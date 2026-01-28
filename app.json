@@ -1,0 +1,96 @@
+{
+  "expo": {
+    "name": "Rez Admin",
+    "slug": "rez-admin-app",
+    "version": "1.0.0",
+    "description": "HQ Admin dashboard for Rez platform. Manage merchants, users, transactions, coin rewards, and system configuration.",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "rez-admin",
+    "owner": "rez-platform",
+    "privacy": "public",
+    "primaryColor": "#DC2626",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#DC2626"
+    },
+    "extra": {
+      "router": {
+        "appDir": "app"
+      }
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rez.admin",
+      "buildNumber": "1",
+      "requireFullScreen": false,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSExceptionDomains": {
+            "localhost": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSExceptionMinimumTLSVersion": "1.0",
+              "NSIncludesSubdomains": true
+            },
+            "192.168.168.39": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSExceptionMinimumTLSVersion": "1.0",
+              "NSIncludesSubdomains": true
+            }
+          }
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#DC2626"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.rez.admin",
+      "versionCode": 1,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#DC2626"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/images/favicon.png",
+      "name": "Rez Admin",
+      "shortName": "Rez Admin",
+      "lang": "en",
+      "scope": "/",
+      "themeColor": "#DC2626",
+      "backgroundColor": "#ffffff",
+      "display": "standalone",
+      "startUrl": "/",
+      "orientation": "any"
+    },
+    "extra": {
+      "privacyPolicyUrl": "https://rez.app/privacy",
+      "termsOfServiceUrl": "https://rez.app/terms",
+      "supportEmail": "admin@rez.app",
+      "appVersion": "1.0.0",
+      "apiVersion": "v1"
+    }
+  }
+}
