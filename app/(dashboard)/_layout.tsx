@@ -16,33 +16,61 @@ export default function DashboardLayout() {
         tabBarStyle: {
           backgroundColor: colors.card,
           borderTopColor: colors.border,
+          height: 70,
+      
+          paddingTop: 8,
+      
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 9,
+          fontWeight: '600',
+          marginTop: 2,
+        },
+        tabBarIconStyle: {
+          marginBottom: -2,
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid" size={size} color={color} />
+          title: 'Home',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="grid" size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: 'Explore',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="compass" size={22} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="coin-rewards"
         options={{
-          title: 'Coin Rewards',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="gift" size={size} color={color} />
+          title: 'Coins',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="gift" size={22} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="merchants"
         options={{
-          title: 'Merchants',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="storefront" size={size} color={color} />
+          title: 'Shops',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="storefront" size={22} color={color} />
           ),
         }}
       />
@@ -50,8 +78,8 @@ export default function DashboardLayout() {
         name="wallet"
         options={{
           title: 'Wallet',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="wallet" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="wallet" size={22} color={color} />
           ),
         }}
       />
@@ -59,8 +87,8 @@ export default function DashboardLayout() {
         name="orders"
         options={{
           title: 'Orders',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="receipt" size={22} color={color} />
           ),
         }}
       />
@@ -68,17 +96,17 @@ export default function DashboardLayout() {
         name="users"
         options={{
           title: 'Users',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="people" size={22} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" size={size} color={color} />
+          title: 'More',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="settings" size={22} color={color} />
           ),
         }}
       />

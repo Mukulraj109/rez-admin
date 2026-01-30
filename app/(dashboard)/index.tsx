@@ -332,7 +332,7 @@ export default function DashboardScreen() {
         </View>
       </View>
 
-      <View style={{ height: 40 }} />
+      <View style={{ height: 100 }} />
     </ScrollView>
   );
 }
@@ -373,47 +373,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   section: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 18,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 12,
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 10,
   },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
+    rowGap: 10,
   },
   statCard: {
-    width: '48%',
-    padding: 16,
-    borderRadius: 16,
+    width: '48.5%',
+    padding: 14,
+    borderRadius: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: -0.3,
   },
   statTitle: {
-    fontSize: 13,
-    marginTop: 4,
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 3,
   },
   statSubtitle: {
     fontSize: 11,
-    marginTop: 2,
+    marginTop: 1,
+    opacity: 0.7,
   },
   trendContainer: {
     flexDirection: 'row',
