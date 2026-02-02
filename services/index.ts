@@ -10,6 +10,8 @@ export { dashboardService } from './api/dashboard';
 export { coinRewardsService } from './api/coinRewards';
 export { merchantsService } from './api/merchants';
 export { ordersService } from './api/orders';
+export { campaignsService } from './api/campaigns';
+export { uploadsService } from './api/uploads';
 
 // Types
 export type { AdminUser, LoginResponse } from './api/auth';
@@ -17,6 +19,8 @@ export type { DashboardStats, RecentActivity } from './api/dashboard';
 export type { PendingCoinReward, CoinRewardStats, CoinRewardsListResponse } from './api/coinRewards';
 export type { Merchant, MerchantWallet, MerchantWalletSummary, WithdrawalRequest, MerchantsListResponse } from './api/merchants';
 export type { Order, OrderStats, OrdersListResponse } from './api/orders';
+export type { Campaign, CampaignDeal, CampaignStats, CampaignsListResponse, CampaignsQuery, StoreOption } from './api/campaigns';
+export type { UploadedImage, UploadResponse } from './api/uploads';
 
 // Re-import for local use
 import { storageService } from './storage';
@@ -26,6 +30,8 @@ import { dashboardService } from './api/dashboard';
 import { coinRewardsService } from './api/coinRewards';
 import { merchantsService } from './api/merchants';
 import { ordersService } from './api/orders';
+import { campaignsService } from './api/campaigns';
+import { uploadsService } from './api/uploads';
 
 // API Service Collection
 export const apiServices = {
@@ -36,4 +42,6 @@ export const apiServices = {
   coinRewards: coinRewardsService,
   merchants: merchantsService,
   orders: ordersService,
+  campaigns: campaignsService,
+  uploads: uploadsService,
 };

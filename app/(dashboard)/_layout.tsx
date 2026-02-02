@@ -57,6 +57,15 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
+        name="campaigns"
+        options={{
+          title: 'Campaigns',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="megaphone" size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="coin-rewards"
         options={{
           title: 'Coins',

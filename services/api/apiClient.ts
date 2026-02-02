@@ -116,6 +116,82 @@ class ApiClient {
   async patch<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
     return this.request<T>('PATCH', endpoint, body, options);
   }
+
+  /**
+   * Upload file using FormData
+   * @param endpoint API endpoint
+   * @param formData FormData with file(s)
+   * @param options Request options
+   */
+  async uploadFile<T>(
+    endpoint: string,
+    formData: FormData,
+    options?: RequestOptions
+  ): Promise<ApiResponse<T>> {
+    const url = buildApiUrl(endpoint);
+    const token = await storageService.getAuthToken();
+    const timeout = options?.timeout || 60000; // 60 second timeout for uploads
+
+    console.log(`📤 [Admin API] UPLOAD ${url}`);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const headers: Record<string, string> = {
+        ...options?.headers,
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // Don't set Content-Type for FormData - let the browser set it with boundary
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: formData,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(`❌ [Admin API] UPLOAD ${endpoint} failed:`, data.message || response.statusText);
+
+        if (response.status === 401) {
+          console.log('🔐 [Admin API] Token expired, clearing auth data');
+          await storageService.logout();
+        }
+
+        return {
+          success: false,
+          message: data.message || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+
+      console.log(`✅ [Admin API] UPLOAD ${endpoint} success`);
+      return data;
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+
+      if (error.name === 'AbortError') {
+        console.error(`❌ [Admin API] UPLOAD ${endpoint} timeout`);
+        return {
+          success: false,
+          message: 'Upload timeout',
+        };
+      }
+
+      console.error(`❌ [Admin API] UPLOAD ${endpoint} error:`, error.message);
+      return {
+        success: false,
+        message: error.message || 'Upload failed',
+      };
+    }
+  }
 }
 
 export const apiClient = new ApiClient();
