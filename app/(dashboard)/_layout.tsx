@@ -17,9 +17,7 @@ export default function DashboardLayout() {
           backgroundColor: colors.card,
           borderTopColor: colors.border,
           height: 70,
-      
           paddingTop: 8,
-      
           borderTopLeftRadius: 16,
           borderTopRightRadius: 16,
           shadowColor: '#000',
@@ -29,7 +27,7 @@ export default function DashboardLayout() {
           elevation: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 9,
+          fontSize: 10,
           fontWeight: '600',
           marginTop: 2,
         },
@@ -38,57 +36,13 @@ export default function DashboardLayout() {
         },
       }}
     >
+      {/* Main 5 Tabs */}
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Dashboard',
           tabBarIcon: ({ color }) => (
             <Ionicons name="grid" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="compass" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="campaigns"
-        options={{
-          title: 'Campaigns',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="megaphone" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="coin-rewards"
-        options={{
-          title: 'Coins',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="gift" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="merchants"
-        options={{
-          title: 'Shops',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="storefront" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="wallet"
-        options={{
-          title: 'Wallet',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="wallet" size={22} color={color} />
           ),
         }}
       />
@@ -102,11 +56,20 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
-        name="users"
+        name="campaigns"
         options={{
-          title: 'Users',
+          title: 'Campaigns',
           tabBarIcon: ({ color }) => (
-            <Ionicons name="people" size={22} color={color} />
+            <Ionicons name="megaphone" size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="merchants"
+        options={{
+          title: 'Merchants',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="storefront" size={22} color={color} />
           ),
         }}
       />
@@ -115,8 +78,40 @@ export default function DashboardLayout() {
         options={{
           title: 'More',
           tabBarIcon: ({ color }) => (
-            <Ionicons name="settings" size={22} color={color} />
+            <Ionicons name="menu" size={22} color={color} />
           ),
+        }}
+      />
+
+      {/* Hidden tabs - accessible via More menu */}
+      <Tabs.Screen
+        name="explore"
+        options={{
+          href: null, // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="experiences"
+        options={{
+          href: null, // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="coin-rewards"
+        options={{
+          href: null, // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="wallet"
+        options={{
+          href: null, // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="users"
+        options={{
+          href: null, // Hide from tab bar
         }}
       />
     </Tabs>

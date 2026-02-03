@@ -121,30 +121,51 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {/* Quick Actions */}
+      {/* Homepage Management */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.icon }]}>QUICK ACTIONS</Text>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>HOMEPAGE MANAGEMENT</Text>
+        <View style={styles.settingsGroup}>
+          <SettingItem
+            icon="sparkles"
+            iconColor="#8B5CF6"
+            title="Shop by Experience"
+            subtitle="Manage homepage experiences"
+            onPress={() => router.push('/(dashboard)/experiences')}
+          />
+          <SettingItem
+            icon="compass"
+            iconColor="#06B6D4"
+            title="Explore Section"
+            subtitle="Manage explore page content"
+            onPress={() => router.push('/(dashboard)/explore')}
+          />
+        </View>
+      </View>
+
+      {/* Operations */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>OPERATIONS</Text>
         <View style={styles.settingsGroup}>
           <SettingItem
             icon="gift"
             iconColor="#F59E0B"
-            title="Pending Coin Rewards"
+            title="Coin Rewards"
             subtitle="Review and approve rewards"
             onPress={() => router.push('/(dashboard)/coin-rewards')}
           />
           <SettingItem
-            icon="storefront"
-            iconColor="#3B82F6"
-            title="Pending Merchants"
-            subtitle="Approve new merchants"
-            onPress={() => router.push('/(dashboard)/merchants')}
+            icon="wallet"
+            iconColor="#10B981"
+            title="Wallet Management"
+            subtitle="Manage user wallets"
+            onPress={() => router.push('/(dashboard)/wallet')}
           />
           <SettingItem
-            icon="receipt"
-            iconColor="#10B981"
-            title="Recent Orders"
-            subtitle="Monitor order activity"
-            onPress={() => router.push('/(dashboard)/orders')}
+            icon="people"
+            iconColor="#3B82F6"
+            title="Users"
+            subtitle="Manage user accounts"
+            onPress={() => router.push('/(dashboard)/users')}
           />
         </View>
       </View>

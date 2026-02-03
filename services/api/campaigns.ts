@@ -11,6 +11,13 @@ export interface CampaignDeal {
   drop?: string;
   discount?: string;
   endsIn?: string;
+  // Price for paid deals (0 or undefined = free deal)
+  price?: number;
+  currency?: 'INR' | 'AED' | 'USD';
+  // Limit for redemptions (0 = unlimited)
+  purchaseLimit?: number;
+  // Track how many times redeemed (read-only)
+  purchaseCount?: number;
 }
 
 // Campaign interface

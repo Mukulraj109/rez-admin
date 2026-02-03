@@ -21,7 +21,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
-import { campaignsService, uploadsService, Campaign, CampaignStats, CampaignDeal } from '../../services';
+import { campaignsService, uploadsService, Campaign, CampaignStats, CampaignDeal, StoreOption } from '../../services';
 import { Colors } from '../../constants/Colors';
 import { format } from 'date-fns';
 import { showAlert, showConfirm } from '../../utils/alert';
@@ -91,6 +91,12 @@ export default function CampaignsScreen() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
 
+  // Store selection states
+  const [stores, setStores] = useState<StoreOption[]>([]);
+  const [storesLoading, setStoresLoading] = useState(false);
+  const [showStoreSelector, setShowStoreSelector] = useState(false);
+  const [storeSearchQuery, setStoreSearchQuery] = useState('');
+
   // Request permission for image picker
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -147,7 +153,20 @@ export default function CampaignsScreen() {
   useEffect(() => {
     loadData();
     loadStats();
+    loadStores();
   }, [activeTab, searchQuery]);
+
+  const loadStores = async (search?: string) => {
+    setStoresLoading(true);
+    try {
+      const storesData = await campaignsService.getStores(search, 100);
+      setStores(storesData);
+    } catch (error) {
+      console.error('Failed to load stores:', error);
+    } finally {
+      setStoresLoading(false);
+    }
+  };
 
   const loadData = async (pageNum: number = 1, append: boolean = false) => {
     try {
@@ -783,38 +802,159 @@ export default function CampaignsScreen() {
             )}
           </View>
 
-          {/* Date Pickers */}
-          {showStartDatePicker && (
-            <DateTimePicker
-              value={formData.startTime ? new Date(formData.startTime) : new Date()}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleStartDateChange}
-            />
+          {/* Date Pickers - Web compatible - Inline inputs */}
+          {Platform.OS === 'web' && (showStartDatePicker || showStartTimePicker || showEndDatePicker || showEndTimePicker) && (
+            <View style={[styles.webInlineDatePicker, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              <View style={styles.webDatePickerHeader}>
+                <Ionicons name="calendar" size={20} color={colors.tint} />
+                <Text style={[styles.webDatePickerHeaderText, { color: colors.text }]}>
+                  {showStartDatePicker ? 'Start Date' : showStartTimePicker ? 'Start Time' : showEndDatePicker ? 'End Date' : 'End Time'}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowStartDatePicker(false);
+                    setShowStartTimePicker(false);
+                    setShowEndDatePicker(false);
+                    setShowEndTimePicker(false);
+                  }}
+                  style={styles.webDatePickerClose}
+                >
+                  <Ionicons name="close" size={20} color={colors.icon} />
+                </TouchableOpacity>
+              </View>
+
+              {showStartDatePicker && (
+                <input
+                  type="date"
+                  value={formData.startTime ? new Date(formData.startTime).toISOString().split('T')[0] : ''}
+                  onChange={(e) => {
+                    const selectedDate = new Date(e.target.value);
+                    const currentDate = formData.startTime ? new Date(formData.startTime) : new Date();
+                    selectedDate.setHours(currentDate.getHours(), currentDate.getMinutes());
+                    setFormData(p => ({ ...p, startTime: selectedDate.toISOString() }));
+                    setShowStartDatePicker(false);
+                  }}
+                  style={{
+                    padding: 14,
+                    fontSize: 16,
+                    borderRadius: 10,
+                    border: `2px solid ${colors.tint}`,
+                    width: '100%',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer'
+                  }}
+                />
+              )}
+              {showStartTimePicker && (
+                <input
+                  type="time"
+                  value={formData.startTime ? format(new Date(formData.startTime), 'HH:mm') : ''}
+                  onChange={(e) => {
+                    const [hours, minutes] = e.target.value.split(':').map(Number);
+                    const currentDate = formData.startTime ? new Date(formData.startTime) : new Date();
+                    currentDate.setHours(hours, minutes);
+                    setFormData(p => ({ ...p, startTime: currentDate.toISOString() }));
+                    setShowStartTimePicker(false);
+                  }}
+                  style={{
+                    padding: 14,
+                    fontSize: 16,
+                    borderRadius: 10,
+                    border: `2px solid ${colors.tint}`,
+                    width: '100%',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer'
+                  }}
+                />
+              )}
+              {showEndDatePicker && (
+                <input
+                  type="date"
+                  value={formData.endTime ? new Date(formData.endTime).toISOString().split('T')[0] : ''}
+                  onChange={(e) => {
+                    const selectedDate = new Date(e.target.value);
+                    const currentDate = formData.endTime ? new Date(formData.endTime) : new Date();
+                    selectedDate.setHours(currentDate.getHours(), currentDate.getMinutes());
+                    setFormData(p => ({ ...p, endTime: selectedDate.toISOString() }));
+                    setShowEndDatePicker(false);
+                  }}
+                  style={{
+                    padding: 14,
+                    fontSize: 16,
+                    borderRadius: 10,
+                    border: `2px solid ${colors.tint}`,
+                    width: '100%',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer'
+                  }}
+                />
+              )}
+              {showEndTimePicker && (
+                <input
+                  type="time"
+                  value={formData.endTime ? format(new Date(formData.endTime), 'HH:mm') : ''}
+                  onChange={(e) => {
+                    const [hours, minutes] = e.target.value.split(':').map(Number);
+                    const currentDate = formData.endTime ? new Date(formData.endTime) : new Date();
+                    currentDate.setHours(hours, minutes);
+                    setFormData(p => ({ ...p, endTime: currentDate.toISOString() }));
+                    setShowEndTimePicker(false);
+                  }}
+                  style={{
+                    padding: 14,
+                    fontSize: 16,
+                    borderRadius: 10,
+                    border: `2px solid ${colors.tint}`,
+                    width: '100%',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer'
+                  }}
+                />
+              )}
+            </View>
           )}
-          {showStartTimePicker && (
-            <DateTimePicker
-              value={formData.startTime ? new Date(formData.startTime) : new Date()}
-              mode="time"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleStartTimeChange}
-            />
-          )}
-          {showEndDatePicker && (
-            <DateTimePicker
-              value={formData.endTime ? new Date(formData.endTime) : new Date()}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleEndDateChange}
-            />
-          )}
-          {showEndTimePicker && (
-            <DateTimePicker
-              value={formData.endTime ? new Date(formData.endTime) : new Date()}
-              mode="time"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleEndTimeChange}
-            />
+
+          {/* Native Date Pickers for iOS/Android */}
+          {Platform.OS !== 'web' && (
+            <>
+              {/* Native Date Pickers for iOS/Android */}
+              {showStartDatePicker && (
+                <DateTimePicker
+                  value={formData.startTime ? new Date(formData.startTime) : new Date()}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={handleStartDateChange}
+                />
+              )}
+              {showStartTimePicker && (
+                <DateTimePicker
+                  value={formData.startTime ? new Date(formData.startTime) : new Date()}
+                  mode="time"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={handleStartTimeChange}
+                />
+              )}
+              {showEndDatePicker && (
+                <DateTimePicker
+                  value={formData.endTime ? new Date(formData.endTime) : new Date()}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={handleEndDateChange}
+                />
+              )}
+              {showEndTimePicker && (
+                <DateTimePicker
+                  value={formData.endTime ? new Date(formData.endTime) : new Date()}
+                  mode="time"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={handleEndTimeChange}
+                />
+              )}
+            </>
           )}
 
           <View style={styles.formGroup}>
@@ -1119,6 +1259,18 @@ export default function CampaignsScreen() {
                     {deal.endsIn && (
                       <Text style={[styles.dealEndsIn, { color: colors.icon }]}>Ends: {deal.endsIn}</Text>
                     )}
+                    {/* Show linked store status */}
+                    {deal.storeId ? (
+                      <View style={styles.dealLinkedStore}>
+                        <Ionicons name="link" size={10} color="#10B981" />
+                        <Text style={styles.dealLinkedStoreText}>Store linked</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.dealUnlinkedStore}>
+                        <Ionicons name="warning" size={10} color="#F59E0B" />
+                        <Text style={styles.dealUnlinkedStoreText}>No store linked</Text>
+                      </View>
+                    )}
                   </View>
 
                   <View style={styles.dealItemActions}>
@@ -1215,13 +1367,52 @@ export default function CampaignsScreen() {
               />
             </View>
 
+            {/* Store Selection */}
             <View style={styles.formGroup}>
-              <Text style={[styles.formLabel, { color: colors.text }]}>Store Name</Text>
+              <Text style={[styles.formLabel, { color: colors.text }]}>Link to Store</Text>
+              <TouchableOpacity
+                style={[styles.storeSelectBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
+                onPress={() => setShowStoreSelector(true)}
+              >
+                {dealFormData.storeId ? (
+                  <View style={styles.selectedStoreInfo}>
+                    <Ionicons name="storefront" size={18} color={colors.tint} />
+                    <Text style={[styles.selectedStoreName, { color: colors.text }]} numberOfLines={1}>
+                      {stores.find(s => s._id === dealFormData.storeId)?.name || dealFormData.store || 'Store selected'}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => setDealFormData(p => ({ ...p, storeId: undefined }))}
+                      style={styles.clearStoreBtn}
+                    >
+                      <Ionicons name="close-circle" size={20} color="#EF4444" />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View style={styles.selectStorePlaceholder}>
+                    <Ionicons name="add-circle-outline" size={18} color={colors.icon} />
+                    <Text style={[styles.selectStorePlaceholderText, { color: colors.icon }]}>
+                      Select a store (optional)
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              {dealFormData.storeId && (
+                <View style={[styles.linkedStoreHint, { backgroundColor: `${colors.tint}15` }]}>
+                  <Ionicons name="checkmark-circle" size={14} color={colors.tint} />
+                  <Text style={[styles.linkedStoreHintText, { color: colors.tint }]}>
+                    Store linked - users can visit this store from the deal
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={[styles.formLabel, { color: colors.text }]}>Store Name (Display)</Text>
               <TextInput
                 style={[styles.formInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                 value={dealFormData.store || ''}
                 onChangeText={text => setDealFormData(p => ({ ...p, store: text }))}
-                placeholder="Store name"
+                placeholder="Store name shown on deal"
                 placeholderTextColor={colors.icon}
               />
             </View>
@@ -1295,6 +1486,121 @@ export default function CampaignsScreen() {
               </View>
             </View>
 
+            {/* Deal Price - FREE or PAID */}
+            <View style={[styles.formGroup, { marginTop: 12 }]}>
+              <Text style={[styles.formLabel, { color: colors.text }]}>Deal Type</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+                <TouchableOpacity
+                  style={[
+                    styles.dealTypeBtn,
+                    {
+                      backgroundColor: !dealFormData.price || dealFormData.price === 0 ? colors.tint : colors.background,
+                      borderColor: colors.tint,
+                    }
+                  ]}
+                  onPress={() => setDealFormData(p => ({ ...p, price: 0 }))}
+                >
+                  <Ionicons
+                    name="gift-outline"
+                    size={16}
+                    color={!dealFormData.price || dealFormData.price === 0 ? '#FFF' : colors.tint}
+                  />
+                  <Text style={{
+                    color: !dealFormData.price || dealFormData.price === 0 ? '#FFF' : colors.tint,
+                    marginLeft: 6,
+                    fontWeight: '600',
+                  }}>
+                    FREE
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.dealTypeBtn,
+                    {
+                      backgroundColor: dealFormData.price && dealFormData.price > 0 ? colors.tint : colors.background,
+                      borderColor: colors.tint,
+                      marginLeft: 12,
+                    }
+                  ]}
+                  onPress={() => setDealFormData(p => ({ ...p, price: p.price && p.price > 0 ? p.price : 99 }))}
+                >
+                  <Ionicons
+                    name="pricetag-outline"
+                    size={16}
+                    color={dealFormData.price && dealFormData.price > 0 ? '#FFF' : colors.tint}
+                  />
+                  <Text style={{
+                    color: dealFormData.price && dealFormData.price > 0 ? '#FFF' : colors.tint,
+                    marginLeft: 6,
+                    fontWeight: '600',
+                  }}>
+                    PAID
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Price input - only show if PAID is selected */}
+            {dealFormData.price !== undefined && dealFormData.price > 0 && (
+              <View style={styles.formRow}>
+                <View style={[styles.formGroup, { flex: 1, marginRight: 12 }]}>
+                  <Text style={[styles.formLabel, { color: colors.text }]}>Price</Text>
+                  <TextInput
+                    style={[styles.formInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                    value={dealFormData.price?.toString() || ''}
+                    onChangeText={text => setDealFormData(p => ({ ...p, price: parseInt(text) || 0 }))}
+                    placeholder="e.g., 99"
+                    placeholderTextColor={colors.icon}
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={[styles.formGroup, { flex: 1.5 }]}>
+                  <Text style={[styles.formLabel, { color: colors.text }]}>Currency</Text>
+                  <View style={{ flexDirection: 'row', marginTop: 4, flexWrap: 'wrap', gap: 4 }}>
+                    {(['INR', 'AED', 'USD'] as const).map((curr) => (
+                      <TouchableOpacity
+                        key={curr}
+                        style={[
+                          styles.currencyBtn,
+                          {
+                            backgroundColor: (dealFormData.currency || 'INR') === curr ? colors.tint : colors.background,
+                            borderColor: colors.border,
+                          }
+                        ]}
+                        onPress={() => setDealFormData(p => ({ ...p, currency: curr }))}
+                      >
+                        <Text style={{
+                          color: (dealFormData.currency || 'INR') === curr ? '#FFF' : colors.text,
+                          fontSize: 12,
+                          fontWeight: '600',
+                        }}>
+                          {curr}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {/* Redemption Limit (optional) */}
+            <View style={[styles.formGroup, { marginTop: 12 }]}>
+              <Text style={[styles.formLabel, { color: colors.text }]}>Redemption Limit (0 = unlimited)</Text>
+              <TextInput
+                style={[styles.formInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                value={dealFormData.purchaseLimit?.toString() || '0'}
+                onChangeText={text => setDealFormData(p => ({ ...p, purchaseLimit: parseInt(text) || 0 }))}
+                placeholder="0"
+                placeholderTextColor={colors.icon}
+                keyboardType="numeric"
+              />
+              {dealFormData.purchaseCount !== undefined && dealFormData.purchaseCount > 0 && (
+                <Text style={{ color: colors.icon, fontSize: 12, marginTop: 4 }}>
+                  {dealFormData.purchaseCount} redeemed so far
+                </Text>
+              )}
+            </View>
+
             <View style={styles.dealModalButtons}>
               <TouchableOpacity
                 style={[styles.dealModalBtn, styles.dealModalCancelBtn, { borderColor: colors.border }]}
@@ -1366,8 +1672,102 @@ export default function CampaignsScreen() {
 
       {renderFormModal()}
       {renderDealModal()}
+      {renderStoreSelector()}
     </SafeAreaView>
   );
+
+  function renderStoreSelector() {
+    const filteredStores = stores.filter(store =>
+      store.name.toLowerCase().includes(storeSearchQuery.toLowerCase())
+    );
+
+    return (
+      <Modal visible={showStoreSelector} transparent animationType="fade">
+        <View style={styles.storeSelectorOverlay}>
+          <View style={[styles.storeSelectorContent, { backgroundColor: colors.card }]}>
+            <View style={styles.storeSelectorHeader}>
+              <Text style={[styles.storeSelectorTitle, { color: colors.text }]}>Select Store</Text>
+              <TouchableOpacity onPress={() => setShowStoreSelector(false)}>
+                <Ionicons name="close" size={24} color={colors.icon} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Search */}
+            <View style={[styles.storeSearchBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
+              <Ionicons name="search" size={18} color={colors.icon} />
+              <TextInput
+                style={[styles.storeSearchInput, { color: colors.text }]}
+                value={storeSearchQuery}
+                onChangeText={setStoreSearchQuery}
+                placeholder="Search stores..."
+                placeholderTextColor={colors.icon}
+              />
+              {storeSearchQuery.length > 0 && (
+                <TouchableOpacity onPress={() => setStoreSearchQuery('')}>
+                  <Ionicons name="close-circle" size={18} color={colors.icon} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Store List */}
+            <ScrollView style={styles.storeList} showsVerticalScrollIndicator={false}>
+              {storesLoading ? (
+                <View style={styles.storesLoadingContainer}>
+                  <ActivityIndicator size="large" color={colors.tint} />
+                </View>
+              ) : filteredStores.length === 0 ? (
+                <View style={styles.noStoresContainer}>
+                  <Ionicons name="storefront-outline" size={48} color={colors.icon} />
+                  <Text style={[styles.noStoresText, { color: colors.icon }]}>No stores found</Text>
+                </View>
+              ) : (
+                filteredStores.map((store) => (
+                  <TouchableOpacity
+                    key={store._id}
+                    style={[
+                      styles.storeListItem,
+                      { borderColor: colors.border },
+                      dealFormData.storeId === store._id && { backgroundColor: `${colors.tint}15`, borderColor: colors.tint }
+                    ]}
+                    onPress={() => {
+                      setDealFormData(p => ({
+                        ...p,
+                        storeId: store._id,
+                        store: p.store || store.name, // Set store name if empty
+                      }));
+                      setShowStoreSelector(false);
+                      setStoreSearchQuery('');
+                    }}
+                  >
+                    {store.logo ? (
+                      <Image source={{ uri: store.logo }} style={styles.storeListItemImage} />
+                    ) : (
+                      <View style={[styles.storeListItemImagePlaceholder, { backgroundColor: colors.border }]}>
+                        <Ionicons name="storefront" size={20} color={colors.icon} />
+                      </View>
+                    )}
+                    <View style={styles.storeListItemInfo}>
+                      <Text style={[styles.storeListItemName, { color: colors.text }]} numberOfLines={1}>
+                        {store.name}
+                      </Text>
+                      {store.category && (
+                        <Text style={[styles.storeListItemCategory, { color: colors.icon }]}>
+                          {store.category}
+                        </Text>
+                      )}
+                    </View>
+                    {dealFormData.storeId === store._id && (
+                      <Ionicons name="checkmark-circle" size={22} color={colors.tint} />
+                    )}
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -1968,5 +2368,198 @@ const styles = StyleSheet.create({
   dealModalBtnText: {
     fontWeight: '600',
     fontSize: 14,
+  },
+  dealTypeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1.5,
+  },
+  currencyBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    borderWidth: 1,
+    minWidth: 40,
+  },
+  // Web Date Picker styles - Inline
+  webInlineDatePicker: {
+    marginBottom: 16,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  webDatePickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 8,
+  },
+  webDatePickerHeaderText: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  webDatePickerClose: {
+    padding: 4,
+  },
+  // Store Selection Styles
+  storeSelectBtn: {
+    borderRadius: 10,
+    borderWidth: 1,
+    padding: 12,
+  },
+  selectedStoreInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  selectedStoreName: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  clearStoreBtn: {
+    padding: 2,
+  },
+  selectStorePlaceholder: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  selectStorePlaceholderText: {
+    fontSize: 14,
+  },
+  linkedStoreHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  linkedStoreHintText: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  // Store Selector Modal
+  storeSelectorOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  storeSelectorContent: {
+    borderRadius: 16,
+    maxHeight: '80%',
+    overflow: 'hidden',
+  },
+  storeSelectorHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  storeSelectorTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  storeSearchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    gap: 8,
+  },
+  storeSearchInput: {
+    flex: 1,
+    fontSize: 14,
+    padding: 0,
+  },
+  storeList: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    maxHeight: 400,
+  },
+  storesLoadingContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  noStoresContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    gap: 8,
+  },
+  noStoresText: {
+    fontSize: 14,
+  },
+  storeListItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginBottom: 8,
+    gap: 12,
+  },
+  storeListItemImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+  },
+  storeListItemImagePlaceholder: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  storeListItemInfo: {
+    flex: 1,
+  },
+  storeListItemName: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  storeListItemCategory: {
+    fontSize: 12,
+  },
+  // Deal linked store status
+  dealLinkedStore: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  dealLinkedStoreText: {
+    fontSize: 9,
+    color: '#10B981',
+    fontWeight: '500',
+  },
+  dealUnlinkedStore: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  dealUnlinkedStoreText: {
+    fontSize: 9,
+    color: '#F59E0B',
+    fontWeight: '500',
   },
 });
