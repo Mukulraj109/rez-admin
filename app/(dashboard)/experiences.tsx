@@ -29,6 +29,7 @@ import {
   TagOption,
   PreviewStore,
   RegionId,
+  AssignableStore,
   EXPERIENCE_TYPES,
   BACKGROUND_COLORS,
   COMMON_EMOJIS,
@@ -126,6 +127,16 @@ export default function ExperiencesScreen() {
   const [newTag, setNewTag] = useState('');
   const [showFilterSection, setShowFilterSection] = useState(false);
 
+  // Store assignment states
+  const [storeSearchQuery, setStoreSearchQuery] = useState('');
+  const [storeSearchResults, setStoreSearchResults] = useState<AssignableStore[]>([]);
+  const [suggestedStores, setSuggestedStores] = useState<AssignableStore[]>([]);
+  const [assignedStores, setAssignedStores] = useState<AssignableStore[]>([]);
+  const [isSearchingStores, setIsSearchingStores] = useState(false);
+  const [isLoadingSuggested, setIsLoadingSuggested] = useState(false);
+  const [isAssigningStore, setIsAssigningStore] = useState(false);
+  const [showAssignedSection, setShowAssignedSection] = useState(false);
+
   // Fetch data
   const fetchExperiences = useCallback(async (pageNum: number = 1, append: boolean = false) => {
     try {
@@ -217,6 +228,10 @@ export default function ExperiencesScreen() {
     setPreviewStores([]);
     setPreviewTotal(0);
     setShowFilterSection(false);
+    setShowAssignedSection(false);
+    setAssignedStores([]);
+    setStoreSearchQuery('');
+    setStoreSearchResults([]);
     setShowFormModal(true);
   };
 
@@ -254,10 +269,17 @@ export default function ExperiencesScreen() {
       isFeatured: exp.isFeatured,
     });
     setShowFilterSection(true);
+    setShowAssignedSection(true);
+    // Reset search state
+    setStoreSearchQuery('');
+    setStoreSearchResults([]);
     // Load preview for existing filter criteria
     if (filterCriteria && Object.keys(filterCriteria).length > 0) {
       previewMatchingStores(filterCriteria);
     }
+    // Load assigned stores and suggested stores
+    fetchAssignedStores(exp._id);
+    fetchSuggestedStores();
     setShowFormModal(true);
   };
 
@@ -298,22 +320,22 @@ export default function ExperiencesScreen() {
     }
   };
 
-  const handleDelete = async (exp: StoreExperience) => {
-    const confirmed = await showConfirm(
+  const handleDelete = (exp: StoreExperience) => {
+    showConfirm(
       'Delete Experience',
-      `Are you sure you want to delete "${exp.title}"? This action cannot be undone.`
+      `Are you sure you want to delete "${exp.title}"? This action cannot be undone.`,
+      async () => {
+        try {
+          await experiencesService.deleteExperience(exp._id);
+          showAlert('Success', 'Experience deleted successfully');
+          fetchExperiences(1);
+          fetchStats();
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to delete experience');
+        }
+      },
+      'Delete'
     );
-
-    if (confirmed) {
-      try {
-        await experiencesService.deleteExperience(exp._id);
-        showAlert('Success', 'Experience deleted successfully');
-        fetchExperiences(1);
-        fetchStats();
-      } catch (error: any) {
-        showAlert('Error', error.message || 'Failed to delete experience');
-      }
-    }
   };
 
   const handleToggle = async (exp: StoreExperience) => {
@@ -421,6 +443,102 @@ export default function ExperiencesScreen() {
       : [...currentRegions, regionId];
     setFormData(prev => ({ ...prev, regions: newRegions }));
   };
+
+  // Store assignment helpers
+  const searchStoresForAssignment = useCallback(async (query: string) => {
+    // Require at least 2 characters for search
+    if (!query.trim() || query.trim().length < 2) {
+      setStoreSearchResults([]);
+      return;
+    }
+    setIsSearchingStores(true);
+    try {
+      const response = await experiencesService.searchStores(query);
+      // Filter out already assigned stores
+      const assignedIds = assignedStores.map(s => s._id);
+      const filteredResults = response.stores.filter(s => !assignedIds.includes(s._id));
+      setStoreSearchResults(filteredResults);
+    } catch (error) {
+      console.log('Store search failed:', error);
+      setStoreSearchResults([]);
+    } finally {
+      setIsSearchingStores(false);
+    }
+  }, [assignedStores]);
+
+  const fetchSuggestedStores = useCallback(async () => {
+    if (suggestedStores.length > 0) return; // Already loaded
+    setIsLoadingSuggested(true);
+    try {
+      const response = await experiencesService.getSuggestedStores();
+      setSuggestedStores(response.stores);
+    } catch (error) {
+      console.log('Fetch suggested stores failed:', error);
+      setSuggestedStores([]);
+    } finally {
+      setIsLoadingSuggested(false);
+    }
+  }, [suggestedStores.length]);
+
+  const fetchAssignedStores = useCallback(async (experienceId: string) => {
+    try {
+      const response = await experiencesService.getAssignedStores(experienceId);
+      setAssignedStores(response.stores);
+    } catch (error) {
+      console.log('Fetch assigned stores failed:', error);
+      setAssignedStores([]);
+    }
+  }, []);
+
+  const handleAssignStore = async (store: AssignableStore) => {
+    if (!editingExperience) return;
+
+    setIsAssigningStore(true);
+    try {
+      await experiencesService.assignStore(editingExperience._id, store._id);
+      setAssignedStores(prev => [...prev, store]);
+      setStoreSearchResults(prev => prev.filter(s => s._id !== store._id));
+      // Also remove from suggested stores display
+      setSuggestedStores(prev => prev.filter(s => s._id !== store._id));
+      showAlert('Success', `${store.name} has been assigned to this experience`);
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to assign store');
+    } finally {
+      setIsAssigningStore(false);
+    }
+  };
+
+  const handleRemoveStore = (store: AssignableStore) => {
+    if (!editingExperience) return;
+
+    showConfirm(
+      'Remove Store',
+      `Are you sure you want to remove "${store.name}" from this experience?`,
+      async () => {
+        // This callback runs when user clicks "Confirm"
+        try {
+          await experiencesService.removeStore(editingExperience._id, store._id);
+          setAssignedStores(prev => prev.filter(s => s._id !== store._id));
+          showAlert('Success', `${store.name} has been removed from this experience`);
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to remove store');
+        }
+      },
+      'Remove' // Confirm button text
+    );
+  };
+
+  // Debounced store search with minimum 2 character requirement
+  useEffect(() => {
+    if (storeSearchQuery.trim().length < 2) {
+      setStoreSearchResults([]);
+      return;
+    }
+    const timer = setTimeout(() => {
+      searchStoresForAssignment(storeSearchQuery);
+    }, 400); // Slightly longer debounce for optimization
+    return () => clearTimeout(timer);
+  }, [storeSearchQuery, searchStoresForAssignment]);
 
   // Render stat card
   const renderStatCard = (label: string, value: number, icon: string, color: string) => (
@@ -1109,6 +1227,209 @@ export default function ExperiencesScreen() {
               )}
             </View>
 
+            {/* ============================================ */}
+            {/* MANUALLY ASSIGNED STORES */}
+            {/* ============================================ */}
+            {!editingExperience && (
+              <View style={[styles.newExpNotice, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                <Ionicons name="information-circle" size={20} color={colors.tint} />
+                <Text style={[styles.newExpNoticeText, { color: colors.icon }]}>
+                  Save this experience first, then you can manually assign specific stores to it.
+                </Text>
+              </View>
+            )}
+            {editingExperience && (
+              <View style={[styles.filterSection, { borderColor: colors.border }]}>
+                <TouchableOpacity
+                  style={styles.filterSectionHeader}
+                  onPress={() => setShowAssignedSection(!showAssignedSection)}
+                >
+                  <View style={styles.filterHeaderLeft}>
+                    <Ionicons name="storefront" size={20} color="#22C55E" />
+                    <Text style={[styles.filterSectionTitle, { color: colors.text }]}>
+                      Manually Assigned Stores
+                    </Text>
+                  </View>
+                  <View style={styles.filterHeaderRight}>
+                    <Text style={[styles.filterPreviewCount, { color: '#22C55E' }]}>
+                      {assignedStores.length} assigned
+                    </Text>
+                    <Ionicons
+                      name={showAssignedSection ? 'chevron-up' : 'chevron-down'}
+                      size={20}
+                      color={colors.icon}
+                    />
+                  </View>
+                </TouchableOpacity>
+
+                {showAssignedSection && (
+                  <View style={styles.filterContent}>
+                    <Text style={[styles.formHint, { color: colors.icon, marginBottom: 12 }]}>
+                      These stores will always appear in this experience, in addition to stores matching the filter criteria above.
+                    </Text>
+
+                    {/* Suggested Stores - Quick Selection */}
+                    {!storeSearchQuery && (
+                      <View style={styles.formGroup}>
+                        <Text style={[styles.formLabel, { color: colors.text }]}>
+                          Quick Add - Popular Stores
+                        </Text>
+                        {isLoadingSuggested ? (
+                          <View style={{ padding: 20, alignItems: 'center' }}>
+                            <ActivityIndicator size="small" color={colors.tint} />
+                          </View>
+                        ) : suggestedStores.length > 0 ? (
+                          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -4 }}>
+                            {suggestedStores
+                              .filter(s => !assignedStores.some(a => a._id === s._id))
+                              .slice(0, 10)
+                              .map((store) => (
+                                <TouchableOpacity
+                                  key={store._id}
+                                  style={[styles.suggestedStoreChip, { backgroundColor: colors.card, borderColor: colors.border }]}
+                                  onPress={() => handleAssignStore(store)}
+                                  disabled={isAssigningStore}
+                                >
+                                  <Ionicons name="storefront" size={14} color={colors.icon} />
+                                  <Text style={[styles.suggestedStoreName, { color: colors.text }]} numberOfLines={1}>
+                                    {store.name}
+                                  </Text>
+                                  <View style={[styles.quickAddBtn, { backgroundColor: '#22C55E20' }]}>
+                                    <Ionicons name="add" size={14} color="#22C55E" />
+                                  </View>
+                                </TouchableOpacity>
+                              ))}
+                          </ScrollView>
+                        ) : (
+                          <Text style={[styles.noResultsText, { color: colors.icon }]}>
+                            No suggested stores available
+                          </Text>
+                        )}
+                      </View>
+                    )}
+
+                    {/* Search Stores */}
+                    <View style={styles.formGroup}>
+                      <Text style={[styles.formLabel, { color: colors.text }]}>Search & Add Stores</Text>
+                      <View style={[styles.storeSearchContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                        <Ionicons name="search" size={18} color={colors.icon} />
+                        <TextInput
+                          style={[styles.storeSearchInput, { color: colors.text }]}
+                          placeholder="Type at least 2 characters to search..."
+                          placeholderTextColor={colors.icon}
+                          value={storeSearchQuery}
+                          onChangeText={setStoreSearchQuery}
+                        />
+                        {isSearchingStores && (
+                          <ActivityIndicator size="small" color={colors.tint} />
+                        )}
+                        {storeSearchQuery.length > 0 && !isSearchingStores && (
+                          <TouchableOpacity onPress={() => {
+                            setStoreSearchQuery('');
+                            setStoreSearchResults([]);
+                          }}>
+                            <Ionicons name="close-circle" size={18} color={colors.icon} />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+
+                      {/* Minimum character hint */}
+                      {storeSearchQuery.length > 0 && storeSearchQuery.length < 2 && (
+                        <Text style={[styles.searchHintText, { color: colors.icon }]}>
+                          Type at least 2 characters to search
+                        </Text>
+                      )}
+
+                      {/* Search Results */}
+                      {storeSearchResults.length > 0 && (
+                        <View style={[styles.searchResultsContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                          {storeSearchResults.slice(0, 5).map((store) => (
+                            <TouchableOpacity
+                              key={store._id}
+                              style={[styles.searchResultItem, { borderColor: colors.border }]}
+                              onPress={() => handleAssignStore(store)}
+                              disabled={isAssigningStore}
+                            >
+                              <View style={[styles.searchResultLogo, { backgroundColor: colors.background }]}>
+                                <Ionicons name="storefront" size={16} color={colors.icon} />
+                              </View>
+                              <View style={styles.searchResultInfo}>
+                                <Text style={[styles.searchResultName, { color: colors.text }]} numberOfLines={1}>
+                                  {store.name}
+                                </Text>
+                                <Text style={[styles.searchResultMeta, { color: colors.icon }]} numberOfLines={1}>
+                                  {store.city} • {store.category || 'N/A'} {store.rating ? `• ${store.rating.toFixed(1)} ⭐` : ''}
+                                </Text>
+                              </View>
+                              <View style={[styles.addStoreBtn, { backgroundColor: '#22C55E20' }]}>
+                                <Ionicons name="add" size={18} color="#22C55E" />
+                              </View>
+                            </TouchableOpacity>
+                          ))}
+                          {storeSearchResults.length > 5 && (
+                            <Text style={[styles.moreResultsText, { color: colors.icon }]}>
+                              +{storeSearchResults.length - 5} more results. Type more to narrow search.
+                            </Text>
+                          )}
+                        </View>
+                      )}
+
+                      {storeSearchQuery.length >= 2 && storeSearchResults.length === 0 && !isSearchingStores && (
+                        <Text style={[styles.noResultsText, { color: colors.icon }]}>
+                          No stores found matching "{storeSearchQuery}"
+                        </Text>
+                      )}
+                    </View>
+
+                    {/* Assigned Stores List */}
+                    <View style={styles.formGroup}>
+                      <Text style={[styles.formLabel, { color: colors.text }]}>
+                        Assigned Stores ({assignedStores.length})
+                      </Text>
+                      {assignedStores.length > 0 ? (
+                        <View style={styles.assignedStoresList}>
+                          {assignedStores.map((store) => (
+                            <View
+                              key={store._id}
+                              style={[styles.assignedStoreItem, { backgroundColor: colors.card, borderColor: colors.border }]}
+                            >
+                              <View style={[styles.assignedStoreLogo, { backgroundColor: '#22C55E15' }]}>
+                                <Ionicons name="storefront" size={16} color="#22C55E" />
+                              </View>
+                              <View style={styles.assignedStoreInfo}>
+                                <Text style={[styles.assignedStoreName, { color: colors.text }]} numberOfLines={1}>
+                                  {store.name}
+                                </Text>
+                                <Text style={[styles.assignedStoreMeta, { color: colors.icon }]} numberOfLines={1}>
+                                  {store.city} • {store.category || 'N/A'}
+                                </Text>
+                              </View>
+                              <TouchableOpacity
+                                style={[styles.removeStoreBtn, { backgroundColor: '#EF444415' }]}
+                                onPress={() => handleRemoveStore(store)}
+                              >
+                                <Ionicons name="close" size={16} color="#EF4444" />
+                              </TouchableOpacity>
+                            </View>
+                          ))}
+                        </View>
+                      ) : (
+                        <View style={[styles.emptyAssignedState, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                          <Ionicons name="storefront-outline" size={32} color={colors.icon} />
+                          <Text style={[styles.emptyAssignedText, { color: colors.icon }]}>
+                            No stores manually assigned yet
+                          </Text>
+                          <Text style={[styles.emptyAssignedHint, { color: colors.icon }]}>
+                            Search and add stores above to always include them in this experience
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                )}
+              </View>
+            )}
+
             {/* Toggles */}
             <View style={styles.togglesContainer}>
               <View style={[styles.toggleRow, { borderColor: colors.border }]}>
@@ -1686,5 +2007,166 @@ const styles = StyleSheet.create({
     padding: 16,
     textAlign: 'center',
     fontSize: 13,
+  },
+  // Store Assignment Styles
+  storeSearchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 44,
+    gap: 8,
+  },
+  storeSearchInput: {
+    flex: 1,
+    fontSize: 14,
+    paddingVertical: 10,
+  },
+  searchResultsContainer: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  searchResultItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    gap: 10,
+  },
+  searchResultLogo: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchResultInfo: {
+    flex: 1,
+  },
+  searchResultName: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  searchResultMeta: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  addStoreBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  moreResultsText: {
+    padding: 10,
+    textAlign: 'center',
+    fontSize: 12,
+  },
+  noResultsText: {
+    marginTop: 8,
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  assignedStoresList: {
+    gap: 8,
+  },
+  assignedStoreItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    gap: 10,
+  },
+  assignedStoreLogo: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  assignedStoreInfo: {
+    flex: 1,
+  },
+  assignedStoreName: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  assignedStoreMeta: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  removeStoreBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyAssignedState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+  },
+  emptyAssignedText: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 8,
+  },
+  emptyAssignedHint: {
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 4,
+    maxWidth: '80%',
+  },
+  newExpNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginTop: 16,
+    marginBottom: 8,
+    gap: 10,
+  },
+  newExpNoticeText: {
+    flex: 1,
+    fontSize: 13,
+  },
+  // Suggested Stores Styles
+  suggestedStoreChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginHorizontal: 4,
+    gap: 6,
+    maxWidth: 180,
+  },
+  suggestedStoreName: {
+    fontSize: 12,
+    fontWeight: '500',
+    flexShrink: 1,
+  },
+  quickAddBtn: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchHintText: {
+    fontSize: 12,
+    marginTop: 6,
+    fontStyle: 'italic',
   },
 });

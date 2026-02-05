@@ -126,6 +126,13 @@ export default function SettingsScreen() {
         <Text style={[styles.sectionTitle, { color: colors.icon }]}>HOMEPAGE MANAGEMENT</Text>
         <View style={styles.settingsGroup}>
           <SettingItem
+            icon="flash"
+            iconColor="#F59E0B"
+            title="Deals Section"
+            subtitle="Manage deals that save money"
+            onPress={() => router.push('/(dashboard)/homepage-deals')}
+          />
+          <SettingItem
             icon="sparkles"
             iconColor="#8B5CF6"
             title="Shop by Experience"
@@ -138,6 +145,20 @@ export default function SettingsScreen() {
             title="Explore Section"
             subtitle="Manage explore page content"
             onPress={() => router.push('/(dashboard)/explore')}
+          />
+        </View>
+      </View>
+
+      {/* Offers & Zones Management */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>OFFERS & ZONES</Text>
+        <View style={styles.settingsGroup}>
+          <SettingItem
+            icon="pricetag"
+            iconColor="#10B981"
+            title="Offers Management"
+            subtitle="Create & manage all offers"
+            onPress={() => router.push('/(dashboard)/offers')}
           />
         </View>
       </View>
@@ -166,6 +187,13 @@ export default function SettingsScreen() {
             title="Users"
             subtitle="Manage user accounts"
             onPress={() => router.push('/(dashboard)/users')}
+          />
+          <SettingItem
+            icon="shield-checkmark"
+            iconColor="#8B5CF6"
+            title="Verifications"
+            subtitle="Review student & zone verifications"
+            onPress={() => router.push('/(dashboard)/verifications')}
           />
         </View>
       </View>

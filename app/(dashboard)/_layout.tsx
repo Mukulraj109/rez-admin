@@ -114,6 +114,24 @@ export default function DashboardLayout() {
           href: null, // Hide from tab bar
         }}
       />
+      <Tabs.Screen
+        name="offers"
+        options={{
+          href: null, // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="homepage-deals"
+        options={{
+          href: null, // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="verifications"
+        options={{
+          href: null, // Hide from tab bar - accessible via More menu
+        }}
+      />
     </Tabs>
   );
 }

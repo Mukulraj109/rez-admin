@@ -507,6 +507,117 @@ class ExperiencesService {
       throw new Error(error.message || 'Failed to refresh all store counts');
     }
   }
+
+  /**
+   * Search stores for assignment
+   */
+  async searchStores(query: string): Promise<{ stores: AssignableStore[]; total: number }> {
+    try {
+      console.log('[Experiences] Searching stores:', query);
+      // Build query params in URL since apiClient.get doesn't handle query params
+      const endpoint = `admin/experiences/stores/search?q=${encodeURIComponent(query)}&limit=10`;
+      const response = await apiClient.get<{ stores: AssignableStore[]; total: number }>(endpoint);
+
+      if (response.success && response.data) {
+        return response.data;
+      }
+
+      throw new Error(response.message || 'Failed to search stores');
+    } catch (error: any) {
+      console.error('[Experiences] Search stores error:', error.message);
+      throw new Error(error.message || 'Failed to search stores');
+    }
+  }
+
+  /**
+   * Get suggested stores (popular/top-rated) for quick assignment
+   */
+  async getSuggestedStores(): Promise<{ stores: AssignableStore[]; total: number }> {
+    try {
+      console.log('[Experiences] Fetching suggested stores...');
+      const response = await apiClient.get<{ stores: AssignableStore[]; total: number }>('admin/experiences/stores/suggested');
+
+      if (response.success && response.data) {
+        return response.data;
+      }
+
+      throw new Error(response.message || 'Failed to fetch suggested stores');
+    } catch (error: any) {
+      console.error('[Experiences] Get suggested stores error:', error.message);
+      throw new Error(error.message || 'Failed to fetch suggested stores');
+    }
+  }
+
+  /**
+   * Get assigned stores for an experience
+   */
+  async getAssignedStores(experienceId: string): Promise<{ stores: AssignableStore[]; total: number }> {
+    try {
+      console.log('[Experiences] Getting assigned stores for:', experienceId);
+      const response = await apiClient.get<{ stores: AssignableStore[]; total: number }>(`admin/experiences/${experienceId}/assigned-stores`);
+
+      if (response.success && response.data) {
+        return response.data;
+      }
+
+      throw new Error(response.message || 'Failed to get assigned stores');
+    } catch (error: any) {
+      console.error('[Experiences] Get assigned stores error:', error.message);
+      throw new Error(error.message || 'Failed to get assigned stores');
+    }
+  }
+
+  /**
+   * Assign a store to an experience
+   */
+  async assignStore(experienceId: string, storeId: string): Promise<void> {
+    try {
+      console.log('[Experiences] Assigning store:', storeId, 'to experience:', experienceId);
+      const response = await apiClient.post(`admin/experiences/${experienceId}/assign-store`, { storeId });
+
+      if (response.success) {
+        console.log('[Experiences] Store assigned successfully');
+        return;
+      }
+
+      throw new Error(response.message || 'Failed to assign store');
+    } catch (error: any) {
+      console.error('[Experiences] Assign store error:', error.message);
+      throw new Error(error.message || 'Failed to assign store');
+    }
+  }
+
+  /**
+   * Remove a store from an experience
+   */
+  async removeStore(experienceId: string, storeId: string): Promise<void> {
+    try {
+      console.log('[Experiences] Removing store:', storeId, 'from experience:', experienceId);
+      const response = await apiClient.delete(`admin/experiences/${experienceId}/remove-store/${storeId}`);
+
+      if (response.success) {
+        console.log('[Experiences] Store removed successfully');
+        return;
+      }
+
+      throw new Error(response.message || 'Failed to remove store');
+    } catch (error: any) {
+      console.error('[Experiences] Remove store error:', error.message);
+      throw new Error(error.message || 'Failed to remove store');
+    }
+  }
+}
+
+// Assignable store interface
+export interface AssignableStore {
+  _id: string;
+  name: string;
+  logo?: string;
+  category?: string;
+  city?: string;
+  rating?: number;
+  cashback?: number;
+  tags?: string[];
 }
 
 export const experiencesService = new ExperiencesService();
