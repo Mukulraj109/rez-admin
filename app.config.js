@@ -47,7 +47,10 @@ const config = {
       apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:5001/api',
       apiTimeout: process.env.EXPO_PUBLIC_API_TIMEOUT || '60000',
       socketUrl: process.env.EXPO_PUBLIC_SOCKET_URL || 'http://localhost:5001',
-      socketTimeout: process.env.EXPO_PUBLIC_SOCKET_TIMEOUT || '5000'
+      socketTimeout: process.env.EXPO_PUBLIC_SOCKET_TIMEOUT || '5000',
+      eas: {
+        projectId: "71e8a58b-aaec-472a-aba6-4afd001576fb"
+      }
     }
   }
 };
