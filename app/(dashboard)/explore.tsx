@@ -21,6 +21,20 @@ import { showAlert, showConfirm } from '../../utils/alert';
 
 type TabType = 'videos' | 'reviews' | 'comparisons';
 type VideoStatusFilter = 'all' | 'published' | 'unpublished' | 'featured' | 'trending' | 'pending';
+type ReviewFilter = 'featured' | 'eligible';
+
+interface ReviewItem {
+  id: string;
+  _id?: string;
+  rating: number;
+  review: string;
+  title?: string;
+  user?: { name: string; _id: string };
+  store?: { name: string; _id: string };
+  verified?: boolean;
+  isFeaturedOnExplore?: boolean;
+  createdAt: string;
+}
 
 export default function ExploreScreen() {
   const colorScheme = useColorScheme();
@@ -47,6 +61,14 @@ export default function ExploreScreen() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+
+  // Reviews state
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('featured');
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsPage, setReviewsPage] = useState(1);
+  const [reviewsHasMore, setReviewsHasMore] = useState(true);
+  const [processingReview, setProcessingReview] = useState<string | null>(null);
 
   // New video form
   const [newVideo, setNewVideo] = useState({
@@ -240,6 +262,87 @@ export default function ExploreScreen() {
     }
   };
 
+  // =====================================================
+  // REVIEWS FUNCTIONS
+  // =====================================================
+
+  const loadReviews = async (pageNum: number = 1, append: boolean = false) => {
+    try {
+      setReviewsLoading(true);
+      let data: any;
+      if (reviewFilter === 'featured') {
+        data = await exploreService.getFeaturedReviews(pageNum, 20);
+      } else {
+        data = await exploreService.getEligibleReviews(pageNum, 20, 4);
+      }
+
+      const reviewsList = data?.reviews || [];
+      const mapped = reviewsList.map((r: any) => ({
+        id: r._id || r.id,
+        _id: r._id || r.id,
+        rating: r.rating || 0,
+        review: r.review || r.text || r.comment || '',
+        title: r.title || '',
+        user: r.user ? { name: r.user.name || 'Anonymous', _id: r.user._id || r.user.id } : undefined,
+        store: r.store ? { name: r.store.name || 'Unknown Store', _id: r.store._id || r.store.id } : undefined,
+        verified: r.verified || false,
+        isFeaturedOnExplore: r.isFeaturedOnExplore || false,
+        createdAt: r.createdAt || '',
+      }));
+
+      if (append) {
+        setReviews(prev => [...prev, ...mapped]);
+      } else {
+        setReviews(mapped);
+      }
+
+      const pagination = data?.pagination;
+      setReviewsHasMore(pagination ? pagination.current < pagination.pages : false);
+      setReviewsPage(pageNum);
+    } catch (error: any) {
+      console.error('Failed to load reviews:', error);
+      showAlert('Error', error.message || 'Failed to load reviews');
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'reviews') {
+      loadReviews(1);
+    }
+  }, [activeTab, reviewFilter]);
+
+  const handleToggleReviewFeatured = async (review: ReviewItem) => {
+    try {
+      setProcessingReview(review.id);
+      const newFeatured = !review.isFeaturedOnExplore;
+      await exploreService.toggleReviewFeatured(review.id, newFeatured);
+      showAlert('Success', `Review ${newFeatured ? 'featured' : 'unfeatured'} successfully`);
+      await loadReviews(1);
+      await loadStats();
+    } catch (error: any) {
+      showAlert('Error', error.message);
+    } finally {
+      setProcessingReview(null);
+    }
+  };
+
+  // Video moderation handler
+  const handleModerateVideo = async (video: Video, status: 'approved' | 'rejected') => {
+    try {
+      setProcessingVideo(video.id);
+      await exploreService.updateVideo(video.id, { moderationStatus: status });
+      showAlert('Success', `Video ${status === 'approved' ? 'approved' : 'rejected'} successfully`);
+      await loadData(1);
+      await loadStats();
+    } catch (error: any) {
+      showAlert('Error', error.message);
+    } finally {
+      setProcessingVideo(null);
+    }
+  };
+
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
@@ -384,6 +487,21 @@ export default function ExploreScreen() {
                   <Text style={styles.badgeText}>Trending</Text>
                 </View>
               )}
+              {item.moderationStatus === 'pending' && (
+                <View style={[styles.badge, { backgroundColor: '#F59E0B' }]}>
+                  <Text style={styles.badgeText}>Pending</Text>
+                </View>
+              )}
+              {item.moderationStatus === 'rejected' && (
+                <View style={[styles.badge, { backgroundColor: '#EF4444' }]}>
+                  <Text style={styles.badgeText}>Rejected</Text>
+                </View>
+              )}
+              {item.moderationStatus === 'flagged' && (
+                <View style={[styles.badge, { backgroundColor: '#8B5CF6' }]}>
+                  <Text style={styles.badgeText}>Flagged</Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -467,7 +585,187 @@ export default function ExploreScreen() {
             >
               <Ionicons name="trash" size={16} color="#EF4444" />
             </TouchableOpacity>
+
+            {/* Moderation: Approve/Reject for pending videos */}
+            {item.moderationStatus === 'pending' && (
+              <>
+                <TouchableOpacity
+                  style={[styles.actionBtn, { backgroundColor: '#D1FAE5' }]}
+                  onPress={() => handleModerateVideo(item, 'approved')}
+                >
+                  <Ionicons name="checkmark-circle" size={16} color="#10B981" />
+                  <Text style={{ color: '#10B981', fontSize: 12, marginLeft: 4 }}>Approve</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.actionBtn, { backgroundColor: '#FEE2E2' }]}
+                  onPress={() => handleModerateVideo(item, 'rejected')}
+                >
+                  <Ionicons name="close-circle" size={16} color="#EF4444" />
+                  <Text style={{ color: '#EF4444', fontSize: 12, marginLeft: 4 }}>Reject</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
+        )}
+      </View>
+    );
+  };
+
+  // Render review card
+  const renderReviewCard = ({ item }: { item: ReviewItem }) => {
+    const isProcessing = processingReview === item.id;
+
+    return (
+      <View style={[styles.videoCard, { backgroundColor: colors.card }]}>
+        {/* Rating Stars */}
+        <View style={styles.reviewRatingRow}>
+          <View style={styles.reviewStars}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Ionicons
+                key={star}
+                name={star <= item.rating ? 'star' : 'star-outline'}
+                size={16}
+                color={star <= item.rating ? '#F59E0B' : '#D1D5DB'}
+              />
+            ))}
+            <Text style={[styles.reviewRatingText, { color: colors.text }]}>{item.rating}</Text>
+          </View>
+          {item.isFeaturedOnExplore && (
+            <View style={[styles.badge, { backgroundColor: '#F59E0B' }]}>
+              <Text style={styles.badgeText}>Featured</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Review Text */}
+        <Text style={[styles.reviewText, { color: colors.text }]} numberOfLines={3}>
+          "{item.review}"
+        </Text>
+
+        {/* Store & User Info */}
+        <View style={styles.reviewMeta}>
+          {item.store && (
+            <View style={styles.reviewMetaItem}>
+              <Ionicons name="storefront" size={12} color={colors.textSecondary} />
+              <Text style={[styles.reviewMetaText, { color: colors.textSecondary }]}>{item.store.name}</Text>
+            </View>
+          )}
+          {item.user && (
+            <View style={styles.reviewMetaItem}>
+              <Ionicons name="person" size={12} color={colors.textSecondary} />
+              <Text style={[styles.reviewMetaText, { color: colors.textSecondary }]}>{item.user.name}</Text>
+            </View>
+          )}
+          {item.verified && (
+            <View style={styles.reviewMetaItem}>
+              <Ionicons name="checkmark-circle" size={12} color="#10B981" />
+              <Text style={[styles.reviewMetaText, { color: '#10B981' }]}>Verified</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Date */}
+        {item.createdAt && (
+          <Text style={[styles.reviewDate, { color: colors.textSecondary }]}>
+            {new Date(item.createdAt).toLocaleDateString()}
+          </Text>
+        )}
+
+        {/* Actions */}
+        {isProcessing ? (
+          <View style={styles.processingOverlay}>
+            <ActivityIndicator size="small" color={colors.tint} />
+          </View>
+        ) : (
+          <View style={styles.videoActions}>
+            <TouchableOpacity
+              style={[styles.actionBtn, { backgroundColor: item.isFeaturedOnExplore ? '#FEF3C7' : '#D1FAE5' }]}
+              onPress={() => handleToggleReviewFeatured(item)}
+            >
+              <Ionicons
+                name={item.isFeaturedOnExplore ? 'star' : 'star-outline'}
+                size={16}
+                color={item.isFeaturedOnExplore ? '#F59E0B' : '#10B981'}
+              />
+              <Text style={{ color: item.isFeaturedOnExplore ? '#F59E0B' : '#10B981', fontSize: 12, marginLeft: 4 }}>
+                {item.isFeaturedOnExplore ? 'Unfeature' : 'Feature'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  // Render Reviews Tab
+  const renderReviewsTab = () => {
+    const filters: { key: ReviewFilter; label: string }[] = [
+      { key: 'featured', label: 'Featured' },
+      { key: 'eligible', label: 'Eligible (4+ Stars)' },
+    ];
+
+    return (
+      <View style={{ flex: 1 }}>
+        {/* Review Filter Chips */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.filterContainer}
+          contentContainerStyle={styles.filterContent}
+        >
+          {filters.map(filter => (
+            <TouchableOpacity
+              key={filter.key}
+              style={[
+                styles.filterChip,
+                { backgroundColor: reviewFilter === filter.key ? colors.tint : colors.card },
+              ]}
+              onPress={() => setReviewFilter(filter.key)}
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  { color: reviewFilter === filter.key ? '#FFF' : colors.textSecondary },
+                ]}
+              >
+                {filter.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {reviewsLoading && reviews.length === 0 ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.tint} />
+          </View>
+        ) : (
+          <FlatList
+            data={reviews}
+            keyExtractor={item => item.id}
+            renderItem={renderReviewCard}
+            refreshControl={
+              <RefreshControl
+                refreshing={false}
+                onRefresh={() => loadReviews(1)}
+                tintColor={colors.tint}
+              />
+            }
+            onEndReached={() => {
+              if (!reviewsLoading && reviewsHasMore) {
+                loadReviews(reviewsPage + 1, true);
+              }
+            }}
+            onEndReachedThreshold={0.5}
+            contentContainerStyle={styles.listContent}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Ionicons name="chatbubble-outline" size={48} color={colors.textSecondary} />
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                  {reviewFilter === 'featured' ? 'No featured reviews yet' : 'No eligible reviews found'}
+                </Text>
+              </View>
+            }
+          />
         )}
       </View>
     );
@@ -711,56 +1009,93 @@ export default function ExploreScreen() {
       {/* Stats */}
       {renderStatsCards()}
 
-      {/* Search */}
-      <View style={[styles.searchContainer, { backgroundColor: colors.card }]}>
-        <Ionicons name="search" size={20} color={colors.textSecondary} />
-        <TextInput
-          style={[styles.searchInput, { color: colors.text }]}
-          placeholder="Search videos..."
-          placeholderTextColor={colors.textSecondary}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery ? (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
+      {/* Tab Buttons */}
+      <View style={[styles.tabsRow, { backgroundColor: colors.card }]}>
+        {([
+          { key: 'videos' as TabType, label: 'Videos', icon: 'videocam' },
+          { key: 'reviews' as TabType, label: 'Reviews', icon: 'chatbubble' },
+        ] as const).map(tab => (
+          <TouchableOpacity
+            key={tab.key}
+            style={[
+              styles.tabBtn,
+              activeTab === tab.key && { borderBottomColor: colors.tint, borderBottomWidth: 2 },
+            ]}
+            onPress={() => setActiveTab(tab.key)}
+          >
+            <Ionicons
+              name={tab.icon as any}
+              size={16}
+              color={activeTab === tab.key ? colors.tint : colors.textSecondary}
+            />
+            <Text style={[
+              styles.tabBtnText,
+              { color: activeTab === tab.key ? colors.tint : colors.textSecondary },
+              activeTab === tab.key && { fontWeight: '700' },
+            ]}>
+              {tab.label}
+            </Text>
           </TouchableOpacity>
-        ) : null}
+        ))}
       </View>
 
-      {/* Filters */}
-      {renderFilterChips()}
-
-      {/* Videos List */}
-      {isLoading && videos.length === 0 ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.tint} />
-        </View>
-      ) : (
-        <FlatList
-          data={videos}
-          keyExtractor={item => item.id}
-          renderItem={renderVideoCard}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.tint} />
-          }
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Ionicons name="videocam-off-outline" size={48} color={colors.textSecondary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No videos found</Text>
-              <TouchableOpacity
-                style={[styles.emptyBtn, { backgroundColor: colors.tint }]}
-                onPress={() => setShowAddModal(true)}
-              >
-                <Text style={styles.emptyBtnText}>Add your first video</Text>
+      {/* Tab Content */}
+      {activeTab === 'videos' ? (
+        <>
+          {/* Search */}
+          <View style={[styles.searchContainer, { backgroundColor: colors.card }]}>
+            <Ionicons name="search" size={20} color={colors.textSecondary} />
+            <TextInput
+              style={[styles.searchInput, { color: colors.text }]}
+              placeholder="Search videos..."
+              placeholderTextColor={colors.textSecondary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            {searchQuery ? (
+              <TouchableOpacity onPress={() => setSearchQuery('')}>
+                <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
               </TouchableOpacity>
+            ) : null}
+          </View>
+
+          {/* Filters */}
+          {renderFilterChips()}
+
+          {/* Videos List */}
+          {isLoading && videos.length === 0 ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.tint} />
             </View>
-          }
-        />
-      )}
+          ) : (
+            <FlatList
+              data={videos}
+              keyExtractor={item => item.id}
+              renderItem={renderVideoCard}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.tint} />
+              }
+              onEndReached={loadMore}
+              onEndReachedThreshold={0.5}
+              contentContainerStyle={styles.listContent}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Ionicons name="videocam-off-outline" size={48} color={colors.textSecondary} />
+                  <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No videos found</Text>
+                  <TouchableOpacity
+                    style={[styles.emptyBtn, { backgroundColor: colors.tint }]}
+                    onPress={() => setShowAddModal(true)}
+                  >
+                    <Text style={styles.emptyBtnText}>Add your first video</Text>
+                  </TouchableOpacity>
+                </View>
+              }
+            />
+          )}
+        </>
+      ) : activeTab === 'reviews' ? (
+        renderReviewsTab()
+      ) : null}
 
       {/* Modals */}
       {renderAddModal()}
@@ -1065,5 +1400,64 @@ const styles = StyleSheet.create({
   detailBadges: {
     flexDirection: 'row',
     gap: 4,
+  },
+  tabsRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    gap: 0,
+    marginBottom: 8,
+  },
+  tabBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 6,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  tabBtnText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  reviewRatingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  reviewStars: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  reviewRatingText: {
+    fontSize: 14,
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  reviewText: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 12,
+    fontStyle: 'italic',
+  },
+  reviewMeta: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 6,
+  },
+  reviewMetaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  reviewMetaText: {
+    fontSize: 12,
+  },
+  reviewDate: {
+    fontSize: 11,
+    marginBottom: 4,
   },
 });
