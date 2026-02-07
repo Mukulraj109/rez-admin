@@ -50,6 +50,7 @@ const EXCLUSIVE_ZONES = [
 const CATEGORIES = [
   { value: 'general', label: 'General' },
   { value: 'food', label: 'Food' },
+  { value: 'grocery', label: 'Grocery' },
   { value: 'fashion', label: 'Fashion' },
   { value: 'electronics', label: 'Electronics' },
   { value: 'beauty', label: 'Beauty' },
