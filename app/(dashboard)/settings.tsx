@@ -195,6 +195,13 @@ export default function SettingsScreen() {
             subtitle="Review student & zone verifications"
             onPress={() => router.push('/(dashboard)/verifications')}
           />
+          <SettingItem
+            icon="trophy"
+            iconColor="#F59E0B"
+            title="Loyalty Management"
+            subtitle="Manage user streaks, missions & coins"
+            onPress={() => router.push('/(dashboard)/loyalty')}
+          />
         </View>
       </View>
 
