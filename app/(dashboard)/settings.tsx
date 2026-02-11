@@ -153,6 +153,20 @@ export default function SettingsScreen() {
             subtitle="Manage mall brands, categories & offers"
             onPress={() => router.push('/(dashboard)/mall')}
           />
+          <SettingItem
+            icon="rocket"
+            iconColor="#F59E0B"
+            title="Extra Rewards"
+            subtitle="Double cashback campaigns & coin drops"
+            onPress={() => router.push('/(dashboard)/extra-rewards')}
+          />
+          <SettingItem
+            icon="cash"
+            iconColor="#10B981"
+            title="Cash Store Management"
+            subtitle="Vouchers, coupons, campaigns & analytics"
+            onPress={() => router.push('/(dashboard)/cash-store')}
+          />
         </View>
       </View>
 

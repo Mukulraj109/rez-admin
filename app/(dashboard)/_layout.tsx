@@ -144,6 +144,18 @@ export default function DashboardLayout() {
           href: null, // Hide from tab bar - accessible via More menu
         }}
       />
+      <Tabs.Screen
+        name="extra-rewards"
+        options={{
+          href: null, // Hide from tab bar - accessible via More menu
+        }}
+      />
+      <Tabs.Screen
+        name="cash-store"
+        options={{
+          href: null, // Hide from tab bar - accessible via More menu
+        }}
+      />
     </Tabs>
   );
 }

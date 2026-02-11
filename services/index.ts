@@ -12,6 +12,7 @@ export { merchantsService } from './api/merchants';
 export { ordersService } from './api/orders';
 export { campaignsService } from './api/campaigns';
 export { uploadsService } from './api/uploads';
+export { extraRewardsService } from './api/extraRewards';
 
 // Types
 export type { AdminUser, LoginResponse } from './api/auth';
@@ -21,6 +22,7 @@ export type { Merchant, MerchantWallet, MerchantWalletSummary, WithdrawalRequest
 export type { Order, OrderStats, OrdersListResponse } from './api/orders';
 export type { Campaign, CampaignDeal, CampaignStats, CampaignsListResponse, CampaignsQuery, StoreOption } from './api/campaigns';
 export type { UploadedImage, UploadResponse } from './api/uploads';
+export type { DoubleCashbackCampaign, CoinDrop, DoubleCampaignsListResponse, CoinDropsListResponse } from './api/extraRewards';
 
 // Re-import for local use
 import { storageService } from './storage';
@@ -32,6 +34,7 @@ import { merchantsService } from './api/merchants';
 import { ordersService } from './api/orders';
 import { campaignsService } from './api/campaigns';
 import { uploadsService } from './api/uploads';
+import { extraRewardsService } from './api/extraRewards';
 
 // API Service Collection
 export const apiServices = {
@@ -44,4 +47,5 @@ export const apiServices = {
   orders: ordersService,
   campaigns: campaignsService,
   uploads: uploadsService,
+  extraRewards: extraRewardsService,
 };
