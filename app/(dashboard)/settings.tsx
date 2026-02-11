@@ -146,6 +146,13 @@ export default function SettingsScreen() {
             subtitle="Manage explore page content"
             onPress={() => router.push('/(dashboard)/explore')}
           />
+          <SettingItem
+            icon="bag-handle"
+            iconColor="#0284C7"
+            title="Mall Management"
+            subtitle="Manage mall brands, categories & offers"
+            onPress={() => router.push('/(dashboard)/mall')}
+          />
         </View>
       </View>
 

@@ -138,6 +138,12 @@ export default function DashboardLayout() {
           href: null, // Hide from tab bar - accessible via More menu
         }}
       />
+      <Tabs.Screen
+        name="mall"
+        options={{
+          href: null, // Hide from tab bar - accessible via More menu
+        }}
+      />
     </Tabs>
   );
 }
