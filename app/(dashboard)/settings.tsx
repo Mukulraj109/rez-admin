@@ -167,6 +167,13 @@ export default function SettingsScreen() {
             subtitle="Vouchers, coupons, campaigns & analytics"
             onPress={() => router.push('/(dashboard)/cash-store')}
           />
+          <SettingItem
+            icon="airplane"
+            iconColor="#8B5CF6"
+            title="Travel Management"
+            subtitle="Bookings, categories, cashback & analytics"
+            onPress={() => router.push('/(dashboard)/travel')}
+          />
         </View>
       </View>
 

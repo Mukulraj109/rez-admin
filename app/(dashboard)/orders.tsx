@@ -17,7 +17,7 @@ import { Colors } from '../../constants/Colors';
 import { format } from 'date-fns';
 import { showAlert } from '../../utils/alert';
 
-type StatusFilter = 'all' | 'pending' | 'confirmed' | 'delivered' | 'cancelled';
+type StatusFilter = 'all' | 'placed' | 'confirmed' | 'preparing' | 'ready' | 'dispatched' | 'delivered' | 'cancelled' | 'returned' | 'refunded';
 
 export default function OrdersScreen() {
   const colorScheme = useColorScheme();
@@ -127,9 +127,9 @@ export default function OrdersScreen() {
     }
   };
 
+  // Canonical status transitions — matches backend Order model
   const STATUS_TRANSITIONS: { [key: string]: string[] } = {
     placed: ['confirmed', 'cancelled'],
-    pending: ['confirmed', 'cancelled'],
     confirmed: ['preparing', 'cancelled'],
     preparing: ['ready', 'cancelled'],
     ready: ['dispatched', 'cancelled'],
@@ -165,12 +165,12 @@ export default function OrdersScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'delivered': return colors.success;
-      case 'pending':
       case 'placed': return colors.warning;
       case 'confirmed':
       case 'preparing':
       case 'ready': return colors.info;
-      case 'out_for_delivery': return '#8B5CF6';
+      case 'dispatched': return '#8B5CF6';
+      case 'returned': return '#795548';
       case 'cancelled':
       case 'refunded': return colors.error;
       default: return colors.icon;

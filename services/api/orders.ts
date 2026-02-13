@@ -49,7 +49,7 @@ export interface Order {
       totalCoinsValue?: number;
     };
   };
-  status: 'placed' | 'pending' | 'confirmed' | 'preparing' | 'ready' | 'out_for_delivery' | 'delivered' | 'cancelled' | 'refunded';
+  status: 'placed' | 'confirmed' | 'preparing' | 'ready' | 'dispatched' | 'delivered' | 'cancelled' | 'returned' | 'refunded';
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod: string;
   deliveryType: 'pickup' | 'delivery';

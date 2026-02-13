@@ -42,15 +42,30 @@ export interface AdminCoupon {
   maxDiscountCap: number;
   validFrom: string;
   validTo: string;
-  usageLimit: number;
+  usageLimit: number | { totalUsage: number; perUser: number; usedCount: number };
   usedCount: number;
-  isActive: boolean;
+  status: 'active' | 'inactive' | 'expired';
   isAutoApply: boolean;
+  isFeatured?: boolean;
+  isNewlyAdded?: boolean;
   tags: string[];
   category?: string;
   imageUrl?: string;
+  applicableTo?: {
+    categories: Array<string | { _id: string; name: string }>;
+    products: string[];
+    stores: Array<string | { _id: string; name: string; logo?: string }>;
+    userTiers: string[];
+  };
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AdminStore {
+  _id: string;
+  name: string;
+  logo: string;
+  category: string;
 }
 
 export interface DoubleCashbackCampaign {
@@ -124,11 +139,12 @@ class CashStoreService {
       if (params?.isFeatured !== undefined) queryParams.append('isFeatured', params.isFeatured.toString());
 
       const url = `/admin/vouchers?${queryParams.toString()}`;
-      const response = await apiClient.get<VoucherBrand[]>(url);
+      const response = await apiClient.get<any>(url);
       if (response.success) {
+        const data = response.data || {};
         return {
-          voucherBrands: response.data || [],
-          pagination: response.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
+          voucherBrands: data.vouchers || [],
+          pagination: data.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
         };
       }
       throw new Error(response.message || 'Failed to fetch voucher brands');
@@ -178,7 +194,7 @@ class CashStoreService {
 
   async toggleVoucherBrand(brandId: string): Promise<VoucherBrand> {
     try {
-      const response = await apiClient.put<VoucherBrand>(`/admin/vouchers/${brandId}/toggle`, {});
+      const response = await apiClient.patch<VoucherBrand>(`/admin/vouchers/${brandId}/toggle`, {});
       if (response.success && response.data) {
         return response.data;
       }
@@ -209,11 +225,12 @@ class CashStoreService {
       if (params?.category) queryParams.append('category', params.category);
 
       const url = `/admin/coupons?${queryParams.toString()}`;
-      const response = await apiClient.get<AdminCoupon[]>(url);
+      const response = await apiClient.get<any>(url);
       if (response.success) {
+        const data = response.data || {};
         return {
-          coupons: response.data || [],
-          pagination: response.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
+          coupons: data.coupons || [],
+          pagination: data.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
         };
       }
       throw new Error(response.message || 'Failed to fetch coupons');
@@ -263,13 +280,29 @@ class CashStoreService {
 
   async toggleCoupon(couponId: string): Promise<AdminCoupon> {
     try {
-      const response = await apiClient.put<AdminCoupon>(`/admin/coupons/${couponId}/toggle`, {});
+      const response = await apiClient.patch<AdminCoupon>(`/admin/coupons/${couponId}/toggle`, {});
       if (response.success && response.data) {
         return response.data;
       }
       throw new Error(response.message || 'Failed to toggle coupon');
     } catch (error: any) {
       console.error('[CashStoreService] toggleCoupon error:', error);
+      throw error;
+    }
+  }
+
+  async getCouponStores(search?: string): Promise<AdminStore[]> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (search) queryParams.append('q', search);
+      const url = `/admin/coupons/stores?${queryParams.toString()}`;
+      const response = await apiClient.get<AdminStore[]>(url);
+      if (response.success) {
+        return response.data || [];
+      }
+      throw new Error(response.message || 'Failed to fetch stores');
+    } catch (error: any) {
+      console.error('[CashStoreService] getCouponStores error:', error);
       throw error;
     }
   }
@@ -290,11 +323,12 @@ class CashStoreService {
       if (params?.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
 
       const url = `/admin/double-campaigns?${queryParams.toString()}`;
-      const response = await apiClient.get<DoubleCashbackCampaign[]>(url);
+      const response = await apiClient.get<any>(url);
       if (response.success) {
+        const data = response.data || {};
         return {
-          campaigns: response.data || [],
-          pagination: response.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
+          campaigns: data.campaigns || [],
+          pagination: data.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
         };
       }
       throw new Error(response.message || 'Failed to fetch double cashback campaigns');
@@ -344,7 +378,7 @@ class CashStoreService {
 
   async toggleDoubleCampaign(campaignId: string): Promise<DoubleCashbackCampaign> {
     try {
-      const response = await apiClient.put<DoubleCashbackCampaign>(`/admin/double-campaigns/${campaignId}/toggle`, {});
+      const response = await apiClient.patch<DoubleCashbackCampaign>(`/admin/double-campaigns/${campaignId}/toggle`, {});
       if (response.success && response.data) {
         return response.data;
       }
@@ -373,11 +407,12 @@ class CashStoreService {
       if (params?.category) queryParams.append('category', params.category);
 
       const url = `/admin/coin-drops?${queryParams.toString()}`;
-      const response = await apiClient.get<CoinDrop[]>(url);
+      const response = await apiClient.get<any>(url);
       if (response.success) {
+        const data = response.data || {};
         return {
-          coinDrops: response.data || [],
-          pagination: response.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
+          coinDrops: data.coinDrops || [],
+          pagination: data.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
         };
       }
       throw new Error(response.message || 'Failed to fetch coin drops');
@@ -444,7 +479,7 @@ class CashStoreService {
 
   async toggleCoinDrop(coinDropId: string): Promise<CoinDrop> {
     try {
-      const response = await apiClient.put<CoinDrop>(`/admin/coin-drops/${coinDropId}/toggle`, {});
+      const response = await apiClient.patch<CoinDrop>(`/admin/coin-drops/${coinDropId}/toggle`, {});
       if (response.success && response.data) {
         return response.data;
       }

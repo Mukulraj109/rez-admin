@@ -1,11 +1,27 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, View, ActivityIndicator } from 'react-native';
 import { Colors } from '../../constants/Colors';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function DashboardLayout() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading spinner while checking auth
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#DC2626" />
+      </View>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
   return (
     <Tabs
@@ -152,6 +168,12 @@ export default function DashboardLayout() {
       />
       <Tabs.Screen
         name="cash-store"
+        options={{
+          href: null, // Hide from tab bar - accessible via More menu
+        }}
+      />
+      <Tabs.Screen
+        name="travel"
         options={{
           href: null, // Hide from tab bar - accessible via More menu
         }}
