@@ -71,6 +71,7 @@ export interface MallOffer {
   description?: string;
   image: string;
   brand?: { _id: string; name: string; logo: string };
+  store?: string; // Store ObjectId (for store-based offers)
   offerType: 'cashback' | 'discount' | 'coins' | 'combo';
   value: number;
   valueType: 'percentage' | 'fixed';
@@ -83,6 +84,17 @@ export interface MallOffer {
   priority: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AllianceStore {
+  _id: string;
+  name: string;
+  logo?: string;
+  tags?: string[];
+  deliveryCategories: { alliance?: boolean; mall?: boolean };
+  ratings?: { average: number; count: number };
+  category?: { _id: string; name: string; slug: string };
+  isVerified?: boolean;
 }
 
 export interface MallStats {
@@ -296,6 +308,35 @@ class MallService {
       }
     } catch (error: any) {
       console.error('[MallService] deleteOffer error:', error);
+      throw error;
+    }
+  }
+
+  // ==================== ALLIANCE STORES ====================
+
+  async getAllianceStores(search?: string): Promise<AllianceStore[]> {
+    try {
+      const params = search ? `?search=${encodeURIComponent(search)}` : '';
+      const response = await apiClient.get<AllianceStore[]>(`/mall/admin/stores/alliance${params}`);
+      if (response.success) {
+        return response.data || [];
+      }
+      throw new Error(response.message || 'Failed to fetch alliance stores');
+    } catch (error: any) {
+      console.error('[MallService] getAllianceStores error:', error);
+      throw error;
+    }
+  }
+
+  async toggleStoreAlliance(storeId: string, alliance: boolean): Promise<any> {
+    try {
+      const response = await apiClient.put(`/mall/admin/stores/${storeId}/alliance`, { alliance });
+      if (response.success) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Failed to toggle alliance status');
+    } catch (error: any) {
+      console.error('[MallService] toggleStoreAlliance error:', error);
       throw error;
     }
   }

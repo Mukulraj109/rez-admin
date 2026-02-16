@@ -16,10 +16,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
-import { mallService, MallBrand, MallCategory, MallOffer, MallStats } from '../../services/api/mall';
+import { mallService, MallBrand, MallCategory, MallOffer, MallStats, AllianceStore } from '../../services/api/mall';
 import { showAlert, showConfirm } from '../../utils/alert';
 
-type TabType = 'dashboard' | 'brands' | 'categories' | 'offers';
+type TabType = 'dashboard' | 'brands' | 'categories' | 'offers' | 'alliance';
 type BrandFilter = 'all' | 'active' | 'inactive' | 'featured' | 'luxury';
 
 export default function MallScreen() {
@@ -49,6 +49,12 @@ export default function MallScreen() {
   const [offers, setOffers] = useState<MallOffer[]>([]);
   const [offersLoading, setOffersLoading] = useState(false);
   const [processingOffer, setProcessingOffer] = useState<string | null>(null);
+
+  // Alliance state
+  const [allianceStores, setAllianceStores] = useState<AllianceStore[]>([]);
+  const [allianceSearch, setAllianceSearch] = useState('');
+  const [allianceLoading, setAllianceLoading] = useState(false);
+  const [processingAlliance, setProcessingAlliance] = useState<string | null>(null);
 
   // Modals
   const [showBrandModal, setShowBrandModal] = useState(false);
@@ -90,6 +96,7 @@ export default function MallScreen() {
     title: '',
     subtitle: '',
     image: '',
+    store: '',
     offerType: 'cashback' as string,
     value: '',
     valueType: 'percentage' as string,
@@ -108,6 +115,7 @@ export default function MallScreen() {
     if (activeTab === 'brands') loadBrands();
     else if (activeTab === 'categories') loadCategories();
     else if (activeTab === 'offers') loadOffers();
+    else if (activeTab === 'alliance') loadAllianceStores();
   }, [activeTab, brandFilter]);
 
   // ==================== LOADERS ====================
@@ -174,6 +182,32 @@ export default function MallScreen() {
       showAlert('Error', 'Failed to load offers');
     } finally {
       setOffersLoading(false);
+    }
+  };
+
+  const loadAllianceStores = async (search?: string) => {
+    try {
+      setAllianceLoading(true);
+      const data = await mallService.getAllianceStores(search || allianceSearch || undefined);
+      setAllianceStores(data);
+    } catch (error: any) {
+      console.error('Failed to load alliance stores:', error);
+      showAlert('Error', 'Failed to load alliance stores');
+    } finally {
+      setAllianceLoading(false);
+    }
+  };
+
+  const toggleAlliance = async (store: AllianceStore) => {
+    try {
+      setProcessingAlliance(store._id);
+      const isAlliance = !!store.deliveryCategories?.alliance;
+      await mallService.toggleStoreAlliance(store._id, !isAlliance);
+      loadAllianceStores();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to toggle alliance');
+    } finally {
+      setProcessingAlliance(null);
     }
   };
 
@@ -373,6 +407,7 @@ export default function MallScreen() {
         title: offer.title,
         subtitle: offer.subtitle || '',
         image: offer.image || '',
+        store: offer.store || '',
         offerType: offer.offerType,
         value: offer.value?.toString() || '0',
         valueType: offer.valueType,
@@ -385,7 +420,7 @@ export default function MallScreen() {
     } else {
       setEditingOffer(null);
       setOfferForm({
-        title: '', subtitle: '', image: '', offerType: 'cashback',
+        title: '', subtitle: '', image: '', store: '', offerType: 'cashback',
         value: '0', valueType: 'percentage', validFrom: '', validUntil: '',
         badge: '', isActive: true, isMallExclusive: false,
       });
@@ -398,11 +433,16 @@ export default function MallScreen() {
       showAlert('Error', 'Offer title is required');
       return;
     }
+    if (!offerForm.store.trim()) {
+      showAlert('Error', 'Store ID is required for creating offers');
+      return;
+    }
     try {
       const data: any = {
         title: offerForm.title.trim(),
         subtitle: offerForm.subtitle.trim(),
         image: offerForm.image.trim(),
+        store: offerForm.store.trim() || undefined,
         offerType: offerForm.offerType,
         value: parseFloat(offerForm.value) || 0,
         valueType: offerForm.valueType,
@@ -470,6 +510,7 @@ export default function MallScreen() {
         { key: 'brands', label: 'Brands', icon: 'storefront' as const },
         { key: 'categories', label: 'Categories', icon: 'apps' as const },
         { key: 'offers', label: 'Offers', icon: 'pricetag' as const },
+        { key: 'alliance', label: 'Alliance', icon: 'people' as const },
       ] as const).map((tab) => (
         <TouchableOpacity
           key={tab.key}
@@ -926,6 +967,114 @@ export default function MallScreen() {
     </View>
   );
 
+  // Alliance Tab
+  const renderAllianceItem = ({ item }: { item: AllianceStore }) => {
+    const isAlliance = !!item.deliveryCategories?.alliance;
+    const isProcessing = processingAlliance === item._id;
+    return (
+      <View style={[styles.listItem, { backgroundColor: colors.card }]}>
+        <View style={styles.listItemRow}>
+          {item.logo ? (
+            <Image source={{ uri: item.logo }} style={styles.listItemImage} />
+          ) : (
+            <View style={[styles.listItemImageFallback, { backgroundColor: '#1a3a52' }]}>
+              <Text style={styles.listItemInitials}>
+                {item.name.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
+          <View style={styles.listItemInfo}>
+            <View style={styles.listItemNameRow}>
+              <Text style={[styles.listItemName, { color: colors.text }]} numberOfLines={1}>
+                {item.name}
+              </Text>
+              {item.isVerified && (
+                <View style={[styles.smallBadge, { backgroundColor: '#10B98120' }]}>
+                  <Text style={[styles.smallBadgeText, { color: '#10B981' }]}>Verified</Text>
+                </View>
+              )}
+            </View>
+            <Text style={[styles.listItemSub, { color: colors.icon }]}>
+              {item.category?.name || 'Uncategorized'} | {item.ratings?.average?.toFixed(1) || '0'} rating
+            </Text>
+            <View style={styles.listItemTags}>
+              <View style={[styles.statusDot, { backgroundColor: isAlliance ? '#10B981' : '#9CA3AF' }]} />
+              <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
+                {isAlliance ? 'Alliance' : 'Not Alliance'}
+              </Text>
+              {item.tags?.slice(0, 2).map((tag, i) => (
+                <View key={i} style={[styles.tagBadge, { backgroundColor: `${colors.tint}15` }]}>
+                  <Text style={[styles.tagText, { color: colors.tint }]}>{tag}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+        <View style={styles.listItemActions}>
+          {isProcessing ? (
+            <ActivityIndicator size="small" color={colors.tint} />
+          ) : (
+            <Switch
+              value={isAlliance}
+              onValueChange={() => toggleAlliance(item)}
+              trackColor={{ false: '#E2E8F0', true: '#10B981' }}
+              thumbColor="#FFF"
+            />
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const renderAlliance = () => (
+    <View style={{ flex: 1 }}>
+      <View style={styles.searchRow}>
+        <View style={[styles.searchInput, { backgroundColor: colors.card, flex: 1 }]}>
+          <Ionicons name="search" size={18} color={colors.icon} />
+          <TextInput
+            style={[styles.searchText, { color: colors.text }]}
+            placeholder="Search mall stores..."
+            placeholderTextColor={colors.icon}
+            value={allianceSearch}
+            onChangeText={setAllianceSearch}
+            onSubmitEditing={() => loadAllianceStores(allianceSearch)}
+          />
+        </View>
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: colors.tint }]}
+          onPress={() => loadAllianceStores(allianceSearch)}
+        >
+          <Ionicons name="search" size={22} color="#FFF" />
+        </TouchableOpacity>
+      </View>
+      <Text style={[styles.sectionCount, { color: colors.icon, paddingHorizontal: 16, paddingBottom: 8 }]}>
+        {allianceStores.filter(s => s.deliveryCategories?.alliance).length} alliance stores of {allianceStores.length} mall stores
+      </Text>
+      <FlatList
+        data={allianceStores}
+        renderItem={renderAllianceItem}
+        keyExtractor={(item) => item._id}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={() => loadAllianceStores()} tintColor={colors.tint} />
+        }
+        ListEmptyComponent={
+          allianceLoading ? (
+            <View style={styles.centerContainer}>
+              <ActivityIndicator size="large" color={colors.tint} />
+            </View>
+          ) : (
+            <View style={styles.centerContainer}>
+              <Ionicons name="people-outline" size={48} color={colors.icon} />
+              <Text style={[styles.emptyText, { color: colors.icon }]}>No mall stores found</Text>
+              <Text style={[styles.emptyText, { color: colors.icon, fontSize: 13 }]}>Search for stores to add to alliance</Text>
+            </View>
+          )
+        }
+      />
+    </View>
+  );
+
   // ==================== MODALS ====================
 
   const renderFormField = (
@@ -1062,6 +1211,7 @@ export default function MallScreen() {
           {renderFormField('Title *', offerForm.title, (v) => setOfferForm(p => ({ ...p, title: v })))}
           {renderFormField('Subtitle', offerForm.subtitle, (v) => setOfferForm(p => ({ ...p, subtitle: v })))}
           {renderFormField('Image URL', offerForm.image, (v) => setOfferForm(p => ({ ...p, image: v })))}
+          {renderFormField('Store ID *', offerForm.store, (v) => setOfferForm(p => ({ ...p, store: v })), { placeholder: 'MongoDB ObjectId of the store' })}
 
           <View style={styles.formField}>
             <Text style={[styles.formLabel, { color: colors.text }]}>Offer Type</Text>
@@ -1165,6 +1315,7 @@ export default function MallScreen() {
         {activeTab === 'brands' && renderBrands()}
         {activeTab === 'categories' && renderCategories()}
         {activeTab === 'offers' && renderOffers()}
+        {activeTab === 'alliance' && renderAlliance()}
       </View>
 
       {/* Modals */}

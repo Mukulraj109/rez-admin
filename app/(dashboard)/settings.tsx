@@ -283,11 +283,11 @@ export default function SettingsScreen() {
               onPress={() => showAlert('Coming Soon', 'Admin user management will be available soon')}
             />
             <SettingItem
-              icon="cog"
-              iconColor="#64748B"
-              title="System Configuration"
-              subtitle="Platform settings"
-              onPress={() => showAlert('Coming Soon', 'System configuration will be available soon')}
+              icon="pulse"
+              iconColor="#06B6D4"
+              title="System Health"
+              subtitle="Server, database, queues & reconciliation"
+              onPress={() => router.push('/(dashboard)/system-health')}
             />
             <SettingItem
               icon="shield-checkmark"
