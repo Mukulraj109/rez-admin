@@ -91,10 +91,69 @@ export interface AllianceStore {
   name: string;
   logo?: string;
   tags?: string[];
-  deliveryCategories: { alliance?: boolean; mall?: boolean };
+  deliveryCategories: { alliance?: boolean; mall?: boolean; premium?: boolean };
   ratings?: { average: number; count: number };
   category?: { _id: string; name: string; slug: string };
   isVerified?: boolean;
+}
+
+export interface ManagedMallStore {
+  _id: string;
+  name: string;
+  logo?: string;
+  tags?: string[];
+  deliveryCategories: { mall?: boolean; alliance?: boolean; premium?: boolean };
+  ratings?: { average: number; count: number };
+  category?: { _id: string; name: string; slug: string };
+  isVerified?: boolean;
+  isFeatured?: boolean;
+  offers?: { cashback?: number; maxCashback?: number };
+  rewardRules?: { baseCashbackPercent?: number; maxCashback?: number };
+  createdAt?: string;
+}
+
+export interface MallBanner {
+  _id: string;
+  id?: string;
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  image: string;
+  backgroundColor: string;
+  gradientColors?: string[];
+  textColor: string;
+  ctaText: string;
+  ctaAction: 'navigate' | 'external' | 'brand' | 'category' | 'collection';
+  ctaUrl?: string;
+  ctaBrand?: { _id: string; name: string; logo: string } | string;
+  ctaCategory?: { _id: string; name: string; slug: string } | string;
+  ctaCollection?: { _id: string; name: string; slug: string } | string;
+  position: 'hero' | 'inline' | 'footer';
+  priority: number;
+  validFrom: string;
+  validUntil: string;
+  isActive: boolean;
+  clickCount: number;
+  impressionCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MallCollection {
+  _id: string;
+  id?: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image: string;
+  type: 'curated' | 'seasonal' | 'trending' | 'personalized';
+  sortOrder: number;
+  isActive: boolean;
+  validFrom?: string;
+  validUntil?: string;
+  brandCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MallStats {
@@ -105,6 +164,9 @@ export interface MallStats {
   activeOffers: number;
   totalOffers: number;
   activeBanners: number;
+  totalBanners: number;
+  totalCollections: number;
+  activeCollections: number;
   totalMallStores: number;
 }
 
@@ -141,7 +203,7 @@ class MallService {
       if (params?.search) queryParams.append('search', params.search);
       if (params?.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
 
-      const url = `/mall/brands?${queryParams.toString()}`;
+      const url = `/mall/admin/brands?${queryParams.toString()}`;
       const response = await apiClient.get<MallBrand[]>(url);
       if (response.success) {
         return {
@@ -198,7 +260,7 @@ class MallService {
 
   async getCategories(): Promise<MallCategory[]> {
     try {
-      const response = await apiClient.get<MallCategory[]>('/mall/categories');
+      const response = await apiClient.get<MallCategory[]>('/mall/admin/categories');
       if (response.success) {
         return response.data || [];
       }
@@ -259,7 +321,7 @@ class MallService {
       if (params?.page) queryParams.append('page', params.page.toString());
       if (params?.limit) queryParams.append('limit', params.limit.toString());
 
-      const url = `/mall/offers?${queryParams.toString()}`;
+      const url = `/mall/admin/offers?${queryParams.toString()}`;
       const response = await apiClient.get<MallOffer[]>(url);
       if (response.success) {
         return {
@@ -337,6 +399,163 @@ class MallService {
       throw new Error(response.message || 'Failed to toggle alliance status');
     } catch (error: any) {
       console.error('[MallService] toggleStoreAlliance error:', error);
+      throw error;
+    }
+  }
+
+  // ==================== MALL STORE MANAGEMENT ====================
+
+  async getManagedMallStores(params?: { search?: string; filter?: string }): Promise<ManagedMallStore[]> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.search) queryParams.append('search', params.search);
+      if (params?.filter) queryParams.append('filter', params.filter);
+
+      const url = `/mall/admin/stores/manage?${queryParams.toString()}`;
+      const response = await apiClient.get<ManagedMallStore[]>(url);
+      if (response.success) {
+        return response.data || [];
+      }
+      throw new Error(response.message || 'Failed to fetch managed mall stores');
+    } catch (error: any) {
+      console.error('[MallService] getManagedMallStores error:', error);
+      throw error;
+    }
+  }
+
+  async toggleStoreMall(storeId: string, mall: boolean): Promise<any> {
+    try {
+      const response = await apiClient.put(`/mall/admin/stores/${storeId}/mall-toggle`, { mall });
+      if (response.success) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Failed to toggle mall status');
+    } catch (error: any) {
+      console.error('[MallService] toggleStoreMall error:', error);
+      throw error;
+    }
+  }
+
+  async updateStoreMallProperties(storeId: string, data: {
+    isFeatured?: boolean;
+    premium?: boolean;
+    cashbackPercent?: number;
+    maxCashback?: number;
+  }): Promise<any> {
+    try {
+      const response = await apiClient.put(`/mall/admin/stores/${storeId}/mall-properties`, data);
+      if (response.success) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Failed to update mall properties');
+    } catch (error: any) {
+      console.error('[MallService] updateStoreMallProperties error:', error);
+      throw error;
+    }
+  }
+
+  // ==================== BANNERS ====================
+
+  async getBanners(): Promise<MallBanner[]> {
+    try {
+      const response = await apiClient.get<MallBanner[]>('/mall/admin/banners');
+      if (response.success) {
+        return response.data || [];
+      }
+      throw new Error(response.message || 'Failed to fetch banners');
+    } catch (error: any) {
+      console.error('[MallService] getBanners error:', error);
+      throw error;
+    }
+  }
+
+  async createBanner(data: Partial<MallBanner>): Promise<MallBanner> {
+    try {
+      const response = await apiClient.post<MallBanner>('/mall/admin/banners', data);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Failed to create banner');
+    } catch (error: any) {
+      console.error('[MallService] createBanner error:', error);
+      throw error;
+    }
+  }
+
+  async updateBanner(bannerId: string, data: Partial<MallBanner>): Promise<MallBanner> {
+    try {
+      const response = await apiClient.put<MallBanner>(`/mall/admin/banners/${bannerId}`, data);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Failed to update banner');
+    } catch (error: any) {
+      console.error('[MallService] updateBanner error:', error);
+      throw error;
+    }
+  }
+
+  async deleteBanner(bannerId: string): Promise<void> {
+    try {
+      const response = await apiClient.delete(`/mall/admin/banners/${bannerId}`);
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to delete banner');
+      }
+    } catch (error: any) {
+      console.error('[MallService] deleteBanner error:', error);
+      throw error;
+    }
+  }
+
+  // ==================== COLLECTIONS ====================
+
+  async getCollections(): Promise<MallCollection[]> {
+    try {
+      const response = await apiClient.get<MallCollection[]>('/mall/admin/collections');
+      if (response.success) {
+        return response.data || [];
+      }
+      throw new Error(response.message || 'Failed to fetch collections');
+    } catch (error: any) {
+      console.error('[MallService] getCollections error:', error);
+      throw error;
+    }
+  }
+
+  async createCollection(data: Partial<MallCollection>): Promise<MallCollection> {
+    try {
+      const response = await apiClient.post<MallCollection>('/mall/admin/collections', data);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Failed to create collection');
+    } catch (error: any) {
+      console.error('[MallService] createCollection error:', error);
+      throw error;
+    }
+  }
+
+  async updateCollection(collectionId: string, data: Partial<MallCollection>): Promise<MallCollection> {
+    try {
+      const response = await apiClient.put<MallCollection>(`/mall/admin/collections/${collectionId}`, data);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Failed to update collection');
+    } catch (error: any) {
+      console.error('[MallService] updateCollection error:', error);
+      throw error;
+    }
+  }
+
+  async deleteCollection(collectionId: string): Promise<void> {
+    try {
+      const response = await apiClient.delete(`/mall/admin/collections/${collectionId}`);
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to delete collection');
+      }
+    } catch (error: any) {
+      console.error('[MallService] deleteCollection error:', error);
       throw error;
     }
   }

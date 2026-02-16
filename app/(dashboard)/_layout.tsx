@@ -184,6 +184,42 @@ export default function DashboardLayout() {
           href: null, // Hide from tab bar - accessible via More menu
         }}
       />
+      <Tabs.Screen
+        name="challenges"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="game-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="feature-flags"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="achievements"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="gamification-economy"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="categories"
+        options={{
+          href: null, // Hide from tab bar - accessible via More menu
+        }}
+      />
     </Tabs>
   );
 }

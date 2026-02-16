@@ -16,10 +16,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
-import { mallService, MallBrand, MallCategory, MallOffer, MallStats, AllianceStore } from '../../services/api/mall';
+import { mallService, MallBrand, MallCategory, MallOffer, MallStats, AllianceStore, ManagedMallStore, MallBanner, MallCollection } from '../../services/api/mall';
 import { showAlert, showConfirm } from '../../utils/alert';
 
-type TabType = 'dashboard' | 'brands' | 'categories' | 'offers' | 'alliance';
+type TabType = 'dashboard' | 'stores' | 'brands' | 'categories' | 'offers' | 'banners' | 'collections' | 'alliance';
 type BrandFilter = 'all' | 'active' | 'inactive' | 'featured' | 'luxury';
 
 export default function MallScreen() {
@@ -56,13 +56,34 @@ export default function MallScreen() {
   const [allianceLoading, setAllianceLoading] = useState(false);
   const [processingAlliance, setProcessingAlliance] = useState<string | null>(null);
 
+  // Mall Stores management state
+  const [managedStores, setManagedStores] = useState<ManagedMallStore[]>([]);
+  const [managedStoresSearch, setManagedStoresSearch] = useState('');
+  const [managedStoresFilter, setManagedStoresFilter] = useState<'all' | 'mall' | 'non-mall'>('all');
+  const [managedStoresLoading, setManagedStoresLoading] = useState(false);
+  const [processingManagedStore, setProcessingManagedStore] = useState<string | null>(null);
+
+  // Banners state
+  const [banners, setBanners] = useState<MallBanner[]>([]);
+  const [bannersLoading, setBannersLoading] = useState(false);
+  const [processingBanner, setProcessingBanner] = useState<string | null>(null);
+
+  // Collections state
+  const [collections, setCollections] = useState<MallCollection[]>([]);
+  const [collectionsLoading, setCollectionsLoading] = useState(false);
+  const [processingCollection, setProcessingCollection] = useState<string | null>(null);
+
   // Modals
   const [showBrandModal, setShowBrandModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showOfferModal, setShowOfferModal] = useState(false);
+  const [showBannerModal, setShowBannerModal] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [editingBrand, setEditingBrand] = useState<MallBrand | null>(null);
   const [editingCategory, setEditingCategory] = useState<MallCategory | null>(null);
   const [editingOffer, setEditingOffer] = useState<MallOffer | null>(null);
+  const [editingBanner, setEditingBanner] = useState<MallBanner | null>(null);
+  const [editingCollection, setEditingCollection] = useState<MallCollection | null>(null);
 
   // Brand form
   const [brandForm, setBrandForm] = useState({
@@ -72,19 +93,27 @@ export default function MallScreen() {
     logo: '',
     externalUrl: '',
     tier: 'standard' as string,
+    mallCategory: '',
     cashbackPercentage: '',
+    cashbackMaxAmount: '',
+    cashbackMinPurchase: '',
     isActive: true,
     isFeatured: false,
     isLuxury: false,
+    isNewArrival: false,
     badges: '',
+    tags: '',
   });
 
   // Category form
   const [categoryForm, setCategoryForm] = useState({
     name: '',
     slug: '',
+    description: '',
     icon: '',
+    image: '',
     color: '#1a3a52',
+    backgroundColor: '',
     maxCashback: '',
     sortOrder: '',
     isActive: true,
@@ -95,16 +124,54 @@ export default function MallScreen() {
   const [offerForm, setOfferForm] = useState({
     title: '',
     subtitle: '',
+    description: '',
     image: '',
     store: '',
+    brand: '',
     offerType: 'cashback' as string,
     value: '',
     valueType: 'percentage' as string,
+    minPurchase: '',
+    maxDiscount: '',
     validFrom: '',
     validUntil: '',
     badge: '',
     isActive: true,
     isMallExclusive: false,
+  });
+
+  // Banner form
+  const [bannerForm, setBannerForm] = useState({
+    title: '',
+    subtitle: '',
+    image: '',
+    backgroundColor: '#00C06A',
+    textColor: '#FFFFFF',
+    ctaText: 'Shop Now',
+    ctaAction: 'navigate' as string,
+    ctaUrl: '',
+    ctaBrand: '',
+    ctaCategory: '',
+    ctaCollection: '',
+    position: 'hero' as string,
+    priority: '0',
+    validFrom: '',
+    validUntil: '',
+    isActive: true,
+    badge: '',
+  });
+
+  // Collection form
+  const [collectionForm, setCollectionForm] = useState({
+    name: '',
+    slug: '',
+    description: '',
+    image: '',
+    type: 'curated' as string,
+    sortOrder: '0',
+    validFrom: '',
+    validUntil: '',
+    isActive: true,
   });
 
   useEffect(() => {
@@ -116,7 +183,10 @@ export default function MallScreen() {
     else if (activeTab === 'categories') loadCategories();
     else if (activeTab === 'offers') loadOffers();
     else if (activeTab === 'alliance') loadAllianceStores();
-  }, [activeTab, brandFilter]);
+    else if (activeTab === 'stores') loadManagedStores();
+    else if (activeTab === 'banners') loadBanners();
+    else if (activeTab === 'collections') loadCollections();
+  }, [activeTab, brandFilter, managedStoresFilter]);
 
   // ==================== LOADERS ====================
 
@@ -211,6 +281,314 @@ export default function MallScreen() {
     }
   };
 
+  // ==================== BANNERS ====================
+
+  const loadBanners = async () => {
+    try {
+      setBannersLoading(true);
+      const data = await mallService.getBanners();
+      setBanners(data);
+    } catch (error: any) {
+      console.error('Failed to load banners:', error);
+      showAlert('Error', 'Failed to load banners');
+    } finally {
+      setBannersLoading(false);
+    }
+  };
+
+  const openBannerForm = (banner?: MallBanner) => {
+    if (banner) {
+      setEditingBanner(banner);
+      setBannerForm({
+        title: banner.title,
+        subtitle: banner.subtitle || '',
+        image: banner.image || '',
+        backgroundColor: banner.backgroundColor || '#00C06A',
+        textColor: banner.textColor || '#FFFFFF',
+        ctaText: banner.ctaText || 'Shop Now',
+        ctaAction: banner.ctaAction || 'navigate',
+        ctaUrl: banner.ctaUrl || '',
+        ctaBrand: (typeof banner.ctaBrand === 'object' ? banner.ctaBrand?._id : banner.ctaBrand) || '',
+        ctaCategory: (typeof banner.ctaCategory === 'object' ? banner.ctaCategory?._id : banner.ctaCategory) || '',
+        ctaCollection: (typeof banner.ctaCollection === 'object' ? banner.ctaCollection?._id : banner.ctaCollection) || '',
+        position: banner.position || 'hero',
+        priority: banner.priority?.toString() || '0',
+        validFrom: banner.validFrom?.split('T')[0] || '',
+        validUntil: banner.validUntil?.split('T')[0] || '',
+        isActive: banner.isActive,
+        badge: banner.badge || '',
+      });
+    } else {
+      setEditingBanner(null);
+      const today = new Date().toISOString().split('T')[0];
+      const sixMonths = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      setBannerForm({
+        title: '', subtitle: '', image: '', backgroundColor: '#00C06A',
+        textColor: '#FFFFFF', ctaText: 'Shop Now', ctaAction: 'navigate',
+        ctaUrl: '', ctaBrand: '', ctaCategory: '', ctaCollection: '',
+        position: 'hero', priority: '0',
+        validFrom: today, validUntil: sixMonths, isActive: true, badge: '',
+      });
+    }
+    setShowBannerModal(true);
+  };
+
+  const saveBanner = async () => {
+    if (!bannerForm.title.trim()) {
+      showAlert('Error', 'Banner title is required');
+      return;
+    }
+    if (!bannerForm.image.trim()) {
+      showAlert('Error', 'Banner image URL is required');
+      return;
+    }
+    try {
+      const data: any = {
+        title: bannerForm.title.trim(),
+        subtitle: bannerForm.subtitle.trim() || undefined,
+        image: bannerForm.image.trim(),
+        backgroundColor: bannerForm.backgroundColor.trim(),
+        textColor: bannerForm.textColor.trim(),
+        ctaText: bannerForm.ctaText.trim(),
+        ctaAction: bannerForm.ctaAction,
+        ctaUrl: bannerForm.ctaUrl.trim() || undefined,
+        ctaBrand: bannerForm.ctaBrand.trim() || undefined,
+        ctaCategory: bannerForm.ctaCategory.trim() || undefined,
+        ctaCollection: bannerForm.ctaCollection.trim() || undefined,
+        position: bannerForm.position,
+        priority: parseInt(bannerForm.priority) || 0,
+        validFrom: bannerForm.validFrom || new Date().toISOString(),
+        validUntil: bannerForm.validUntil || new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
+        isActive: bannerForm.isActive,
+        badge: bannerForm.badge.trim() || undefined,
+      };
+
+      if (editingBanner) {
+        await mallService.updateBanner(editingBanner._id, data);
+        showAlert('Success', 'Banner updated successfully');
+      } else {
+        await mallService.createBanner(data);
+        showAlert('Success', 'Banner created successfully');
+      }
+      setShowBannerModal(false);
+      loadBanners();
+      loadStats();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to save banner');
+    }
+  };
+
+  const deleteBanner = (banner: MallBanner) => {
+    showConfirm(
+      'Delete Banner',
+      `Are you sure you want to delete "${banner.title}"?`,
+      async () => {
+        try {
+          setProcessingBanner(banner._id);
+          await mallService.deleteBanner(banner._id);
+          showAlert('Success', 'Banner deleted');
+          loadBanners();
+          loadStats();
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to delete banner');
+        } finally {
+          setProcessingBanner(null);
+        }
+      },
+      'Delete'
+    );
+  };
+
+  const toggleBannerActive = async (banner: MallBanner) => {
+    try {
+      setProcessingBanner(banner._id);
+      await mallService.updateBanner(banner._id, { isActive: !banner.isActive } as any);
+      loadBanners();
+    } catch (error: any) {
+      showAlert('Error', 'Failed to update banner');
+    } finally {
+      setProcessingBanner(null);
+    }
+  };
+
+  // ==================== COLLECTIONS ====================
+
+  const loadCollections = async () => {
+    try {
+      setCollectionsLoading(true);
+      const data = await mallService.getCollections();
+      setCollections(data);
+    } catch (error: any) {
+      console.error('Failed to load collections:', error);
+      showAlert('Error', 'Failed to load collections');
+    } finally {
+      setCollectionsLoading(false);
+    }
+  };
+
+  const openCollectionForm = (collection?: MallCollection) => {
+    if (collection) {
+      setEditingCollection(collection);
+      setCollectionForm({
+        name: collection.name,
+        slug: collection.slug || '',
+        description: collection.description || '',
+        image: collection.image || '',
+        type: collection.type || 'curated',
+        sortOrder: collection.sortOrder?.toString() || '0',
+        validFrom: collection.validFrom?.split('T')[0] || '',
+        validUntil: collection.validUntil?.split('T')[0] || '',
+        isActive: collection.isActive,
+      });
+    } else {
+      setEditingCollection(null);
+      setCollectionForm({
+        name: '', slug: '', description: '', image: '',
+        type: 'curated', sortOrder: '0', validFrom: '', validUntil: '',
+        isActive: true,
+      });
+    }
+    setShowCollectionModal(true);
+  };
+
+  const saveCollection = async () => {
+    if (!collectionForm.name.trim()) {
+      showAlert('Error', 'Collection name is required');
+      return;
+    }
+    if (!collectionForm.image.trim()) {
+      showAlert('Error', 'Collection image URL is required');
+      return;
+    }
+    try {
+      const data: any = {
+        name: collectionForm.name.trim(),
+        slug: collectionForm.slug.trim() || collectionForm.name.toLowerCase().replace(/\s+/g, '-'),
+        description: collectionForm.description.trim() || undefined,
+        image: collectionForm.image.trim(),
+        type: collectionForm.type,
+        sortOrder: parseInt(collectionForm.sortOrder) || 0,
+        validFrom: collectionForm.validFrom || undefined,
+        validUntil: collectionForm.validUntil || undefined,
+        isActive: collectionForm.isActive,
+      };
+
+      if (editingCollection) {
+        await mallService.updateCollection(editingCollection._id, data);
+        showAlert('Success', 'Collection updated successfully');
+      } else {
+        await mallService.createCollection(data);
+        showAlert('Success', 'Collection created successfully');
+      }
+      setShowCollectionModal(false);
+      loadCollections();
+      loadStats();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to save collection');
+    }
+  };
+
+  const deleteCollection = (collection: MallCollection) => {
+    showConfirm(
+      'Delete Collection',
+      `Are you sure you want to delete "${collection.name}"?`,
+      async () => {
+        try {
+          setProcessingCollection(collection._id);
+          await mallService.deleteCollection(collection._id);
+          showAlert('Success', 'Collection deleted');
+          loadCollections();
+          loadStats();
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to delete collection');
+        } finally {
+          setProcessingCollection(null);
+        }
+      },
+      'Delete'
+    );
+  };
+
+  const toggleCollectionActive = async (collection: MallCollection) => {
+    try {
+      setProcessingCollection(collection._id);
+      await mallService.updateCollection(collection._id, { isActive: !collection.isActive } as any);
+      loadCollections();
+    } catch (error: any) {
+      showAlert('Error', 'Failed to update collection');
+    } finally {
+      setProcessingCollection(null);
+    }
+  };
+
+  // ==================== MALL STORES MANAGEMENT ====================
+
+  const loadManagedStores = async (search?: string) => {
+    try {
+      setManagedStoresLoading(true);
+      const data = await mallService.getManagedMallStores({
+        search: search || managedStoresSearch || undefined,
+        filter: managedStoresFilter !== 'all' ? managedStoresFilter : undefined,
+      });
+      setManagedStores(data);
+    } catch (error: any) {
+      console.error('Failed to load managed stores:', error);
+      showAlert('Error', 'Failed to load stores');
+    } finally {
+      setManagedStoresLoading(false);
+    }
+  };
+
+  const toggleStoreMall = async (store: ManagedMallStore) => {
+    try {
+      setProcessingManagedStore(store._id);
+      const isMall = !!store.deliveryCategories?.mall;
+      await mallService.toggleStoreMall(store._id, !isMall);
+      loadManagedStores();
+      loadStats();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to toggle mall status');
+    } finally {
+      setProcessingManagedStore(null);
+    }
+  };
+
+  const toggleStoreFeatured = async (store: ManagedMallStore) => {
+    if (!store.deliveryCategories?.mall) {
+      showAlert('Info', 'Store must be added to mall first');
+      return;
+    }
+    try {
+      setProcessingManagedStore(store._id);
+      await mallService.updateStoreMallProperties(store._id, {
+        isFeatured: !store.isFeatured,
+      });
+      loadManagedStores();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to update store');
+    } finally {
+      setProcessingManagedStore(null);
+    }
+  };
+
+  const toggleStorePremium = async (store: ManagedMallStore) => {
+    if (!store.deliveryCategories?.mall) {
+      showAlert('Info', 'Store must be added to mall first');
+      return;
+    }
+    try {
+      setProcessingManagedStore(store._id);
+      await mallService.updateStoreMallProperties(store._id, {
+        premium: !store.deliveryCategories?.premium,
+      });
+      loadManagedStores();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to update store');
+    } finally {
+      setProcessingManagedStore(null);
+    }
+  };
+
   // ==================== BRAND CRUD ====================
 
   const openBrandForm = (brand?: MallBrand) => {
@@ -223,18 +601,25 @@ export default function MallScreen() {
         logo: brand.logo || '',
         externalUrl: brand.externalUrl || '',
         tier: brand.tier,
+        mallCategory: brand.mallCategory?._id || '',
         cashbackPercentage: brand.cashback?.percentage?.toString() || '0',
+        cashbackMaxAmount: brand.cashback?.maxAmount?.toString() || '',
+        cashbackMinPurchase: brand.cashback?.minPurchase?.toString() || '',
         isActive: brand.isActive,
         isFeatured: brand.isFeatured,
         isLuxury: brand.isLuxury,
+        isNewArrival: brand.isNewArrival || false,
         badges: brand.badges?.join(', ') || '',
+        tags: brand.tags?.join(', ') || '',
       });
     } else {
       setEditingBrand(null);
       setBrandForm({
         name: '', slug: '', description: '', logo: '', externalUrl: '',
-        tier: 'standard', cashbackPercentage: '0', isActive: true,
-        isFeatured: false, isLuxury: false, badges: '',
+        tier: 'standard', mallCategory: '', cashbackPercentage: '0',
+        cashbackMaxAmount: '', cashbackMinPurchase: '',
+        isActive: true, isFeatured: false, isLuxury: false,
+        isNewArrival: false, badges: '', tags: '',
       });
     }
     setShowBrandModal(true);
@@ -246,6 +631,10 @@ export default function MallScreen() {
       return;
     }
     try {
+      const cashback: any = { percentage: parseFloat(brandForm.cashbackPercentage) || 0 };
+      if (brandForm.cashbackMaxAmount) cashback.maxAmount = parseFloat(brandForm.cashbackMaxAmount);
+      if (brandForm.cashbackMinPurchase) cashback.minPurchase = parseFloat(brandForm.cashbackMinPurchase);
+
       const data: any = {
         name: brandForm.name.trim(),
         slug: brandForm.slug.trim() || brandForm.name.toLowerCase().replace(/\s+/g, '-'),
@@ -253,11 +642,14 @@ export default function MallScreen() {
         logo: brandForm.logo.trim(),
         externalUrl: brandForm.externalUrl.trim(),
         tier: brandForm.tier,
-        cashback: { percentage: parseFloat(brandForm.cashbackPercentage) || 0 },
+        mallCategory: brandForm.mallCategory || undefined,
+        cashback,
         isActive: brandForm.isActive,
         isFeatured: brandForm.isFeatured,
         isLuxury: brandForm.isLuxury,
+        isNewArrival: brandForm.isNewArrival,
         badges: brandForm.badges.split(',').map(b => b.trim()).filter(Boolean),
+        tags: brandForm.tags.split(',').map(t => t.trim()).filter(Boolean),
       };
 
       if (editingBrand) {
@@ -328,8 +720,11 @@ export default function MallScreen() {
       setCategoryForm({
         name: category.name,
         slug: category.slug,
+        description: (category as any).description || '',
         icon: category.icon || '',
+        image: (category as any).image || '',
         color: category.color || '#1a3a52',
+        backgroundColor: (category as any).backgroundColor || '',
         maxCashback: category.maxCashback?.toString() || '0',
         sortOrder: category.sortOrder?.toString() || '0',
         isActive: category.isActive,
@@ -338,7 +733,8 @@ export default function MallScreen() {
     } else {
       setEditingCategory(null);
       setCategoryForm({
-        name: '', slug: '', icon: '', color: '#1a3a52',
+        name: '', slug: '', description: '', icon: '', image: '',
+        color: '#1a3a52', backgroundColor: '',
         maxCashback: '0', sortOrder: '0', isActive: true, isFeatured: false,
       });
     }
@@ -354,8 +750,11 @@ export default function MallScreen() {
       const data: any = {
         name: categoryForm.name.trim(),
         slug: categoryForm.slug.trim() || categoryForm.name.toLowerCase().replace(/\s+/g, '-'),
+        description: categoryForm.description.trim() || undefined,
         icon: categoryForm.icon.trim(),
+        image: categoryForm.image.trim() || undefined,
         color: categoryForm.color.trim(),
+        backgroundColor: categoryForm.backgroundColor.trim() || undefined,
         maxCashback: parseFloat(categoryForm.maxCashback) || 0,
         sortOrder: parseInt(categoryForm.sortOrder) || 0,
         isActive: categoryForm.isActive,
@@ -403,14 +802,19 @@ export default function MallScreen() {
   const openOfferForm = (offer?: MallOffer) => {
     if (offer) {
       setEditingOffer(offer);
+      const brandId = typeof offer.brand === 'object' ? offer.brand?._id : offer.brand;
       setOfferForm({
         title: offer.title,
         subtitle: offer.subtitle || '',
+        description: (offer as any).description || '',
         image: offer.image || '',
         store: offer.store || '',
+        brand: brandId || '',
         offerType: offer.offerType,
         value: offer.value?.toString() || '0',
         valueType: offer.valueType,
+        minPurchase: (offer as any).minPurchase?.toString() || '',
+        maxDiscount: (offer as any).maxDiscount?.toString() || '',
         validFrom: offer.validFrom?.split('T')[0] || '',
         validUntil: offer.validUntil?.split('T')[0] || '',
         badge: offer.badge || '',
@@ -419,9 +823,13 @@ export default function MallScreen() {
       });
     } else {
       setEditingOffer(null);
+      const today = new Date().toISOString().split('T')[0];
+      const oneMonth = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       setOfferForm({
-        title: '', subtitle: '', image: '', store: '', offerType: 'cashback',
-        value: '0', valueType: 'percentage', validFrom: '', validUntil: '',
+        title: '', subtitle: '', description: '', image: '',
+        store: '', brand: '', offerType: 'cashback',
+        value: '0', valueType: 'percentage', minPurchase: '', maxDiscount: '',
+        validFrom: today, validUntil: oneMonth,
         badge: '', isActive: true, isMallExclusive: false,
       });
     }
@@ -433,21 +841,29 @@ export default function MallScreen() {
       showAlert('Error', 'Offer title is required');
       return;
     }
-    if (!offerForm.store.trim()) {
-      showAlert('Error', 'Store ID is required for creating offers');
+    if (!offerForm.store.trim() && !offerForm.brand.trim()) {
+      showAlert('Error', 'Either Store ID or Brand ID is required');
+      return;
+    }
+    if (offerForm.store.trim() && offerForm.brand.trim()) {
+      showAlert('Error', 'Offer must be linked to either a Store OR a Brand, not both');
       return;
     }
     try {
       const data: any = {
         title: offerForm.title.trim(),
-        subtitle: offerForm.subtitle.trim(),
-        image: offerForm.image.trim(),
+        subtitle: offerForm.subtitle.trim() || undefined,
+        description: offerForm.description.trim() || undefined,
+        image: offerForm.image.trim() || undefined,
         store: offerForm.store.trim() || undefined,
+        brand: offerForm.brand.trim() || undefined,
         offerType: offerForm.offerType,
         value: parseFloat(offerForm.value) || 0,
         valueType: offerForm.valueType,
+        minPurchase: offerForm.minPurchase ? parseFloat(offerForm.minPurchase) : undefined,
+        maxDiscount: offerForm.maxDiscount ? parseFloat(offerForm.maxDiscount) : undefined,
         validFrom: offerForm.validFrom || new Date().toISOString(),
-        validUntil: offerForm.validUntil || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        validUntil: offerForm.validUntil || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         badge: offerForm.badge || undefined,
         isActive: offerForm.isActive,
         isMallExclusive: offerForm.isMallExclusive,
@@ -504,12 +920,15 @@ export default function MallScreen() {
   // ==================== RENDERS ====================
 
   const renderTabs = () => (
-    <View style={styles.tabBar}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabBarContent}>
       {([
         { key: 'dashboard', label: 'Dashboard', icon: 'grid' as const },
+        { key: 'stores', label: 'Stores', icon: 'business' as const },
         { key: 'brands', label: 'Brands', icon: 'storefront' as const },
         { key: 'categories', label: 'Categories', icon: 'apps' as const },
         { key: 'offers', label: 'Offers', icon: 'pricetag' as const },
+        { key: 'banners', label: 'Banners', icon: 'image' as const },
+        { key: 'collections', label: 'Collections', icon: 'albums' as const },
         { key: 'alliance', label: 'Alliance', icon: 'people' as const },
       ] as const).map((tab) => (
         <TouchableOpacity
@@ -532,7 +951,7 @@ export default function MallScreen() {
           </Text>
         </TouchableOpacity>
       ))}
-    </View>
+    </ScrollView>
   );
 
   // Dashboard Tab
@@ -547,14 +966,14 @@ export default function MallScreen() {
     }
 
     const statCards = [
+      { label: 'Mall Stores', value: stats?.totalMallStores || 0, icon: 'business' as const, color: '#1a3a52' },
       { label: 'Total Brands', value: stats?.totalBrands || 0, icon: 'storefront' as const, color: '#3B82F6' },
       { label: 'Active Brands', value: stats?.activeBrands || 0, icon: 'checkmark-circle' as const, color: '#10B981' },
       { label: 'Categories', value: stats?.totalCategories || 0, icon: 'apps' as const, color: '#8B5CF6' },
-      { label: 'Active Categories', value: stats?.activeCategories || 0, icon: 'checkmark' as const, color: '#06B6D4' },
-      { label: 'Active Offers', value: stats?.activeOffers || 0, icon: 'pricetag' as const, color: '#F59E0B' },
-      { label: 'Total Offers', value: stats?.totalOffers || 0, icon: 'pricetags' as const, color: '#EF4444' },
-      { label: 'Mall Stores', value: stats?.totalMallStores || 0, icon: 'business' as const, color: '#1a3a52' },
-      { label: 'Active Banners', value: stats?.activeBanners || 0, icon: 'image' as const, color: '#EC4899' },
+      { label: 'Active Offers', value: `${stats?.activeOffers || 0}/${stats?.totalOffers || 0}`, icon: 'pricetag' as const, color: '#F59E0B' },
+      { label: 'Banners', value: `${stats?.activeBanners || 0}/${stats?.totalBanners || 0}`, icon: 'image' as const, color: '#EC4899' },
+      { label: 'Collections', value: `${stats?.activeCollections || 0}/${stats?.totalCollections || 0}`, icon: 'albums' as const, color: '#06B6D4' },
+      { label: 'Active Categories', value: stats?.activeCategories || 0, icon: 'checkmark' as const, color: '#14B8A6' },
     ];
 
     return (
@@ -599,6 +1018,22 @@ export default function MallScreen() {
           >
             <Ionicons name="add-circle" size={20} color="#F59E0B" />
             <Text style={[styles.quickActionText, { color: '#F59E0B' }]}>Add Offer</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.quickActions}>
+          <TouchableOpacity
+            style={[styles.quickActionBtn, { backgroundColor: '#EC489920' }]}
+            onPress={() => { setActiveTab('banners'); setTimeout(() => openBannerForm(), 100); }}
+          >
+            <Ionicons name="add-circle" size={20} color="#EC4899" />
+            <Text style={[styles.quickActionText, { color: '#EC4899' }]}>Add Banner</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.quickActionBtn, { backgroundColor: '#06B6D420' }]}
+            onPress={() => { setActiveTab('collections'); setTimeout(() => openCollectionForm(), 100); }}
+          >
+            <Ionicons name="add-circle" size={20} color="#06B6D4" />
+            <Text style={[styles.quickActionText, { color: '#06B6D4' }]}>Add Collection</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -967,6 +1402,410 @@ export default function MallScreen() {
     </View>
   );
 
+  // Mall Stores Management Tab
+  const renderManagedStoreItem = ({ item }: { item: ManagedMallStore }) => {
+    const isMall = !!item.deliveryCategories?.mall;
+    const isPremium = !!item.deliveryCategories?.premium;
+    const isProcessing = processingManagedStore === item._id;
+    const cashback = item.offers?.cashback || item.rewardRules?.baseCashbackPercent || 0;
+
+    return (
+      <View style={[styles.listItem, { backgroundColor: colors.card }]}>
+        <View style={styles.listItemRow}>
+          {item.logo ? (
+            <Image source={{ uri: item.logo }} style={styles.listItemImage} />
+          ) : (
+            <View style={[styles.listItemImageFallback, { backgroundColor: '#1a3a52' }]}>
+              <Text style={styles.listItemInitials}>
+                {item.name.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
+          <View style={styles.listItemInfo}>
+            <View style={styles.listItemNameRow}>
+              <Text style={[styles.listItemName, { color: colors.text }]} numberOfLines={1}>
+                {item.name}
+              </Text>
+              {item.isVerified && (
+                <View style={[styles.smallBadge, { backgroundColor: '#10B98120' }]}>
+                  <Text style={[styles.smallBadgeText, { color: '#10B981' }]}>Verified</Text>
+                </View>
+              )}
+            </View>
+            <Text style={[styles.listItemSub, { color: colors.icon }]}>
+              {item.category?.name || 'Uncategorized'} | {item.ratings?.average?.toFixed(1) || '0'} rating | {cashback}% cashback
+            </Text>
+            <View style={styles.listItemTags}>
+              <View style={[styles.statusDot, { backgroundColor: isMall ? '#10B981' : '#9CA3AF' }]} />
+              <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
+                {isMall ? 'In Mall' : 'Not in Mall'}
+              </Text>
+              {item.isFeatured && (
+                <View style={[styles.tagBadge, { backgroundColor: '#F59E0B20' }]}>
+                  <Text style={[styles.tagText, { color: '#F59E0B' }]}>Featured</Text>
+                </View>
+              )}
+              {isPremium && (
+                <View style={[styles.tagBadge, { backgroundColor: '#8B5CF620' }]}>
+                  <Text style={[styles.tagText, { color: '#8B5CF6' }]}>Premium</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
+        <View style={styles.listItemActions}>
+          {isProcessing ? (
+            <ActivityIndicator size="small" color={colors.tint} />
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.actionBtn}
+                onPress={() => toggleStoreFeatured(item)}
+              >
+                <Ionicons
+                  name={item.isFeatured ? 'star' : 'star-outline'}
+                  size={18}
+                  color={item.isFeatured ? '#F59E0B' : '#9CA3AF'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionBtn}
+                onPress={() => toggleStorePremium(item)}
+              >
+                <Ionicons
+                  name={isPremium ? 'diamond' : 'diamond-outline'}
+                  size={18}
+                  color={isPremium ? '#8B5CF6' : '#9CA3AF'}
+                />
+              </TouchableOpacity>
+              <Switch
+                value={isMall}
+                onValueChange={() => toggleStoreMall(item)}
+                trackColor={{ false: '#E2E8F0', true: '#10B981' }}
+                thumbColor="#FFF"
+              />
+            </>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const renderManagedStores = () => (
+    <View style={{ flex: 1 }}>
+      <View style={styles.searchRow}>
+        <View style={[styles.searchInput, { backgroundColor: colors.card, flex: 1 }]}>
+          <Ionicons name="search" size={18} color={colors.icon} />
+          <TextInput
+            style={[styles.searchText, { color: colors.text }]}
+            placeholder="Search stores..."
+            placeholderTextColor={colors.icon}
+            value={managedStoresSearch}
+            onChangeText={setManagedStoresSearch}
+            onSubmitEditing={() => loadManagedStores(managedStoresSearch)}
+          />
+        </View>
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: colors.tint }]}
+          onPress={() => loadManagedStores(managedStoresSearch)}
+        >
+          <Ionicons name="search" size={22} color="#FFF" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Filter Chips */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
+        {(['all', 'mall', 'non-mall'] as const).map((filter) => (
+          <TouchableOpacity
+            key={filter}
+            style={[
+              styles.filterChip,
+              managedStoresFilter === filter
+                ? { backgroundColor: colors.tint }
+                : { backgroundColor: colors.card },
+            ]}
+            onPress={() => setManagedStoresFilter(filter)}
+          >
+            <Text
+              style={[
+                styles.filterChipText,
+                { color: managedStoresFilter === filter ? '#FFF' : colors.icon },
+              ]}
+            >
+              {filter === 'all' ? 'All Stores' : filter === 'mall' ? 'In Mall' : 'Not in Mall'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <Text style={[styles.sectionCount, { color: colors.icon, paddingHorizontal: 16, paddingBottom: 8 }]}>
+        {managedStores.filter(s => s.deliveryCategories?.mall).length} mall stores of {managedStores.length} total
+      </Text>
+
+      <FlatList
+        data={managedStores}
+        renderItem={renderManagedStoreItem}
+        keyExtractor={(item) => item._id}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={() => loadManagedStores()} tintColor={colors.tint} />
+        }
+        ListEmptyComponent={
+          managedStoresLoading ? (
+            <View style={styles.centerContainer}>
+              <ActivityIndicator size="large" color={colors.tint} />
+            </View>
+          ) : (
+            <View style={styles.centerContainer}>
+              <Ionicons name="business-outline" size={48} color={colors.icon} />
+              <Text style={[styles.emptyText, { color: colors.icon }]}>No stores found</Text>
+              <Text style={[styles.emptyText, { color: colors.icon, fontSize: 13 }]}>
+                Toggle stores into the mall to show them on the Mall tab
+              </Text>
+            </View>
+          )
+        }
+      />
+    </View>
+  );
+
+  // Banners Tab
+  const renderBannerItem = ({ item }: { item: MallBanner }) => {
+    const isProcessing = processingBanner === item._id;
+    const isExpired = new Date(item.validUntil) < new Date();
+    const daysLeft = Math.ceil((new Date(item.validUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+
+    return (
+      <View style={[styles.listItem, { backgroundColor: colors.card }]}>
+        <View style={styles.listItemRow}>
+          {item.image ? (
+            <Image source={{ uri: item.image }} style={[styles.listItemImage, { width: 60, height: 36, borderRadius: 6 }]} />
+          ) : (
+            <View style={[styles.listItemImageFallback, { backgroundColor: item.backgroundColor || '#EC4899', width: 60, height: 36, borderRadius: 6 }]}>
+              <Ionicons name="image" size={18} color="#FFF" />
+            </View>
+          )}
+          <View style={styles.listItemInfo}>
+            <Text style={[styles.listItemName, { color: colors.text }]} numberOfLines={1}>
+              {item.title}
+            </Text>
+            <Text style={[styles.listItemSub, { color: colors.icon }]}>
+              {item.position} | Priority: {item.priority} | {item.ctaAction}
+            </Text>
+            <View style={styles.listItemTags}>
+              <View style={[styles.statusDot, {
+                backgroundColor: isExpired ? '#9CA3AF' : item.isActive ? '#10B981' : '#EF4444'
+              }]} />
+              <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
+                {isExpired ? 'Expired' : item.isActive ? 'Active' : 'Inactive'}
+              </Text>
+              {!isExpired && daysLeft <= 30 && (
+                <View style={[styles.tagBadge, { backgroundColor: '#F59E0B20' }]}>
+                  <Text style={[styles.tagText, { color: '#F59E0B' }]}>{daysLeft}d left</Text>
+                </View>
+              )}
+              {isExpired && (
+                <View style={[styles.tagBadge, { backgroundColor: '#EF444420' }]}>
+                  <Text style={[styles.tagText, { color: '#EF4444' }]}>Expired</Text>
+                </View>
+              )}
+              {item.badge && (
+                <View style={[styles.tagBadge, { backgroundColor: `${colors.tint}15` }]}>
+                  <Text style={[styles.tagText, { color: colors.tint }]}>{item.badge}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
+        <View style={styles.listItemActions}>
+          {isProcessing ? (
+            <ActivityIndicator size="small" color={colors.tint} />
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.actionBtn}
+                onPress={() => toggleBannerActive(item)}
+              >
+                <Ionicons
+                  name={item.isActive ? 'eye' : 'eye-off'}
+                  size={18}
+                  color={item.isActive ? '#10B981' : '#EF4444'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionBtn}
+                onPress={() => openBannerForm(item)}
+              >
+                <Ionicons name="create-outline" size={18} color={colors.tint} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionBtn}
+                onPress={() => deleteBanner(item)}
+              >
+                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const renderBanners = () => {
+    const activeBanners = banners.filter(b => b.isActive && new Date(b.validUntil) >= new Date());
+    const expiredBanners = banners.filter(b => new Date(b.validUntil) < new Date());
+
+    return (
+      <View style={{ flex: 1 }}>
+        <View style={styles.searchRow}>
+          <Text style={[styles.sectionCount, { color: colors.icon }]}>
+            {banners.length} banners ({activeBanners.length} active, {expiredBanners.length} expired)
+          </Text>
+          <TouchableOpacity
+            style={[styles.addButton, { backgroundColor: colors.tint }]}
+            onPress={() => openBannerForm()}
+          >
+            <Ionicons name="add" size={22} color="#FFF" />
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={banners}
+          renderItem={renderBannerItem}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl refreshing={false} onRefresh={loadBanners} tintColor={colors.tint} />
+          }
+          ListEmptyComponent={
+            bannersLoading ? (
+              <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color={colors.tint} />
+              </View>
+            ) : (
+              <View style={styles.centerContainer}>
+                <Ionicons name="image-outline" size={48} color={colors.icon} />
+                <Text style={[styles.emptyText, { color: colors.icon }]}>No banners</Text>
+                <Text style={[styles.emptyText, { color: colors.icon, fontSize: 13 }]}>
+                  Create banners to show on the Mall homepage
+                </Text>
+              </View>
+            )
+          }
+        />
+      </View>
+    );
+  };
+
+  // Collections Tab
+  const renderCollectionItem = ({ item }: { item: MallCollection }) => {
+    const isProcessing = processingCollection === item._id;
+    return (
+      <View style={[styles.listItem, { backgroundColor: colors.card }]}>
+        <View style={styles.listItemRow}>
+          {item.image ? (
+            <Image source={{ uri: item.image }} style={styles.listItemImage} />
+          ) : (
+            <View style={[styles.listItemImageFallback, { backgroundColor: '#06B6D4' }]}>
+              <Ionicons name="albums" size={20} color="#FFF" />
+            </View>
+          )}
+          <View style={styles.listItemInfo}>
+            <Text style={[styles.listItemName, { color: colors.text }]} numberOfLines={1}>
+              {item.name}
+            </Text>
+            <Text style={[styles.listItemSub, { color: colors.icon }]}>
+              {item.slug} | {item.type} | Order: {item.sortOrder}
+            </Text>
+            <View style={styles.listItemTags}>
+              <View style={[styles.statusDot, { backgroundColor: item.isActive ? '#10B981' : '#EF4444' }]} />
+              <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
+                {item.isActive ? 'Active' : 'Inactive'}
+              </Text>
+              <View style={[styles.tagBadge, { backgroundColor: '#06B6D420' }]}>
+                <Text style={[styles.tagText, { color: '#06B6D4' }]}>{item.type}</Text>
+              </View>
+              {item.brandCount > 0 && (
+                <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
+                  | {item.brandCount} brands
+                </Text>
+              )}
+            </View>
+          </View>
+        </View>
+        <View style={styles.listItemActions}>
+          {isProcessing ? (
+            <ActivityIndicator size="small" color={colors.tint} />
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.actionBtn}
+                onPress={() => toggleCollectionActive(item)}
+              >
+                <Ionicons
+                  name={item.isActive ? 'eye' : 'eye-off'}
+                  size={18}
+                  color={item.isActive ? '#10B981' : '#EF4444'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionBtn}
+                onPress={() => openCollectionForm(item)}
+              >
+                <Ionicons name="create-outline" size={18} color={colors.tint} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionBtn}
+                onPress={() => deleteCollection(item)}
+              >
+                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const renderCollections = () => (
+    <View style={{ flex: 1 }}>
+      <View style={styles.searchRow}>
+        <Text style={[styles.sectionCount, { color: colors.icon }]}>
+          {collections.length} collections
+        </Text>
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: colors.tint }]}
+          onPress={() => openCollectionForm()}
+        >
+          <Ionicons name="add" size={22} color="#FFF" />
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        data={collections}
+        renderItem={renderCollectionItem}
+        keyExtractor={(item) => item._id}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={loadCollections} tintColor={colors.tint} />
+        }
+        ListEmptyComponent={
+          collectionsLoading ? (
+            <View style={styles.centerContainer}>
+              <ActivityIndicator size="large" color={colors.tint} />
+            </View>
+          ) : (
+            <View style={styles.centerContainer}>
+              <Ionicons name="albums-outline" size={48} color={colors.icon} />
+              <Text style={[styles.emptyText, { color: colors.icon }]}>No collections</Text>
+              <Text style={[styles.emptyText, { color: colors.icon, fontSize: 13 }]}>
+                Create curated collections to display on the Mall tab
+              </Text>
+            </View>
+          )
+        }
+      />
+    </View>
+  );
+
   // Alliance Tab
   const renderAllianceItem = ({ item }: { item: AllianceStore }) => {
     const isAlliance = !!item.deliveryCategories?.alliance;
@@ -1155,11 +1994,48 @@ export default function MallScreen() {
             </View>
           </View>
 
+          {renderFormField('Category ID', brandForm.mallCategory, (v) => setBrandForm(p => ({ ...p, mallCategory: v })), { placeholder: 'MallCategory ObjectId' })}
+
+          <Text style={[styles.formLabel, { color: colors.text, marginTop: 8, marginBottom: 12, fontSize: 15, fontWeight: '700' }]}>Cashback Settings</Text>
           {renderFormField('Cashback %', brandForm.cashbackPercentage, (v) => setBrandForm(p => ({ ...p, cashbackPercentage: v })))}
-          {renderFormField('Badges (comma separated)', brandForm.badges, (v) => setBrandForm(p => ({ ...p, badges: v })), { placeholder: 'exclusive, trending, new' })}
+          {renderFormField('Max Cashback Amount', brandForm.cashbackMaxAmount, (v) => setBrandForm(p => ({ ...p, cashbackMaxAmount: v })), { placeholder: 'e.g. 500' })}
+          {renderFormField('Min Purchase', brandForm.cashbackMinPurchase, (v) => setBrandForm(p => ({ ...p, cashbackMinPurchase: v })), { placeholder: 'e.g. 100' })}
+
+          {renderFormField('Tags (comma separated)', brandForm.tags, (v) => setBrandForm(p => ({ ...p, tags: v })), { placeholder: 'fashion, electronics, food' })}
+
+          <View style={styles.formField}>
+            <Text style={[styles.formLabel, { color: colors.text }]}>Badges</Text>
+            <View style={styles.tierRow}>
+              {['exclusive', 'premium', 'new', 'trending', 'top-rated', 'verified'].map((b) => {
+                const selected = brandForm.badges.split(',').map(s => s.trim()).includes(b);
+                return (
+                  <TouchableOpacity
+                    key={b}
+                    style={[
+                      styles.tierBtn,
+                      selected
+                        ? { backgroundColor: colors.tint }
+                        : { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border },
+                    ]}
+                    onPress={() => {
+                      const current = brandForm.badges.split(',').map(s => s.trim()).filter(Boolean);
+                      const updated = selected ? current.filter(x => x !== b) : [...current, b];
+                      setBrandForm(p => ({ ...p, badges: updated.join(', ') }));
+                    }}
+                  >
+                    <Text style={{ color: selected ? '#FFF' : colors.icon, fontSize: 10, fontWeight: '600' }}>
+                      {b}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
           {renderSwitchField('Active', brandForm.isActive, (v) => setBrandForm(p => ({ ...p, isActive: v })))}
           {renderSwitchField('Featured', brandForm.isFeatured, (v) => setBrandForm(p => ({ ...p, isFeatured: v })))}
           {renderSwitchField('Luxury', brandForm.isLuxury, (v) => setBrandForm(p => ({ ...p, isLuxury: v })))}
+          {renderSwitchField('New Arrival', brandForm.isNewArrival, (v) => setBrandForm(p => ({ ...p, isNewArrival: v })))}
         </ScrollView>
       </View>
     </Modal>
@@ -1182,8 +2058,11 @@ export default function MallScreen() {
         <ScrollView contentContainerStyle={styles.modalContent}>
           {renderFormField('Name *', categoryForm.name, (v) => setCategoryForm(p => ({ ...p, name: v })))}
           {renderFormField('Slug', categoryForm.slug, (v) => setCategoryForm(p => ({ ...p, slug: v })), { placeholder: 'auto-generated from name' })}
+          {renderFormField('Description', categoryForm.description, (v) => setCategoryForm(p => ({ ...p, description: v })), { multiline: true })}
           {renderFormField('Icon (emoji)', categoryForm.icon, (v) => setCategoryForm(p => ({ ...p, icon: v })))}
+          {renderFormField('Image URL', categoryForm.image, (v) => setCategoryForm(p => ({ ...p, image: v })), { placeholder: 'Category image URL' })}
           {renderFormField('Color', categoryForm.color, (v) => setCategoryForm(p => ({ ...p, color: v })), { placeholder: '#1a3a52' })}
+          {renderFormField('Background Color', categoryForm.backgroundColor, (v) => setCategoryForm(p => ({ ...p, backgroundColor: v })), { placeholder: 'Optional background color' })}
           {renderFormField('Max Cashback %', categoryForm.maxCashback, (v) => setCategoryForm(p => ({ ...p, maxCashback: v })))}
           {renderFormField('Sort Order', categoryForm.sortOrder, (v) => setCategoryForm(p => ({ ...p, sortOrder: v })))}
           {renderSwitchField('Active', categoryForm.isActive, (v) => setCategoryForm(p => ({ ...p, isActive: v })))}
@@ -1210,8 +2089,12 @@ export default function MallScreen() {
         <ScrollView contentContainerStyle={styles.modalContent}>
           {renderFormField('Title *', offerForm.title, (v) => setOfferForm(p => ({ ...p, title: v })))}
           {renderFormField('Subtitle', offerForm.subtitle, (v) => setOfferForm(p => ({ ...p, subtitle: v })))}
+          {renderFormField('Description', offerForm.description, (v) => setOfferForm(p => ({ ...p, description: v })), { multiline: true })}
           {renderFormField('Image URL', offerForm.image, (v) => setOfferForm(p => ({ ...p, image: v })))}
-          {renderFormField('Store ID *', offerForm.store, (v) => setOfferForm(p => ({ ...p, store: v })), { placeholder: 'MongoDB ObjectId of the store' })}
+
+          <Text style={[styles.formLabel, { color: colors.text, marginTop: 8, marginBottom: 4, fontSize: 13, fontWeight: '700' }]}>Link to Store OR Brand (one required)</Text>
+          {renderFormField('Store ID', offerForm.store, (v) => setOfferForm(p => ({ ...p, store: v, brand: v ? '' : p.brand })), { placeholder: 'MongoDB ObjectId of store' })}
+          {renderFormField('Brand ID', offerForm.brand, (v) => setOfferForm(p => ({ ...p, brand: v, store: v ? '' : p.store })), { placeholder: 'MongoDB ObjectId of brand (if no store)' })}
 
           <View style={styles.formField}>
             <Text style={[styles.formLabel, { color: colors.text }]}>Offer Type</Text>
@@ -1259,6 +2142,9 @@ export default function MallScreen() {
             </View>
           </View>
 
+          {renderFormField('Min Purchase Amount', offerForm.minPurchase, (v) => setOfferForm(p => ({ ...p, minPurchase: v })), { placeholder: 'e.g. 100' })}
+          {renderFormField('Max Discount Amount', offerForm.maxDiscount, (v) => setOfferForm(p => ({ ...p, maxDiscount: v })), { placeholder: 'e.g. 500' })}
+
           {renderFormField('Valid From (YYYY-MM-DD)', offerForm.validFrom, (v) => setOfferForm(p => ({ ...p, validFrom: v })))}
           {renderFormField('Valid Until (YYYY-MM-DD)', offerForm.validUntil, (v) => setOfferForm(p => ({ ...p, validUntil: v })))}
 
@@ -1291,6 +2177,142 @@ export default function MallScreen() {
     </Modal>
   );
 
+  const renderBannerModal = () => (
+    <Modal visible={showBannerModal} animationType="slide" presentationStyle="pageSheet">
+      <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
+        <View style={[styles.modalHeader, { backgroundColor: colors.card }]}>
+          <TouchableOpacity onPress={() => setShowBannerModal(false)}>
+            <Text style={[styles.modalCancel, { color: colors.tint }]}>Cancel</Text>
+          </TouchableOpacity>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>
+            {editingBanner ? 'Edit Banner' : 'New Banner'}
+          </Text>
+          <TouchableOpacity onPress={saveBanner}>
+            <Text style={[styles.modalSave, { color: colors.tint }]}>Save</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView contentContainerStyle={styles.modalContent}>
+          {renderFormField('Title *', bannerForm.title, (v) => setBannerForm(p => ({ ...p, title: v })))}
+          {renderFormField('Subtitle', bannerForm.subtitle, (v) => setBannerForm(p => ({ ...p, subtitle: v })))}
+          {renderFormField('Image URL *', bannerForm.image, (v) => setBannerForm(p => ({ ...p, image: v })))}
+          {renderFormField('Background Color', bannerForm.backgroundColor, (v) => setBannerForm(p => ({ ...p, backgroundColor: v })), { placeholder: '#00C06A' })}
+          {renderFormField('Text Color', bannerForm.textColor, (v) => setBannerForm(p => ({ ...p, textColor: v })), { placeholder: '#FFFFFF' })}
+          {renderFormField('CTA Text', bannerForm.ctaText, (v) => setBannerForm(p => ({ ...p, ctaText: v })), { placeholder: 'Shop Now' })}
+
+          <View style={styles.formField}>
+            <Text style={[styles.formLabel, { color: colors.text }]}>CTA Action</Text>
+            <View style={styles.tierRow}>
+              {['navigate', 'external', 'brand', 'category', 'collection'].map((t) => (
+                <TouchableOpacity
+                  key={t}
+                  style={[
+                    styles.tierBtn,
+                    bannerForm.ctaAction === t
+                      ? { backgroundColor: colors.tint }
+                      : { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border },
+                  ]}
+                  onPress={() => setBannerForm(p => ({ ...p, ctaAction: t }))}
+                >
+                  <Text style={{ color: bannerForm.ctaAction === t ? '#FFF' : colors.icon, fontSize: 10, fontWeight: '600' }}>
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {(bannerForm.ctaAction === 'navigate' || bannerForm.ctaAction === 'external') &&
+            renderFormField('CTA URL', bannerForm.ctaUrl, (v) => setBannerForm(p => ({ ...p, ctaUrl: v })), { placeholder: 'URL or deep link route' })}
+          {bannerForm.ctaAction === 'brand' &&
+            renderFormField('Target Brand/Store ID *', bannerForm.ctaBrand, (v) => setBannerForm(p => ({ ...p, ctaBrand: v })), { placeholder: 'MongoDB ObjectId of the brand or store' })}
+          {bannerForm.ctaAction === 'category' &&
+            renderFormField('Target Category ID *', bannerForm.ctaCategory, (v) => setBannerForm(p => ({ ...p, ctaCategory: v })), { placeholder: 'MongoDB ObjectId of the category' })}
+          {bannerForm.ctaAction === 'collection' &&
+            renderFormField('Target Collection ID *', bannerForm.ctaCollection, (v) => setBannerForm(p => ({ ...p, ctaCollection: v })), { placeholder: 'MongoDB ObjectId of the collection' })}
+
+          <View style={styles.formField}>
+            <Text style={[styles.formLabel, { color: colors.text }]}>Position</Text>
+            <View style={styles.tierRow}>
+              {['hero', 'inline', 'footer'].map((t) => (
+                <TouchableOpacity
+                  key={t}
+                  style={[
+                    styles.tierBtn,
+                    bannerForm.position === t
+                      ? { backgroundColor: colors.tint }
+                      : { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border },
+                  ]}
+                  onPress={() => setBannerForm(p => ({ ...p, position: t }))}
+                >
+                  <Text style={{ color: bannerForm.position === t ? '#FFF' : colors.icon, fontSize: 12, fontWeight: '600' }}>
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {renderFormField('Priority', bannerForm.priority, (v) => setBannerForm(p => ({ ...p, priority: v })), { placeholder: '0' })}
+          {renderFormField('Valid From (YYYY-MM-DD)', bannerForm.validFrom, (v) => setBannerForm(p => ({ ...p, validFrom: v })))}
+          {renderFormField('Valid Until (YYYY-MM-DD)', bannerForm.validUntil, (v) => setBannerForm(p => ({ ...p, validUntil: v })))}
+          {renderFormField('Badge', bannerForm.badge, (v) => setBannerForm(p => ({ ...p, badge: v })), { placeholder: 'e.g. NEW, SALE' })}
+          {renderSwitchField('Active', bannerForm.isActive, (v) => setBannerForm(p => ({ ...p, isActive: v })))}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+
+  const renderCollectionModal = () => (
+    <Modal visible={showCollectionModal} animationType="slide" presentationStyle="pageSheet">
+      <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
+        <View style={[styles.modalHeader, { backgroundColor: colors.card }]}>
+          <TouchableOpacity onPress={() => setShowCollectionModal(false)}>
+            <Text style={[styles.modalCancel, { color: colors.tint }]}>Cancel</Text>
+          </TouchableOpacity>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>
+            {editingCollection ? 'Edit Collection' : 'New Collection'}
+          </Text>
+          <TouchableOpacity onPress={saveCollection}>
+            <Text style={[styles.modalSave, { color: colors.tint }]}>Save</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView contentContainerStyle={styles.modalContent}>
+          {renderFormField('Name *', collectionForm.name, (v) => setCollectionForm(p => ({ ...p, name: v })))}
+          {renderFormField('Slug', collectionForm.slug, (v) => setCollectionForm(p => ({ ...p, slug: v })), { placeholder: 'auto-generated from name' })}
+          {renderFormField('Description', collectionForm.description, (v) => setCollectionForm(p => ({ ...p, description: v })), { multiline: true })}
+          {renderFormField('Image URL *', collectionForm.image, (v) => setCollectionForm(p => ({ ...p, image: v })))}
+
+          <View style={styles.formField}>
+            <Text style={[styles.formLabel, { color: colors.text }]}>Type</Text>
+            <View style={styles.tierRow}>
+              {['curated', 'seasonal', 'trending', 'personalized'].map((t) => (
+                <TouchableOpacity
+                  key={t}
+                  style={[
+                    styles.tierBtn,
+                    collectionForm.type === t
+                      ? { backgroundColor: colors.tint }
+                      : { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border },
+                  ]}
+                  onPress={() => setCollectionForm(p => ({ ...p, type: t }))}
+                >
+                  <Text style={{ color: collectionForm.type === t ? '#FFF' : colors.icon, fontSize: 11, fontWeight: '600' }}>
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {renderFormField('Sort Order', collectionForm.sortOrder, (v) => setCollectionForm(p => ({ ...p, sortOrder: v })))}
+          {renderFormField('Valid From (YYYY-MM-DD)', collectionForm.validFrom, (v) => setCollectionForm(p => ({ ...p, validFrom: v })), { placeholder: 'Optional - leave empty for always valid' })}
+          {renderFormField('Valid Until (YYYY-MM-DD)', collectionForm.validUntil, (v) => setCollectionForm(p => ({ ...p, validUntil: v })), { placeholder: 'Optional - leave empty for always valid' })}
+          {renderSwitchField('Active', collectionForm.isActive, (v) => setCollectionForm(p => ({ ...p, isActive: v })))}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+
   // ==================== MAIN RENDER ====================
 
   return (
@@ -1302,7 +2324,7 @@ export default function MallScreen() {
           <Text style={[styles.headerTitle, { color: colors.text }]}>Mall Management</Text>
         </View>
         <Text style={[styles.headerSubtitle, { color: colors.icon }]}>
-          Manage brands, categories, and offers
+          Manage stores, brands, offers, banners & collections
         </Text>
       </View>
 
@@ -1312,9 +2334,12 @@ export default function MallScreen() {
       {/* Content */}
       <View style={{ flex: 1 }}>
         {activeTab === 'dashboard' && renderDashboard()}
+        {activeTab === 'stores' && renderManagedStores()}
         {activeTab === 'brands' && renderBrands()}
         {activeTab === 'categories' && renderCategories()}
         {activeTab === 'offers' && renderOffers()}
+        {activeTab === 'banners' && renderBanners()}
+        {activeTab === 'collections' && renderCollections()}
         {activeTab === 'alliance' && renderAlliance()}
       </View>
 
@@ -1322,6 +2347,8 @@ export default function MallScreen() {
       {renderBrandModal()}
       {renderCategoryModal()}
       {renderOfferModal()}
+      {renderBannerModal()}
+      {renderCollectionModal()}
     </View>
   );
 }
@@ -1352,18 +2379,20 @@ const styles = StyleSheet.create({
     marginLeft: 34,
   },
   tabBar: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
     paddingVertical: 10,
+    maxHeight: 54,
+  },
+  tabBarContent: {
+    paddingHorizontal: 16,
     gap: 8,
   },
   tab: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
     paddingVertical: 10,
+    paddingHorizontal: 14,
     borderRadius: 12,
   },
   tabText: {

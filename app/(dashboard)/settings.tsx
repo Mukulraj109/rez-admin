@@ -147,6 +147,13 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/explore')}
           />
           <SettingItem
+            icon="apps"
+            iconColor="#8B5CF6"
+            title="Categories"
+            subtitle="Manage main categories & page configs"
+            onPress={() => router.push('/(dashboard)/categories')}
+          />
+          <SettingItem
             icon="bag-handle"
             iconColor="#0284C7"
             title="Mall Management"
@@ -229,6 +236,41 @@ export default function SettingsScreen() {
             title="Loyalty Management"
             subtitle="Manage user streaks, missions & coins"
             onPress={() => router.push('/(dashboard)/loyalty')}
+          />
+          <SettingItem
+            icon="flag"
+            iconColor="#EF4444"
+            title="Challenges"
+            subtitle="Manage Play & Earn challenges"
+            onPress={() => router.push('/(dashboard)/challenges')}
+          />
+          <SettingItem
+            icon="game-controller"
+            iconColor="#3B82F6"
+            title="Game Config"
+            subtitle="Configure mini-games & rewards"
+            onPress={() => router.push('/(dashboard)/game-config')}
+          />
+          <SettingItem
+            icon="toggle"
+            iconColor="#8B5CF6"
+            title="Feature Flags"
+            subtitle="Toggle sections & earning config"
+            onPress={() => router.push('/(dashboard)/feature-flags')}
+          />
+          <SettingItem
+            icon="medal"
+            iconColor="#F59E0B"
+            title="Achievements"
+            subtitle="Manage user achievements & badges"
+            onPress={() => router.push('/(dashboard)/achievements')}
+          />
+          <SettingItem
+            icon="stats-chart"
+            iconColor="#10B981"
+            title="Economy Dashboard"
+            subtitle="Monitor coin economy & fraud"
+            onPress={() => router.push('/(dashboard)/gamification-economy')}
           />
         </View>
       </View>
