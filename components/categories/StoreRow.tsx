@@ -1,28 +1,110 @@
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Platform,
+  Modal, Pressable, Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AdminStore } from '../../services/api/stores';
 
 interface StoreRowProps {
   store: AdminStore;
-  categories: Array<{ _id: string; name: string }>;
+  categories: Array<{ _id: string; name: string; slug: string }>;
   isSelected: boolean;
   onToggleSelect: () => void;
   onReassignCategory: (storeId: string, categoryId: string) => void;
   onToggleFeatured: (storeId: string, featured: boolean) => void;
+  onToggleCapability: (storeId: string, capability: string, enabled: boolean) => void;
   colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
 }
 
-// Service capability abbreviations
-const SERVICE_CAPS: { key: string; label: string; color: string }[] = [
-  { key: 'homeDelivery', label: 'HD', color: '#3B82F6' },
-  { key: 'driveThru', label: 'DT', color: '#8B5CF6' },
-  { key: 'tableBooking', label: 'TB', color: '#EC4899' },
-  { key: 'dineIn', label: 'DI', color: '#F59E0B' },
-  { key: 'storePickup', label: 'SP', color: '#10B981' },
-];
+// All service capability definitions
+const ALL_SERVICE_CAPS: Record<string, { label: string; fullLabel: string; color: string }> = {
+  homeDelivery: { label: 'HD', fullLabel: 'Home Delivery', color: '#3B82F6' },
+  driveThru:    { label: 'DT', fullLabel: 'Drive Thru', color: '#8B5CF6' },
+  tableBooking: { label: 'TB', fullLabel: 'Table Booking', color: '#EC4899' },
+  dineIn:       { label: 'DI', fullLabel: 'Dine In', color: '#F59E0B' },
+  storePickup:  { label: 'SP', fullLabel: 'Store Pickup', color: '#10B981' },
+};
+
+// Service capabilities per parent category
+const PARENT_CAPABILITIES: Record<string, string[]> = {
+  'food-dining':        ['homeDelivery', 'driveThru', 'tableBooking', 'dineIn', 'storePickup'],
+  'grocery-essentials': ['homeDelivery', 'storePickup'],
+  'beauty-wellness':    ['tableBooking', 'storePickup'],
+  'healthcare':         ['homeDelivery', 'storePickup'],
+  'fashion':            ['homeDelivery', 'storePickup'],
+  'electronics':        ['homeDelivery', 'storePickup'],
+  'fitness-sports':     ['tableBooking', 'storePickup'],
+  'education-learning': ['tableBooking'],
+  'home-services':      ['homeDelivery'],
+  'travel-experiences': ['tableBooking'],
+  'entertainment':      ['tableBooking'],
+  'financial-lifestyle': [],
+};
+
+// Map every subcategory slug back to its parent slug
+const SUBCATEGORY_TO_PARENT: Record<string, string> = {
+  // Food & Dining
+  'cafes': 'food-dining', 'qsr-fast-food': 'food-dining', 'family-restaurants': 'food-dining',
+  'fine-dining': 'food-dining', 'ice-cream-dessert': 'food-dining', 'bakery-confectionery': 'food-dining',
+  'cloud-kitchens': 'food-dining', 'street-food': 'food-dining',
+  // Grocery & Essentials
+  'supermarkets': 'grocery-essentials', 'kirana-stores': 'grocery-essentials', 'fresh-vegetables': 'grocery-essentials',
+  'meat-fish': 'grocery-essentials', 'dairy': 'grocery-essentials', 'packaged-goods': 'grocery-essentials',
+  'water-cans': 'grocery-essentials',
+  // Beauty & Wellness
+  'salons': 'beauty-wellness', 'spa-massage': 'beauty-wellness', 'beauty-services': 'beauty-wellness',
+  'cosmetology': 'beauty-wellness', 'dermatology': 'beauty-wellness', 'skincare-cosmetics': 'beauty-wellness',
+  'nail-studios': 'beauty-wellness', 'grooming-men': 'beauty-wellness',
+  // Healthcare
+  'pharmacy': 'healthcare', 'clinics': 'healthcare', 'diagnostics': 'healthcare', 'dental': 'healthcare',
+  'physiotherapy': 'healthcare', 'home-nursing': 'healthcare', 'vision-eyewear': 'healthcare',
+  // Fashion
+  'footwear': 'fashion', 'bags-accessories': 'fashion', 'mobile-accessories': 'fashion',
+  'watches': 'fashion', 'jewelry': 'fashion', 'local-brands': 'fashion',
+  // Fitness & Sports
+  'gyms': 'fitness-sports', 'crossfit': 'fitness-sports', 'yoga': 'fitness-sports', 'zumba': 'fitness-sports',
+  'martial-arts': 'fitness-sports', 'sports-academies': 'fitness-sports', 'sportswear': 'fitness-sports',
+  // Education & Learning
+  'coaching-centers': 'education-learning', 'skill-development': 'education-learning',
+  'music-dance-classes': 'education-learning', 'art-craft': 'education-learning',
+  'vocational': 'education-learning', 'language-training': 'education-learning',
+  // Home Services
+  'ac-repair': 'home-services', 'plumbing': 'home-services', 'electrical': 'home-services',
+  'cleaning': 'home-services', 'pest-control': 'home-services', 'house-shifting': 'home-services',
+  'laundry-dry-cleaning': 'home-services', 'home-tutors': 'home-services',
+  // Travel & Experiences
+  'hotels': 'travel-experiences', 'intercity-travel': 'travel-experiences', 'taxis': 'travel-experiences',
+  'bike-rentals': 'travel-experiences', 'weekend-getaways': 'travel-experiences',
+  'tours': 'travel-experiences', 'activities': 'travel-experiences',
+  // Entertainment
+  'movies': 'entertainment', 'live-events': 'entertainment', 'festivals': 'entertainment',
+  'workshops': 'entertainment', 'amusement-parks': 'entertainment', 'gaming-cafes': 'entertainment',
+  'vr-ar-experiences': 'entertainment',
+  // Financial Lifestyle
+  'bill-payments': 'financial-lifestyle', 'mobile-recharge': 'financial-lifestyle',
+  'broadband': 'financial-lifestyle', 'cable-ott': 'financial-lifestyle',
+  'insurance': 'financial-lifestyle', 'gold-savings': 'financial-lifestyle', 'donations': 'financial-lifestyle',
+  // Electronics
+  'mobile-phones': 'electronics', 'laptops': 'electronics', 'televisions': 'electronics',
+  'cameras': 'electronics', 'audio-headphones': 'electronics', 'gaming': 'electronics',
+  'accessories': 'electronics', 'smartwatches': 'electronics',
+};
+
+// Fallback: show all capabilities if category slug not recognized
+const ALL_CAPABILITY_KEYS = Object.keys(ALL_SERVICE_CAPS);
+
+function getRelevantCaps(categorySlug?: string): { key: string; label: string; fullLabel: string; color: string }[] {
+  if (!categorySlug) {
+    return ALL_CAPABILITY_KEYS.map((k) => ({ key: k, ...ALL_SERVICE_CAPS[k] }));
+  }
+  // Resolve to parent slug (if it's a subcategory) or use directly (if it's a parent)
+  const parentSlug = PARENT_CAPABILITIES[categorySlug] ? categorySlug : SUBCATEGORY_TO_PARENT[categorySlug];
+  const keys = parentSlug && PARENT_CAPABILITIES[parentSlug]
+    ? PARENT_CAPABILITIES[parentSlug]
+    : ALL_CAPABILITY_KEYS;
+  return keys.map((k) => ({ key: k, ...ALL_SERVICE_CAPS[k] })).filter(Boolean);
+}
 
 const StoreRow = React.memo(({
   store,
@@ -31,6 +113,7 @@ const StoreRow = React.memo(({
   onToggleSelect,
   onReassignCategory,
   onToggleFeatured,
+  onToggleCapability,
   colors,
 }: StoreRowProps) => {
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
@@ -44,14 +127,18 @@ const StoreRow = React.memo(({
   };
 
   const status = getStatus();
-  const enabledServices = SERVICE_CAPS.filter((cap) => {
-    const capabilities = store.serviceCapabilities as any;
-    return capabilities?.[cap.key]?.enabled;
-  });
+
+  // Resolve category info: backend returns categoryInfo from $lookup
+  const catInfo = store.categoryInfo || (typeof store.category === 'object' ? store.category : undefined);
+  const catSlug = catInfo?.slug;
+  const catId = catInfo?._id || (typeof store.category === 'string' ? store.category : undefined);
+
+  // Get all relevant capabilities for this category and check which are enabled
+  const relevantCaps = getRelevantCaps(catSlug);
 
   const handleCategorySelect = (categoryId: string) => {
     setShowCategoryPicker(false);
-    if (categoryId !== store.category?._id) {
+    if (categoryId !== catId) {
       onReassignCategory(store._id, categoryId);
     }
   };
@@ -94,10 +181,10 @@ const StoreRow = React.memo(({
         {/* Second row: category, rating, services */}
         <View style={styles.metaRow}>
           {/* Category chip */}
-          {store.category && (
+          {catInfo && (
             <View style={[styles.categoryChip, { backgroundColor: `${colors.tint}12` }]}>
               <Text style={[styles.categoryText, { color: colors.tint }]} numberOfLines={1}>
-                {store.category.name}
+                {catInfo.name}
               </Text>
             </View>
           )}
@@ -115,15 +202,37 @@ const StoreRow = React.memo(({
             </View>
           )}
 
-          {/* Service capabilities */}
-          {enabledServices.length > 0 && (
+          {/* Service capabilities (tappable toggles) */}
+          {relevantCaps.length > 0 && (
             <View style={styles.servicesRow}>
-              {enabledServices.map((svc) => (
-                <View key={svc.key} style={[styles.serviceBadge, { backgroundColor: `${svc.color}18` }]}>
-                  <View style={[styles.serviceDot, { backgroundColor: svc.color }]} />
-                  <Text style={[styles.serviceLabel, { color: svc.color }]}>{svc.label}</Text>
-                </View>
-              ))}
+              {relevantCaps.map((svc) => {
+                const isEnabled = !!(store.serviceCapabilities as any)?.[svc.key]?.enabled;
+                return (
+                  <TouchableOpacity
+                    key={svc.key}
+                    style={[
+                      styles.serviceBadge,
+                      isEnabled
+                        ? { backgroundColor: `${svc.color}20`, borderColor: svc.color, borderWidth: 1 }
+                        : { backgroundColor: `${colors.icon}08`, borderColor: `${colors.icon}30`, borderWidth: 1 },
+                    ]}
+                    onPress={() => onToggleCapability(store._id, svc.key, !isEnabled)}
+                    activeOpacity={0.6}
+                  >
+                    <View style={[
+                      styles.serviceDot,
+                      { backgroundColor: isEnabled ? svc.color : `${colors.icon}40` },
+                    ]} />
+                    <Text style={[
+                      styles.serviceLabel,
+                      { color: isEnabled ? svc.color : `${colors.icon}60` },
+                      !isEnabled && { textDecorationLine: 'line-through' },
+                    ]}>
+                      {svc.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           )}
         </View>
@@ -132,45 +241,12 @@ const StoreRow = React.memo(({
       {/* Actions */}
       <View style={styles.actions}>
         {/* Category reassign */}
-        <View style={styles.reassignContainer}>
-          <TouchableOpacity
-            style={[styles.actionBtn, { backgroundColor: `${colors.tint}12`, borderColor: colors.border }]}
-            onPress={() => setShowCategoryPicker(!showCategoryPicker)}
-          >
-            <Ionicons name="swap-horizontal-outline" size={14} color={colors.tint} />
-          </TouchableOpacity>
-
-          {showCategoryPicker && (
-            <View style={[styles.pickerDropdown, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <ScrollView style={styles.pickerScroll} nestedScrollEnabled>
-                {categories.map((cat) => (
-                  <TouchableOpacity
-                    key={cat._id}
-                    style={[
-                      styles.pickerItem,
-                      cat._id === store.category?._id && { backgroundColor: `${colors.tint}12` },
-                    ]}
-                    onPress={() => handleCategorySelect(cat._id)}
-                  >
-                    <Text
-                      style={[
-                        styles.pickerItemText,
-                        { color: colors.text },
-                        cat._id === store.category?._id && { color: colors.tint, fontWeight: '700' },
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {cat.name}
-                    </Text>
-                    {cat._id === store.category?._id && (
-                      <Ionicons name="checkmark" size={14} color={colors.tint} />
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          )}
-        </View>
+        <TouchableOpacity
+          style={[styles.actionBtn, { backgroundColor: `${colors.tint}12` }]}
+          onPress={() => setShowCategoryPicker(true)}
+        >
+          <Ionicons name="swap-horizontal-outline" size={14} color={colors.tint} />
+        </TouchableOpacity>
 
         {/* Featured toggle */}
         <TouchableOpacity
@@ -184,6 +260,96 @@ const StoreRow = React.memo(({
           />
         </TouchableOpacity>
       </View>
+
+      {/* Category Picker Modal */}
+      <Modal
+        visible={showCategoryPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowCategoryPicker(false)}
+      >
+        <Pressable
+          style={styles.pickerOverlay}
+          onPress={() => setShowCategoryPicker(false)}
+        >
+          <Pressable style={[styles.pickerModal, { backgroundColor: colors.card }]} onPress={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <View style={[styles.pickerModalHeader, { borderBottomColor: colors.border }]}>
+              <View style={styles.pickerModalHeaderLeft}>
+                <Ionicons name="swap-horizontal-outline" size={20} color={colors.tint} />
+                <Text style={[styles.pickerModalTitle, { color: colors.text }]}>Reassign Category</Text>
+              </View>
+              <TouchableOpacity
+                style={[styles.pickerModalCloseBtn, { backgroundColor: `${colors.icon}12` }]}
+                onPress={() => setShowCategoryPicker(false)}
+              >
+                <Ionicons name="close" size={18} color={colors.icon} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Store info */}
+            <View style={[styles.pickerStoreInfo, { borderBottomColor: colors.border }]}>
+              {store.logo ? (
+                <Image source={{ uri: store.logo }} style={styles.pickerStoreLogo} />
+              ) : (
+                <View style={[styles.pickerStoreLogoFallback, { backgroundColor: `${colors.tint}15` }]}>
+                  <Ionicons name="storefront-outline" size={16} color={colors.tint} />
+                </View>
+              )}
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.pickerStoreName, { color: colors.text }]} numberOfLines={1}>{store.name}</Text>
+                {catInfo && (
+                  <Text style={[styles.pickerStoreCategory, { color: colors.icon }]} numberOfLines={1}>
+                    Current: {catInfo.name}
+                  </Text>
+                )}
+              </View>
+            </View>
+
+            {/* Category List */}
+            <ScrollView style={styles.pickerList} showsVerticalScrollIndicator={false}>
+              {categories.map((cat, index) => {
+                const isCurrent = cat._id === catId;
+                return (
+                  <TouchableOpacity
+                    key={cat._id}
+                    style={[
+                      styles.pickerListItem,
+                      { borderBottomColor: index < categories.length - 1 ? `${colors.border}80` : 'transparent' },
+                      isCurrent && { backgroundColor: `${colors.tint}10` },
+                    ]}
+                    onPress={() => handleCategorySelect(cat._id)}
+                    activeOpacity={0.6}
+                  >
+                    <View style={[
+                      styles.pickerListRadio,
+                      { borderColor: isCurrent ? colors.tint : colors.border },
+                      isCurrent && { backgroundColor: colors.tint, borderColor: colors.tint },
+                    ]}>
+                      {isCurrent && <Ionicons name="checkmark" size={12} color="#FFF" />}
+                    </View>
+                    <Text
+                      style={[
+                        styles.pickerListItemText,
+                        { color: colors.text },
+                        isCurrent && { color: colors.tint, fontWeight: '700' },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {cat.name}
+                    </Text>
+                    {isCurrent && (
+                      <View style={[styles.currentBadge, { backgroundColor: `${colors.tint}15` }]}>
+                        <Text style={[styles.currentBadgeText, { color: colors.tint }]}>Current</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }, (prev, next) =>
@@ -192,7 +358,8 @@ const StoreRow = React.memo(({
   prev.store.isSuspended === next.store.isSuspended &&
   prev.store.adminApproved === next.store.adminApproved &&
   prev.store.isFeatured === next.store.isFeatured &&
-  prev.store.category?._id === next.store.category?._id &&
+  prev.store.categoryInfo?._id === next.store.categoryInfo?._id &&
+  prev.store.serviceCapabilities === next.store.serviceCapabilities &&
   prev.isSelected === next.isSelected
 );
 
@@ -318,10 +485,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  reassignContainer: {
-    position: 'relative',
-    ...(Platform.OS === 'web' ? { zIndex: 10 } : {}),
-  },
   actionBtn: {
     width: 30,
     height: 30,
@@ -329,31 +492,107 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pickerDropdown: {
-    position: 'absolute',
-    top: 34,
-    right: 0,
-    width: 180,
-    maxHeight: 200,
-    borderRadius: 10,
-    borderWidth: 1,
-    ...(Platform.OS === 'web'
-      ? { zIndex: 100, boxShadow: '0px 4px 12px rgba(0,0,0,0.15)' }
-      : { elevation: 8 }),
+
+  // Category picker modal
+  pickerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'flex-end',
   },
-  pickerScroll: {
-    maxHeight: 196,
+  pickerModal: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: Dimensions.get('window').height * 0.65,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20,
   },
-  pickerItem: {
+  pickerModalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
   },
-  pickerItemText: {
+  pickerModalHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  pickerModalTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  pickerModalCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pickerStoreInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    gap: 10,
+  },
+  pickerStoreLogo: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+  },
+  pickerStoreLogoFallback: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pickerStoreName: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  pickerStoreCategory: {
     fontSize: 12,
     fontWeight: '500',
+    marginTop: 2,
+  },
+  pickerList: {
+    paddingHorizontal: 12,
+    paddingTop: 4,
+  },
+  pickerListItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 13,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: 12,
+    borderRadius: 8,
+    marginVertical: 1,
+  },
+  pickerListRadio: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pickerListItemText: {
+    fontSize: 15,
+    fontWeight: '500',
     flex: 1,
+  },
+  currentBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  currentBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

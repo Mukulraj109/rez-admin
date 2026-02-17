@@ -18,6 +18,21 @@ import { format } from 'date-fns';
 import { showAlert } from '../../utils/alert';
 
 type StatusFilter = 'all' | 'placed' | 'confirmed' | 'preparing' | 'ready' | 'dispatched' | 'delivered' | 'cancelled' | 'returned' | 'refunded';
+type FulfillmentFilter = 'all' | 'delivery' | 'pickup' | 'drive_thru' | 'dine_in';
+
+const FULFILLMENT_LABELS: Record<string, string> = {
+  delivery: 'Delivery',
+  pickup: 'Pickup',
+  drive_thru: 'Drive-Thru',
+  dine_in: 'Dine-In',
+};
+
+const FULFILLMENT_ICONS: Record<string, string> = {
+  delivery: 'bicycle-outline',
+  pickup: 'bag-handle-outline',
+  drive_thru: 'car-outline',
+  dine_in: 'restaurant-outline',
+};
 
 export default function OrdersScreen() {
   const colorScheme = useColorScheme();
@@ -25,6 +40,7 @@ export default function OrdersScreen() {
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [fulfillmentFilter, setFulfillmentFilter] = useState<FulfillmentFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -49,7 +65,7 @@ export default function OrdersScreen() {
 
   useEffect(() => {
     loadData();
-  }, [statusFilter, searchQuery]);
+  }, [statusFilter, searchQuery, fulfillmentFilter]);
 
   const loadData = async (pageNum: number = 1, append: boolean = false) => {
     try {
@@ -58,7 +74,8 @@ export default function OrdersScreen() {
         20,
         statusFilter === 'all' ? undefined : statusFilter,
         undefined,
-        searchQuery || undefined
+        searchQuery || undefined,
+        fulfillmentFilter === 'all' ? undefined : fulfillmentFilter
       );
 
       if (append) {
@@ -80,7 +97,7 @@ export default function OrdersScreen() {
     setRefreshing(true);
     await loadData(1);
     setRefreshing(false);
-  }, [statusFilter, searchQuery]);
+  }, [statusFilter, searchQuery, fulfillmentFilter]);
 
   const loadMore = () => {
     if (!isLoading && hasMore) {
@@ -237,6 +254,44 @@ export default function OrdersScreen() {
           </TouchableOpacity>
         ))}
       </View>
+
+      {/* Fulfillment type filter */}
+      <View style={[styles.statusFilters, { marginTop: 8 }]}>
+        {(['all', 'delivery', 'pickup', 'drive_thru', 'dine_in'] as FulfillmentFilter[]).map(ft => (
+          <TouchableOpacity
+            key={ft}
+            style={[
+              styles.filterChip,
+              {
+                backgroundColor: fulfillmentFilter === ft ? '#1a3a52' : colors.card,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+              },
+            ]}
+            onPress={() => {
+              setFulfillmentFilter(ft);
+              setIsLoading(true);
+            }}
+          >
+            {ft !== 'all' && (
+              <Ionicons
+                name={(FULFILLMENT_ICONS[ft] || 'help-circle-outline') as any}
+                size={13}
+                color={fulfillmentFilter === ft ? '#FFFFFF' : colors.icon}
+              />
+            )}
+            <Text
+              style={[
+                styles.filterChipText,
+                { color: fulfillmentFilter === ft ? '#FFFFFF' : colors.text },
+              ]}
+            >
+              {ft === 'all' ? 'All Types' : FULFILLMENT_LABELS[ft] || ft}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 
@@ -267,10 +322,24 @@ export default function OrdersScreen() {
               </Text>
             )}
           </View>
-          <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(item.status)}20` }]}>
-            <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
-              {item.status.replace(/_/g, ' ')}
-            </Text>
+          <View style={{ alignItems: 'flex-end', gap: 4 }}>
+            {item.fulfillmentType && item.fulfillmentType !== 'delivery' && (
+              <View style={[styles.statusBadge, { backgroundColor: '#f0f6fa', flexDirection: 'row', alignItems: 'center', gap: 3 }]}>
+                <Ionicons
+                  name={(FULFILLMENT_ICONS[item.fulfillmentType] || 'help-circle-outline') as any}
+                  size={11}
+                  color="#1a3a52"
+                />
+                <Text style={{ fontSize: 10, fontWeight: '600', color: '#1a3a52' }}>
+                  {FULFILLMENT_LABELS[item.fulfillmentType] || item.fulfillmentType}
+                </Text>
+              </View>
+            )}
+            <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(item.status)}20` }]}>
+              <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+                {item.status.replace(/_/g, ' ')}
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -307,7 +376,7 @@ export default function OrdersScreen() {
               </Text>
             </View>
             <Text style={[styles.deliveryType, { color: colors.icon }]}>
-              {item.deliveryType}
+              {item.fulfillmentType ? (FULFILLMENT_LABELS[item.fulfillmentType] || item.deliveryType) : item.deliveryType}
             </Text>
           </View>
         </View>
@@ -493,6 +562,20 @@ export default function OrdersScreen() {
 
             {selectedOrder && (
               <View style={styles.modalBody}>
+                {/* Fulfillment badge in modal */}
+                {selectedOrder.fulfillmentType && selectedOrder.fulfillmentType !== 'delivery' && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 6, backgroundColor: '#f0f6fa', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, alignSelf: 'flex-start' }}>
+                    <Ionicons name={(FULFILLMENT_ICONS[selectedOrder.fulfillmentType] || 'help-circle-outline') as any} size={14} color="#1a3a52" />
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#1a3a52' }}>{FULFILLMENT_LABELS[selectedOrder.fulfillmentType] || selectedOrder.fulfillmentType}</Text>
+                    {selectedOrder.fulfillmentDetails?.tableNumber && (
+                      <Text style={{ fontSize: 12, color: '#1a3a52' }}>• Table {selectedOrder.fulfillmentDetails.tableNumber}</Text>
+                    )}
+                    {selectedOrder.fulfillmentDetails?.vehicleInfo && (
+                      <Text style={{ fontSize: 12, color: '#1a3a52' }}>• {selectedOrder.fulfillmentDetails.vehicleInfo}</Text>
+                    )}
+                  </View>
+                )}
+
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>Items</Text>
                 {selectedOrder.items?.map((item, index) => (
                   <View key={index} style={styles.itemRow}>

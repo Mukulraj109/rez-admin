@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   ActivityIndicator, TextInput, FlatList, Platform,
+  Modal, Pressable, Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { storesService, AdminStore, Pagination } from '../../services/api/stores';
@@ -102,10 +103,15 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
   const handleReassignCategory = useCallback(async (storeId: string, categoryId: string) => {
     try {
       // Optimistic update
+      const targetCat = categories.find((c) => c._id === categoryId);
       setStores((prev) =>
         prev.map((s) =>
           s._id === storeId
-            ? { ...s, category: categories.find((c) => c._id === categoryId) || s.category }
+            ? {
+                ...s,
+                category: categoryId,
+                categoryInfo: targetCat ? { _id: targetCat._id, name: targetCat.name, slug: targetCat.slug } : s.categoryInfo,
+              }
             : s
         )
       );
@@ -128,6 +134,30 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
       // Revert by reloading
       loadStores(pagination.page);
       showAlert('Error', error.message || 'Failed to update featured status');
+    }
+  }, [loadStores, pagination.page]);
+
+  const handleToggleCapability = useCallback(async (storeId: string, capability: string, enabled: boolean) => {
+    try {
+      // Optimistic update
+      setStores((prev) =>
+        prev.map((s) =>
+          s._id === storeId
+            ? {
+                ...s,
+                serviceCapabilities: {
+                  ...s.serviceCapabilities,
+                  [capability]: { ...(s.serviceCapabilities as any)?.[capability], enabled },
+                },
+              }
+            : s
+        )
+      );
+      await storesService.toggleServiceCapability(storeId, capability, enabled);
+    } catch (error: any) {
+      // Revert by reloading
+      loadStores(pagination.page);
+      showAlert('Error', error.message || 'Failed to toggle capability');
     }
   }, [loadStores, pagination.page]);
 
@@ -203,9 +233,10 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
       onToggleSelect={() => handleToggleSelect(item._id)}
       onReassignCategory={handleReassignCategory}
       onToggleFeatured={handleToggleFeatured}
+      onToggleCapability={handleToggleCapability}
       colors={colors}
     />
-  ), [categories, selectedStoreIds, handleToggleSelect, handleReassignCategory, handleToggleFeatured, colors]);
+  ), [categories, selectedStoreIds, handleToggleSelect, handleReassignCategory, handleToggleFeatured, handleToggleCapability, colors]);
 
   const keyExtractor = useCallback((item: AdminStore) => item._id, []);
 
@@ -298,26 +329,37 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
       {/* Bulk Actions Bar */}
       {selectedStoreIds.size > 0 && (
         <View style={[styles.bulkBar, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <TouchableOpacity style={styles.selectAllBtn} onPress={handleSelectAll}>
-            <Ionicons
-              name={isAllSelected ? 'checkbox' : 'square-outline'}
-              size={18}
-              color={colors.tint}
-            />
-            <Text style={[styles.selectAllText, { color: colors.text }]}>
-              {isAllSelected ? 'Deselect All' : 'Select All'}
-            </Text>
-          </TouchableOpacity>
+          {/* Top row: Select all + count */}
+          <View style={styles.bulkTopRow}>
+            <TouchableOpacity style={styles.selectAllBtn} onPress={handleSelectAll}>
+              <Ionicons
+                name={isAllSelected ? 'checkbox' : 'square-outline'}
+                size={20}
+                color={colors.tint}
+              />
+              <Text style={[styles.selectAllText, { color: colors.text }]}>
+                Select All
+              </Text>
+            </TouchableOpacity>
 
-          <Text style={[styles.selectedCount, { color: colors.icon }]}>
-            {selectedStoreIds.size} selected
-          </Text>
+            <View style={[styles.selectedCountBadge, { backgroundColor: `${colors.tint}15` }]}>
+              <Text style={[styles.selectedCountText, { color: colors.tint }]}>
+                {selectedStoreIds.size} selected
+              </Text>
+            </View>
+          </View>
 
-          <View style={[styles.bulkPickerContainer, Platform.OS === 'web' ? { zIndex: 20 } : {}]}>
+          {/* Bottom row: Move to picker + Apply */}
+          <View style={styles.bulkBottomRow}>
             <TouchableOpacity
-              style={[styles.bulkCategoryBtn, { borderColor: colors.border }]}
-              onPress={() => setShowBulkCategoryPicker(!showBulkCategoryPicker)}
+              style={[
+                styles.bulkCategoryBtn,
+                { borderColor: colors.border, backgroundColor: colors.background },
+                bulkCategoryId ? { borderColor: colors.tint } : {},
+              ]}
+              onPress={() => setShowBulkCategoryPicker(true)}
             >
+              <Ionicons name="folder-open-outline" size={15} color={bulkCategoryId ? colors.tint : colors.icon} />
               <Text style={[styles.bulkCategoryText, { color: bulkCategoryId ? colors.text : colors.icon }]} numberOfLines={1}>
                 {bulkCategoryId
                   ? categories.find((c) => c._id === bulkCategoryId)?.name || 'Select...'
@@ -326,51 +368,96 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
               <Ionicons name="chevron-down" size={14} color={colors.icon} />
             </TouchableOpacity>
 
-            {showBulkCategoryPicker && (
-              <View style={[styles.bulkDropdown, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                <ScrollView style={styles.bulkDropdownScroll} nestedScrollEnabled>
-                  {categories.map((cat) => (
-                    <TouchableOpacity
-                      key={cat._id}
-                      style={[
-                        styles.bulkDropdownItem,
-                        cat._id === bulkCategoryId && { backgroundColor: `${colors.tint}12` },
-                      ]}
-                      onPress={() => {
-                        setBulkCategoryId(cat._id);
-                        setShowBulkCategoryPicker(false);
-                      }}
-                    >
-                      <Text
-                        style={[
-                          styles.bulkDropdownText,
-                          { color: colors.text },
-                          cat._id === bulkCategoryId && { color: colors.tint, fontWeight: '700' },
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {cat.name}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
+            <TouchableOpacity
+              style={[styles.applyBtn, { backgroundColor: colors.tint, opacity: isBulkProcessing || !bulkCategoryId ? 0.5 : 1 }]}
+              onPress={handleBulkReassign}
+              disabled={isBulkProcessing || !bulkCategoryId}
+            >
+              {isBulkProcessing ? (
+                <ActivityIndicator size="small" color="#FFF" />
+              ) : (
+                <>
+                  <Ionicons name="checkmark-circle-outline" size={16} color="#FFF" />
+                  <Text style={styles.applyBtnText}>Apply</Text>
+                </>
+              )}
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity
-            style={[styles.applyBtn, { backgroundColor: colors.tint, opacity: isBulkProcessing ? 0.6 : 1 }]}
-            onPress={handleBulkReassign}
-            disabled={isBulkProcessing}
-          >
-            {isBulkProcessing ? (
-              <ActivityIndicator size="small" color="#FFF" />
-            ) : (
-              <Text style={styles.applyBtnText}>Apply</Text>
-            )}
-          </TouchableOpacity>
         </View>
       )}
+
+      {/* Bulk Category Picker Modal */}
+      <Modal
+        visible={showBulkCategoryPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowBulkCategoryPicker(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowBulkCategoryPicker(false)}
+        >
+          <Pressable style={[styles.modalContent, { backgroundColor: colors.card }]} onPress={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+              <View style={styles.modalHeaderLeft}>
+                <Ionicons name="folder-open-outline" size={20} color={colors.tint} />
+                <Text style={[styles.modalTitle, { color: colors.text }]}>Move to Category</Text>
+              </View>
+              <TouchableOpacity
+                style={[styles.modalCloseBtn, { backgroundColor: `${colors.icon}12` }]}
+                onPress={() => setShowBulkCategoryPicker(false)}
+              >
+                <Ionicons name="close" size={18} color={colors.icon} />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={[styles.modalSubtitle, { color: colors.icon }]}>
+              Select a category for {selectedStoreIds.size} store{selectedStoreIds.size > 1 ? 's' : ''}
+            </Text>
+
+            {/* Category List */}
+            <ScrollView style={styles.modalList} showsVerticalScrollIndicator={false}>
+              {categories.map((cat, index) => {
+                const isActive = cat._id === bulkCategoryId;
+                return (
+                  <TouchableOpacity
+                    key={cat._id}
+                    style={[
+                      styles.modalItem,
+                      { borderBottomColor: index < categories.length - 1 ? `${colors.border}80` : 'transparent' },
+                      isActive && { backgroundColor: `${colors.tint}10` },
+                    ]}
+                    onPress={() => {
+                      setBulkCategoryId(cat._id);
+                      setShowBulkCategoryPicker(false);
+                    }}
+                    activeOpacity={0.6}
+                  >
+                    <View style={[
+                      styles.modalItemRadio,
+                      { borderColor: isActive ? colors.tint : colors.border },
+                      isActive && { backgroundColor: colors.tint, borderColor: colors.tint },
+                    ]}>
+                      {isActive && <Ionicons name="checkmark" size={12} color="#FFF" />}
+                    </View>
+                    <Text
+                      style={[
+                        styles.modalItemText,
+                        { color: colors.text },
+                        isActive && { color: colors.tint, fontWeight: '700' },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {cat.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       {/* Store List */}
       {isLoading && stores.length === 0 ? (
@@ -527,80 +614,138 @@ const styles = StyleSheet.create({
 
   // Bulk bar
   bulkBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 10,
+    padding: 12,
+    borderRadius: 12,
     borderWidth: 1,
     marginBottom: 10,
-    gap: 8,
-    flexWrap: 'wrap',
+    gap: 10,
+  },
+  bulkTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   selectAllBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   selectAllText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
   },
-  selectedCount: {
-    fontSize: 11,
-    fontWeight: '500',
+  selectedCountBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
   },
-  bulkPickerContainer: {
-    position: 'relative',
-    flex: 1,
-    minWidth: 120,
+  selectedCountText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
-  bulkCategoryBtn: {
+  bulkBottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 4,
+    gap: 8,
+  },
+  bulkCategoryBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    gap: 8,
   },
   bulkCategoryText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '500',
     flex: 1,
   },
-  bulkDropdown: {
-    position: 'absolute',
-    top: 34,
-    left: 0,
-    right: 0,
-    maxHeight: 180,
-    borderRadius: 10,
-    borderWidth: 1,
-    ...(Platform.OS === 'web'
-      ? { zIndex: 100, boxShadow: '0px 4px 12px rgba(0,0,0,0.15)' }
-      : { elevation: 8 }),
-  },
-  bulkDropdownScroll: {
-    maxHeight: 176,
-  },
-  bulkDropdownItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  bulkDropdownText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
   applyBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+    borderRadius: 10,
+    gap: 6,
   },
   applyBtnText: {
     color: '#FFF',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
+  },
+
+  // Bulk category picker modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: Dimensions.get('window').height * 0.6,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+  },
+  modalHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  modalCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalSubtitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  modalList: {
+    paddingHorizontal: 12,
+  },
+  modalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 13,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: 12,
+    borderRadius: 8,
+    marginVertical: 1,
+  },
+  modalItemRadio: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalItemText: {
+    fontSize: 15,
+    fontWeight: '500',
+    flex: 1,
   },
 
   // List

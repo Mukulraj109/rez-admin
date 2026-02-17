@@ -10,8 +10,10 @@ export interface AdminStore {
   slug: string;
   logo?: string;
   banner?: string[];
-  category?: { _id: string; name: string; slug: string };
+  category?: string | { _id: string; name: string; slug: string };
+  categoryInfo?: { _id: string; name: string; slug: string };
   merchant?: { _id: string; name?: string; email?: string; businessName?: string };
+  merchantInfo?: { _id: string; businessName?: string; ownerName?: string; email?: string };
   isActive: boolean;
   adminApproved?: boolean;
   isSuspended?: boolean;
@@ -65,11 +67,12 @@ class StoresService {
       if (response.success && response.data) {
         console.log('[Stores] Fetched successfully');
         const stores = response.data.stores || (Array.isArray(response.data) ? response.data : []);
-        const pagination = response.data.pagination || response.pagination || {
-          page: params.page || 1,
-          limit: params.limit || 20,
-          total: stores.length,
-          pages: 1,
+        const rawPag = response.data.pagination || response.pagination || {};
+        const pagination: Pagination = {
+          page: rawPag.page || params.page || 1,
+          limit: rawPag.limit || params.limit || 20,
+          total: rawPag.total || stores.length,
+          pages: rawPag.pages || rawPag.totalPages || 1,
         };
         return { stores, pagination };
       }
@@ -122,11 +125,12 @@ class StoresService {
       if (response.success && response.data) {
         console.log('[Stores] Category stores fetched');
         const stores = response.data.stores || (Array.isArray(response.data) ? response.data : []);
-        const pagination = response.data.pagination || response.pagination || {
-          page: params?.page || 1,
-          limit: params?.limit || 20,
-          total: stores.length,
-          pages: 1,
+        const rawPag = response.data.pagination || response.pagination || {};
+        const pagination: Pagination = {
+          page: rawPag.page || params?.page || 1,
+          limit: rawPag.limit || params?.limit || 20,
+          total: rawPag.total || stores.length,
+          pages: rawPag.pages || rawPag.totalPages || 1,
         };
         return { stores, pagination };
       }
@@ -206,6 +210,34 @@ class StoresService {
     } catch (error: any) {
       console.error('[Stores] Update admin actions error:', error.message);
       throw new Error(error.message || 'Failed to update admin actions');
+    }
+  }
+
+  /**
+   * Toggle a service capability for a store
+   */
+  async toggleServiceCapability(
+    storeId: string,
+    capability: string,
+    enabled: boolean
+  ): Promise<{ store: AdminStore; message: string }> {
+    try {
+      console.log('[Stores] Toggling capability:', capability, enabled ? 'ON' : 'OFF', 'for store:', storeId);
+      const response = await apiClient.put<any>(`admin/stores/${storeId}/service-capabilities`, {
+        capability,
+        enabled,
+      });
+
+      if (response.success && response.data) {
+        console.log('[Stores] Capability toggled successfully');
+        const store = response.data.store || response.data;
+        return { store, message: response.message || `${capability} ${enabled ? 'enabled' : 'disabled'}` };
+      }
+
+      throw new Error(response.message || 'Failed to toggle service capability');
+    } catch (error: any) {
+      console.error('[Stores] Toggle capability error:', error.message);
+      throw new Error(error.message || 'Failed to toggle service capability');
     }
   }
 }

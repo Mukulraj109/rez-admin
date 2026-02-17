@@ -53,6 +53,14 @@ export interface Order {
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod: string;
   deliveryType: 'pickup' | 'delivery';
+  fulfillmentType?: 'delivery' | 'pickup' | 'drive_thru' | 'dine_in';
+  fulfillmentDetails?: {
+    storeAddress?: string;
+    tableNumber?: string;
+    vehicleInfo?: string;
+    estimatedReadyTime?: string;
+    pickupInstructions?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -99,13 +107,15 @@ class OrdersService {
     limit: number = 20,
     status?: string,
     merchantId?: string,
-    search?: string
+    search?: string,
+    fulfillmentType?: string
   ): Promise<OrdersListResponse> {
     try {
       let url = `admin/orders?page=${page}&limit=${limit}`;
       if (status) url += `&status=${status}`;
       if (merchantId) url += `&merchantId=${merchantId}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
+      if (fulfillmentType) url += `&fulfillmentType=${fulfillmentType}`;
 
       console.log('[Orders] Fetching orders list...');
       const response = await apiClient.get<Order[]>(url);
