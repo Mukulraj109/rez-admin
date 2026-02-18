@@ -245,6 +245,20 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/challenges')}
           />
           <SettingItem
+            icon="heart"
+            iconColor="#EC4899"
+            title="Social Impact"
+            subtitle="CSR events, participants & rewards"
+            onPress={() => router.push('/(dashboard)/social-impact')}
+          />
+          <SettingItem
+            icon="business"
+            iconColor="#0EA5E9"
+            title="CSR Sponsors"
+            subtitle="Sponsors, budgets & brand coins"
+            onPress={() => router.push('/(dashboard)/sponsors')}
+          />
+          <SettingItem
             icon="game-controller"
             iconColor="#3B82F6"
             title="Game Config"
@@ -266,11 +280,60 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/achievements')}
           />
           <SettingItem
+            icon="calendar"
+            iconColor="#22C55E"
+            title="Daily Check-In Config"
+            subtitle="Day rewards, milestones & pro tips"
+            onPress={() => router.push('/(dashboard)/daily-checkin-config')}
+          />
+          <SettingItem
             icon="stats-chart"
             iconColor="#10B981"
             title="Economy Dashboard"
             subtitle="Monitor coin economy & fraud"
             onPress={() => router.push('/(dashboard)/gamification-economy')}
+          />
+        </View>
+      </View>
+
+      {/* Engagement & UGC */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>ENGAGEMENT & UGC</Text>
+        <View style={styles.settingsGroup}>
+          <SettingItem
+            icon="camera"
+            iconColor="#EC4899"
+            title="Photo Moderation"
+            subtitle="Review user-uploaded photos"
+            onPress={() => router.push('/(dashboard)/photo-moderation')}
+          />
+          <SettingItem
+            icon="bar-chart"
+            iconColor="#6366F1"
+            title="Polls"
+            subtitle="Create & manage polls"
+            onPress={() => router.push('/(dashboard)/polls')}
+          />
+          <SettingItem
+            icon="chatbubble-ellipses"
+            iconColor="#D97706"
+            title="Offer Comments"
+            subtitle="Moderate offer comments"
+            onPress={() => router.push('/(dashboard)/offer-comments')}
+          />
+          <SettingItem
+            icon="videocam"
+            iconColor="#EF4444"
+            title="UGC Reels"
+            subtitle="Moderate user-created reels"
+            onPress={() => router.push('/(dashboard)/ugc-moderation')}
+          />
+          <SettingItem
+            icon="settings"
+            iconColor="#3B82F6"
+            title="Engagement Config"
+            subtitle="View reward settings & limits"
+            onPress={() => router.push('/(dashboard)/engagement-config')}
           />
         </View>
       </View>

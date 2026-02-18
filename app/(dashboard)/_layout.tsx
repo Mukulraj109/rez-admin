@@ -215,9 +215,57 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
+        name="daily-checkin-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="categories"
         options={{
           href: null, // Hide from tab bar - accessible via More menu
+        }}
+      />
+      <Tabs.Screen
+        name="photo-moderation"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="polls"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="offer-comments"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="engagement-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="ugc-moderation"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="social-impact"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="sponsors"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

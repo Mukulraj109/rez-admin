@@ -153,18 +153,16 @@ export default function CoinRewardsScreen() {
       case 'social_media_post': return 'share-social';
       case 'review_bonus': return 'star';
       case 'referral_bonus': return 'people';
-      default: return 'gift';
+      default: return 'share-social';
     }
   };
 
-  const getSourceLabel = (source: string): string => {
-    switch (source) {
-      case 'purchase_bonus': return 'Purchase Bonus';
-      case 'social_media_post': return 'Social Media';
-      case 'review_bonus': return 'Review Bonus';
-      case 'referral_bonus': return 'Referral';
-      default: return source;
+  const getSourceLabel = (item: PendingCoinReward): string => {
+    const platform = item.platform?.charAt(0).toUpperCase() + (item.platform?.slice(1) || '');
+    if (item.posterTitle && item.posterTitle !== 'Promotional Poster') {
+      return `${platform} — ${item.posterTitle}`;
     }
+    return platform ? `${platform} Share` : 'Social Media Post';
   };
 
   const renderStatsCard = () => (
@@ -249,7 +247,7 @@ export default function CoinRewardsScreen() {
           <View style={styles.rewardInfo}>
             <Text style={[styles.userName, { color: colors.text }]}>{userName}</Text>
             <Text style={[styles.sourceLabel, { color: colors.icon }]}>
-              {getSourceLabel(item.source)}
+              {getSourceLabel(item)}
             </Text>
           </View>
           <View style={styles.coinBadge}>
@@ -258,10 +256,24 @@ export default function CoinRewardsScreen() {
           </View>
         </View>
 
-        <View style={styles.rewardDetails}>
-          <Text style={[styles.detailText, { color: colors.icon }]}>
-            {item.percentage}% of reference amount
-          </Text>
+        {item.postUrl ? (
+          <TouchableOpacity
+            style={styles.rewardDetails}
+            onPress={() => {
+              if (typeof window !== 'undefined') window.open(item.postUrl, '_blank');
+            }}
+          >
+            <Text style={[styles.detailText, { color: '#3B82F6' }]} numberOfLines={1}>
+              {item.postUrl}
+            </Text>
+            <Ionicons name="open-outline" size={14} color="#3B82F6" />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.rewardDetails}>
+            <Text style={[styles.detailText, { color: colors.icon }]}>No URL</Text>
+          </View>
+        )}
+        <View style={[styles.rewardDetails, { borderTopWidth: 0, marginTop: 4, paddingTop: 0 }]}>
           <Text style={[styles.dateText, { color: colors.icon }]}>
             {format(new Date(item.submittedAt), 'MMM d, yyyy h:mm a')}
           </Text>

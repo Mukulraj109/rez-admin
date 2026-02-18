@@ -16,6 +16,9 @@ export interface PendingCoinReward {
   source: 'purchase_bonus' | 'social_media_post' | 'review_bonus' | 'referral_bonus';
   referenceType: 'order' | 'post' | 'review' | 'referral';
   referenceId: string;
+  postUrl?: string;
+  platform?: string;
+  posterTitle?: string;
   status: 'pending' | 'approved' | 'rejected' | 'credited';
   submittedAt: string;
   reviewedAt?: string;
