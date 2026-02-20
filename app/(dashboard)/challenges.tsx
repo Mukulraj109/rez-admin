@@ -15,12 +15,10 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { challengesService, AdminChallenge, ChallengeTemplate } from '../../services/api/challenges';
+import { challengesService, AdminChallenge, ChallengeTemplate, ChallengeStatus, ChallengeVisibility, ChallengeAnalytics } from '../../services/api/challenges';
 import { Colors } from '../../constants/Colors';
 import { format } from 'date-fns';
 import { showAlert, showConfirm } from '../../utils/alert';
-
-type StatusType = 'active' | 'inactive' | 'expired';
 
 const TYPE_COLORS: Record<string, string> = {
   daily: '#3B82F6',
@@ -35,17 +33,40 @@ const DIFFICULTY_COLORS: Record<string, string> = {
   hard: '#EF4444',
 };
 
-const STATUS_COLORS: Record<StatusType, string> = {
+const STATUS_COLORS: Record<string, string> = {
+  draft: '#94A3B8',
+  scheduled: '#3B82F6',
   active: '#10B981',
-  inactive: '#94A3B8',
+  paused: '#F59E0B',
+  completed: '#6366F1',
   expired: '#EF4444',
+  disabled: '#6B7280',
 };
 
-const STATUS_ICONS: Record<StatusType, string> = {
+const STATUS_ICONS: Record<string, string> = {
+  draft: 'document-outline',
+  scheduled: 'time-outline',
   active: 'radio-button-on',
-  inactive: 'pause-circle',
+  paused: 'pause-circle',
+  completed: 'checkmark-circle',
   expired: 'close-circle',
+  disabled: 'ban-outline',
 };
+
+const VISIBILITY_LABELS: Record<string, string> = {
+  play_and_earn: 'Play & Earn',
+  missions: 'Missions',
+  both: 'Both',
+};
+
+const VISIBILITY_COLORS: Record<string, string> = {
+  play_and_earn: '#8B5CF6',
+  missions: '#3B82F6',
+  both: '#10B981',
+};
+
+const CHALLENGE_STATUSES: ChallengeStatus[] = ['draft', 'scheduled', 'active', 'paused', 'completed', 'expired', 'disabled'];
+const VISIBILITY_OPTIONS: ChallengeVisibility[] = ['play_and_earn', 'missions', 'both'];
 
 const CHALLENGE_TYPES = ['daily', 'weekly', 'monthly', 'special'] as const;
 const DIFFICULTY_LEVELS = ['easy', 'medium', 'hard'] as const;
@@ -62,10 +83,12 @@ const ACTION_OPTIONS = [
   'add_favorites',
 ] as const;
 
-function getStatus(item: AdminChallenge): StatusType {
+function getStatus(item: AdminChallenge): string {
+  // Use new status field if available, fall back to legacy logic
+  if (item.status) return item.status;
   const now = new Date();
   const end = new Date(item.endDate);
-  if (!item.active) return 'inactive';
+  if (!item.active) return 'disabled';
   if (now > end) return 'expired';
   return 'active';
 }
@@ -103,6 +126,10 @@ interface ChallengeFormData {
   endDate: string;
   featured: boolean;
   active: boolean;
+  status: ChallengeStatus;
+  visibility: ChallengeVisibility;
+  priority: number;
+  scheduledPublishAt?: string;
   maxParticipants?: number;
 }
 
@@ -119,6 +146,10 @@ const DEFAULT_FORM: ChallengeFormData = {
   endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   featured: false,
   active: true,
+  status: 'active',
+  visibility: 'both',
+  priority: 0,
+  scheduledPublishAt: undefined,
   maxParticipants: undefined,
 };
 
@@ -146,6 +177,9 @@ export default function ChallengesScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [editingChallenge, setEditingChallenge] = useState<AdminChallenge | null>(null);
   const [form, setForm] = useState<ChallengeFormData>({ ...DEFAULT_FORM });
+
+  // Analytics
+  const [analytics, setAnalytics] = useState<ChallengeAnalytics | null>(null);
 
   // Template modal
   const [showTemplateModal, setShowTemplateModal] = useState(false);
@@ -199,16 +233,28 @@ export default function ChallengesScreen() {
     }
   }, []);
 
+  const loadAnalytics = useCallback(async () => {
+    try {
+      const response = await challengesService.getAnalytics();
+      if (response.success && response.data) {
+        setAnalytics(response.data as ChallengeAnalytics);
+      }
+    } catch (error) {
+      console.error('Failed to load challenge analytics:', error);
+    }
+  }, []);
+
   useEffect(() => {
     loadChallenges(1);
     loadStats();
+    loadAnalytics();
   }, [filterType, filterDifficulty, filterStatus]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([loadChallenges(1), loadStats()]);
+    await Promise.all([loadChallenges(1), loadStats(), loadAnalytics()]);
     setRefreshing(false);
-  }, [loadChallenges, loadStats]);
+  }, [loadChallenges, loadStats, loadAnalytics]);
 
   const loadMore = useCallback(() => {
     if (!loading && hasMore) {
@@ -241,6 +287,10 @@ export default function ChallengesScreen() {
       endDate: challenge.endDate,
       featured: challenge.featured,
       active: challenge.active,
+      status: challenge.status || (challenge.active ? 'active' : 'disabled'),
+      visibility: challenge.visibility || 'both',
+      priority: challenge.priority || 0,
+      scheduledPublishAt: challenge.scheduledPublishAt,
       maxParticipants: challenge.maxParticipants,
     });
     setShowFormModal(true);
@@ -265,6 +315,10 @@ export default function ChallengesScreen() {
     }
     if (form.coins < 0) {
       showAlert('Error', 'Coins must be 0 or more');
+      return;
+    }
+    if (form.status === 'scheduled' && !form.scheduledPublishAt) {
+      showAlert('Error', 'Scheduled challenges require a publish date');
       return;
     }
     if (!form.startDate || !form.endDate) {
@@ -296,8 +350,15 @@ export default function ChallengesScreen() {
         startDate: form.startDate,
         endDate: form.endDate,
         featured: form.featured,
-        active: form.active,
+        active: form.status === 'active',
+        status: form.status,
+        visibility: form.visibility,
+        priority: form.priority,
       };
+
+      if (form.status === 'scheduled' && form.scheduledPublishAt) {
+        payload.scheduledPublishAt = form.scheduledPublishAt;
+      }
 
       if (form.maxParticipants && form.maxParticipants > 0) {
         payload.maxParticipants = form.maxParticipants;
@@ -332,24 +393,6 @@ export default function ChallengesScreen() {
     }
   }, [form, editingChallenge, loadChallenges, loadStats]);
 
-  const handleToggle = useCallback(async (challenge: AdminChallenge) => {
-    // Optimistic update
-    const prevChallenges = [...challenges];
-    setChallenges(prev =>
-      prev.map(c => c._id === challenge._id ? { ...c, active: !c.active } : c)
-    );
-    try {
-      const response = await challengesService.toggle(challenge._id);
-      if (!response.success) {
-        setChallenges(prevChallenges);
-        showAlert('Error', response.message || 'Failed to toggle challenge');
-      }
-    } catch (error: any) {
-      setChallenges(prevChallenges);
-      showAlert('Error', error.message || 'Failed to toggle challenge');
-    }
-  }, [challenges]);
-
   const handleToggleFeatured = useCallback(async (challenge: AdminChallenge) => {
     // Optimistic update
     const prevChallenges = [...challenges];
@@ -365,6 +408,96 @@ export default function ChallengesScreen() {
     } catch (error: any) {
       setChallenges(prevChallenges);
       showAlert('Error', error.message || 'Failed to toggle featured');
+    }
+  }, [challenges]);
+
+  const executeStatusChange = useCallback(async (challenge: AdminChallenge, newStatus: ChallengeStatus) => {
+    const prevChallenges = [...challenges];
+    setChallenges(prev =>
+      prev.map(c => c._id === challenge._id ? { ...c, status: newStatus, active: newStatus === 'active' } : c)
+    );
+    try {
+      const response = await challengesService.changeStatus(challenge._id, newStatus);
+      if (!response.success) {
+        setChallenges(prevChallenges);
+        showAlert('Error', response.message || 'Failed to change status');
+      } else {
+        loadStats();
+        loadAnalytics();
+      }
+    } catch (error: any) {
+      setChallenges(prevChallenges);
+      showAlert('Error', error.message || 'Failed to change status');
+    }
+  }, [challenges, loadStats, loadAnalytics]);
+
+  const handleChangeStatus = useCallback((challenge: AdminChallenge, newStatus: ChallengeStatus) => {
+    // Dangerous transitions require confirmation
+    if (newStatus === 'disabled' || newStatus === 'paused') {
+      const action = newStatus === 'disabled' ? 'Disable' : 'Pause';
+      showConfirm(
+        `${action} Challenge`,
+        `Are you sure you want to ${action.toLowerCase()} "${challenge.title}"? ${newStatus === 'disabled' ? 'This will hide it from all users.' : 'Users will not see this challenge until resumed.'}`,
+        () => executeStatusChange(challenge, newStatus),
+        action
+      );
+    } else {
+      executeStatusChange(challenge, newStatus);
+    }
+  }, [executeStatusChange]);
+
+  const handleClone = useCallback((challenge: AdminChallenge) => {
+    showConfirm(
+      'Clone Challenge',
+      `Clone "${challenge.title}" with new dates?`,
+      async () => {
+        try {
+          const response = await challengesService.clone(challenge._id);
+          if (response.success) {
+            showAlert('Success', 'Challenge cloned successfully');
+            await Promise.all([loadChallenges(1), loadStats()]);
+          } else {
+            showAlert('Error', response.message || 'Failed to clone challenge');
+          }
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to clone challenge');
+        }
+      },
+      'Clone'
+    );
+  }, [loadChallenges, loadStats]);
+
+  const handleSetVisibility = useCallback(async (challenge: AdminChallenge, visibility: ChallengeVisibility) => {
+    const prevChallenges = [...challenges];
+    setChallenges(prev =>
+      prev.map(c => c._id === challenge._id ? { ...c, visibility } : c)
+    );
+    try {
+      const response = await challengesService.setVisibility(challenge._id, visibility);
+      if (!response.success) {
+        setChallenges(prevChallenges);
+        showAlert('Error', response.message || 'Failed to set visibility');
+      }
+    } catch (error: any) {
+      setChallenges(prevChallenges);
+      showAlert('Error', error.message || 'Failed to set visibility');
+    }
+  }, [challenges]);
+
+  const handleSetPriority = useCallback(async (challenge: AdminChallenge, priority: number) => {
+    const prevChallenges = [...challenges];
+    setChallenges(prev =>
+      prev.map(c => c._id === challenge._id ? { ...c, priority } : c)
+    );
+    try {
+      const response = await challengesService.setPriority(challenge._id, priority);
+      if (!response.success) {
+        setChallenges(prevChallenges);
+        showAlert('Error', response.message || 'Failed to set priority');
+      }
+    } catch (error: any) {
+      setChallenges(prevChallenges);
+      showAlert('Error', error.message || 'Failed to set priority');
     }
   }, [challenges]);
 
@@ -400,6 +533,8 @@ export default function ChallengesScreen() {
       const response = await challengesService.getTemplates();
       if (response.success && response.data) {
         setTemplates(response.data as ChallengeTemplate[]);
+      } else {
+        showAlert('Error', 'Failed to load templates');
       }
     } catch (error) {
       console.error('Failed to load templates:', error);
@@ -444,7 +579,9 @@ export default function ChallengesScreen() {
       {[
         { label: 'Total', value: stats?.total ?? 0, color: colors.text },
         { label: 'Active', value: stats?.active ?? 0, color: '#10B981' },
-        { label: 'Completion', value: `${stats?.avgCompletionRate ?? 0}%`, color: '#3B82F6' },
+        { label: 'Participants', value: analytics?.totalParticipants ?? 0, color: '#8B5CF6' },
+        { label: 'Completion', value: `${analytics?.avgCompletionRate ?? stats?.avgCompletionRate ?? 0}%`, color: '#3B82F6' },
+        { label: 'Coin Liability', value: analytics?.totalCoinLiability ?? 0, color: '#F59E0B' },
       ].map((item, index) => (
         <View key={index} style={[styles.statItem, { backgroundColor: colors.card }]}>
           <Text style={[styles.statValue, { color: item.color }]}>{item.value}</Text>
@@ -453,6 +590,64 @@ export default function ChallengesScreen() {
       ))}
     </View>
   );
+
+  const renderConversionFunnel = () => {
+    const funnel = analytics?.conversionFunnel;
+    if (!funnel || Object.keys(funnel).length === 0) return null;
+
+    const steps = ['impression', 'join', 'progress_update', 'completion', 'claim'];
+    const stepLabels: Record<string, string> = {
+      impression: 'Viewed',
+      join: 'Joined',
+      progress_update: 'In Progress',
+      completion: 'Completed',
+      claim: 'Claimed',
+    };
+    const stepColors: Record<string, string> = {
+      impression: '#94A3B8',
+      join: '#3B82F6',
+      progress_update: '#8B5CF6',
+      completion: '#F59E0B',
+      claim: '#10B981',
+    };
+
+    const maxUsers = Math.max(...steps.map(s => funnel[s]?.uniqueUsers ?? 0), 1);
+
+    return (
+      <View style={[styles.funnelContainer, { backgroundColor: colors.card }]}>
+        <Text style={[styles.funnelTitle, { color: colors.text }]}>Conversion Funnel (30d)</Text>
+        {steps.map((step, idx) => {
+          const data = funnel[step];
+          if (!data) return null;
+          const barWidth = Math.max((data.uniqueUsers / maxUsers) * 100, 5);
+          const prevUsers = idx > 0 ? (funnel[steps[idx - 1]]?.uniqueUsers ?? 0) : 0;
+          const convRate = idx > 0 && prevUsers > 0
+            ? `${Math.round((data.uniqueUsers / prevUsers) * 100)}%`
+            : '';
+          return (
+            <View key={step} style={styles.funnelStep}>
+              <View style={styles.funnelLabelRow}>
+                <Text style={[styles.funnelStepLabel, { color: colors.text }]}>
+                  {stepLabels[step] || step}
+                </Text>
+                <Text style={[styles.funnelStepCount, { color: colors.icon }]}>
+                  {data.uniqueUsers} users {convRate ? `(${convRate})` : ''}
+                </Text>
+              </View>
+              <View style={[styles.funnelBarBg, { backgroundColor: `${colors.border}50` }]}>
+                <View
+                  style={[
+                    styles.funnelBar,
+                    { width: `${barWidth}%`, backgroundColor: stepColors[step] || '#6B7280' },
+                  ]}
+                />
+              </View>
+            </View>
+          );
+        })}
+      </View>
+    );
+  };
 
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
@@ -518,9 +713,9 @@ export default function ChallengesScreen() {
         <View style={styles.filterDivider} />
 
         {/* Status Filter */}
-        {['all', 'active', 'inactive', 'expired'].map(status => {
+        {['all', ...CHALLENGE_STATUSES].map(status => {
           const isActive = filterStatus === status;
-          const statusColor = status === 'all' ? colors.tint : STATUS_COLORS[status as StatusType] || colors.tint;
+          const statusColor = status === 'all' ? colors.tint : STATUS_COLORS[status] || colors.tint;
           return (
             <TouchableOpacity
               key={`status-${status}`}
@@ -567,14 +762,30 @@ export default function ChallengesScreen() {
     </View>
   );
 
-  const renderStatusBadge = (status: StatusType) => (
-    <View style={[styles.statusChip, { backgroundColor: `${STATUS_COLORS[status]}15` }]}>
-      <Ionicons name={STATUS_ICONS[status] as any} size={12} color={STATUS_COLORS[status]} />
-      <Text style={[styles.statusLabel, { color: STATUS_COLORS[status] }]}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Text>
-    </View>
-  );
+  const renderStatusBadge = (status: string) => {
+    const color = STATUS_COLORS[status] || '#6B7280';
+    const icon = STATUS_ICONS[status] || 'help-circle-outline';
+    return (
+      <View style={[styles.statusChip, { backgroundColor: `${color}15` }]}>
+        <Ionicons name={icon as any} size={12} color={color} />
+        <Text style={[styles.statusLabel, { color }]}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Text>
+      </View>
+    );
+  };
+
+  const renderVisibilityBadge = (visibility: string) => {
+    const color = VISIBILITY_COLORS[visibility] || '#6B7280';
+    const label = VISIBILITY_LABELS[visibility] || visibility;
+    return (
+      <View style={[styles.typeBadge, { backgroundColor: `${color}15` }]}>
+        <Text style={[styles.typeBadgeText, { color }]}>
+          {label}
+        </Text>
+      </View>
+    );
+  };
 
   const renderTypeBadge = (type: string) => {
     const color = TYPE_COLORS[type] || '#6B7280';
@@ -607,9 +818,10 @@ export default function ChallengesScreen() {
     const completionRate = item.participantCount > 0
       ? ((item.completionCount / item.participantCount) * 100).toFixed(1)
       : '0';
+    const statusColor = STATUS_COLORS[status] || '#6B7280';
 
     return (
-      <View style={[styles.card, { backgroundColor: colors.card }]}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderLeftWidth: 3, borderLeftColor: statusColor }]}>
         {/* Card Header */}
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderLeft}>
@@ -630,10 +842,17 @@ export default function ChallengesScreen() {
         <View style={styles.badgesRow}>
           {renderTypeBadge(item.type)}
           {renderDifficultyBadge(item.difficulty)}
+          {renderVisibilityBadge(item.visibility || 'both')}
           {item.featured && (
             <View style={[styles.featuredBadge, { backgroundColor: '#F59E0B15' }]}>
               <Ionicons name="star" size={11} color="#F59E0B" />
               <Text style={[styles.featuredBadgeText, { color: '#F59E0B' }]}>Featured</Text>
+            </View>
+          )}
+          {(item.priority || 0) > 0 && (
+            <View style={[styles.featuredBadge, { backgroundColor: '#6366F115' }]}>
+              <Ionicons name="arrow-up" size={11} color="#6366F1" />
+              <Text style={[styles.featuredBadgeText, { color: '#6366F1' }]}>P{item.priority}</Text>
             </View>
           )}
         </View>
@@ -685,6 +904,55 @@ export default function ChallengesScreen() {
           )}
         </View>
 
+        {/* Status Quick Actions */}
+        <View style={styles.statusActionsRow}>
+          {status === 'draft' && (
+            <TouchableOpacity
+              style={[styles.statusActionBtn, { backgroundColor: '#10B98115' }]}
+              onPress={() => handleChangeStatus(item, 'active')}
+            >
+              <Ionicons name="play" size={13} color="#10B981" />
+              <Text style={[styles.statusActionText, { color: '#10B981' }]}>Activate</Text>
+            </TouchableOpacity>
+          )}
+          {status === 'active' && (
+            <TouchableOpacity
+              style={[styles.statusActionBtn, { backgroundColor: '#F59E0B15' }]}
+              onPress={() => handleChangeStatus(item, 'paused')}
+            >
+              <Ionicons name="pause" size={13} color="#F59E0B" />
+              <Text style={[styles.statusActionText, { color: '#F59E0B' }]}>Pause</Text>
+            </TouchableOpacity>
+          )}
+          {status === 'paused' && (
+            <TouchableOpacity
+              style={[styles.statusActionBtn, { backgroundColor: '#10B98115' }]}
+              onPress={() => handleChangeStatus(item, 'active')}
+            >
+              <Ionicons name="play" size={13} color="#10B981" />
+              <Text style={[styles.statusActionText, { color: '#10B981' }]}>Resume</Text>
+            </TouchableOpacity>
+          )}
+          {(status === 'active' || status === 'paused') && (
+            <TouchableOpacity
+              style={[styles.statusActionBtn, { backgroundColor: '#6B728015' }]}
+              onPress={() => handleChangeStatus(item, 'disabled')}
+            >
+              <Ionicons name="ban-outline" size={13} color="#6B7280" />
+              <Text style={[styles.statusActionText, { color: '#6B7280' }]}>Disable</Text>
+            </TouchableOpacity>
+          )}
+          {(status === 'disabled' || status === 'expired') && (
+            <TouchableOpacity
+              style={[styles.statusActionBtn, { backgroundColor: '#3B82F615' }]}
+              onPress={() => handleClone(item)}
+            >
+              <Ionicons name="copy-outline" size={13} color="#3B82F6" />
+              <Text style={[styles.statusActionText, { color: '#3B82F6' }]}>Clone</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
         {/* Action Row */}
         <View style={styles.actionRow}>
           <TouchableOpacity
@@ -694,17 +962,10 @@ export default function ChallengesScreen() {
             <Ionicons name="pencil" size={16} color="#3B82F6" />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[
-              styles.actionIconBtn,
-              { backgroundColor: item.active ? '#F59E0B10' : '#10B98110' },
-            ]}
-            onPress={() => handleToggle(item)}
+            style={[styles.actionIconBtn, { backgroundColor: '#8B5CF610' }]}
+            onPress={() => handleClone(item)}
           >
-            <Ionicons
-              name={item.active ? 'pause' : 'play'}
-              size={16}
-              color={item.active ? '#F59E0B' : '#10B981'}
-            />
+            <Ionicons name="copy" size={16} color="#8B5CF6" />
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -728,7 +989,7 @@ export default function ChallengesScreen() {
         </View>
       </View>
     );
-  }, [colors, handleEdit, handleToggle, handleToggleFeatured, handleDelete]);
+  }, [colors, handleEdit, handleClone, handleChangeStatus, handleToggleFeatured, handleDelete]);
 
   // ==========================================
   // Dropdown Select Helper
@@ -954,6 +1215,50 @@ export default function ChallengesScreen() {
               />
             </View>
 
+            {/* Status */}
+            {renderSelectOptions('Status *', CHALLENGE_STATUSES, form.status, (val) => setForm(p => ({ ...p, status: val as ChallengeStatus })), STATUS_COLORS)}
+
+            {/* Scheduled Publish At (only shown when status is 'scheduled') */}
+            {form.status === 'scheduled' && (
+              <View style={styles.formGroup}>
+                <Text style={[styles.formLabel, { color: colors.text }]}>Scheduled Publish At *</Text>
+                <TextInput
+                  style={[styles.formInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                  value={form.scheduledPublishAt ? format(new Date(form.scheduledPublishAt), 'yyyy-MM-dd HH:mm') : ''}
+                  onChangeText={text => {
+                    const parsed = new Date(text.replace(' ', 'T'));
+                    if (!isNaN(parsed.getTime())) {
+                      setForm(p => ({ ...p, scheduledPublishAt: parsed.toISOString() }));
+                    }
+                  }}
+                  placeholder="YYYY-MM-DD HH:mm"
+                  placeholderTextColor={colors.icon}
+                />
+              </View>
+            )}
+
+            {/* Visibility */}
+            {renderSelectOptions('Visibility *', VISIBILITY_OPTIONS, form.visibility, (val) => setForm(p => ({ ...p, visibility: val as ChallengeVisibility })), VISIBILITY_COLORS)}
+
+            {/* Priority */}
+            <View style={styles.formGroup}>
+              <Text style={[styles.formLabel, { color: colors.text }]}>Priority (0-100)</Text>
+              <TextInput
+                style={[styles.formInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                value={form.priority !== undefined ? String(form.priority) : '0'}
+                onChangeText={text => {
+                  const val = parseInt(text) || 0;
+                  setForm(p => ({ ...p, priority: Math.max(0, Math.min(100, val)) }));
+                }}
+                placeholder="0"
+                placeholderTextColor={colors.icon}
+                keyboardType="numeric"
+              />
+              <Text style={[styles.formHint, { color: colors.icon }]}>
+                Higher priority challenges appear first. 0 = default.
+              </Text>
+            </View>
+
             {/* Featured Toggle */}
             <View style={styles.formGroup}>
               <Text style={[styles.formLabel, { color: colors.text }]}>Featured</Text>
@@ -964,21 +1269,6 @@ export default function ChallengesScreen() {
                 <Switch
                   value={form.featured}
                   onValueChange={val => setForm(p => ({ ...p, featured: val }))}
-                  trackColor={{ true: colors.tint }}
-                />
-              </View>
-            </View>
-
-            {/* Active Toggle */}
-            <View style={styles.formGroup}>
-              <Text style={[styles.formLabel, { color: colors.text }]}>Active</Text>
-              <View style={[styles.switchBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <Text style={[styles.switchLabel, { color: colors.icon }]}>
-                  {form.active ? 'Yes' : 'No'}
-                </Text>
-                <Switch
-                  value={form.active}
-                  onValueChange={val => setForm(p => ({ ...p, active: val }))}
                   trackColor={{ true: colors.tint }}
                 />
               </View>
@@ -1103,6 +1393,7 @@ export default function ChallengesScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {renderHeader()}
       {renderStatsRow()}
+      {renderConversionFunnel()}
       {renderFilters()}
       {renderButtonRow()}
 
@@ -1175,8 +1466,9 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     paddingHorizontal: 16,
-    gap: 8,
+    gap: 6,
     marginBottom: 12,
+    flexWrap: 'wrap',
   },
   statItem: {
     flex: 1,
@@ -1186,13 +1478,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: '700',
   },
   statLabel: {
     fontSize: 10,
     fontWeight: '500',
     marginTop: 2,
+  },
+
+  // Conversion Funnel
+  funnelContainer: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    padding: 14,
+    borderRadius: 10,
+  },
+  funnelTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 10,
+  },
+  funnelStep: {
+    marginBottom: 8,
+  },
+  funnelLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  funnelStepLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  funnelStepCount: {
+    fontSize: 11,
+  },
+  funnelBarBg: {
+    height: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  funnelBar: {
+    height: '100%',
+    borderRadius: 4,
   },
 
   // Filters
@@ -1556,6 +1886,32 @@ const styles = StyleSheet.create({
   durationHintText: {
     fontSize: 13,
     fontWeight: '500',
+  },
+
+  // Status Quick Actions
+  statusActionsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 8,
+  },
+  statusActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 4,
+  },
+  statusActionText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+
+  // Form Hint
+  formHint: {
+    fontSize: 11,
+    marginTop: 4,
   },
 
   // Switch Box

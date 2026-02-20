@@ -1,5 +1,31 @@
 import apiClient from './apiClient';
 
+export interface AchievementConditionRule {
+  metric: string;
+  operator: 'gte' | 'lte' | 'eq' | 'gt' | 'lt';
+  target: number;
+  weight: number;
+}
+
+export interface AchievementConditions {
+  type: 'simple' | 'compound' | 'streak' | 'time_bounded';
+  rules: AchievementConditionRule[];
+  combinator: 'AND' | 'OR';
+  streakMetric?: string;
+  streakTarget?: number;
+  timeWindowDays?: number;
+  startsAt?: string;
+  endsAt?: string;
+}
+
+export interface AchievementReward {
+  coins: number;
+  cashback?: number;
+  multiplier?: number;
+  badge?: string;
+  title?: string;
+}
+
 export interface AdminAchievement {
   _id: string;
   type: string;
@@ -16,6 +42,13 @@ export interface AdminAchievement {
   unlockCount?: number;
   createdAt: string;
   updatedAt: string;
+  conditions?: AchievementConditions;
+  visibility?: 'visible' | 'hidden_until_progress' | 'secret';
+  repeatability?: 'one_time' | 'daily' | 'weekly' | 'monthly';
+  tier?: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+  reward?: AchievementReward;
+  trackedMetrics?: string[];
+  prerequisites?: string[];
 }
 
 export interface AchievementStats {
@@ -56,5 +89,8 @@ export const achievementsService = {
   },
   async delete(id: string) {
     return apiClient.delete(`/admin/achievements/${id}`);
+  },
+  async getMetrics() {
+    return apiClient.get('/admin/achievements/metrics');
   },
 };

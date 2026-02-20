@@ -61,4 +61,39 @@ export const gameConfigService = {
   async delete(id: string) {
     return apiClient.delete(`/admin/game-config/${id}`);
   },
+
+  // ======== Phase 5: Analytics ========
+  async getAnalytics(gameType?: string, days: number = 30) {
+    const params = new URLSearchParams();
+    if (gameType) params.append('gameType', gameType);
+    params.append('days', days.toString());
+    return apiClient.get(`/admin/game-config/analytics/overview?${params.toString()}`);
+  },
+
+  // ======== Phase 5: User Game History ========
+  async getUserGameHistory(userId: string, gameType?: string) {
+    const query = gameType ? `?gameType=${gameType}` : '';
+    return apiClient.get(`/admin/game-config/user/${userId}/history${query}`);
+  },
+
+  // ======== Phase 5: Game Ban Management ========
+  async banUser(userId: string, reason: string) {
+    return apiClient.post(`/admin/game-config/user/${userId}/ban`, { reason });
+  },
+  async unbanUser(userId: string) {
+    return apiClient.post(`/admin/game-config/user/${userId}/unban`);
+  },
+
+  // ======== Phase 5: Manual Coin Operations ========
+  async creditCoins(userId: string, amount: number, reason: string) {
+    return apiClient.post(`/admin/game-config/user/${userId}/credit-coins`, { amount, reason });
+  },
+  async revokeCoins(userId: string, amount: number, reason: string) {
+    return apiClient.post(`/admin/game-config/user/${userId}/revoke-coins`, { amount, reason });
+  },
+
+  // ======== Cache Management ========
+  async invalidateCache() {
+    return apiClient.post('/admin/game-config/invalidate-cache');
+  },
 };

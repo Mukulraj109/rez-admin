@@ -195,6 +195,13 @@ export default function SettingsScreen() {
             subtitle="Create & manage all offers"
             onPress={() => router.push('/(dashboard)/offers')}
           />
+          <SettingItem
+            icon="gift-outline"
+            iconColor="#E11D48"
+            title="Bonus Zone"
+            subtitle="Cashback boosts, bank offers & bonuses"
+            onPress={() => router.push('/(dashboard)/bonus-zone')}
+          />
         </View>
       </View>
 
@@ -231,6 +238,13 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/verifications')}
           />
           <SettingItem
+            icon="ribbon"
+            iconColor="#C9A962"
+            title="Special Programs"
+            subtitle="Student Zone, Corporate Perks, Privé"
+            onPress={() => router.push('/(dashboard)/special-programs')}
+          />
+          <SettingItem
             icon="trophy"
             iconColor="#F59E0B"
             title="Loyalty Management"
@@ -257,6 +271,20 @@ export default function SettingsScreen() {
             title="CSR Sponsors"
             subtitle="Sponsors, budgets & brand coins"
             onPress={() => router.push('/(dashboard)/sponsors')}
+          />
+          <SettingItem
+            icon="trophy"
+            iconColor="#F59E0B"
+            title="Tournaments"
+            subtitle="Manage tournaments & prize pools"
+            onPress={() => router.push('/(dashboard)/tournaments')}
+          />
+          <SettingItem
+            icon="book"
+            iconColor="#3B82F6"
+            title="Learning Content"
+            subtitle="Manage educational articles & rewards"
+            onPress={() => router.push('/(dashboard)/learning-content')}
           />
           <SettingItem
             icon="game-controller"
@@ -292,6 +320,48 @@ export default function SettingsScreen() {
             title="Economy Dashboard"
             subtitle="Monitor coin economy & fraud"
             onPress={() => router.push('/(dashboard)/gamification-economy')}
+          />
+          <SettingItem
+            icon="calendar"
+            iconColor="#8B5CF6"
+            title="Events Management"
+            subtitle="Create & manage events"
+            onPress={() => router.push('/(dashboard)/events')}
+          />
+          <SettingItem
+            icon="layers"
+            iconColor="#F59E0B"
+            title="Event Categories"
+            subtitle="Manage event categories"
+            onPress={() => router.push('/(dashboard)/event-categories')}
+          />
+          <SettingItem
+            icon="gift"
+            iconColor="#10B981"
+            title="Event Rewards"
+            subtitle="Configure event reward rules"
+            onPress={() => router.push('/(dashboard)/event-rewards')}
+          />
+          <SettingItem
+            icon="podium"
+            iconColor="#D97706"
+            title="Leaderboard Config"
+            subtitle="Manage leaderboards, prizes & anti-fraud"
+            onPress={() => router.push('/(dashboard)/leaderboard-config')}
+          />
+          <SettingItem
+            icon="flash"
+            iconColor="#06B6D4"
+            title="Quick Actions"
+            subtitle="Configure homepage quick action buttons"
+            onPress={() => router.push('/(dashboard)/quick-actions')}
+          />
+          <SettingItem
+            icon="card"
+            iconColor="#8B5CF6"
+            title="Value Cards"
+            subtitle="Manage value proposition cards"
+            onPress={() => router.push('/(dashboard)/value-cards')}
           />
         </View>
       </View>

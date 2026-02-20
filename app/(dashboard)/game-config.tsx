@@ -101,6 +101,21 @@ export default function GameConfigScreen() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState<FormData>({ ...DEFAULT_FORM });
 
+  // Page-level tab (configs vs analytics vs user management)
+  const [pageTab, setPageTab] = useState<'configs' | 'analytics' | 'users'>('configs');
+
+  // Analytics state
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsDays, setAnalyticsDays] = useState(30);
+
+  // User management state
+  const [userIdInput, setUserIdInput] = useState('');
+  const [userData, setUserData] = useState<any>(null);
+  const [userLoading, setUserLoading] = useState(false);
+  const [coinAmount, setCoinAmount] = useState('');
+  const [coinReason, setCoinReason] = useState('');
+
   // ==========================================
   // Data Loading
   // ==========================================
@@ -339,6 +354,107 @@ export default function GameConfigScreen() {
       setIsSaving(false);
     }
   }, [createForm, loadConfigs]);
+
+  // ==========================================
+  // Analytics & User Management Handlers
+  // ==========================================
+
+  const loadAnalytics = useCallback(async () => {
+    setAnalyticsLoading(true);
+    try {
+      const response = await gameConfigService.getAnalytics(undefined, analyticsDays);
+      if (response.success && response.data) {
+        setAnalyticsData(response.data);
+      }
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to load analytics');
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  }, [analyticsDays]);
+
+  useEffect(() => {
+    if (pageTab === 'analytics' && !analyticsData) {
+      loadAnalytics();
+    }
+  }, [pageTab, loadAnalytics, analyticsData]);
+
+  const handleLookupUser = async () => {
+    if (!userIdInput.trim()) return;
+    setUserLoading(true);
+    try {
+      const response = await gameConfigService.getUserGameHistory(userIdInput.trim());
+      if (response.success && response.data) {
+        setUserData(response.data);
+      } else {
+        showAlert('Not Found', 'User not found or no game history');
+      }
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to lookup user');
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
+  const handleBanUser = async () => {
+    if (!userData?.user?._id) return;
+    showConfirm('Ban User', `Ban ${userData.user.fullName || userData.user._id} from all games?`, async () => {
+      try {
+        await gameConfigService.banUser(userData.user._id, 'Banned via admin panel');
+        showAlert('Success', 'User banned from games');
+        handleLookupUser(); // Refresh
+      } catch (error: any) {
+        showAlert('Error', error.message);
+      }
+    });
+  };
+
+  const handleUnbanUser = async () => {
+    if (!userData?.user?._id) return;
+    try {
+      await gameConfigService.unbanUser(userData.user._id);
+      showAlert('Success', 'User unbanned');
+      handleLookupUser();
+    } catch (error: any) {
+      showAlert('Error', error.message);
+    }
+  };
+
+  const handleCreditCoins = async () => {
+    if (!userData?.user?._id || !coinAmount || !coinReason) {
+      showAlert('Error', 'Enter amount and reason');
+      return;
+    }
+    try {
+      const response = await gameConfigService.creditCoins(userData.user._id, parseInt(coinAmount), coinReason);
+      if (response.success) {
+        showAlert('Success', `Credited ${coinAmount} coins`);
+        setCoinAmount('');
+        setCoinReason('');
+      }
+    } catch (error: any) {
+      showAlert('Error', error.message);
+    }
+  };
+
+  const handleRevokeCoins = async () => {
+    if (!userData?.user?._id || !coinAmount || !coinReason) {
+      showAlert('Error', 'Enter amount and reason');
+      return;
+    }
+    showConfirm('Revoke Coins', `Revoke ${coinAmount} coins from this user?`, async () => {
+      try {
+        const response = await gameConfigService.revokeCoins(userData.user._id, parseInt(coinAmount), coinReason);
+        if (response.success) {
+          showAlert('Success', `Revoked ${coinAmount} coins`);
+          setCoinAmount('');
+          setCoinReason('');
+        }
+      } catch (error: any) {
+        showAlert('Error', error.message);
+      }
+    });
+  };
 
   // ==========================================
   // Render: Header
@@ -1073,6 +1189,280 @@ export default function GameConfigScreen() {
   );
 
   // ==========================================
+  // Render: Page Tabs
+  // ==========================================
+
+  const renderPageTabs = () => (
+    <View style={[styles.pageTabsRow, { borderBottomColor: colors.border }]}>
+      {([
+        { key: 'configs' as const, label: 'Configuration', icon: 'settings' },
+        { key: 'analytics' as const, label: 'Analytics', icon: 'bar-chart' },
+        { key: 'users' as const, label: 'User Mgmt', icon: 'people' },
+      ]).map(tab => {
+        const active = pageTab === tab.key;
+        return (
+          <TouchableOpacity
+            key={tab.key}
+            style={[styles.pageTab, active && { borderBottomColor: colors.tint, borderBottomWidth: 2 }]}
+            onPress={() => setPageTab(tab.key)}
+          >
+            <Ionicons name={tab.icon as any} size={16} color={active ? colors.tint : colors.icon} />
+            <Text style={[styles.pageTabLabel, { color: active ? colors.tint : colors.icon }]}>
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+
+  // ==========================================
+  // Render: Analytics Tab
+  // ==========================================
+
+  const renderAnalyticsTab = () => {
+    if (analyticsLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.tint} />
+          <Text style={[{ color: colors.icon, marginTop: 12 }]}>Loading analytics...</Text>
+        </View>
+      );
+    }
+
+    if (!analyticsData) {
+      return (
+        <View style={styles.emptyContainer}>
+          <TouchableOpacity
+            style={[styles.seedBtn, { backgroundColor: colors.tint }]}
+            onPress={loadAnalytics}
+          >
+            <Ionicons name="refresh" size={16} color="#FFF" />
+            <Text style={styles.seedBtnText}>Load Analytics</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    const { stats, topPlayers } = analyticsData;
+
+    return (
+      <ScrollView contentContainerStyle={styles.listContent}>
+        {/* Period selector */}
+        <View style={[styles.statsRow, { marginBottom: 8 }]}>
+          {[7, 30, 90].map(d => (
+            <TouchableOpacity
+              key={d}
+              style={[styles.statItem, {
+                backgroundColor: analyticsDays === d ? colors.tint : colors.card,
+              }]}
+              onPress={() => { setAnalyticsDays(d); setAnalyticsData(null); }}
+            >
+              <Text style={[styles.statValue, { color: analyticsDays === d ? '#FFF' : colors.text, fontSize: 16 }]}>
+                {d}d
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Per-game stats */}
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Game Performance</Text>
+        {(stats || []).map((stat: any) => {
+          const info = GAME_TYPE_DISPLAY[stat._id as GameType] || { label: stat._id, emoji: '🎮', color: '#6B7280' };
+          return (
+            <View key={stat._id} style={[styles.card, { backgroundColor: colors.card, borderLeftWidth: 4, borderLeftColor: info.color }]}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardEmoji}>{info.emoji}</Text>
+                <Text style={[styles.cardTitle, { color: colors.text, marginLeft: 8 }]}>{info.label}</Text>
+              </View>
+              <View style={[styles.infoRow, { marginTop: 8 }]}>
+                <View style={[styles.infoChip, { backgroundColor: colors.background }]}>
+                  <Text style={[styles.infoChipText, { color: colors.text }]}>{stat.totalPlayed} played</Text>
+                </View>
+                <View style={[styles.infoChip, { backgroundColor: '#10B98115' }]}>
+                  <Text style={[styles.infoChipText, { color: '#10B981' }]}>{stat.totalCoins} coins</Text>
+                </View>
+                <View style={[styles.infoChip, { backgroundColor: colors.background }]}>
+                  <Text style={[styles.infoChipText, { color: colors.text }]}>{stat.uniquePlayers} players</Text>
+                </View>
+                <View style={[styles.infoChip, { backgroundColor: colors.background }]}>
+                  <Text style={[styles.infoChipText, { color: colors.text }]}>{Math.round(stat.winRate)}% win</Text>
+                </View>
+              </View>
+            </View>
+          );
+        })}
+
+        {/* Top players */}
+        <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 16 }]}>Top Players (by coins)</Text>
+        {(topPlayers || []).slice(0, 10).map((p: any, i: number) => (
+          <View key={i} style={[styles.card, { backgroundColor: colors.card, paddingVertical: 10, paddingHorizontal: 14 }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <Text style={[{ fontSize: 16, fontWeight: '700', color: i < 3 ? '#F59E0B' : colors.icon, width: 24 }]}>
+                  #{i + 1}
+                </Text>
+                <View>
+                  <Text style={[{ fontSize: 14, fontWeight: '600', color: colors.text }]}>
+                    {p.user?.fullName || p.user?.username || 'Unknown'}
+                  </Text>
+                  <Text style={[{ fontSize: 11, color: colors.icon }]}>{p.gamesPlayed} games</Text>
+                </View>
+              </View>
+              <Text style={[{ fontSize: 16, fontWeight: '700', color: '#10B981' }]}>{p.totalCoins} coins</Text>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    );
+  };
+
+  // ==========================================
+  // Render: User Management Tab
+  // ==========================================
+
+  const renderUserManagementTab = () => (
+    <ScrollView contentContainerStyle={styles.listContent}>
+      {/* User lookup */}
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        <Text style={[styles.cardTitle, { color: colors.text, marginBottom: 12 }]}>User Lookup</Text>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <TextInput
+            style={[styles.formInput, { flex: 1, backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+            value={userIdInput}
+            onChangeText={setUserIdInput}
+            placeholder="Enter User ID"
+            placeholderTextColor={colors.icon}
+            autoCapitalize="none"
+          />
+          <TouchableOpacity
+            style={[styles.seedBtn, { backgroundColor: colors.tint }]}
+            onPress={handleLookupUser}
+            disabled={userLoading}
+          >
+            {userLoading ? (
+              <ActivityIndicator size="small" color="#FFF" />
+            ) : (
+              <>
+                <Ionicons name="search" size={16} color="#FFF" />
+                <Text style={styles.seedBtnText}>Search</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* User details */}
+      {userData?.user && (
+        <>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <View>
+                <Text style={[{ fontSize: 18, fontWeight: '700', color: colors.text }]}>
+                  {userData.user.fullName || 'No Name'}
+                </Text>
+                <Text style={[{ fontSize: 13, color: colors.icon }]}>
+                  {userData.user.phoneNumber || userData.user.username || userData.user._id}
+                </Text>
+              </View>
+              {userData.user.gameBanned ? (
+                <TouchableOpacity
+                  style={[styles.seedBtn, { backgroundColor: '#10B981' }]}
+                  onPress={handleUnbanUser}
+                >
+                  <Ionicons name="lock-open" size={14} color="#FFF" />
+                  <Text style={styles.seedBtnText}>Unban</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.seedBtn, { backgroundColor: '#EF4444' }]}
+                  onPress={handleBanUser}
+                >
+                  <Ionicons name="ban" size={14} color="#FFF" />
+                  <Text style={styles.seedBtnText}>Ban</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            {userData.user.gameBanned && (
+              <View style={[{ backgroundColor: '#FEF2F2', padding: 10, borderRadius: 8, marginTop: 10 }]}>
+                <Text style={[{ color: '#EF4444', fontWeight: '600', fontSize: 13 }]}>
+                  Banned: {userData.user.gameBanReason || 'No reason given'}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {/* Manual coin operations */}
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
+            <Text style={[styles.cardTitle, { color: colors.text, marginBottom: 12 }]}>Coin Operations</Text>
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+              <TextInput
+                style={[styles.formInput, { flex: 1, backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                value={coinAmount}
+                onChangeText={setCoinAmount}
+                placeholder="Amount"
+                placeholderTextColor={colors.icon}
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={[styles.formInput, { flex: 2, backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                value={coinReason}
+                onChangeText={setCoinReason}
+                placeholder="Reason"
+                placeholderTextColor={colors.icon}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TouchableOpacity
+                style={[styles.seedBtn, { backgroundColor: '#10B981', flex: 1, justifyContent: 'center' }]}
+                onPress={handleCreditCoins}
+              >
+                <Ionicons name="add-circle" size={14} color="#FFF" />
+                <Text style={styles.seedBtnText}>Credit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.seedBtn, { backgroundColor: '#EF4444', flex: 1, justifyContent: 'center' }]}
+                onPress={handleRevokeCoins}
+              >
+                <Ionicons name="remove-circle" size={14} color="#FFF" />
+                <Text style={styles.seedBtnText}>Revoke</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Game history */}
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Recent Games ({userData.total || 0})
+          </Text>
+          {(userData.sessions || []).slice(0, 20).map((s: any, i: number) => {
+            const info = GAME_TYPE_DISPLAY[s.gameType as GameType] || { label: s.gameType, emoji: '🎮', color: '#6B7280' };
+            return (
+              <View key={i} style={[styles.card, { backgroundColor: colors.card, paddingVertical: 10, paddingHorizontal: 14 }]}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Text style={{ fontSize: 18 }}>{info.emoji}</Text>
+                    <View>
+                      <Text style={[{ fontSize: 13, fontWeight: '600', color: colors.text }]}>{info.label}</Text>
+                      <Text style={[{ fontSize: 11, color: colors.icon }]}>
+                        {new Date(s.createdAt).toLocaleDateString()} · {s.status}
+                      </Text>
+                    </View>
+                  </View>
+                  {s.result?.prize?.type === 'coins' && (
+                    <Text style={[{ fontSize: 14, fontWeight: '700', color: '#10B981' }]}>
+                      +{s.result.prize.value}
+                    </Text>
+                  )}
+                </View>
+              </View>
+            );
+          })}
+        </>
+      )}
+    </ScrollView>
+  );
+
+  // ==========================================
   // Main Return
   // ==========================================
 
@@ -1090,46 +1480,54 @@ export default function GameConfigScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {renderHeader()}
-      {renderStats()}
+      {renderPageTabs()}
 
-      <ScrollView
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.tint}
-          />
-        }
-      >
-        {gameConfigs.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="game-controller-outline" size={56} color={colors.icon} />
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>No game configs</Text>
-            <Text style={[styles.emptyText, { color: colors.icon }]}>
-              Tap "Seed Defaults" to create configs for all 6 game types
-            </Text>
-          </View>
-        ) : (
-          gameConfigs.map(renderGameCard)
-        )}
-
-        {/* Create new button (if fewer than 6 exist) */}
-        {availableTypes.length > 0 && (
-          <TouchableOpacity
-            style={[styles.createNewBtn, { borderColor: colors.tint }]}
-            onPress={() => {
-              setCreateForm({ ...DEFAULT_FORM, gameType: availableTypes[0] });
-              setShowCreateModal(true);
-            }}
+      {pageTab === 'configs' && (
+        <>
+          {renderStats()}
+          <ScrollView
+            contentContainerStyle={styles.listContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={colors.tint}
+              />
+            }
           >
-            <Ionicons name="add-circle" size={20} color={colors.tint} />
-            <Text style={[styles.createNewBtnText, { color: colors.tint }]}>
-              Add New Game Config ({availableTypes.length} available)
-            </Text>
-          </TouchableOpacity>
-        )}
-      </ScrollView>
+            {gameConfigs.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Ionicons name="game-controller-outline" size={56} color={colors.icon} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>No game configs</Text>
+                <Text style={[styles.emptyText, { color: colors.icon }]}>
+                  Tap "Seed Defaults" to create configs for all 6 game types
+                </Text>
+              </View>
+            ) : (
+              gameConfigs.map(renderGameCard)
+            )}
+
+            {/* Create new button (if fewer than 6 exist) */}
+            {availableTypes.length > 0 && (
+              <TouchableOpacity
+                style={[styles.createNewBtn, { borderColor: colors.tint }]}
+                onPress={() => {
+                  setCreateForm({ ...DEFAULT_FORM, gameType: availableTypes[0] });
+                  setShowCreateModal(true);
+                }}
+              >
+                <Ionicons name="add-circle" size={20} color={colors.tint} />
+                <Text style={[styles.createNewBtnText, { color: colors.tint }]}>
+                  Add New Game Config ({availableTypes.length} available)
+                </Text>
+              </TouchableOpacity>
+            )}
+          </ScrollView>
+        </>
+      )}
+
+      {pageTab === 'analytics' && renderAnalyticsTab()}
+      {pageTab === 'users' && renderUserManagementTab()}
 
       {renderEditModal()}
       {renderCreateModal()}
@@ -1522,5 +1920,34 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     flex: 1,
+  },
+
+  // Page-level tabs
+  pageTabsRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    paddingHorizontal: 16,
+  },
+  pageTab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginRight: 4,
+    gap: 6,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  pageTabLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  // Section title
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 10,
+    paddingHorizontal: 4,
   },
 });

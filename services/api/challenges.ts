@@ -1,5 +1,8 @@
 import apiClient from './apiClient';
 
+export type ChallengeStatus = 'draft' | 'scheduled' | 'active' | 'paused' | 'completed' | 'expired' | 'disabled';
+export type ChallengeVisibility = 'play_and_earn' | 'missions' | 'both';
+
 export interface AdminChallenge {
   _id: string;
   type: 'daily' | 'weekly' | 'monthly' | 'special';
@@ -27,8 +30,39 @@ export interface AdminChallenge {
   active: boolean;
   featured: boolean;
   maxParticipants?: number;
+  status: ChallengeStatus;
+  visibility: ChallengeVisibility;
+  priority: number;
+  scheduledPublishAt?: string;
+  pausedAt?: string;
+  statusHistory?: Array<{ status: string; changedAt: string; changedBy?: string; reason?: string }>;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ConversionFunnelStep {
+  count: number;
+  uniqueUsers: number;
+}
+
+export interface ChallengeBreakdown {
+  _id: string;
+  title: string;
+  participants: number;
+  completions: number;
+  completionRate: number;
+  coinReward: number;
+}
+
+export interface ChallengeAnalytics {
+  activeChallenges: number;
+  totalParticipants: number;
+  totalCompletions: number;
+  avgCompletionRate: number;
+  totalCoinLiability: number;
+  byType: Record<string, number>;
+  challengeBreakdown: ChallengeBreakdown[];
+  conversionFunnel: Record<string, ConversionFunnelStep>;
 }
 
 export interface ChallengeTemplate {
@@ -88,5 +122,29 @@ export const challengesService = {
 
   async getTemplates() {
     return apiClient.get('/admin/challenges/templates');
+  },
+
+  async changeStatus(id: string, status: ChallengeStatus, reason?: string) {
+    return apiClient.patch(`/admin/challenges/${id}/status`, { status, reason });
+  },
+
+  async clone(id: string, overrides?: Partial<AdminChallenge>) {
+    return apiClient.post(`/admin/challenges/${id}/clone`, overrides || {});
+  },
+
+  async setVisibility(id: string, visibility: ChallengeVisibility) {
+    return apiClient.patch(`/admin/challenges/${id}/visibility`, { visibility });
+  },
+
+  async setPriority(id: string, priority: number) {
+    return apiClient.patch(`/admin/challenges/${id}/priority`, { priority });
+  },
+
+  async getAnalytics(params?: { type?: string; period?: string }) {
+    const query = new URLSearchParams();
+    if (params?.type) query.set('type', params.type);
+    if (params?.period) query.set('period', params.period);
+    const qs = query.toString();
+    return apiClient.get(`/admin/challenges/analytics${qs ? `?${qs}` : ''}`);
   },
 };

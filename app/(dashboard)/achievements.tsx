@@ -20,6 +20,13 @@ import { Colors } from '../../constants/Colors';
 import { showAlert, showConfirm } from '../../utils/alert';
 import { router } from 'expo-router';
 
+interface ConditionRule {
+  metric: string;
+  operator: string;
+  target: number;
+  weight: number;
+}
+
 interface AchievementFormData {
   type: string;
   title: string;
@@ -32,6 +39,15 @@ interface AchievementFormData {
   badge: string;
   isActive: boolean;
   sortOrder: number;
+  // New fields
+  conditionType: string;
+  conditionCombinator: string;
+  conditionRules: ConditionRule[];
+  visibility: string;
+  repeatability: string;
+  tier: string;
+  cashbackReward: number;
+  multiplierReward: number;
 }
 
 const DEFAULT_FORM: AchievementFormData = {
@@ -46,7 +62,33 @@ const DEFAULT_FORM: AchievementFormData = {
   badge: '',
   isActive: true,
   sortOrder: 0,
+  conditionType: 'simple',
+  conditionCombinator: 'AND',
+  conditionRules: [{ metric: 'totalOrders', operator: 'gte', target: 1, weight: 1 }],
+  visibility: 'visible',
+  repeatability: 'one_time',
+  tier: 'bronze',
+  cashbackReward: 0,
+  multiplierReward: 0,
 };
+
+const METRIC_OPTIONS = [
+  'totalOrders', 'totalSpent', 'uniqueStoresOrdered',
+  'totalReviews', 'totalHelpfulVotes',
+  'totalVideos', 'totalVideoViews',
+  'totalProjects', 'projectEarnings',
+  'totalReferrals',
+  'billsUploaded', 'socialSharesApproved',
+  'loginStreak', 'longestLoginStreak',
+  'totalCoinsEarned', 'offersRedeemed',
+  'totalActivity', 'daysActive',
+];
+
+const OPERATOR_OPTIONS = ['gte', 'lte', 'eq', 'gt', 'lt'];
+const TIER_OPTIONS = ['bronze', 'silver', 'gold', 'platinum', 'diamond'];
+const VISIBILITY_OPTIONS = ['visible', 'hidden_until_progress', 'secret'];
+const REPEATABILITY_OPTIONS = ['one_time', 'daily', 'weekly', 'monthly'];
+const CONDITION_TYPE_OPTIONS = ['simple', 'compound', 'streak', 'time_bounded'];
 
 const CATEGORY_OPTIONS = [
   'shopping', 'social', 'engagement', 'special',
@@ -162,6 +204,7 @@ export default function AchievementsScreen() {
 
   const handleEdit = (achievement: AdminAchievement) => {
     setEditingAchievement(achievement);
+    const a = achievement as any;
     setForm({
       type: achievement.type,
       title: achievement.title,
@@ -174,6 +217,16 @@ export default function AchievementsScreen() {
       badge: achievement.badge || '',
       isActive: achievement.isActive,
       sortOrder: achievement.sortOrder || 0,
+      conditionType: a.conditions?.type || 'simple',
+      conditionCombinator: a.conditions?.combinator || 'AND',
+      conditionRules: a.conditions?.rules?.length > 0
+        ? a.conditions.rules.map((r: any) => ({ metric: r.metric, operator: r.operator, target: r.target, weight: r.weight || 1 }))
+        : [{ metric: 'totalOrders', operator: 'gte', target: achievement.target || 1, weight: 1 }],
+      visibility: a.visibility || 'visible',
+      repeatability: a.repeatability || 'one_time',
+      tier: a.tier || 'bronze',
+      cashbackReward: a.reward?.cashback || 0,
+      multiplierReward: a.reward?.multiplier || 0,
     });
     setShowFormModal(true);
   };
@@ -184,13 +237,29 @@ export default function AchievementsScreen() {
       return;
     }
 
+    // Build payload with new condition/reward fields
+    const payload: any = {
+      ...form,
+      conditions: {
+        type: form.conditionType,
+        combinator: form.conditionCombinator,
+        rules: form.conditionRules,
+      },
+      reward: {
+        coins: form.coinReward,
+        cashback: form.cashbackReward || 0,
+        multiplier: form.multiplierReward || 0,
+        badge: form.badge || undefined,
+      },
+    };
+
     setIsSaving(true);
     try {
       let response;
       if (editingAchievement) {
-        response = await achievementsService.update(editingAchievement._id, form);
+        response = await achievementsService.update(editingAchievement._id, payload);
       } else {
-        response = await achievementsService.create(form);
+        response = await achievementsService.create(payload);
       }
 
       if (response.success) {
@@ -528,6 +597,176 @@ export default function AchievementsScreen() {
               placeholderTextColor={colors.icon}
               keyboardType="numeric"
             />
+          </View>
+
+          {/* === NEW: Condition Builder === */}
+          <View style={[styles.formGroup, { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 16, marginTop: 8 }]}>
+            <Text style={[styles.formLabel, { color: '#F59E0B', fontWeight: '700', fontSize: 15 }]}>Condition Builder</Text>
+          </View>
+
+          {/* Condition Type */}
+          <View style={styles.formGroup}>
+            <Text style={[styles.formLabel, { color: colors.text }]}>Condition Type</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {CONDITION_TYPE_OPTIONS.map(opt => (
+                <TouchableOpacity
+                  key={opt}
+                  style={[styles.categoryChip, { backgroundColor: form.conditionType === opt ? '#8B5CF6' : colors.card, borderColor: form.conditionType === opt ? '#8B5CF6' : colors.border }]}
+                  onPress={() => setForm(prev => ({ ...prev, conditionType: opt }))}
+                >
+                  <Text style={[styles.categoryChipText, { color: form.conditionType === opt ? '#fff' : colors.text }]}>{opt}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Combinator (for compound) */}
+          {form.conditionType === 'compound' && (
+            <View style={styles.formGroup}>
+              <Text style={[styles.formLabel, { color: colors.text }]}>Combinator</Text>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {['AND', 'OR'].map(c => (
+                  <TouchableOpacity
+                    key={c}
+                    style={[styles.categoryChip, { backgroundColor: form.conditionCombinator === c ? '#3B82F6' : colors.card, borderColor: form.conditionCombinator === c ? '#3B82F6' : colors.border }]}
+                    onPress={() => setForm(prev => ({ ...prev, conditionCombinator: c }))}
+                  >
+                    <Text style={[styles.categoryChipText, { color: form.conditionCombinator === c ? '#fff' : colors.text }]}>{c}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Condition Rules */}
+          {form.conditionRules.map((rule, idx) => (
+            <View key={idx} style={[styles.formGroup, { backgroundColor: `${colors.card}`, borderRadius: 8, padding: 12, borderWidth: 1, borderColor: colors.border }]}>
+              <Text style={[styles.formLabel, { color: colors.text, fontSize: 12 }]}>Rule {idx + 1}</Text>
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                <View style={{ flex: 2, minWidth: 120 }}>
+                  <Text style={{ color: colors.icon, fontSize: 10, marginBottom: 2 }}>Metric</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 32 }}>
+                    {METRIC_OPTIONS.map(m => (
+                      <TouchableOpacity
+                        key={m}
+                        style={[styles.categoryChip, { paddingHorizontal: 6, paddingVertical: 3, backgroundColor: rule.metric === m ? '#8B5CF6' : colors.background, borderColor: rule.metric === m ? '#8B5CF6' : colors.border }]}
+                        onPress={() => {
+                          const rules = [...form.conditionRules];
+                          rules[idx] = { ...rules[idx], metric: m };
+                          setForm(prev => ({ ...prev, conditionRules: rules }));
+                        }}
+                      >
+                        <Text style={{ fontSize: 10, color: rule.metric === m ? '#fff' : colors.text }}>{m}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: colors.icon, fontSize: 10, marginBottom: 2 }}>Operator</Text>
+                  <View style={{ flexDirection: 'row', gap: 4 }}>
+                    {OPERATOR_OPTIONS.map(op => (
+                      <TouchableOpacity
+                        key={op}
+                        style={[styles.categoryChip, { paddingHorizontal: 6, paddingVertical: 3, backgroundColor: rule.operator === op ? '#3B82F6' : colors.background, borderColor: rule.operator === op ? '#3B82F6' : colors.border }]}
+                        onPress={() => {
+                          const rules = [...form.conditionRules];
+                          rules[idx] = { ...rules[idx], operator: op };
+                          setForm(prev => ({ ...prev, conditionRules: rules }));
+                        }}
+                      >
+                        <Text style={{ fontSize: 10, color: rule.operator === op ? '#fff' : colors.text }}>{op}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: colors.icon, fontSize: 10, marginBottom: 2 }}>Target</Text>
+                  <TextInput
+                    style={[styles.formInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border, height: 32, fontSize: 12 }]}
+                    value={String(rule.target)}
+                    onChangeText={(v) => {
+                      const rules = [...form.conditionRules];
+                      rules[idx] = { ...rules[idx], target: parseInt(v) || 0 };
+                      setForm(prev => ({ ...prev, conditionRules: rules }));
+                    }}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+              {form.conditionRules.length > 1 && (
+                <TouchableOpacity
+                  style={{ alignSelf: 'flex-end', marginTop: 4 }}
+                  onPress={() => {
+                    const rules = form.conditionRules.filter((_, i) => i !== idx);
+                    setForm(prev => ({ ...prev, conditionRules: rules }));
+                  }}
+                >
+                  <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                </TouchableOpacity>
+              )}
+            </View>
+          ))}
+          <TouchableOpacity
+            style={{ alignSelf: 'flex-start', marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}
+            onPress={() => setForm(prev => ({ ...prev, conditionRules: [...prev.conditionRules, { metric: 'totalOrders', operator: 'gte', target: 1, weight: 1 }] }))}
+          >
+            <Ionicons name="add-circle-outline" size={18} color="#8B5CF6" />
+            <Text style={{ color: '#8B5CF6', fontSize: 13, fontWeight: '600' }}>Add Rule</Text>
+          </TouchableOpacity>
+
+          {/* === NEW: Achievement Properties === */}
+          <View style={[styles.formGroup, { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 16, marginTop: 8 }]}>
+            <Text style={[styles.formLabel, { color: '#F59E0B', fontWeight: '700', fontSize: 15 }]}>Properties</Text>
+          </View>
+
+          {/* Tier */}
+          <View style={styles.formGroup}>
+            <Text style={[styles.formLabel, { color: colors.text }]}>Tier</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {TIER_OPTIONS.map(t => (
+                <TouchableOpacity
+                  key={t}
+                  style={[styles.categoryChip, { backgroundColor: form.tier === t ? '#F59E0B' : colors.card, borderColor: form.tier === t ? '#F59E0B' : colors.border }]}
+                  onPress={() => setForm(prev => ({ ...prev, tier: t }))}
+                >
+                  <Text style={[styles.categoryChipText, { color: form.tier === t ? '#fff' : colors.text }]}>{t}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Visibility */}
+          <View style={styles.formGroup}>
+            <Text style={[styles.formLabel, { color: colors.text }]}>Visibility</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {VISIBILITY_OPTIONS.map(v => (
+                <TouchableOpacity
+                  key={v}
+                  style={[styles.categoryChip, { backgroundColor: form.visibility === v ? '#3B82F6' : colors.card, borderColor: form.visibility === v ? '#3B82F6' : colors.border }]}
+                  onPress={() => setForm(prev => ({ ...prev, visibility: v }))}
+                >
+                  <Text style={[styles.categoryChipText, { color: form.visibility === v ? '#fff' : colors.text }]}>{v.replace(/_/g, ' ')}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Repeatability */}
+          <View style={styles.formGroup}>
+            <Text style={[styles.formLabel, { color: colors.text }]}>Repeatability</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {REPEATABILITY_OPTIONS.map(r => (
+                <TouchableOpacity
+                  key={r}
+                  style={[styles.categoryChip, { backgroundColor: form.repeatability === r ? '#10B981' : colors.card, borderColor: form.repeatability === r ? '#10B981' : colors.border }]}
+                  onPress={() => setForm(prev => ({ ...prev, repeatability: r }))}
+                >
+                  <Text style={[styles.categoryChipText, { color: form.repeatability === r ? '#fff' : colors.text }]}>{r.replace(/_/g, ' ')}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
 
           {/* Active Toggle */}

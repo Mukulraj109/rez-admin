@@ -149,6 +149,12 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
+        name="special-programs"
+        options={{
+          href: null, // Hide from tab bar - accessible via More menu
+        }}
+      />
+      <Tabs.Screen
         name="loyalty"
         options={{
           href: null, // Hide from tab bar - accessible via More menu
@@ -264,6 +270,42 @@ export default function DashboardLayout() {
       />
       <Tabs.Screen
         name="sponsors"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="bonus-zone"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="tournaments"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="learning-content"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="leaderboard-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="quick-actions"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="value-cards"
         options={{
           href: null,
         }}

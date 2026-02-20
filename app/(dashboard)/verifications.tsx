@@ -143,14 +143,24 @@ export default function VerificationsScreen() {
   };
 
   const handleRejectConfirm = async () => {
-    if (!rejectReason.trim() || !selectedVerification) {
+    if (!selectedVerification) return;
+
+    const isRevoke = selectedVerification.status === 'approved';
+
+    if (!isRevoke && !rejectReason.trim()) {
       showAlert('Error', 'Please provide a rejection reason');
       return;
     }
+
     try {
       setProcessingId(selectedVerification._id);
-      await zoneVerificationsService.rejectVerification(selectedVerification._id, rejectReason);
-      showAlert('Success', 'Verification rejected');
+      if (isRevoke) {
+        await zoneVerificationsService.revokeVerification(selectedVerification._id, rejectReason.trim() || undefined);
+        showAlert('Success', 'Verification revoked');
+      } else {
+        await zoneVerificationsService.rejectVerification(selectedVerification._id, rejectReason);
+        showAlert('Success', 'Verification rejected');
+      }
       setShowRejectModal(false);
       setRejectReason('');
       setSelectedVerification(null);
@@ -160,6 +170,32 @@ export default function VerificationsScreen() {
     } finally {
       setProcessingId(null);
     }
+  };
+
+  const handleRevoke = async (verification: ZoneVerification) => {
+    setSelectedVerification(verification);
+    setRejectReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleReApprove = async (verification: ZoneVerification) => {
+    showConfirm(
+      'Re-approve Verification',
+      `Are you sure you want to re-approve this ${verification.verificationType} verification?`,
+      async () => {
+        try {
+          setProcessingId(verification._id);
+          await zoneVerificationsService.reApproveVerification(verification._id);
+          showAlert('Success', 'Verification re-approved successfully');
+          await Promise.all([loadData(1), loadStats()]);
+        } catch (error: any) {
+          showAlert('Error', error.message);
+        } finally {
+          setProcessingId(null);
+        }
+      },
+      'Re-approve'
+    );
   };
 
   const handleViewDetails = (verification: ZoneVerification) => {
@@ -357,6 +393,46 @@ export default function VerificationsScreen() {
           </View>
         )}
 
+        {/* Revoke button for approved */}
+        {item.status === 'approved' && (
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: colors.error }]}
+              onPress={() => handleRevoke(item)}
+              disabled={isProcessing}
+            >
+              {isProcessing ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <>
+                  <Ionicons name="ban" size={16} color="#FFFFFF" />
+                  <Text style={styles.actionButtonText}>Revoke</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Re-approve button for rejected */}
+        {item.status === 'rejected' && (
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: colors.success }]}
+              onPress={() => handleReApprove(item)}
+              disabled={isProcessing}
+            >
+              {isProcessing ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <>
+                  <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                  <Text style={styles.actionButtonText}>Re-approve</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Rejection Reason */}
         {item.status === 'rejected' && item.rejectionReason && (
           <View style={[styles.rejectionBox, { backgroundColor: colors.error + '10' }]}>
@@ -408,9 +484,13 @@ export default function VerificationsScreen() {
       <Modal visible={showRejectModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Reject Verification</Text>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
+              {selectedVerification?.status === 'approved' ? 'Revoke Verification' : 'Reject Verification'}
+            </Text>
             <Text style={[styles.modalSubtitle, { color: colors.icon }]}>
-              Please provide a reason for rejection. This will be shown to the user.
+              {selectedVerification?.status === 'approved'
+                ? 'Provide an optional reason for revoking this verification.'
+                : 'Please provide a reason for rejection. This will be shown to the user.'}
             </Text>
             <TextInput
               style={[styles.reasonInput, { color: colors.text, borderColor: colors.border }]}
@@ -436,7 +516,9 @@ export default function VerificationsScreen() {
                 style={[styles.modalButton, { backgroundColor: colors.error }]}
                 onPress={handleRejectConfirm}
               >
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Reject</Text>
+                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>
+                  {selectedVerification?.status === 'approved' ? 'Revoke' : 'Reject'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -629,6 +711,38 @@ export default function VerificationsScreen() {
                     >
                       <Ionicons name="close" size={20} color="#FFFFFF" />
                       <Text style={styles.detailActionText}>Reject</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {/* Revoke for approved */}
+                {detailVerification.status === 'approved' && (
+                  <View style={styles.detailActions}>
+                    <TouchableOpacity
+                      style={[styles.detailActionButton, { backgroundColor: colors.error }]}
+                      onPress={() => {
+                        setShowDetailModal(false);
+                        handleRevoke(detailVerification);
+                      }}
+                    >
+                      <Ionicons name="ban" size={20} color="#FFFFFF" />
+                      <Text style={styles.detailActionText}>Revoke Verification</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {/* Re-approve for rejected */}
+                {detailVerification.status === 'rejected' && (
+                  <View style={styles.detailActions}>
+                    <TouchableOpacity
+                      style={[styles.detailActionButton, { backgroundColor: colors.success }]}
+                      onPress={() => {
+                        setShowDetailModal(false);
+                        handleReApprove(detailVerification);
+                      }}
+                    >
+                      <Ionicons name="checkmark" size={20} color="#FFFFFF" />
+                      <Text style={styles.detailActionText}>Re-approve</Text>
                     </TouchableOpacity>
                   </View>
                 )}

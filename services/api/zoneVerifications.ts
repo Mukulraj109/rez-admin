@@ -222,6 +222,54 @@ class ZoneVerificationsService {
   }
 
   /**
+   * Revoke an approved verification
+   */
+  async revokeVerification(
+    verificationId: string,
+    reason?: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log('[ZoneVerifications] Revoking verification:', verificationId);
+      const body: ReviewRequest = {
+        status: 'rejected',
+        ...(reason && { rejectionReason: reason }),
+      };
+
+      const response = await apiClient.patch<any>(`admin/zone-verifications/${verificationId}/review`, body);
+
+      return {
+        success: response.success,
+        message: response.message || 'Verification revoked'
+      };
+    } catch (error: any) {
+      console.error('[ZoneVerifications] Revoke verification error:', error.message);
+      throw new Error(error.message || 'Failed to revoke verification');
+    }
+  }
+
+  /**
+   * Re-approve a rejected verification
+   */
+  async reApproveVerification(
+    verificationId: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log('[ZoneVerifications] Re-approving verification:', verificationId);
+      const body: ReviewRequest = { status: 'approved' };
+
+      const response = await apiClient.patch<any>(`admin/zone-verifications/${verificationId}/review`, body);
+
+      return {
+        success: response.success,
+        message: response.message || 'Verification re-approved'
+      };
+    } catch (error: any) {
+      console.error('[ZoneVerifications] Re-approve verification error:', error.message);
+      throw new Error(error.message || 'Failed to re-approve verification');
+    }
+  }
+
+  /**
    * Delete a verification
    */
   async deleteVerification(verificationId: string): Promise<{ success: boolean; message: string }> {

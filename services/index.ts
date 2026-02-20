@@ -13,6 +13,7 @@ export { ordersService } from './api/orders';
 export { campaignsService } from './api/campaigns';
 export { uploadsService } from './api/uploads';
 export { extraRewardsService } from './api/extraRewards';
+export { bonusZoneService } from './api/bonusZone';
 
 // Types
 export type { AdminUser, LoginResponse } from './api/auth';
@@ -23,6 +24,18 @@ export type { Order, OrderStats, OrdersListResponse } from './api/orders';
 export type { Campaign, CampaignDeal, CampaignStats, CampaignsListResponse, CampaignsQuery, StoreOption } from './api/campaigns';
 export type { UploadedImage, UploadResponse } from './api/uploads';
 export type { DoubleCashbackCampaign, CoinDrop, DoubleCampaignsListResponse, CoinDropsListResponse } from './api/extraRewards';
+export type {
+  BonusCampaignAdmin,
+  BonusCampaignType,
+  BonusCampaignStatus,
+  BonusCampaignsListResponse,
+  BonusCampaignsQuery,
+  BonusCampaignAnalytics,
+  BonusCampaignClaimsResponse,
+  BonusCampaignClaim,
+  BonusZoneDashboard,
+  BonusFraudAlert,
+} from './api/bonusZone';
 
 // Re-import for local use
 import { storageService } from './storage';
@@ -35,6 +48,7 @@ import { ordersService } from './api/orders';
 import { campaignsService } from './api/campaigns';
 import { uploadsService } from './api/uploads';
 import { extraRewardsService } from './api/extraRewards';
+import { bonusZoneService } from './api/bonusZone';
 
 // API Service Collection
 export const apiServices = {
@@ -48,4 +62,5 @@ export const apiServices = {
   campaigns: campaignsService,
   uploads: uploadsService,
   extraRewards: extraRewardsService,
+  bonusZone: bonusZoneService,
 };
