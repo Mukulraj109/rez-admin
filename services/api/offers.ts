@@ -50,6 +50,8 @@ export interface Offer {
   bogoType?: string;
   bogoDetails?: string;
   redemptionCount?: number;
+  adminApproved?: boolean;
+  adminNotes?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -258,6 +260,50 @@ export const offersService = {
 
     const data = await response.json();
     if (!data.success) throw new Error(data.message || 'Failed to delete offer');
+  },
+
+  /**
+   * Get offers pending admin approval
+   */
+  async getPendingOffers(page = 1, limit = 20): Promise<OffersListResponse> {
+    const headers = await getAuthHeaders();
+    const response = await fetch(
+      `${BASE_URL}/admin/offers/pending-approval?page=${page}&limit=${limit}`,
+      { headers }
+    );
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message || 'Failed to fetch pending offers');
+    return data.data;
+  },
+
+  /**
+   * Approve an offer
+   */
+  async approveOffer(id: string, notes?: string): Promise<Offer> {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${BASE_URL}/admin/offers/${id}/approve`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ notes }),
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message || 'Failed to approve offer');
+    return data.data;
+  },
+
+  /**
+   * Reject an offer
+   */
+  async rejectOffer(id: string, reason?: string): Promise<Offer> {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${BASE_URL}/admin/offers/${id}/reject`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ reason }),
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message || 'Failed to reject offer');
+    return data.data;
   },
 };
 

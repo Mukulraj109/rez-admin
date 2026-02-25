@@ -90,6 +90,29 @@ export interface WithdrawalRequest {
   rejectionReason?: string;
 }
 
+export interface PendingWithdrawalTransaction {
+  _id: string;
+  type: string;
+  amount: number;
+  description: string;
+  status: string;
+  withdrawalDetails?: {
+    bankAccount?: string;
+    ifscCode?: string;
+    upiId?: string;
+    transactionId?: string;
+    processedAt?: string;
+  };
+  createdAt: string;
+}
+
+export interface PendingWithdrawalItem {
+  merchantId: any; // populated user object
+  store: any;      // populated store object
+  pendingAmount: number;
+  pendingTransactions: PendingWithdrawalTransaction[];
+}
+
 export interface MerchantsListResponse {
   merchants: Merchant[];
   pagination: {
@@ -208,6 +231,24 @@ class MerchantsService {
     }
   }
 
+  /**
+   * Reactivate a suspended merchant
+   */
+  async reactivateMerchant(merchantId: string): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log('[Merchants] Reactivating merchant:', merchantId);
+      const response = await apiClient.post<any>(`admin/merchants/${merchantId}/reactivate`);
+
+      return {
+        success: response.success,
+        message: response.message || 'Merchant reactivated'
+      };
+    } catch (error: any) {
+      console.error('[Merchants] Reactivate merchant error:', error.message);
+      throw new Error(error.message || 'Failed to reactivate merchant');
+    }
+  }
+
   // ==================== Merchant Wallet Endpoints ====================
 
   /**
@@ -306,10 +347,10 @@ class MerchantsService {
   async getPendingWithdrawals(
     page: number = 1,
     limit: number = 20
-  ): Promise<{ withdrawals: WithdrawalRequest[]; pagination: any }> {
+  ): Promise<{ withdrawals: PendingWithdrawalItem[]; pagination: any }> {
     try {
       console.log('[Merchants] Fetching pending withdrawals...');
-      const response = await apiClient.get<WithdrawalRequest[]>(`admin/merchant-wallets/withdrawals/pending?page=${page}&limit=${limit}`);
+      const response = await apiClient.get<any>(`admin/merchant-wallets/pending-withdrawals?page=${page}&limit=${limit}`);
 
       if (response.success) {
         return {
@@ -326,30 +367,44 @@ class MerchantsService {
   }
 
   /**
-   * Approve a withdrawal request
+   * Process (approve) a withdrawal request
    */
-  async approveWithdrawal(withdrawalId: string): Promise<{ success: boolean; message: string }> {
+  async processWithdrawal(
+    merchantId: string,
+    transactionId: string,
+    transactionReference: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Merchants] Approving withdrawal:', withdrawalId);
-      const response = await apiClient.post<any>(`admin/merchant-wallets/withdrawals/${withdrawalId}/approve`);
+      console.log('[Merchants] Processing withdrawal for merchant:', merchantId);
+      const response = await apiClient.post<any>(
+        `admin/merchant-wallets/${merchantId}/process-withdrawal`,
+        { transactionId, transactionReference }
+      );
 
       return {
         success: response.success,
-        message: response.message || 'Withdrawal approved'
+        message: response.message || 'Withdrawal processed successfully'
       };
     } catch (error: any) {
-      console.error('[Merchants] Approve withdrawal error:', error.message);
-      throw new Error(error.message || 'Failed to approve withdrawal');
+      console.error('[Merchants] Process withdrawal error:', error.message);
+      throw new Error(error.message || 'Failed to process withdrawal');
     }
   }
 
   /**
    * Reject a withdrawal request
    */
-  async rejectWithdrawal(withdrawalId: string, reason: string): Promise<{ success: boolean; message: string }> {
+  async rejectWithdrawal(
+    merchantId: string,
+    transactionId: string,
+    reason: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Merchants] Rejecting withdrawal:', withdrawalId);
-      const response = await apiClient.post<any>(`admin/merchant-wallets/withdrawals/${withdrawalId}/reject`, { reason });
+      console.log('[Merchants] Rejecting withdrawal for merchant:', merchantId);
+      const response = await apiClient.post<any>(
+        `admin/merchant-wallets/${merchantId}/reject-withdrawal`,
+        { transactionId, reason }
+      );
 
       return {
         success: response.success,

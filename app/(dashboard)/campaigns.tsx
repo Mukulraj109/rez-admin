@@ -16,7 +16,6 @@ import {
   Dimensions,
   Platform,
   Image,
-  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -101,7 +100,7 @@ export default function CampaignsScreen() {
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission Required', 'Please allow access to your photo library to upload images.');
+      showAlert('Permission Required', 'Please allow access to your photo library to upload images.');
       return false;
     }
     return true;

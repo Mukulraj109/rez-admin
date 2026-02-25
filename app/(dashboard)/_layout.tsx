@@ -310,6 +310,36 @@ export default function DashboardLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="wallet-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="user-wallets"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="gift-cards-admin"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="coin-gifts"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="merchant-withdrawals"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

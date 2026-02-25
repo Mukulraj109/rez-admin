@@ -196,6 +196,62 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/offers')}
           />
           <SettingItem
+            icon="layers"
+            iconColor="#6366F1"
+            title="Offers Page Sections"
+            subtitle="Toggle, reorder & configure all 21 sections"
+            onPress={() => router.push('/(dashboard)/offers-sections')}
+          />
+          <SettingItem
+            icon="flash"
+            iconColor="#F97316"
+            title="Flash Sales"
+            subtitle="Manage flash sales & lightning deals"
+            onPress={() => router.push('/(dashboard)/flash-sales')}
+          />
+          <SettingItem
+            icon="flame"
+            iconColor="#EF4444"
+            title="Hotspot Areas"
+            subtitle="Manage geographic deal hotspots"
+            onPress={() => router.push('/(dashboard)/hotspot-areas')}
+          />
+          <SettingItem
+            icon="card"
+            iconColor="#3B82F6"
+            title="Bank Offers"
+            subtitle="Manage bank partnership offers"
+            onPress={() => router.push('/(dashboard)/bank-offers')}
+          />
+          <SettingItem
+            icon="document-text"
+            iconColor="#8B5CF6"
+            title="Upload Bill Stores"
+            subtitle="Manage bill upload cashback stores"
+            onPress={() => router.push('/(dashboard)/upload-bill-stores')}
+          />
+          <SettingItem
+            icon="shield-checkmark"
+            iconColor="#10B981"
+            title="Exclusive Zones"
+            subtitle="Manage student, corporate & birthday zones"
+            onPress={() => router.push('/(dashboard)/exclusive-zones')}
+          />
+          <SettingItem
+            icon="ribbon"
+            iconColor="#059669"
+            title="Special Profiles"
+            subtitle="Manage defence, healthcare & other profiles"
+            onPress={() => router.push('/(dashboard)/special-profiles')}
+          />
+          <SettingItem
+            icon="trophy"
+            iconColor="#F59E0B"
+            title="Loyalty Milestones"
+            subtitle="Manage loyalty program milestones"
+            onPress={() => router.push('/(dashboard)/loyalty-milestones')}
+          />
+          <SettingItem
             icon="gift-outline"
             iconColor="#E11D48"
             title="Bonus Zone"
@@ -222,6 +278,48 @@ export default function SettingsScreen() {
             title="Wallet Management"
             subtitle="Manage user wallets"
             onPress={() => router.push('/(dashboard)/wallet')}
+          />
+          <SettingItem
+            icon="settings"
+            iconColor="#6366F1"
+            title="Wallet Config"
+            subtitle="Transfer limits, cashback tiers, fraud thresholds"
+            onPress={() => router.push('/(dashboard)/wallet-config')}
+          />
+          <SettingItem
+            icon="people-circle"
+            iconColor="#0891B2"
+            title="User Wallets"
+            subtitle="Search, freeze, adjust user wallets"
+            onPress={() => router.push('/(dashboard)/user-wallets')}
+          />
+          <SettingItem
+            icon="card"
+            iconColor="#D97706"
+            title="Gift Cards"
+            subtitle="Manage gift card catalog"
+            onPress={() => router.push('/(dashboard)/gift-cards-admin')}
+          />
+          <SettingItem
+            icon="gift"
+            iconColor="#EC4899"
+            title="Coin Gifts Management"
+            subtitle="Manage coin gift campaigns"
+            onPress={() => router.push('/(dashboard)/coin-gifts')}
+          />
+          <SettingItem
+            icon="sparkles"
+            iconColor="#F59E0B"
+            title="Surprise Coin Drops"
+            subtitle="Schedule & manage surprise coin drops"
+            onPress={() => router.push('/(dashboard)/surprise-coin-drops')}
+          />
+          <SettingItem
+            icon="cash"
+            iconColor="#059669"
+            title="Merchant Withdrawals"
+            subtitle="Review & process merchant withdrawals"
+            onPress={() => router.push('/(dashboard)/merchant-withdrawals')}
           />
           <SettingItem
             icon="people"

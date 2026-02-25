@@ -127,6 +127,7 @@ export default function OffersScreen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
@@ -147,12 +148,14 @@ export default function OffersScreen() {
       setIsLoading(true);
 
       const [offersData, statsData, storesData] = await Promise.all([
-        offersService.getOffers({
-          page,
-          limit: PAGE_SIZE,
-          exclusiveZone: filterZone || undefined,
-          search: searchQuery || undefined,
-        }),
+        showPendingOnly
+          ? offersService.getPendingOffers(page, PAGE_SIZE)
+          : offersService.getOffers({
+              page,
+              limit: PAGE_SIZE,
+              exclusiveZone: filterZone || undefined,
+              search: searchQuery || undefined,
+            }),
         page === 1 ? offersService.getStats() : Promise.resolve(null),
         stores.length === 0 ? offersService.getStores() : Promise.resolve(null),
       ]);
@@ -171,11 +174,11 @@ export default function OffersScreen() {
       setIsLoading(false);
       setRefreshing(false);
     }
-  }, [filterZone, searchQuery, stores.length]);
+  }, [filterZone, searchQuery, stores.length, showPendingOnly]);
 
   useEffect(() => {
     fetchData(1);
-  }, [filterZone]);
+  }, [filterZone, showPendingOnly]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -317,6 +320,42 @@ export default function OffersScreen() {
     );
   };
 
+  // Approve/Reject handlers
+  const approveOffer = async (offer: Offer) => {
+    try {
+      const updated = await offersService.approveOffer(offer._id);
+      setOffers(prev =>
+        prev.map(o => (o._id === offer._id ? { ...o, adminApproved: true } : o))
+      );
+      showAlert('Approved', `"${offer.title}" has been approved`);
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to approve offer');
+    }
+  };
+
+  const rejectOffer = (offer: Offer) => {
+    showConfirm(
+      'Reject Offer',
+      `Are you sure you want to reject "${offer.title}"? It will not be visible to users.`,
+      async () => {
+        try {
+          await offersService.rejectOffer(offer._id, 'Rejected by admin');
+          if (showPendingOnly) {
+            setOffers(prev => prev.filter(o => o._id !== offer._id));
+          } else {
+            setOffers(prev =>
+              prev.map(o => (o._id === offer._id ? { ...o, adminApproved: false } : o))
+            );
+          }
+          showAlert('Rejected', `"${offer.title}" has been rejected`);
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to reject offer');
+        }
+      },
+      'Reject'
+    );
+  };
+
   // Get labels
   const getStoreLabel = () => stores.find(s => s._id === formData.storeId)?.name || 'Select store...';
   const getCategoryLabel = () => CATEGORIES.find(c => c.value === formData.category)?.label || 'Select...';
@@ -355,6 +394,16 @@ export default function OffersScreen() {
                   <Text style={styles.badgeText}>Expired</Text>
                 </View>
               )}
+              {item.adminApproved === false && (
+                <View style={[styles.badge, { backgroundColor: '#F59E0B' }]}>
+                  <Text style={styles.badgeText}>Pending</Text>
+                </View>
+              )}
+              {item.adminApproved === true && (
+                <View style={[styles.badge, { backgroundColor: '#059669' }]}>
+                  <Text style={styles.badgeText}>Approved</Text>
+                </View>
+              )}
             </View>
           </View>
           <Switch
@@ -366,6 +415,20 @@ export default function OffersScreen() {
           />
         </View>
         <View style={[styles.offerActions, { borderTopColor: isDark ? '#374151' : '#E5E7EB' }]}>
+          {item.adminApproved !== true && (
+            <>
+              <TouchableOpacity style={styles.actionButton} onPress={() => approveOffer(item)}>
+                <Ionicons name="checkmark-circle-outline" size={16} color="#10B981" />
+                <Text style={[styles.actionText, { color: '#10B981' }]}>Approve</Text>
+              </TouchableOpacity>
+              <View style={[styles.actionDivider, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]} />
+              <TouchableOpacity style={styles.actionButton} onPress={() => rejectOffer(item)}>
+                <Ionicons name="close-circle-outline" size={16} color="#F59E0B" />
+                <Text style={[styles.actionText, { color: '#F59E0B' }]}>Reject</Text>
+              </TouchableOpacity>
+              <View style={[styles.actionDivider, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]} />
+            </>
+          )}
           <TouchableOpacity style={styles.actionButton} onPress={() => openEditModal(item)}>
             <Ionicons name="pencil-outline" size={16} color="#3B82F6" />
             <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
@@ -478,6 +541,29 @@ export default function OffersScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.filterContent}
         >
+          <TouchableOpacity
+            style={[
+              styles.filterChip,
+              {
+                backgroundColor: showPendingOnly ? '#F59E0B' : colors.card,
+                borderWidth: 1,
+                borderColor: showPendingOnly ? '#F59E0B' : (isDark ? '#374151' : '#E5E7EB'),
+              },
+            ]}
+            onPress={() => setShowPendingOnly(!showPendingOnly)}
+          >
+            <Ionicons
+              name="time"
+              size={14}
+              color={showPendingOnly ? '#fff' : colors.textSecondary}
+            />
+            <Text style={[
+              styles.filterChipText,
+              { color: showPendingOnly ? '#fff' : colors.text },
+            ]}>
+              Pending Approval
+            </Text>
+          </TouchableOpacity>
           {FILTER_ZONES.map(zone => {
             const isSelected = filterZone === zone.value;
             return (

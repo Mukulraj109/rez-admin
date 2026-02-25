@@ -11,7 +11,6 @@ import {
   FlatList,
   TextInput,
   ActivityIndicator,
-  Alert,
   RefreshControl,
   Modal,
   Switch,
@@ -21,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import { showAlert, showConfirm } from '../../utils/alert';
 import {
   travelAdminService,
   TravelDashboardStats,
@@ -262,11 +262,11 @@ function CategoriesTab({ colors }: { colors: any }) {
       await travelAdminService.updateCategory(editingCategory._id, {
         cashbackPercentage: Number(editCashback) || 0,
       });
-      Alert.alert('Success', 'Category updated');
+      showAlert('Success', 'Category updated');
       setEditingCategory(null);
       loadCategories();
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to update');
+      showAlert('Error', err.message || 'Failed to update');
     }
   };
 
@@ -369,7 +369,7 @@ function ServicesTab({ colors }: { colors: any }) {
       await travelAdminService.updateService(service._id, { isActive: !service.isActive } as any);
       loadServices();
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to toggle');
+      showAlert('Error', err.message || 'Failed to toggle');
     }
   };
 
@@ -378,7 +378,7 @@ function ServicesTab({ colors }: { colors: any }) {
       await travelAdminService.updateService(service._id, { isFeatured: !service.isFeatured } as any);
       loadServices();
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to toggle');
+      showAlert('Error', err.message || 'Failed to toggle');
     }
   };
 
@@ -500,41 +500,29 @@ function BookingsTab({ colors }: { colors: any }) {
   useEffect(() => { loadBookings(); }, [loadBookings]);
 
   const handleStatusUpdate = async (bookingId: string, newStatus: string) => {
-    Alert.alert('Confirm', `Change status to ${newStatus}?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Confirm',
-        onPress: async () => {
-          try {
-            await travelAdminService.updateBookingStatus(bookingId, newStatus);
-            Alert.alert('Success', 'Status updated');
-            loadBookings();
-            setSelectedBooking(null);
-          } catch (err: any) {
-            Alert.alert('Error', err.message);
-          }
-        },
-      },
-    ]);
+    showConfirm('Confirm', `Change status to ${newStatus}?`, async () => {
+      try {
+        await travelAdminService.updateBookingStatus(bookingId, newStatus);
+        showAlert('Success', 'Status updated');
+        loadBookings();
+        setSelectedBooking(null);
+      } catch (err: any) {
+        showAlert('Error', err.message);
+      }
+    });
   };
 
   const handleCashbackAction = async (bookingId: string, action: 'credit' | 'clawback') => {
-    Alert.alert('Confirm', `${action === 'credit' ? 'Credit' : 'Claw back'} cashback?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Confirm',
-        onPress: async () => {
-          try {
-            await travelAdminService.overrideCashback(bookingId, action);
-            Alert.alert('Success', `Cashback ${action === 'credit' ? 'credited' : 'clawed back'}`);
-            loadBookings();
-            setSelectedBooking(null);
-          } catch (err: any) {
-            Alert.alert('Error', err.message);
-          }
-        },
-      },
-    ]);
+    showConfirm('Confirm', `${action === 'credit' ? 'Credit' : 'Claw back'} cashback?`, async () => {
+      try {
+        await travelAdminService.overrideCashback(bookingId, action);
+        showAlert('Success', `Cashback ${action === 'credit' ? 'credited' : 'clawed back'}`);
+        loadBookings();
+        setSelectedBooking(null);
+      } catch (err: any) {
+        showAlert('Error', err.message);
+      }
+    });
   };
 
   const handlePnrUpdate = async () => {
@@ -544,11 +532,11 @@ function BookingsTab({ colors }: { colors: any }) {
         pnr: pnrInput || undefined,
         eTicketUrl: eTicketInput || undefined,
       });
-      Alert.alert('Success', 'PNR updated');
+      showAlert('Success', 'PNR updated');
       loadBookings();
       setSelectedBooking(null);
     } catch (err: any) {
-      Alert.alert('Error', err.message);
+      showAlert('Error', err.message);
     }
   };
 
