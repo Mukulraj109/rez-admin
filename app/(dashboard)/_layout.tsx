@@ -281,6 +281,12 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
+        name="prive"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="tournaments"
         options={{
           href: null,
@@ -336,6 +342,156 @@ export default function DashboardLayout() {
       />
       <Tabs.Screen
         name="merchant-withdrawals"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="creators"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="events"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="event-categories"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="event-rewards"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="surprise-coin-drops"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="partner-earnings"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="offers-sections"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="upload-bill-stores"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="exclusive-zones"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="hotspot-areas"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="special-profiles"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="bank-offers"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="flash-sales"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="loyalty-milestones"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="store-collections"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="support-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="support-tickets"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="admin-users"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="faq-management"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="notification-management"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="delivery-settings"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="fraud-reports"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="cashback-rules"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="membership-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="voucher-management"
         options={{
           href: null,
         }}

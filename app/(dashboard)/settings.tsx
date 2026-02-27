@@ -258,6 +258,13 @@ export default function SettingsScreen() {
             subtitle="Cashback boosts, bank offers & bonuses"
             onPress={() => router.push('/(dashboard)/bonus-zone')}
           />
+          <SettingItem
+            icon="diamond-outline"
+            iconColor="#C9A962"
+            title="Privé"
+            subtitle="Offers, vouchers, reputation & analytics"
+            onPress={() => router.push('/(dashboard)/prive')}
+          />
         </View>
       </View>
 
@@ -461,6 +468,55 @@ export default function SettingsScreen() {
             subtitle="Manage value proposition cards"
             onPress={() => router.push('/(dashboard)/value-cards')}
           />
+          <SettingItem
+            icon="videocam"
+            iconColor="#E11D48"
+            title="Creators"
+            subtitle="Manage content creators"
+            onPress={() => router.push('/(dashboard)/creators')}
+          />
+          <SettingItem
+            icon="cash"
+            iconColor="#059669"
+            title="Partner Earnings"
+            subtitle="Track partner earnings & payouts"
+            onPress={() => router.push('/(dashboard)/partner-earnings')}
+          />
+          <SettingItem
+            icon="albums"
+            iconColor="#7C3AED"
+            title="Store Collections"
+            subtitle="Manage curated store collections"
+            onPress={() => router.push('/(dashboard)/store-collections')}
+          />
+          <SettingItem
+            icon="receipt"
+            iconColor="#F59E0B"
+            title="Cashback Rules"
+            subtitle="Configure cashback rules & tiers"
+            onPress={() => router.push('/(dashboard)/cashback-rules')}
+          />
+          <SettingItem
+            icon="id-card"
+            iconColor="#0891B2"
+            title="Membership Config"
+            subtitle="Manage membership tiers & benefits"
+            onPress={() => router.push('/(dashboard)/membership-config')}
+          />
+          <SettingItem
+            icon="ticket"
+            iconColor="#D97706"
+            title="Voucher Management"
+            subtitle="Create & manage vouchers"
+            onPress={() => router.push('/(dashboard)/voucher-management')}
+          />
+          <SettingItem
+            icon="car"
+            iconColor="#3B82F6"
+            title="Delivery Settings"
+            subtitle="Configure delivery zones & fees"
+            onPress={() => router.push('/(dashboard)/delivery-settings')}
+          />
         </View>
       </View>
 
@@ -553,7 +609,7 @@ export default function SettingsScreen() {
               iconColor="#06B6D4"
               title="Admin Users"
               subtitle="Manage admin accounts"
-              onPress={() => showAlert('Coming Soon', 'Admin user management will be available soon')}
+              onPress={() => router.push('/(dashboard)/admin-users')}
             />
             <SettingItem
               icon="pulse"
@@ -573,10 +629,45 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Support */}
+      {/* Support & Moderation */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.icon }]}>SUPPORT</Text>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>SUPPORT & MODERATION</Text>
         <View style={styles.settingsGroup}>
+          <SettingItem
+            icon="settings"
+            iconColor="#14B8A6"
+            title="Support Config"
+            subtitle="Hours, phone numbers, categories & callbacks"
+            onPress={() => router.push('/(dashboard)/support-config')}
+          />
+          <SettingItem
+            icon="chatbox-ellipses"
+            iconColor="#3B82F6"
+            title="Support Tickets"
+            subtitle="Manage user support tickets"
+            onPress={() => router.push('/(dashboard)/support-tickets')}
+          />
+          <SettingItem
+            icon="help-buoy"
+            iconColor="#8B5CF6"
+            title="FAQ Management"
+            subtitle="Manage frequently asked questions"
+            onPress={() => router.push('/(dashboard)/faq-management')}
+          />
+          <SettingItem
+            icon="notifications"
+            iconColor="#F59E0B"
+            title="Notification Management"
+            subtitle="Send & manage push notifications"
+            onPress={() => router.push('/(dashboard)/notification-management')}
+          />
+          <SettingItem
+            icon="warning"
+            iconColor="#EF4444"
+            title="Fraud Reports"
+            subtitle="Review fraud reports & suspicious activity"
+            onPress={() => router.push('/(dashboard)/fraud-reports')}
+          />
           <SettingItem
             icon="document-text"
             iconColor="#3B82F6"
