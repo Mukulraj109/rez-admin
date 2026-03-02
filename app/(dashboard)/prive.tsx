@@ -21,8 +21,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/contexts/ThemeContext';
 import priveAdminApi, { PriveOffer, PriveVoucher, PriveAnalytics } from '@/services/api/priveAdmin';
 import priveInviteAdminApi, { PriveAccessRecord, PriveInviteCodeAdmin, PriveInviteConfig } from '@/services/api/priveInviteAdmin';
+import { priveConfigAdminApi, PriveProgramConfig, TierThresholds, PillarWeights, FeatureFlags, TierConfig } from '@/services/api/priveConfig';
+import { priveMissionsAdminApi, PriveMission } from '@/services/api/priveMissions';
+import { priveConciergeAdminApi, ConciergeTicket, ConciergeAnalytics } from '@/services/api/priveConcierge';
+import { showAlert, showConfirm } from '@/utils/alert';
 
-type Tab = 'offers' | 'vouchers' | 'reputation' | 'analytics' | 'config' | 'habits' | 'smart_spend' | 'invites';
+type Tab = 'offers' | 'vouchers' | 'reputation' | 'analytics' | 'config' | 'habits' | 'smart_spend' | 'invites' | 'program_config' | 'missions' | 'concierge';
 
 export default function PriveAdminScreen() {
   const { colors } = useTheme();
@@ -37,6 +41,9 @@ export default function PriveAdminScreen() {
     { key: 'habits', label: 'Habits', icon: 'fitness-outline' },
     { key: 'smart_spend', label: 'Smart Spend', icon: 'storefront-outline' },
     { key: 'invites', label: 'Invites', icon: 'people-outline' },
+    { key: 'program_config', label: 'Program', icon: 'options-outline' },
+    { key: 'missions', label: 'Missions', icon: 'flag-outline' },
+    { key: 'concierge', label: 'Concierge', icon: 'chatbubble-ellipses-outline' },
   ];
 
   return (
@@ -78,6 +85,9 @@ export default function PriveAdminScreen() {
       {activeTab === 'habits' && <HabitLoopsConfigTab colors={colors} />}
       {activeTab === 'smart_spend' && <SmartSpendTab colors={colors} />}
       {activeTab === 'invites' && <InvitesTab colors={colors} />}
+      {activeTab === 'program_config' && <ProgramConfigTab colors={colors} />}
+      {activeTab === 'missions' && <MissionsTab colors={colors} />}
+      {activeTab === 'concierge' && <ConciergeTab colors={colors} />}
     </SafeAreaView>
   );
 }
@@ -2310,6 +2320,732 @@ function InvitesTab({ colors }: { colors: any }) {
             <Text style={[styles.emptyText, { color: colors.secondaryText }]}>No analytics data</Text>
           )}
         </>
+      )}
+
+      <View style={{ height: 40 }} />
+    </ScrollView>
+  );
+}
+
+// ==========================================
+// Program Config Tab
+// ==========================================
+function ProgramConfigTab({ colors }: { colors: any }) {
+  const [config, setConfig] = useState<PriveProgramConfig | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editSection, setEditSection] = useState<'thresholds' | 'weights' | 'flags' | null>(null);
+  const [thresholds, setThresholds] = useState<TierThresholds>({ entryTier: 50, signatureTier: 70, eliteTier: 85, trustMinimum: 60 });
+  const [weights, setWeights] = useState<PillarWeights>({ engagement: 0.25, trust: 0.20, influence: 0.20, economicValue: 0.15, brandAffinity: 0.10, network: 0.10 });
+  const [flags, setFlags] = useState<FeatureFlags>({ offersEnabled: true, missionsEnabled: true, conciergeEnabled: true, smartSpendEnabled: true, redemptionEnabled: true, analyticsEnabled: true, invitesEnabled: true });
+
+  const fetchConfig = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await priveConfigAdminApi.getProgramConfig();
+      setConfig(data);
+      if (data.tierThresholds) setThresholds(data.tierThresholds);
+      if (data.pillarWeights) setWeights(data.pillarWeights);
+      if (data.featureFlags) setFlags(data.featureFlags);
+    } catch (err) {
+      console.error('[ProgramConfig] Failed to fetch:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchConfig(); }, [fetchConfig]);
+
+  const saveThresholds = async () => {
+    setIsSaving(true);
+    try {
+      await priveConfigAdminApi.updateTierThresholds(thresholds);
+      setEditSection(null);
+      fetchConfig();
+    } catch (err) {
+      console.error('[ProgramConfig] Failed to save thresholds:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const saveWeights = async () => {
+    setIsSaving(true);
+    try {
+      await priveConfigAdminApi.updatePillarWeights(weights);
+      setEditSection(null);
+      fetchConfig();
+    } catch (err) {
+      console.error('[ProgramConfig] Failed to save weights:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const toggleFlag = async (key: keyof FeatureFlags) => {
+    const updated = { ...flags, [key]: !flags[key] };
+    setFlags(updated);
+    try {
+      await priveConfigAdminApi.updateFeatureFlags({ [key]: updated[key] });
+    } catch (err) {
+      console.error('[ProgramConfig] Failed to toggle flag:', err);
+      setFlags(flags); // revert
+    }
+  };
+
+  const weightsSum = Object.values(weights).reduce((s, v) => s + v, 0);
+
+  if (isLoading) return <ActivityIndicator size="large" color="#C9A962" style={{ marginTop: 40 }} />;
+
+  return (
+    <ScrollView style={styles.tabContent} refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchConfig} />}>
+      {/* Tier Thresholds */}
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>Tier Thresholds</Text>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        {(['entryTier', 'signatureTier', 'eliteTier', 'trustMinimum'] as const).map((key) => (
+          <View key={key} style={[styles.pillarRow, { paddingVertical: 8 }]}>
+            <Text style={[styles.pillarName, { color: colors.text }]}>
+              {key === 'entryTier' ? 'Entry' : key === 'signatureTier' ? 'Signature' : key === 'eliteTier' ? 'Elite' : 'Trust Min'}
+            </Text>
+            {editSection === 'thresholds' ? (
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border, width: 80 }]}
+                keyboardType="numeric"
+                value={String(thresholds[key])}
+                onChangeText={(v) => setThresholds({ ...thresholds, [key]: Number(v) || 0 })}
+              />
+            ) : (
+              <Text style={[styles.pillarScore, { color: '#C9A962' }]}>{thresholds[key]}</Text>
+            )}
+          </View>
+        ))}
+        {editSection === 'thresholds' ? (
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+            <TouchableOpacity style={[styles.submitBtn, { flex: 1 }]} onPress={saveThresholds} disabled={isSaving}>
+              <Text style={styles.submitBtnText}>{isSaving ? 'Saving...' : 'Save'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.submitBtn, { flex: 1, backgroundColor: '#666' }]} onPress={() => setEditSection(null)}>
+              <Text style={styles.submitBtnText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={[styles.submitBtn, { marginTop: 12 }]} onPress={() => setEditSection('thresholds')}>
+            <Text style={styles.submitBtnText}>Edit Thresholds</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Pillar Weights */}
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>Pillar Weights (sum: {weightsSum.toFixed(2)})</Text>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        {(Object.keys(weights) as (keyof PillarWeights)[]).map((key) => (
+          <View key={key} style={[styles.pillarRow, { paddingVertical: 8 }]}>
+            <Text style={[styles.pillarName, { color: colors.text }]}>{key}</Text>
+            {editSection === 'weights' ? (
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border, width: 80 }]}
+                keyboardType="numeric"
+                value={String(weights[key])}
+                onChangeText={(v) => setWeights({ ...weights, [key]: parseFloat(v) || 0 })}
+              />
+            ) : (
+              <Text style={[styles.pillarScore, { color: '#C9A962' }]}>{(weights[key] * 100).toFixed(0)}%</Text>
+            )}
+          </View>
+        ))}
+        {editSection === 'weights' ? (
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+            <TouchableOpacity
+              style={[styles.submitBtn, { flex: 1, opacity: Math.abs(weightsSum - 1) > 0.01 ? 0.5 : 1 }]}
+              onPress={saveWeights}
+              disabled={isSaving || Math.abs(weightsSum - 1) > 0.01}
+            >
+              <Text style={styles.submitBtnText}>{isSaving ? 'Saving...' : 'Save'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.submitBtn, { flex: 1, backgroundColor: '#666' }]} onPress={() => setEditSection(null)}>
+              <Text style={styles.submitBtnText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={[styles.submitBtn, { marginTop: 12 }]} onPress={() => setEditSection('weights')}>
+            <Text style={styles.submitBtnText}>Edit Weights</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Feature Flags */}
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>Feature Flags</Text>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        {(Object.keys(flags) as (keyof FeatureFlags)[]).map((key) => (
+          <View key={key} style={[styles.pillarRow, { paddingVertical: 10 }]}>
+            <Text style={[styles.pillarName, { color: colors.text }]}>{key.replace('Enabled', '')}</Text>
+            <TouchableOpacity
+              onPress={() => toggleFlag(key)}
+              style={[styles.configBadge, { backgroundColor: flags[key] ? '#1A5D1A22' : '#D32F2F22' }]}
+            >
+              <Text style={{ color: flags[key] ? '#1A5D1A' : '#D32F2F', fontWeight: '600', fontSize: 13 }}>
+                {flags[key] ? 'ON' : 'OFF'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+
+      {/* Tier Benefits Summary */}
+      {config?.tiers && (
+        <>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Tier Configuration</Text>
+          {config.tiers.map((tier) => (
+            <View key={tier.tier} style={[styles.card, { backgroundColor: colors.card, marginBottom: 10 }]}>
+              <View style={styles.cardHeader}>
+                <Text style={[styles.cardTitle, { color: tier.color || colors.text }]}>{tier.displayName}</Text>
+                <View style={[styles.statusBadge, { backgroundColor: '#C9A96222' }]}>
+                  <Text style={{ color: '#C9A962', fontSize: 12 }}>{tier.coinMultiplier}x</Text>
+                </View>
+              </View>
+              <Text style={[styles.cardSubtitle, { color: colors.secondaryText }]}>
+                SLA: {tier.conciergeResponseSLA}h | Invites: {tier.inviteCodesLimit} | Concierge: {tier.conciergeAccess ? 'Yes' : 'No'}
+              </Text>
+              {tier.benefits?.length > 0 && (
+                <Text style={{ color: colors.secondaryText, fontSize: 12, marginTop: 4 }}>
+                  Benefits: {tier.benefits.join(', ')}
+                </Text>
+              )}
+            </View>
+          ))}
+        </>
+      )}
+
+      <View style={{ height: 40 }} />
+    </ScrollView>
+  );
+}
+
+// ==========================================
+// Missions Tab
+// ==========================================
+function MissionsTab({ colors }: { colors: any }) {
+  const [missions, setMissions] = useState<PriveMission[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [showCreate, setShowCreate] = useState(false);
+  const [newMission, setNewMission] = useState({
+    title: '', description: '', targetPillar: 'engagement', actionType: 'order',
+    targetCount: 1, reward: { coins: 50, coinType: 'rez', pillarBoost: 1 },
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+    tierRequired: 'none', maxParticipants: 100, priority: 1,
+  });
+
+  const [editingMission, setEditingMission] = useState<PriveMission | null>(null);
+
+  const fetchMissions = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await priveMissionsAdminApi.getMissions({
+        page, limit: 20, status: statusFilter || undefined,
+      });
+      setMissions(res.missions || []);
+      setTotalPages(res.pagination?.pages || 1);
+    } catch (err) {
+      console.error('[Missions] Failed to fetch:', err);
+      showAlert('Error', 'Failed to load missions. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, statusFilter]);
+
+  useEffect(() => { fetchMissions(); }, [fetchMissions]);
+
+  const validateMission = (mission: typeof newMission): string | null => {
+    if (!mission.title.trim()) return 'Title is required';
+    if (!mission.description.trim()) return 'Description is required';
+    if (mission.targetCount < 1) return 'Target count must be at least 1';
+    if (mission.reward.coins < 1) return 'Reward coins must be at least 1';
+    if (mission.reward.coins > 10000) return 'Reward coins cannot exceed 10,000';
+    if (mission.maxParticipants < 1) return 'Max participants must be at least 1';
+    if (new Date(mission.endDate) <= new Date(mission.startDate)) return 'End date must be after start date';
+    return null;
+  };
+
+  const handleCreate = async () => {
+    const error = validateMission(newMission);
+    if (error) { showAlert('Validation Error', error); return; }
+    try {
+      await priveMissionsAdminApi.createMission(newMission as any);
+      setShowCreate(false);
+      showAlert('Success', 'Mission created successfully');
+      fetchMissions();
+    } catch (err: any) {
+      console.error('[Missions] Failed to create:', err);
+      showAlert('Error', err?.message || 'Failed to create mission. Please try again.');
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!editingMission) return;
+    const asForm = {
+      title: editingMission.title,
+      description: editingMission.description || '',
+      targetPillar: editingMission.targetPillar,
+      actionType: editingMission.actionType,
+      targetCount: editingMission.targetCount,
+      reward: editingMission.reward || { coins: 50, coinType: 'rez', pillarBoost: 1 },
+      startDate: editingMission.startDate,
+      endDate: editingMission.endDate,
+      tierRequired: editingMission.tierRequired || 'none',
+      maxParticipants: editingMission.maxParticipants || 100,
+      priority: editingMission.priority || 1,
+    };
+    const error = validateMission(asForm);
+    if (error) { showAlert('Validation Error', error); return; }
+    try {
+      await priveMissionsAdminApi.updateMission(editingMission._id, asForm as any);
+      setEditingMission(null);
+      showAlert('Success', 'Mission updated successfully');
+      fetchMissions();
+    } catch (err: any) {
+      console.error('[Missions] Failed to update:', err);
+      showAlert('Error', err?.message || 'Failed to update mission. Please try again.');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    showConfirm('Delete Mission', 'Are you sure you want to delete this mission? This cannot be undone.', async () => {
+      try {
+        await priveMissionsAdminApi.deleteMission(id);
+        showAlert('Deleted', 'Mission deleted successfully');
+        fetchMissions();
+      } catch (err: any) {
+        console.error('[Missions] Failed to delete:', err);
+        showAlert('Error', err?.message || 'Failed to delete mission.');
+      }
+    });
+  };
+
+  return (
+    <ScrollView style={styles.tabContent} refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchMissions} />}>
+      {/* Filters */}
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+        {['', 'active', 'inactive', 'expired'].map((s) => (
+          <TouchableOpacity
+            key={s}
+            style={[styles.configBadge, { backgroundColor: statusFilter === s ? '#C9A96233' : colors.card }]}
+            onPress={() => { setStatusFilter(s); setPage(1); }}
+          >
+            <Text style={{ color: statusFilter === s ? '#C9A962' : colors.secondaryText, fontSize: 13 }}>
+              {s || 'All'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity style={[styles.submitBtn, { paddingVertical: 6, paddingHorizontal: 16 }]} onPress={() => setShowCreate(!showCreate)}>
+          <Text style={styles.submitBtnText}>{showCreate ? 'Cancel' : '+ New Mission'}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Create Form */}
+      {showCreate && (
+        <View style={[styles.card, { backgroundColor: colors.card, marginBottom: 16 }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>New Mission</Text>
+          {[
+            { key: 'title', label: 'Title', placeholder: 'e.g. Complete 3 Orders' },
+            { key: 'description', label: 'Description', placeholder: 'Mission description' },
+          ].map(({ key, label, placeholder }) => (
+            <View key={key} style={{ marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>{label}</Text>
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border }]}
+                placeholder={placeholder}
+                placeholderTextColor={colors.secondaryText}
+                value={(newMission as any)[key]}
+                onChangeText={(v) => setNewMission({ ...newMission, [key]: v })}
+              />
+            </View>
+          ))}
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1, marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>Target Count</Text>
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border }]}
+                keyboardType="numeric"
+                value={String(newMission.targetCount)}
+                onChangeText={(v) => setNewMission({ ...newMission, targetCount: Number(v) || 1 })}
+              />
+            </View>
+            <View style={{ flex: 1, marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>Reward Coins</Text>
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border }]}
+                keyboardType="numeric"
+                value={String(newMission.reward.coins)}
+                onChangeText={(v) => setNewMission({ ...newMission, reward: { ...newMission.reward, coins: Number(v) || 0 } })}
+              />
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1, marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>Pillar</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                {['engagement', 'trust', 'influence', 'economicValue', 'brandAffinity', 'network'].map((p) => (
+                  <TouchableOpacity
+                    key={p}
+                    style={[styles.configBadge, { backgroundColor: newMission.targetPillar === p ? '#C9A96233' : colors.background }]}
+                    onPress={() => setNewMission({ ...newMission, targetPillar: p })}
+                  >
+                    <Text style={{ color: newMission.targetPillar === p ? '#C9A962' : colors.secondaryText, fontSize: 11 }}>{p}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </View>
+          <TouchableOpacity style={[styles.submitBtn, { marginTop: 8 }]} onPress={handleCreate}>
+            <Text style={styles.submitBtnText}>Create Mission</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Edit Form */}
+      {editingMission && (
+        <View style={[styles.card, { backgroundColor: colors.card, marginBottom: 16, borderWidth: 1, borderColor: '#C9A962' }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Edit Mission</Text>
+          {[
+            { key: 'title', label: 'Title' },
+            { key: 'description', label: 'Description' },
+          ].map(({ key, label }) => (
+            <View key={key} style={{ marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>{label}</Text>
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border }]}
+                value={(editingMission as any)[key] || ''}
+                onChangeText={(v) => setEditingMission({ ...editingMission, [key]: v })}
+              />
+            </View>
+          ))}
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1, marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>Target Count</Text>
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border }]}
+                keyboardType="numeric"
+                value={String(editingMission.targetCount || 1)}
+                onChangeText={(v) => setEditingMission({ ...editingMission, targetCount: Number(v) || 1 })}
+              />
+            </View>
+            <View style={{ flex: 1, marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>Reward Coins</Text>
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border }]}
+                keyboardType="numeric"
+                value={String(editingMission.reward?.coins || 50)}
+                onChangeText={(v) => setEditingMission({ ...editingMission, reward: { ...editingMission.reward, coins: Number(v) || 0 } })}
+              />
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1, marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>Max Participants</Text>
+              <TextInput
+                style={[styles.overrideInput, { color: colors.text, borderColor: colors.border }]}
+                keyboardType="numeric"
+                value={String(editingMission.maxParticipants || 100)}
+                onChangeText={(v) => setEditingMission({ ...editingMission, maxParticipants: Number(v) || 100 })}
+              />
+            </View>
+            <View style={{ flex: 1, marginBottom: 8 }}>
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginBottom: 4 }}>Active</Text>
+              <TouchableOpacity
+                style={[styles.configBadge, { backgroundColor: editingMission.isActive ? '#1A5D1A22' : '#D32F2F22', paddingVertical: 8 }]}
+                onPress={() => setEditingMission({ ...editingMission, isActive: !editingMission.isActive })}
+              >
+                <Text style={{ color: editingMission.isActive ? '#1A5D1A' : '#D32F2F', fontSize: 13 }}>
+                  {editingMission.isActive ? 'Active' : 'Inactive'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+            <TouchableOpacity style={[styles.submitBtn, { flex: 1 }]} onPress={handleUpdate}>
+              <Text style={styles.submitBtnText}>Save Changes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.configBadge, { flex: 1, alignItems: 'center', paddingVertical: 10, backgroundColor: colors.background }]}
+              onPress={() => setEditingMission(null)}
+            >
+              <Text style={{ color: colors.secondaryText }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* Mission List */}
+      {isLoading && missions.length === 0 ? (
+        <ActivityIndicator size="large" color="#C9A962" style={{ marginTop: 40 }} />
+      ) : missions.length === 0 ? (
+        <Text style={[styles.emptyText, { color: colors.secondaryText }]}>No missions found</Text>
+      ) : (
+        missions.map((m) => (
+          <View key={m._id} style={[styles.card, { backgroundColor: colors.card, marginBottom: 10 }]}>
+            <View style={styles.cardHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.cardTitle, { color: colors.text }]}>{m.title}</Text>
+                <Text style={[styles.cardSubtitle, { color: colors.secondaryText }]}>
+                  {m.targetPillar} | {m.actionType} x{m.targetCount} | Tier: {m.tierRequired}
+                </Text>
+              </View>
+              <View style={[styles.statusBadge, { backgroundColor: m.isActive ? '#1A5D1A22' : '#D32F2F22' }]}>
+                <Text style={{ color: m.isActive ? '#1A5D1A' : '#D32F2F', fontSize: 12 }}>
+                  {m.isActive ? 'Active' : 'Inactive'}
+                </Text>
+              </View>
+            </View>
+            <Text style={{ color: colors.secondaryText, fontSize: 12, marginTop: 4 }}>
+              Reward: {m.reward?.coins || 0} coins | Participants: {m.currentParticipants}/{m.maxParticipants}
+            </Text>
+            <Text style={{ color: colors.secondaryText, fontSize: 11, marginTop: 2 }}>
+              {new Date(m.startDate).toLocaleDateString()} — {new Date(m.endDate).toLocaleDateString()}
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+              <TouchableOpacity
+                style={[styles.configBadge, { backgroundColor: '#C9A96222' }]}
+                onPress={() => setEditingMission(m)}
+              >
+                <Text style={{ color: '#C9A962', fontSize: 12 }}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.configBadge, { backgroundColor: '#D32F2F22' }]}
+                onPress={() => handleDelete(m._id)}
+              >
+                <Text style={{ color: '#D32F2F', fontSize: 12 }}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <View style={styles.pagination}>
+          <TouchableOpacity disabled={page <= 1} onPress={() => setPage(p => p - 1)}>
+            <Text style={{ color: page <= 1 ? colors.secondaryText : '#C9A962' }}>← Prev</Text>
+          </TouchableOpacity>
+          <Text style={{ color: colors.secondaryText }}>Page {page} of {totalPages}</Text>
+          <TouchableOpacity disabled={page >= totalPages} onPress={() => setPage(p => p + 1)}>
+            <Text style={{ color: page >= totalPages ? colors.secondaryText : '#C9A962' }}>Next →</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <View style={{ height: 40 }} />
+    </ScrollView>
+  );
+}
+
+// ==========================================
+// Concierge Tab
+// ==========================================
+function ConciergeTab({ colors }: { colors: any }) {
+  const [tickets, setTickets] = useState<ConciergeTicket[]>([]);
+  const [analytics, setAnalytics] = useState<ConciergeAnalytics | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [selectedTicket, setSelectedTicket] = useState<ConciergeTicket | null>(null);
+  const [replyMessage, setReplyMessage] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [ticketRes, analyticsRes] = await Promise.all([
+        priveConciergeAdminApi.getTickets({
+          page, limit: 20, status: statusFilter || undefined,
+        }),
+        priveConciergeAdminApi.getAnalytics(),
+      ]);
+      setTickets(ticketRes.tickets || []);
+      setTotalPages(ticketRes.pagination?.pages || 1);
+      setAnalytics(analyticsRes);
+    } catch (err) {
+      console.error('[Concierge] Failed to fetch:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, statusFilter]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  const handleReply = async (ticketId: string) => {
+    if (!replyMessage.trim()) return;
+    setIsSending(true);
+    try {
+      await priveConciergeAdminApi.respondToTicket(ticketId, replyMessage);
+      setReplyMessage('');
+      setSelectedTicket(null);
+      fetchData();
+    } catch (err) {
+      console.error('[Concierge] Failed to reply:', err);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleResolve = async (ticketId: string) => {
+    try {
+      await priveConciergeAdminApi.resolveTicket(ticketId);
+      fetchData();
+    } catch (err) {
+      console.error('[Concierge] Failed to resolve:', err);
+    }
+  };
+
+  const tierColor = (tier: string) => {
+    if (tier === 'elite') return '#FFD700';
+    if (tier === 'signature') return '#C0C0C0';
+    return '#CD7F32';
+  };
+
+  return (
+    <ScrollView style={styles.tabContent} refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchData} />}>
+      {/* Analytics Summary */}
+      {analytics && (
+        <View style={[styles.statsGrid, { marginBottom: 16 }]}>
+          {[
+            { label: 'Total (30d)', value: analytics.totalTickets },
+            { label: 'Open', value: analytics.openTickets },
+            { label: 'SLA Compliance', value: `${analytics.slaComplianceRate}%` },
+            { label: 'SLA Breached', value: analytics.slaBreached },
+            { label: 'Avg Response', value: analytics.avgResponseHours ? `${analytics.avgResponseHours}h` : 'N/A' },
+          ].map((s, i) => (
+            <View key={i} style={[styles.statCard, { backgroundColor: colors.card }]}>
+              <Text style={[styles.statValue, { color: '#C9A962' }]}>{s.value}</Text>
+              <Text style={[styles.statLabel, { color: colors.secondaryText }]}>{s.label}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Filters */}
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+        {['', 'open', 'in_progress', 'resolved', 'closed'].map((s) => (
+          <TouchableOpacity
+            key={s}
+            style={[styles.configBadge, { backgroundColor: statusFilter === s ? '#C9A96233' : colors.card }]}
+            onPress={() => { setStatusFilter(s); setPage(1); }}
+          >
+            <Text style={{ color: statusFilter === s ? '#C9A962' : colors.secondaryText, fontSize: 13 }}>
+              {s || 'All'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Ticket List */}
+      {isLoading && tickets.length === 0 ? (
+        <ActivityIndicator size="large" color="#C9A962" style={{ marginTop: 40 }} />
+      ) : tickets.length === 0 ? (
+        <Text style={[styles.emptyText, { color: colors.secondaryText }]}>No tickets found</Text>
+      ) : (
+        tickets.map((ticket) => (
+          <View key={ticket._id} style={[styles.card, { backgroundColor: colors.card, marginBottom: 10 }]}>
+            <View style={styles.cardHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.cardTitle, { color: colors.text }]}>{ticket.subject}</Text>
+                <Text style={[styles.cardSubtitle, { color: colors.secondaryText }]}>
+                  #{ticket.ticketNumber} | {ticket.user?.fullName || ticket.user?.phoneNumber || 'Unknown'}
+                </Text>
+              </View>
+              <View style={{ alignItems: 'flex-end', gap: 4 }}>
+                <View style={[styles.statusBadge, { backgroundColor: ticket.status === 'open' ? '#FF980022' : ticket.status === 'resolved' ? '#1A5D1A22' : '#2196F322' }]}>
+                  <Text style={{ color: ticket.status === 'open' ? '#FF9800' : ticket.status === 'resolved' ? '#1A5D1A' : '#2196F3', fontSize: 12 }}>
+                    {ticket.status}
+                  </Text>
+                </View>
+                <View style={[styles.configBadge, { backgroundColor: tierColor(ticket.priveTier) + '22' }]}>
+                  <Text style={{ color: tierColor(ticket.priveTier), fontSize: 11, fontWeight: '600' }}>{ticket.priveTier}</Text>
+                </View>
+              </View>
+            </View>
+
+            {ticket.slaBreached && (
+              <View style={{ backgroundColor: '#D32F2F22', padding: 6, borderRadius: 6, marginTop: 6 }}>
+                <Text style={{ color: '#D32F2F', fontSize: 12, fontWeight: '600' }}>SLA BREACHED</Text>
+              </View>
+            )}
+
+            <Text style={{ color: colors.secondaryText, fontSize: 11, marginTop: 4 }}>
+              SLA: {ticket.slaHours}h | Created: {new Date(ticket.createdAt).toLocaleDateString()}
+              {ticket.assignedTo ? ` | Agent: ${ticket.assignedTo.name}` : ''}
+            </Text>
+
+            {/* Actions */}
+            <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+              <TouchableOpacity
+                style={[styles.configBadge, { backgroundColor: '#2196F322' }]}
+                onPress={() => setSelectedTicket(selectedTicket?._id === ticket._id ? null : ticket)}
+              >
+                <Text style={{ color: '#2196F3', fontSize: 12 }}>
+                  {selectedTicket?._id === ticket._id ? 'Hide' : 'Reply'}
+                </Text>
+              </TouchableOpacity>
+              {!['resolved', 'closed'].includes(ticket.status) && (
+                <TouchableOpacity
+                  style={[styles.configBadge, { backgroundColor: '#1A5D1A22' }]}
+                  onPress={() => handleResolve(ticket._id)}
+                >
+                  <Text style={{ color: '#1A5D1A', fontSize: 12 }}>Resolve</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Reply Form */}
+            {selectedTicket?._id === ticket._id && (
+              <View style={{ marginTop: 8 }}>
+                {ticket.messages?.map((msg, i) => (
+                  <View key={i} style={{
+                    padding: 8, borderRadius: 8, marginBottom: 4,
+                    backgroundColor: msg.senderType === 'user' ? colors.background : '#C9A96211',
+                  }}>
+                    <Text style={{ color: msg.senderType === 'user' ? colors.secondaryText : '#C9A962', fontSize: 11, fontWeight: '600' }}>
+                      {msg.senderType === 'user' ? 'User' : 'Agent'}
+                    </Text>
+                    <Text style={{ color: colors.text, fontSize: 13 }}>{msg.message}</Text>
+                  </View>
+                ))}
+                <TextInput
+                  style={[styles.reasonInput, { color: colors.text, borderColor: colors.border, marginTop: 8 }]}
+                  placeholder="Type your reply..."
+                  placeholderTextColor={colors.secondaryText}
+                  value={replyMessage}
+                  onChangeText={setReplyMessage}
+                  multiline
+                />
+                <TouchableOpacity
+                  style={[styles.submitBtn, { opacity: isSending ? 0.5 : 1 }]}
+                  onPress={() => handleReply(ticket._id)}
+                  disabled={isSending}
+                >
+                  <Text style={styles.submitBtnText}>{isSending ? 'Sending...' : 'Send Reply'}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        ))
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <View style={styles.pagination}>
+          <TouchableOpacity disabled={page <= 1} onPress={() => setPage(p => p - 1)}>
+            <Text style={{ color: page <= 1 ? colors.secondaryText : '#C9A962' }}>← Prev</Text>
+          </TouchableOpacity>
+          <Text style={{ color: colors.secondaryText }}>Page {page} of {totalPages}</Text>
+          <TouchableOpacity disabled={page >= totalPages} onPress={() => setPage(p => p + 1)}>
+            <Text style={{ color: page >= totalPages ? colors.secondaryText : '#C9A962' }}>Next →</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       <View style={{ height: 40 }} />
