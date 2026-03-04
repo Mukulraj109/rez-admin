@@ -30,9 +30,9 @@ class AuthService {
     try {
       console.log('🔐 [Admin Auth] Attempting login for:', email);
 
-      // Use the regular auth endpoint - backend validates admin role
+      // Use the admin auth endpoint - backend validates admin role
       const response = await apiClient.post<{ user: AdminUser; token: string }>(
-        'auth/login',
+        'admin/auth/login',
         { email, password }
       );
 
@@ -82,7 +82,7 @@ class AuthService {
 
       // Call backend logout endpoint (optional)
       try {
-        await apiClient.post('auth/logout');
+        await apiClient.post('admin/auth/logout');
       } catch (e) {
         // Ignore logout API errors
       }
@@ -129,7 +129,7 @@ class AuthService {
    */
   async refreshProfile(): Promise<AdminUser | null> {
     try {
-      const response = await apiClient.get<{ user: AdminUser }>('auth/me');
+      const response = await apiClient.get<{ user: AdminUser }>('admin/auth/me');
 
       if (response.success && response.data?.user) {
         await storageService.setUserData(response.data.user);
