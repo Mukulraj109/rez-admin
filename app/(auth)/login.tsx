@@ -20,8 +20,8 @@ export default function LoginScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
-  const [email, setEmail] = useState(__DEV__ ? 'admin@rez.app' : '');
-  const [password, setPassword] = useState(__DEV__ ? 'Admin@123' : '');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
