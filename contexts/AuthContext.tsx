@@ -70,7 +70,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         error: action.payload,
       };
     case 'LOGOUT':
-      console.log('🔄 [Admin] LOGOUT action dispatched');
+      if (__DEV__) console.log('🔄 [Admin] LOGOUT action dispatched');
       return {
         ...state,
         isAuthenticated: false,
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkStoredToken = async () => {
     try {
-      console.log('🔍 [Admin] Checking stored authentication...');
+      if (__DEV__) console.log('🔍 [Admin] Checking stored authentication...');
 
       const isAuthenticated = await authService.isAuthenticated();
 
@@ -119,22 +119,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ]);
 
         if (user && token) {
-          console.log('✅ [Admin] Valid stored authentication found');
+          if (__DEV__) console.log('✅ [Admin] Valid stored authentication found');
           dispatch({
             type: 'AUTH_SUCCESS',
             payload: { user, token }
           });
         } else {
-          console.warn('❌ [Admin] Incomplete stored data, logging out');
+          if (__DEV__) console.warn('❌ [Admin] Incomplete stored data, logging out');
           await authService.logout();
           dispatch({ type: 'LOGOUT' });
         }
       } else {
-        console.log('❌ [Admin] No valid authentication found');
+        if (__DEV__) console.log('❌ [Admin] No valid authentication found');
         dispatch({ type: 'LOGOUT' });
       }
     } catch (error) {
-      console.error('❌ [Admin] Error checking stored authentication:', error);
+      if (__DEV__) console.error('❌ [Admin] Error checking stored authentication:', error);
       await authService.logout();
       dispatch({ type: 'LOGOUT' });
     }
@@ -144,12 +144,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      console.log('🔐 [Admin] Attempting login for:', email);
+      if (__DEV__) console.log('🔐 [Admin] Attempting login for:', email);
 
       const authResponse = await authService.login(email, password);
 
       if (authResponse.success && authResponse.data) {
-        console.log('✅ [Admin] Login successful');
+        if (__DEV__) console.log('✅ [Admin] Login successful');
 
         dispatch({
           type: 'AUTH_SUCCESS',
@@ -165,7 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(authResponse.message || 'Login failed');
       }
     } catch (error: any) {
-      console.error('❌ [Admin] Login failed:', error.message);
+      if (__DEV__) console.error('❌ [Admin] Login failed:', error.message);
       dispatch({
         type: 'AUTH_ERROR',
         payload: error.message || 'Login failed'
@@ -176,19 +176,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      console.log('🚪 [Admin] Starting logout process...');
+      if (__DEV__) console.log('🚪 [Admin] Starting logout process...');
 
       await authService.logout();
 
-      console.log('📤 [Admin] Dispatching LOGOUT action...');
+      if (__DEV__) console.log('📤 [Admin] Dispatching LOGOUT action...');
       dispatch({ type: 'LOGOUT' });
 
-      console.log('🚀 [Admin] Redirecting to login page...');
+      if (__DEV__) console.log('🚀 [Admin] Redirecting to login page...');
       router.replace('/(auth)/login');
 
-      console.log('✅ [Admin] Logout completed successfully');
+      if (__DEV__) console.log('✅ [Admin] Logout completed successfully');
     } catch (error) {
-      console.error('❌ [Admin] Error during logout:', error);
+      if (__DEV__) console.error('❌ [Admin] Error during logout:', error);
       dispatch({ type: 'LOGOUT' });
       router.replace('/(auth)/login');
     }

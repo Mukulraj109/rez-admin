@@ -44,7 +44,7 @@ class ApiClient {
     const headers = await this.getHeaders(options?.headers);
     const timeout = options?.timeout || API_CONFIG.TIMEOUT;
 
-    console.log(`🌐 [Admin API] ${method} ${url}`);
+    if (__DEV__) console.log(`🌐 [Admin API] ${method} ${url}`);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -62,11 +62,11 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error(`❌ [Admin API] ${method} ${endpoint} failed:`, data.message || response.statusText);
+        if (__DEV__) console.error(`❌ [Admin API] ${method} ${endpoint} failed:`, data.message || response.statusText);
 
         // Handle 401 - token expired
         if (response.status === 401) {
-          console.log('🔐 [Admin API] Token expired, clearing auth data');
+          if (__DEV__) console.log('🔐 [Admin API] Token expired, clearing auth data');
           await storageService.logout();
         }
 
@@ -76,20 +76,20 @@ class ApiClient {
         };
       }
 
-      console.log(`✅ [Admin API] ${method} ${endpoint} success`);
+      if (__DEV__) console.log(`✅ [Admin API] ${method} ${endpoint} success`);
       return data;
     } catch (error: any) {
       clearTimeout(timeoutId);
 
       if (error.name === 'AbortError') {
-        console.error(`❌ [Admin API] ${method} ${endpoint} timeout`);
+        if (__DEV__) console.error(`❌ [Admin API] ${method} ${endpoint} timeout`);
         return {
           success: false,
           message: 'Request timeout',
         };
       }
 
-      console.error(`❌ [Admin API] ${method} ${endpoint} error:`, error.message);
+      if (__DEV__) console.error(`❌ [Admin API] ${method} ${endpoint} error:`, error.message);
       return {
         success: false,
         message: error.message || 'Network error',
@@ -132,7 +132,7 @@ class ApiClient {
     const token = await storageService.getAuthToken();
     const timeout = options?.timeout || 60000; // 60 second timeout for uploads
 
-    console.log(`📤 [Admin API] UPLOAD ${url}`);
+    if (__DEV__) console.log(`📤 [Admin API] UPLOAD ${url}`);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -159,10 +159,10 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error(`❌ [Admin API] UPLOAD ${endpoint} failed:`, data.message || response.statusText);
+        if (__DEV__) console.error(`❌ [Admin API] UPLOAD ${endpoint} failed:`, data.message || response.statusText);
 
         if (response.status === 401) {
-          console.log('🔐 [Admin API] Token expired, clearing auth data');
+          if (__DEV__) console.log('🔐 [Admin API] Token expired, clearing auth data');
           await storageService.logout();
         }
 
@@ -172,20 +172,20 @@ class ApiClient {
         };
       }
 
-      console.log(`✅ [Admin API] UPLOAD ${endpoint} success`);
+      if (__DEV__) console.log(`✅ [Admin API] UPLOAD ${endpoint} success`);
       return data;
     } catch (error: any) {
       clearTimeout(timeoutId);
 
       if (error.name === 'AbortError') {
-        console.error(`❌ [Admin API] UPLOAD ${endpoint} timeout`);
+        if (__DEV__) console.error(`❌ [Admin API] UPLOAD ${endpoint} timeout`);
         return {
           success: false,
           message: 'Upload timeout',
         };
       }
 
-      console.error(`❌ [Admin API] UPLOAD ${endpoint} error:`, error.message);
+      if (__DEV__) console.error(`❌ [Admin API] UPLOAD ${endpoint} error:`, error.message);
       return {
         success: false,
         message: error.message || 'Upload failed',

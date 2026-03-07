@@ -48,15 +48,22 @@ interface WalletConfigData {
     suspiciousAmountThreshold: number;
     autoFreezeMultiplier: number;
   };
+  coinExpiryConfig?: {
+    rez: { expiryDays: number; maxUsagePct: number };
+    prive: { expiryDays: number; maxUsagePct: number };
+    promo: { expiryDays: number; maxUsagePct: number };
+    branded: { expiryDays: number; maxUsagePct: number };
+  };
 }
 
-type SectionKey = 'transfer' | 'gift' | 'recharge' | 'expiry' | 'commission' | 'fraud';
+type SectionKey = 'transfer' | 'gift' | 'recharge' | 'expiry' | 'coinExpiry' | 'commission' | 'fraud';
 
 const SECTIONS: { key: SectionKey; title: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
   { key: 'transfer', title: 'Transfer Limits', icon: 'swap-horizontal', color: '#3B82F6' },
   { key: 'gift', title: 'Gift Limits', icon: 'gift', color: '#8B5CF6' },
   { key: 'recharge', title: 'Recharge Config', icon: 'card', color: '#10B981' },
   { key: 'expiry', title: 'Expiry Config', icon: 'time', color: '#F59E0B' },
+  { key: 'coinExpiry', title: 'Coin Expiry Rules', icon: 'hourglass', color: '#D97706' },
   { key: 'commission', title: 'Commission & Conversion', icon: 'calculator', color: '#EC4899' },
   { key: 'fraud', title: 'Fraud Thresholds', icon: 'shield', color: '#EF4444' },
 ];
@@ -71,7 +78,7 @@ export default function WalletConfigScreen() {
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Record<SectionKey, boolean>>({
-    transfer: false, gift: true, recharge: true, expiry: true, commission: true, fraud: true,
+    transfer: false, gift: true, recharge: true, expiry: true, coinExpiry: true, commission: true, fraud: true,
   });
   const [config, setConfig] = useState<WalletConfigData | null>(null);
 
@@ -325,6 +332,43 @@ export default function WalletConfigScreen() {
           {renderInput('Promo Expiry Days', 'expiryConfig.promoExpiryDays', config.expiryConfig.promoExpiryDays)}
           {renderInput('Alert Days Before', 'expiryConfig.alertDaysBefore', config.expiryConfig.alertDaysBefore)}
           {renderInput('Grace Period Days', 'expiryConfig.gracePeriodDays', config.expiryConfig.gracePeriodDays)}
+        </>)}
+
+        {/* Coin Expiry Rules */}
+        {renderSectionCard('coinExpiry', <>
+          <Text style={[styles.subHeading, { color: colors.text }]}>Per-Coin-Type Expiry & Usage Rules</Text>
+          <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 8 }}>Set expiry days (0 = never expires) and max usage % per transaction for each coin type.</Text>
+          {(['rez', 'prive', 'promo', 'branded'] as const).map(coinType => {
+            const label = coinType === 'rez' ? 'ReZ (Nuqta)' : coinType === 'prive' ? 'Prive' : coinType === 'promo' ? 'Promo' : 'Branded';
+            const cfg = config.coinExpiryConfig?.[coinType] || { expiryDays: 0, maxUsagePct: 100 };
+            return (
+              <View key={coinType} style={[styles.tierRow, { borderColor: colors.border }]}>
+                <View style={{ width: 80 }}>
+                  <Text style={[styles.tierLabel, { color: colors.text, fontWeight: '700' }]}>{label}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.tierLabel, { color: colors.text }]}>Expiry Days</Text>
+                  <TextInput
+                    style={[styles.fieldInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text }]}
+                    value={String(cfg.expiryDays)}
+                    onChangeText={v => updateField(`coinExpiryConfig.${coinType}.expiryDays`, parseFloat(v) || 0)}
+                    keyboardType="numeric"
+                    selectTextOnFocus
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.tierLabel, { color: colors.text }]}>Max Usage %</Text>
+                  <TextInput
+                    style={[styles.fieldInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text }]}
+                    value={String(cfg.maxUsagePct)}
+                    onChangeText={v => updateField(`coinExpiryConfig.${coinType}.maxUsagePct`, parseFloat(v) || 0)}
+                    keyboardType="numeric"
+                    selectTextOnFocus
+                  />
+                </View>
+              </View>
+            );
+          })}
         </>)}
 
         {/* Commission & Conversion */}
