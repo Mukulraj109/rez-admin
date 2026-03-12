@@ -57,3 +57,7 @@ coverage/
 
 expo-env.d.ts
 # @end expo-cli
+
+# Temp/junk files
+tmpclaude-*
+test-results.txt

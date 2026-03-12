@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch, ActivityIndicator, RefreshControl, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
+import { BRAND } from '../../constants/brand';
 import { showAlert } from '../../utils/alert';
 import { apiClient } from '../../services/api/apiClient';
 
@@ -339,7 +340,7 @@ export default function WalletConfigScreen() {
           <Text style={[styles.subHeading, { color: colors.text }]}>Per-Coin-Type Expiry & Usage Rules</Text>
           <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 8 }}>Set expiry days (0 = never expires) and max usage % per transaction for each coin type.</Text>
           {(['rez', 'prive', 'promo', 'branded'] as const).map(coinType => {
-            const label = coinType === 'rez' ? 'ReZ (Nuqta)' : coinType === 'prive' ? 'Prive' : coinType === 'promo' ? 'Promo' : 'Branded';
+            const label = coinType === 'rez' ? `${BRAND.APP_NAME} (${BRAND.COIN_SHORT})` : coinType === 'prive' ? 'Prive' : coinType === 'promo' ? 'Promo' : 'Branded';
             const cfg = config.coinExpiryConfig?.[coinType] || { expiryDays: 0, maxUsagePct: 100 };
             return (
               <View key={coinType} style={[styles.tierRow, { borderColor: colors.border }]}>
@@ -374,7 +375,7 @@ export default function WalletConfigScreen() {
         {/* Commission & Conversion */}
         {renderSectionCard('commission', <>
           {renderInput('Commission Rate', 'commissionRate', config.commissionRate, '0-1')}
-          {renderInput('Nuqta to INR', 'coinConversion.nuqtaToInr', config.coinConversion.nuqtaToInr)}
+          {renderInput(`${BRAND.COIN_SHORT} to INR`, 'coinConversion.nuqtaToInr', config.coinConversion.nuqtaToInr)}
           {renderInput('Promo to INR', 'coinConversion.promoToInr', config.coinConversion.promoToInr)}
           {renderInput('Branded to INR', 'coinConversion.brandedToInr', config.coinConversion.brandedToInr)}
         </>)}

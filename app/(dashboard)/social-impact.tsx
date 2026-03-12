@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
+import { BRAND } from '../../constants/brand';
 import { showAlert, showConfirm } from '../../utils/alert';
 import {
   socialImpactService,
@@ -771,7 +772,7 @@ export default function SocialImpactScreen() {
             <View style={styles.metaChip}>
               <Ionicons name="logo-bitcoin" size={13} color="#F59E0B" />
               <Text style={[styles.metaText, { color: '#F59E0B', fontWeight: '700' }]}>
-                {item.rewards!.rezCoins} Nuqta
+                {item.rewards!.rezCoins} {BRAND.COIN_SHORT}
               </Text>
             </View>
           )}
@@ -1074,7 +1075,7 @@ export default function SocialImpactScreen() {
               </View>
               <View style={styles.formRow}>
                 <View style={[styles.formGroup, { flex: 1, marginRight: 8 }]}>
-                  <Text style={[styles.formLabel, { color: colors.text }]}>Nuqta Coins</Text>
+                  <Text style={[styles.formLabel, { color: colors.text }]}>{BRAND.COIN_NAME}</Text>
                   <TextInput
                     style={[styles.formInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                     value={form.rewardsRezCoins !== undefined ? String(form.rewardsRezCoins) : ''}
@@ -1441,7 +1442,7 @@ export default function SocialImpactScreen() {
                         <Ionicons name="gift-outline" size={13} color={colors.icon} />
                         <Text style={[styles.coinsAwardedText, { color: colors.icon }]}>
                           Awarded:
-                          {item.coinsAwarded.rez > 0 ? ` ${item.coinsAwarded.rez} Nuqta` : ''}
+                          {item.coinsAwarded.rez > 0 ? ` ${item.coinsAwarded.rez} ${BRAND.COIN_SHORT}` : ''}
                           {item.coinsAwarded.brand > 0 ? ` ${item.coinsAwarded.brand} Brand` : ''}
                         </Text>
                       </View>
