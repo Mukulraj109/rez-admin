@@ -648,6 +648,13 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/support-tickets')}
           />
           <SettingItem
+            icon="construct"
+            iconColor="#F97316"
+            title="Support Tools"
+            subtitle="Credit, debit, reverse cashback, freeze wallets & campaigns"
+            onPress={() => router.push('/(dashboard)/support-tools')}
+          />
+          <SettingItem
             icon="help-buoy"
             iconColor="#8B5CF6"
             title="FAQ Management"

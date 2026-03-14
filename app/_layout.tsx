@@ -13,6 +13,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { AlertProvider } from '@/contexts/AlertContext';
 import { Colors } from '@/constants/DesignTokens';
+import { installProductionConsoleGuard } from '@/utils/logger';
 
 // Admin roles allowed to access the admin portal
 const ADMIN_ROLES = ['support', 'operator', 'admin', 'super_admin'];
@@ -118,6 +119,9 @@ function AuthGuardedLayout() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  React.useEffect(() => {
+    installProductionConsoleGuard();
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : CustomDefaultTheme}>

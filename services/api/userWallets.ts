@@ -147,6 +147,29 @@ class UserWalletsService {
     }
   }
 
+  async reverseCashback(
+    userId: string,
+    data: { amount: number; originalTransactionId?: string; reason: string }
+  ): Promise<{ amount: number; newBalance: any; reversalTransactionId?: string }> {
+    try {
+      console.log('[UserWallets] Reversing cashback for user:', userId);
+      const response = await apiClient.post<{ amount: number; newBalance: any; reversalTransactionId?: string }>(
+        `admin/user-wallets/${userId}/reverse-cashback`,
+        data
+      );
+
+      if (response.success && response.data) {
+        console.log('[UserWallets] Cashback reversed successfully');
+        return response.data;
+      }
+
+      throw new Error(response.message || 'Failed to reverse cashback');
+    } catch (error: any) {
+      console.error('[UserWallets] Reverse cashback error:', error.message);
+      throw new Error(error.message || 'Failed to reverse cashback');
+    }
+  }
+
   async getAuditTrail(
     userId: string,
     page: number = 1,

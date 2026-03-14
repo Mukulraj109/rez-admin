@@ -29,14 +29,9 @@
       "requireFullScreen": false,
       "infoPlist": {
         "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true,
+          "NSAllowsArbitraryLoads": false,
           "NSExceptionDomains": {
             "localhost": {
-              "NSExceptionAllowsInsecureHTTPLoads": true,
-              "NSExceptionMinimumTLSVersion": "1.0",
-              "NSIncludesSubdomains": true
-            },
-            "192.168.168.39": {
               "NSExceptionAllowsInsecureHTTPLoads": true,
               "NSExceptionMinimumTLSVersion": "1.0",
               "NSIncludesSubdomains": true

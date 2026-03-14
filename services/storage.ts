@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const STORAGE_KEYS = {
   AUTH_TOKEN: 'admin_auth_token',
@@ -7,81 +8,80 @@ const STORAGE_KEYS = {
 };
 
 class StorageService {
-  // Auth Token
-  async setAuthToken(token: string): Promise<void> {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
-      console.log('✅ [Storage] Auth token saved');
-    } catch (error) {
-      console.error('❌ [Storage] Failed to save auth token:', error);
-      throw error;
+  private async secureSetItem(key: string, value: string): Promise<void> {
+    await SecureStore.setItemAsync(key, value);
+    await AsyncStorage.removeItem(key);
+  }
+
+  private async secureGetItem(key: string): Promise<string | null> {
+    const secureValue = await SecureStore.getItemAsync(key);
+    if (secureValue !== null) {
+      return secureValue;
     }
+
+    const legacyValue = await AsyncStorage.getItem(key);
+    if (legacyValue !== null) {
+      await SecureStore.setItemAsync(key, legacyValue);
+      await AsyncStorage.removeItem(key);
+    }
+
+    return legacyValue;
+  }
+
+  private async secureRemoveItem(key: string): Promise<void> {
+    await SecureStore.deleteItemAsync(key);
+    await AsyncStorage.removeItem(key);
+  }
+
+  async setAuthToken(token: string): Promise<void> {
+    await this.secureSetItem(STORAGE_KEYS.AUTH_TOKEN, token);
   }
 
   async getAuthToken(): Promise<string | null> {
-    try {
-      const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-      return token;
-    } catch (error) {
-      console.error('❌ [Storage] Failed to get auth token:', error);
-      return null;
-    }
+    return this.secureGetItem(STORAGE_KEYS.AUTH_TOKEN);
   }
 
   async removeAuthToken(): Promise<void> {
-    try {
-      await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-      console.log('✅ [Storage] Auth token removed');
-    } catch (error) {
-      console.error('❌ [Storage] Failed to remove auth token:', error);
-    }
+    await this.secureRemoveItem(STORAGE_KEYS.AUTH_TOKEN);
   }
 
-  // User Data
+  async setRefreshToken(token: string): Promise<void> {
+    await this.secureSetItem(STORAGE_KEYS.REFRESH_TOKEN, token);
+  }
+
+  async getRefreshToken(): Promise<string | null> {
+    return this.secureGetItem(STORAGE_KEYS.REFRESH_TOKEN);
+  }
+
+  async removeRefreshToken(): Promise<void> {
+    await this.secureRemoveItem(STORAGE_KEYS.REFRESH_TOKEN);
+  }
+
   async setUserData(userData: any): Promise<void> {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
-      console.log('✅ [Storage] User data saved');
-    } catch (error) {
-      console.error('❌ [Storage] Failed to save user data:', error);
-      throw error;
-    }
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
   }
 
   async getUserData(): Promise<any | null> {
     try {
       const data = await AsyncStorage.getItem(STORAGE_KEYS.USER_DATA);
       return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('❌ [Storage] Failed to get user data:', error);
+    } catch {
       return null;
     }
   }
 
   async removeUserData(): Promise<void> {
-    try {
-      await AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA);
-      console.log('✅ [Storage] User data removed');
-    } catch (error) {
-      console.error('❌ [Storage] Failed to remove user data:', error);
-    }
+    await AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA);
   }
 
-  // Logout - Clear all auth data
   async logout(): Promise<void> {
-    try {
-      await Promise.all([
-        AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN),
-        AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA),
-        AsyncStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN),
-      ]);
-      console.log('✅ [Storage] All auth data cleared');
-    } catch (error) {
-      console.error('❌ [Storage] Failed to clear auth data:', error);
-    }
+    await Promise.all([
+      this.removeAuthToken(),
+      this.removeRefreshToken(),
+      this.removeUserData(),
+    ]);
   }
 
-  // Check if authenticated
   async isAuthenticated(): Promise<boolean> {
     const token = await this.getAuthToken();
     return !!token;

@@ -221,6 +221,12 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
+        name="economics"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="daily-checkin-config"
         options={{
           href: null,
@@ -492,6 +498,12 @@ export default function DashboardLayout() {
       />
       <Tabs.Screen
         name="voucher-management"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="support-tools"
         options={{
           href: null,
         }}
