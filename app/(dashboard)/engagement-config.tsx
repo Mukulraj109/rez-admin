@@ -34,7 +34,7 @@ const ENGAGEMENT_ACTIONS: EngagementAction[] = [
     label: 'Share Store',
     description: 'Users share a store to earn coins. Instant reward.',
     icon: 'share-social',
-    iconColor: '#3B82F6',
+    iconColor: Colors.light.info,
     baseCoins: 10,
     bonusCoins: 0,
     dailyLimit: 5,
@@ -46,7 +46,7 @@ const ENGAGEMENT_ACTIONS: EngagementAction[] = [
     label: 'Share Offer',
     description: 'Users share an offer to earn coins. Instant reward.',
     icon: 'pricetag',
-    iconColor: '#10B981',
+    iconColor: Colors.light.success,
     baseCoins: 5,
     bonusCoins: 0,
     dailyLimit: 10,
@@ -58,7 +58,7 @@ const ENGAGEMENT_ACTIONS: EngagementAction[] = [
     label: 'Vote in Poll',
     description: 'Users vote in a poll to earn coins. Instant reward.',
     icon: 'bar-chart',
-    iconColor: '#6366F1',
+    iconColor: Colors.light.indigo,
     baseCoins: 10,
     bonusCoins: 0,
     dailyLimit: 3,
@@ -70,7 +70,7 @@ const ENGAGEMENT_ACTIONS: EngagementAction[] = [
     label: 'Comment on Offer',
     description: 'Users comment on offers. Requires moderation before coins are credited.',
     icon: 'chatbubble-ellipses',
-    iconColor: '#D97706',
+    iconColor: Colors.light.warningDark,
     baseCoins: 15,
     bonusCoins: 5,
     dailyLimit: 5,
@@ -83,7 +83,7 @@ const ENGAGEMENT_ACTIONS: EngagementAction[] = [
     label: 'Upload Photos',
     description: 'Users upload photos of stores/products. Requires moderation.',
     icon: 'camera',
-    iconColor: '#EC4899',
+    iconColor: Colors.light.pink,
     baseCoins: 25,
     bonusCoins: 75,
     dailyLimit: 3,
@@ -96,7 +96,7 @@ const ENGAGEMENT_ACTIONS: EngagementAction[] = [
     label: 'Create Reel',
     description: 'Users create UGC reels. Requires moderation before publish + coins.',
     icon: 'videocam',
-    iconColor: '#EF4444',
+    iconColor: Colors.light.error,
     baseCoins: 50,
     bonusCoins: 150,
     dailyLimit: 2,
@@ -109,7 +109,7 @@ const ENGAGEMENT_ACTIONS: EngagementAction[] = [
     label: 'Rate Event',
     description: 'Users rate events they attended. +5 bonus for verified bookings.',
     icon: 'star',
-    iconColor: '#F59E0B',
+    iconColor: Colors.light.warning,
     baseCoins: 20,
     bonusCoins: 5,
     dailyLimit: 3,
@@ -153,7 +153,7 @@ export default function EngagementConfigScreen() {
             <Text style={[styles.actionKey, { color: colors.icon }]}>{action.key}</Text>
           </View>
           <View style={styles.coinDisplay}>
-            <Ionicons name="sparkles" size={14} color="#F59E0B" />
+            <Ionicons name="sparkles" size={14} color={colors.warning} />
             <Text style={styles.coinValue}>
               {action.baseCoins}{action.bonusCoins > 0 ? `+${action.bonusCoins}` : ''}
             </Text>
@@ -168,18 +168,18 @@ export default function EngagementConfigScreen() {
         {/* Quick badges */}
         <View style={styles.badgeRow}>
           <View style={[styles.badge, {
-            backgroundColor: action.requiresModeration ? '#FEF3C7' : '#D1FAE5',
+            backgroundColor: action.requiresModeration ? colors.warningLight : colors.successLight,
           }]}>
             <Text style={{
               fontSize: 10,
               fontWeight: '600',
-              color: action.requiresModeration ? '#D97706' : '#059669',
+              color: action.requiresModeration ? colors.warningDark : colors.successDark,
             }}>
               {action.requiresModeration ? 'MODERATED' : 'INSTANT'}
             </Text>
           </View>
           <View style={[styles.badge, { backgroundColor: '#EEF2FF' }]}>
-            <Text style={{ fontSize: 10, fontWeight: '600', color: '#6366F1' }}>
+            <Text style={{ fontSize: 10, fontWeight: '600', color: colors.indigo }}>
               {action.dailyLimit}/day
             </Text>
           </View>
@@ -199,7 +199,7 @@ export default function EngagementConfigScreen() {
               </View>
               <View style={[styles.detailItem, { backgroundColor: `${colors.background}` }]}>
                 <Text style={[styles.detailLabel, { color: colors.icon }]}>Bonus Coins</Text>
-                <Text style={[styles.detailValue, { color: action.bonusCoins > 0 ? '#10B981' : colors.icon }]}>
+                <Text style={[styles.detailValue, { color: action.bonusCoins > 0 ? colors.success : colors.icon }]}>
                   {action.bonusCoins > 0 ? `+${action.bonusCoins}` : 'None'}
                 </Text>
               </View>
@@ -209,7 +209,7 @@ export default function EngagementConfigScreen() {
               </View>
               <View style={[styles.detailItem, { backgroundColor: `${colors.background}` }]}>
                 <Text style={[styles.detailLabel, { color: colors.icon }]}>Max/Day</Text>
-                <Text style={[styles.detailValue, { color: '#D97706' }]}>
+                <Text style={[styles.detailValue, { color: colors.warningDark }]}>
                   {(action.baseCoins + action.bonusCoins) * action.dailyLimit}
                 </Text>
               </View>
@@ -254,22 +254,22 @@ export default function EngagementConfigScreen() {
           <Text style={[styles.statLabel, { color: colors.icon }]}>Actions</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-          <Text style={[styles.statValue, { color: '#10B981' }]}>{instantActions}</Text>
+          <Text style={[styles.statValue, { color: colors.success }]}>{instantActions}</Text>
           <Text style={[styles.statLabel, { color: colors.icon }]}>Instant</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-          <Text style={[styles.statValue, { color: '#F59E0B' }]}>{moderatedActions}</Text>
+          <Text style={[styles.statValue, { color: colors.warning }]}>{moderatedActions}</Text>
           <Text style={[styles.statLabel, { color: colors.icon }]}>Moderated</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-          <Text style={[styles.statValue, { color: '#D97706' }]}>{maxDailyCoins}</Text>
+          <Text style={[styles.statValue, { color: colors.warningDark }]}>{maxDailyCoins}</Text>
           <Text style={[styles.statLabel, { color: colors.icon }]}>Max/Day</Text>
         </View>
       </View>
 
       {/* Info banner */}
-      <View style={[styles.infoBanner, { backgroundColor: '#EFF6FF' }]}>
-        <Ionicons name="information-circle" size={18} color="#3B82F6" />
+      <View style={[styles.infoBanner, { backgroundColor: colors.infoLight }]}>
+        <Ionicons name="information-circle" size={18} color={colors.info} />
         <Text style={styles.infoText}>
           These values are currently hardcoded in the backend. Admin-editable configuration
           will be added in a future update.
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     gap: 8,
   },
-  infoText: { flex: 1, fontSize: 12, color: '#3B82F6', lineHeight: 16 },
+  infoText: { flex: 1, fontSize: 12, color: Colors.light.info, lineHeight: 16 },
   actionsList: { padding: 16, paddingTop: 12 },
   actionCard: {
     padding: 16,
@@ -333,17 +333,17 @@ const styles = StyleSheet.create({
   coinDisplay: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.light.warningLight,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     gap: 3,
     marginRight: 8,
   },
-  coinValue: { fontSize: 12, fontWeight: '700', color: '#D97706' },
+  coinValue: { fontSize: 12, fontWeight: '700', color: Colors.light.warningDark },
   badgeRow: { flexDirection: 'row', marginTop: 8, gap: 6 },
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  expandedContent: { marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
+  expandedContent: { marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: Colors.light.border },
   actionDescription: { fontSize: 13, lineHeight: 18, marginBottom: 12 },
   detailGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   detailItem: { width: '48%', padding: 10, borderRadius: 8, alignItems: 'center' },

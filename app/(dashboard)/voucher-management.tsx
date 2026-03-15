@@ -34,7 +34,7 @@ const FEATURED_FILTERS = [
   { label: 'Regular', value: false as boolean | undefined },
 ];
 const DEFAULT_FORM: VoucherFormData = {
-  name: '', logo: '', backgroundColor: '#FFFFFF', logoColor: '#000000',
+  name: '', logo: '', backgroundColor: Colors.light.card, logoColor: '#000000',
   description: '', cashbackRate: '0', category: 'Other', denominations: '',
   termsAndConditions: '', isFeatured: false, isNewlyAdded: false, store: '',
 };
@@ -94,7 +94,7 @@ export default function VoucherManagementScreen() {
   const handleEdit = (v: VoucherBrand) => {
     setEditingVoucher(v);
     setFormData({
-      name: v.name, logo: v.logo, backgroundColor: v.backgroundColor || '#FFFFFF',
+      name: v.name, logo: v.logo, backgroundColor: v.backgroundColor || colors.card,
       logoColor: v.logoColor || '#000000', description: v.description || '',
       cashbackRate: String(v.cashbackRate || 0), category: v.category || 'Other',
       denominations: (v.denominations || []).join(', '),
@@ -186,7 +186,7 @@ export default function VoucherManagementScreen() {
         <View style={s.paginationButtons}>
           <TouchableOpacity style={[s.pageBtn, currentPage === 1 && s.pageBtnDisabled]}
             onPress={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-            <Ionicons name="chevron-back" size={16} color={currentPage === 1 ? '#D1D5DB' : '#3B82F6'} />
+            <Ionicons name="chevron-back" size={16} color={currentPage === 1 ? colors.gray300 : colors.info} />
           </TouchableOpacity>
           {pages.map(p => (
             <TouchableOpacity key={p} style={[s.pageBtn, p === currentPage && s.pageBtnActive]}
@@ -196,7 +196,7 @@ export default function VoucherManagementScreen() {
           ))}
           <TouchableOpacity style={[s.pageBtn, currentPage === totalPages && s.pageBtnDisabled]}
             onPress={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-            <Ionicons name="chevron-forward" size={16} color={currentPage === totalPages ? '#D1D5DB' : '#3B82F6'} />
+            <Ionicons name="chevron-forward" size={16} color={currentPage === totalPages ? colors.gray300 : colors.info} />
           </TouchableOpacity>
         </View>
       </View>
@@ -207,7 +207,7 @@ export default function VoucherManagementScreen() {
     const isToggling = togglingId === item._id;
     return (
       <View style={[s.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={[s.colorStrip, { backgroundColor: item.backgroundColor || '#3B82F6' }]} />
+        <View style={[s.colorStrip, { backgroundColor: item.backgroundColor || colors.info }]} />
         <View style={s.cardBody}>
           <View style={s.cardTopRow}>
             <View style={{ flex: 1, marginRight: 8 }}>
@@ -216,32 +216,32 @@ export default function VoucherManagementScreen() {
             </View>
             <View style={s.badgeRow}>
               {item.isFeatured && (
-                <View style={[s.badge, { backgroundColor: '#FEF3C7' }]}>
-                  <Ionicons name="star" size={10} color="#F59E0B" />
+                <View style={[s.badge, { backgroundColor: colors.warningLight }]}>
+                  <Ionicons name="star" size={10} color={colors.warning} />
                   <Text style={[s.badgeText, { color: '#B45309' }]}>Featured</Text>
                 </View>
               )}
               {item.isNewlyAdded && (
-                <View style={[s.badge, { backgroundColor: '#DBEAFE' }]}>
+                <View style={[s.badge, { backgroundColor: colors.infoLighter }]}>
                   <Text style={[s.badgeText, { color: '#2563EB' }]}>New</Text>
                 </View>
               )}
             </View>
           </View>
           <View style={s.statsRow}>
-            <View style={[s.catBadge, { backgroundColor: '#F3F4F6' }]}>
+            <View style={[s.catBadge, { backgroundColor: colors.backgroundSecondary }]}>
               <Text style={s.catBadgeText}>{item.category}</Text>
             </View>
             <View style={s.statItem}>
-              <Ionicons name="cash-outline" size={13} color="#10B981" />
+              <Ionicons name="cash-outline" size={13} color={colors.success} />
               <Text style={s.statText}>{item.cashbackRate}%</Text>
             </View>
             <View style={s.statItem}>
-              <Ionicons name="cart-outline" size={13} color="#6B7280" />
+              <Ionicons name="cart-outline" size={13} color={colors.mutedDark} />
               <Text style={s.statText}>{item.purchaseCount ?? 0}</Text>
             </View>
             <View style={s.statItem}>
-              <Ionicons name="eye-outline" size={13} color="#6B7280" />
+              <Ionicons name="eye-outline" size={13} color={colors.mutedDark} />
               <Text style={s.statText}>{item.viewCount ?? 0}</Text>
             </View>
           </View>
@@ -258,7 +258,7 @@ export default function VoucherManagementScreen() {
           <View style={s.metaRow}>
             {item.store && (
               <View style={s.statItem}>
-                <Ionicons name="storefront-outline" size={12} color="#6B7280" />
+                <Ionicons name="storefront-outline" size={12} color={colors.mutedDark} />
                 <Text style={s.metaText}>{item.store.name}</Text>
               </View>
             )}
@@ -266,24 +266,24 @@ export default function VoucherManagementScreen() {
           </View>
           <View style={s.cardBottomRow}>
             <View style={s.toggleRow}>
-              {isToggling ? <ActivityIndicator size="small" color="#3B82F6" /> : (
+              {isToggling ? <ActivityIndicator size="small" color={colors.info} /> : (
                 <Switch value={item.isActive} onValueChange={() => handleToggleActive(item)}
-                  trackColor={{ false: '#E2E8F0', true: '#10B981' }} thumbColor="#FFFFFF" />
+                  trackColor={{ false: colors.border, true: colors.success }} thumbColor={colors.card} />
               )}
               <View style={[s.statusBadge, item.isActive ? s.activeBg : s.inactiveBg]}>
-                <Text style={{ fontSize: 11, fontWeight: '600', color: item.isActive ? '#059669' : '#6B7280' }}>
+                <Text style={{ fontSize: 11, fontWeight: '600', color: item.isActive ? colors.successDark : colors.mutedDark }}>
                   {item.isActive ? 'Active' : 'Inactive'}
                 </Text>
               </View>
             </View>
             <View style={s.cardActions}>
               <TouchableOpacity style={s.actionBtn} onPress={() => handleEdit(item)}>
-                <Ionicons name="create-outline" size={18} color="#3B82F6" />
-                <Text style={[s.actionText, { color: '#3B82F6' }]}>Edit</Text>
+                <Ionicons name="create-outline" size={18} color={colors.info} />
+                <Text style={[s.actionText, { color: colors.info }]}>Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity style={s.actionBtn} onPress={() => handleDelete(item)}>
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
-                <Text style={[s.actionText, { color: '#EF4444' }]}>Delete</Text>
+                <Ionicons name="trash-outline" size={18} color={colors.error} />
+                <Text style={[s.actionText, { color: colors.error }]}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -296,7 +296,7 @@ export default function VoucherManagementScreen() {
     <TextInput
       style={[s.formInput, opts?.multi && s.multiline, { color: colors.text, borderColor: colors.border }]}
       value={String(formData[key])} onChangeText={(v) => setFormData(p => ({ ...p, [key]: v }))}
-      placeholder={ph} placeholderTextColor="#9CA3AF"
+      placeholder={ph} placeholderTextColor={colors.muted}
       multiline={opts?.multi} keyboardType={opts?.num ? 'numeric' : 'default'}
     />
   );
@@ -312,7 +312,7 @@ export default function VoucherManagementScreen() {
             {editingVoucher ? 'Edit Voucher' : 'New Voucher'}
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
-            {isSaving ? <ActivityIndicator size="small" color="#3B82F6" /> : <Text style={s.saveBtn}>Save</Text>}
+            {isSaving ? <ActivityIndicator size="small" color={colors.info} /> : <Text style={s.saveBtn}>Save</Text>}
           </TouchableOpacity>
         </View>
         <ScrollView style={s.formScroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -323,7 +323,7 @@ export default function VoucherManagementScreen() {
           <View style={s.colorRow}>
             <View style={{ flex: 1, marginRight: 8 }}>
               <Text style={s.formLabel}>Background Color</Text>
-              {inp('backgroundColor', '#FFFFFF')}
+              {inp('backgroundColor', colors.card)}
             </View>
             <View style={{ flex: 1 }}>
               <Text style={s.formLabel}>Logo Color</Text>
@@ -354,13 +354,13 @@ export default function VoucherManagementScreen() {
             <Text style={s.formLabel}>Featured</Text>
             <Switch value={formData.isFeatured}
               onValueChange={(v) => setFormData(p => ({ ...p, isFeatured: v }))}
-              trackColor={{ false: '#E2E8F0', true: '#F59E0B' }} thumbColor="#FFFFFF" />
+              trackColor={{ false: colors.border, true: colors.warning }} thumbColor={colors.card} />
           </View>
           <View style={s.switchRow}>
             <Text style={s.formLabel}>Newly Added</Text>
             <Switch value={formData.isNewlyAdded}
               onValueChange={(v) => setFormData(p => ({ ...p, isNewlyAdded: v }))}
-              trackColor={{ false: '#E2E8F0', true: '#3B82F6' }} thumbColor="#FFFFFF" />
+              trackColor={{ false: colors.border, true: colors.info }} thumbColor={colors.card} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -372,18 +372,18 @@ export default function VoucherManagementScreen() {
       <View style={[s.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[s.headerTitle, { color: colors.text }]}>Voucher Management</Text>
         <TouchableOpacity style={s.createBtn} onPress={handleCreate}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={s.createBtnText}>Add Voucher</Text>
         </TouchableOpacity>
       </View>
       <View style={[s.searchBar, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <View style={[s.searchInput, { borderColor: colors.border, backgroundColor: colors.background }]}>
-          <Ionicons name="search-outline" size={18} color="#9CA3AF" />
+          <Ionicons name="search-outline" size={18} color={colors.muted} />
           <TextInput style={[s.searchTextInput, { color: colors.text }]} value={searchText}
-            onChangeText={setSearchText} placeholder="Search voucher brands..." placeholderTextColor="#9CA3AF" />
+            onChangeText={setSearchText} placeholder="Search voucher brands..." placeholderTextColor={colors.muted} />
           {searchText.length > 0 && (
             <TouchableOpacity onPress={() => setSearchText('')}>
-              <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+              <Ionicons name="close-circle" size={18} color={colors.muted} />
             </TouchableOpacity>
           )}
         </View>
@@ -399,7 +399,7 @@ export default function VoucherManagementScreen() {
           ))}
         </ScrollView>
         <View style={s.filterSubRow}>
-          <Text style={{ fontSize: 12, color: '#6B7280', marginRight: 6 }}>Status:</Text>
+          <Text style={{ fontSize: 12, color: colors.mutedDark, marginRight: 6 }}>Status:</Text>
           {STATUS_FILTERS.map(sf => (
             <TouchableOpacity key={sf.label}
               style={[s.activeChip, statusFilter === sf.value && s.activeChipSelected]}
@@ -408,7 +408,7 @@ export default function VoucherManagementScreen() {
             </TouchableOpacity>
           ))}
           <View style={{ width: 12 }} />
-          <Text style={{ fontSize: 12, color: '#6B7280', marginRight: 6 }}>Type:</Text>
+          <Text style={{ fontSize: 12, color: colors.mutedDark, marginRight: 6 }}>Type:</Text>
           {FEATURED_FILTERS.map(ff => (
             <TouchableOpacity key={ff.label}
               style={[s.activeChip, featuredFilter === ff.value && s.activeChipSelected]}
@@ -422,9 +422,9 @@ export default function VoucherManagementScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={loading
-          ? <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+          ? <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           : (<View style={s.emptyBox}>
-              <Ionicons name="gift-outline" size={48} color="#D1D5DB" />
+              <Ionicons name="gift-outline" size={48} color={colors.gray300} />
               <Text style={s.emptyText}>No vouchers found</Text>
               <Text style={s.emptySubtext}>Try adjusting your filters or create a new voucher</Text>
             </View>)}
@@ -439,22 +439,22 @@ const s = StyleSheet.create({
   container: { flex: 1 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1 },
   headerTitle: { fontSize: 22, fontWeight: '700' },
-  createBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#3B82F6', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4 },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  createBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.info, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
   searchBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1 },
   searchInput: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
   searchTextInput: { flex: 1, fontSize: 14, padding: 0 },
-  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   filterRow: { flexDirection: 'row', marginBottom: 6 },
-  filterChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: '#F3F4F6', marginRight: 8 },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  chipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  chipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: Colors.light.backgroundSecondary, marginRight: 8 },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  chipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  chipTextActive: { color: Colors.light.card, fontWeight: '600' },
   filterSubRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, flexWrap: 'wrap' },
-  activeChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: '#F3F4F6', marginRight: 6 },
-  activeChipSelected: { backgroundColor: '#3B82F6' },
-  activeChipText: { fontSize: 11, color: '#6B7280', fontWeight: '500' },
-  activeChipTextSelected: { color: '#FFF', fontWeight: '600' },
+  activeChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: Colors.light.backgroundSecondary, marginRight: 6 },
+  activeChipSelected: { backgroundColor: Colors.light.info },
+  activeChipText: { fontSize: 11, color: Colors.light.mutedDark, fontWeight: '500' },
+  activeChipTextSelected: { color: Colors.light.card, fontWeight: '600' },
   card: { borderRadius: 12, marginBottom: 10, borderWidth: 1, flexDirection: 'row', overflow: 'hidden' },
   colorStrip: { width: 5 },
   cardBody: { flex: 1, padding: 14 },
@@ -466,40 +466,40 @@ const s = StyleSheet.create({
   badgeText: { fontSize: 10, fontWeight: '600' },
   statsRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' },
   statItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  statText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
+  statText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
   catBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
-  catBadgeText: { fontSize: 11, fontWeight: '600', color: '#374151' },
+  catBadgeText: { fontSize: 11, fontWeight: '600', color: Colors.light.gray700 },
   denomRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 },
   denomPill: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
-  denomText: { fontSize: 11, fontWeight: '600', color: '#374151' },
-  moreText: { fontSize: 11, color: '#9CA3AF', alignSelf: 'center' },
+  denomText: { fontSize: 11, fontWeight: '600', color: Colors.light.gray700 },
+  moreText: { fontSize: 11, color: Colors.light.muted, alignSelf: 'center' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8 },
-  metaText: { fontSize: 11, color: '#9CA3AF' },
-  cardBottomRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10 },
+  metaText: { fontSize: 11, color: Colors.light.muted },
+  cardBottomRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10 },
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  activeBg: { backgroundColor: '#D1FAE5' },
-  inactiveBg: { backgroundColor: '#F3F4F6' },
+  activeBg: { backgroundColor: Colors.light.successLight },
+  inactiveBg: { backgroundColor: Colors.light.backgroundSecondary },
   cardActions: { flexDirection: 'row', gap: 12 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 4, paddingHorizontal: 6 },
   actionText: { fontSize: 12, fontWeight: '500' },
   paginationBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 4 },
   paginationInfo: { fontSize: 12 },
   paginationButtons: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  pageBtn: { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F3F4F6' },
-  pageBtnActive: { backgroundColor: '#3B82F6' },
+  pageBtn: { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.light.backgroundSecondary },
+  pageBtnActive: { backgroundColor: Colors.light.info },
   pageBtnDisabled: { opacity: 0.4 },
-  pageBtnText: { fontSize: 13, fontWeight: '500', color: '#374151' },
-  pageBtnTextActive: { color: '#FFFFFF', fontWeight: '600' },
+  pageBtnText: { fontSize: 13, fontWeight: '500', color: Colors.light.gray700 },
+  pageBtnTextActive: { color: Colors.light.card, fontWeight: '600' },
   emptyBox: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
-  emptySubtext: { fontSize: 12, color: '#D1D5DB', marginTop: 4 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
+  emptySubtext: { fontSize: 12, color: Colors.light.gray300, marginTop: 4 },
   modalContainer: { flex: 1 },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
   formInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14 },
   multiline: { minHeight: 100, textAlignVertical: 'top' },
   colorRow: { flexDirection: 'row' },

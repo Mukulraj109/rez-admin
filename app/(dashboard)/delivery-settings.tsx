@@ -46,9 +46,9 @@ interface GlobalSettings {
 type SectionKey = 'global' | 'zones' | 'timeslots';
 
 const SECTIONS: { key: SectionKey; title: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
-  { key: 'global', title: 'Global Delivery Settings', icon: 'settings', color: '#3B82F6' },
-  { key: 'zones', title: 'Delivery Zones', icon: 'map', color: '#10B981' },
-  { key: 'timeslots', title: 'Time Slots', icon: 'time', color: '#8B5CF6' },
+  { key: 'global', title: 'Global Delivery Settings', icon: 'settings', color: Colors.light.info },
+  { key: 'zones', title: 'Delivery Zones', icon: 'map', color: Colors.light.success },
+  { key: 'timeslots', title: 'Time Slots', icon: 'time', color: Colors.light.purple },
 ];
 
 // --- Default data ---
@@ -249,10 +249,10 @@ export default function DeliverySettingsScreen() {
             disabled={!dirty || saving}
           >
             {saving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="save" size={16} color="#FFF" />
+                <Ionicons name="save" size={16} color={colors.card} />
                 <Text style={styles.saveButtonText}>Save</Text>
               </>
             )}
@@ -406,12 +406,12 @@ export default function DeliverySettingsScreen() {
 
         {/* Bottom Save */}
         <TouchableOpacity
-          style={[styles.bottomSave, !dirty && { backgroundColor: '#9CA3AF' }]}
+          style={[styles.bottomSave, !dirty && { backgroundColor: colors.muted }]}
           onPress={handleSave}
           disabled={!dirty || saving}
         >
           {saving ? (
-            <ActivityIndicator size="small" color="#FFF" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <Text style={styles.bottomSaveText}>{dirty ? 'Save All Changes' : 'No Changes'}</Text>
           )}
@@ -435,10 +435,10 @@ const styles = StyleSheet.create({
   iconBtn: { padding: 8 },
   saveButton: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: '#1a3a52',
+    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: Colors.light.navy,
   },
-  saveButtonDisabled: { backgroundColor: '#9CA3AF' },
-  saveButtonText: { fontWeight: '600', color: '#FFF', fontSize: 14 },
+  saveButtonDisabled: { backgroundColor: Colors.light.muted },
+  saveButtonText: { fontWeight: '600', color: Colors.light.card, fontSize: 14 },
   scrollContent: { padding: 16, paddingBottom: 60 },
   card: { borderRadius: 12, marginBottom: 12, borderWidth: 1, overflow: 'hidden' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 8 },
@@ -462,6 +462,6 @@ const styles = StyleSheet.create({
   },
   addBtnText: { fontSize: 13, fontWeight: '600' },
   emptyText: { fontSize: 13, textAlign: 'center', paddingVertical: 16, fontStyle: 'italic' },
-  bottomSave: { backgroundColor: '#1a3a52', borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
-  bottomSaveText: { color: '#FFF', fontSize: 16, fontWeight: '700' },
+  bottomSave: { backgroundColor: Colors.light.navy, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
+  bottomSaveText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
 });

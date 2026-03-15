@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 interface FormFieldProps {
   label: string;
@@ -18,7 +19,7 @@ const FormField = React.memo(({ label, value, onChangeText, placeholder, keyboar
     <TextInput
       style={[
         small ? styles.inputSmall : styles.input,
-        { color: colors.text, borderColor: error ? '#EF4444' : colors.border },
+        { color: colors.text, borderColor: error ? Colors.light.error : colors.border },
       ]}
       value={value}
       onChangeText={onChangeText}
@@ -39,5 +40,5 @@ const styles = StyleSheet.create({
   labelSmall: { fontSize: 12, fontWeight: '600', marginBottom: 4 },
   input: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14 },
   inputSmall: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, fontSize: 13 },
-  errorText: { color: '#EF4444', fontSize: 11, marginTop: 2 },
+  errorText: { color: Colors.light.error, fontSize: 11, marginTop: 2 },
 });

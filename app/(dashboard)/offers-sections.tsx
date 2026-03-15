@@ -22,10 +22,10 @@ import { showAlert, showConfirm } from '../../utils/alert';
 type TabFilter = 'all' | 'offers' | 'cashback' | 'exclusive';
 
 const TAB_FILTERS: { key: TabFilter; label: string; icon: string; color: string }[] = [
-  { key: 'all', label: 'All', icon: 'albums', color: '#6366F1' },
-  { key: 'offers', label: 'Offers', icon: 'pricetag', color: '#10B981' },
-  { key: 'cashback', label: 'Cashback', icon: 'cash', color: '#F59E0B' },
-  { key: 'exclusive', label: 'Exclusive', icon: 'lock-closed', color: '#8B5CF6' },
+  { key: 'all', label: 'All', icon: 'albums', color: Colors.light.indigo },
+  { key: 'offers', label: 'Offers', icon: 'pricetag', color: Colors.light.success },
+  { key: 'cashback', label: 'Cashback', icon: 'cash', color: Colors.light.warning },
+  { key: 'exclusive', label: 'Exclusive', icon: 'lock-closed', color: Colors.light.purple },
 ];
 
 const SECTION_ICONS: Record<string, string> = {
@@ -224,23 +224,23 @@ export default function OffersSectionsScreen() {
           style={[styles.seedButton, { backgroundColor: colors.tint }]}
           onPress={handleSeed}
         >
-          <Ionicons name="sparkles" size={16} color="#fff" />
+          <Ionicons name="sparkles" size={16} color={colors.card} />
           <Text style={styles.seedButtonText}>Seed Defaults</Text>
         </TouchableOpacity>
       </View>
 
       {/* Stats Row */}
       <View style={styles.statsRow}>
-        <View style={[styles.statCard, { backgroundColor: isDark ? '#1E293B' : '#F0FDF4' }]}>
-          <Text style={[styles.statValue, { color: '#10B981' }]}>{enabledCount}</Text>
+        <View style={[styles.statCard, { backgroundColor: isDark ? colors.slateDark : colors.successLighter }]}>
+          <Text style={[styles.statValue, { color: colors.success }]}>{enabledCount}</Text>
           <Text style={[styles.statLabel, { color: colors.icon }]}>Enabled</Text>
         </View>
-        <View style={[styles.statCard, { backgroundColor: isDark ? '#1E293B' : '#FEF2F2' }]}>
-          <Text style={[styles.statValue, { color: '#EF4444' }]}>{disabledCount}</Text>
+        <View style={[styles.statCard, { backgroundColor: isDark ? colors.slateDark : colors.errorLight }]}>
+          <Text style={[styles.statValue, { color: colors.error }]}>{disabledCount}</Text>
           <Text style={[styles.statLabel, { color: colors.icon }]}>Disabled</Text>
         </View>
-        <View style={[styles.statCard, { backgroundColor: isDark ? '#1E293B' : '#EFF6FF' }]}>
-          <Text style={[styles.statValue, { color: '#3B82F6' }]}>{sections.length}</Text>
+        <View style={[styles.statCard, { backgroundColor: isDark ? colors.slateDark : colors.infoLight }]}>
+          <Text style={[styles.statValue, { color: colors.info }]}>{sections.length}</Text>
           <Text style={[styles.statLabel, { color: colors.icon }]}>Total</Text>
         </View>
       </View>
@@ -253,7 +253,7 @@ export default function OffersSectionsScreen() {
             style={[
               styles.tabChip,
               {
-                backgroundColor: activeTab === tab.key ? tab.color : isDark ? '#1E293B' : '#F1F5F9',
+                backgroundColor: activeTab === tab.key ? tab.color : isDark ? colors.slateDark : colors.slate,
               },
             ]}
             onPress={() => setActiveTab(tab.key)}
@@ -261,12 +261,12 @@ export default function OffersSectionsScreen() {
             <Ionicons
               name={tab.icon as any}
               size={14}
-              color={activeTab === tab.key ? '#fff' : colors.icon}
+              color={activeTab === tab.key ? colors.card : colors.icon}
             />
             <Text
               style={[
                 styles.tabChipText,
-                { color: activeTab === tab.key ? '#fff' : colors.text },
+                { color: activeTab === tab.key ? colors.card : colors.text },
               ]}
             >
               {tab.label} ({activeTab === 'all'
@@ -309,19 +309,19 @@ export default function OffersSectionsScreen() {
                 style={[
                   styles.sectionCard,
                   {
-                    backgroundColor: isDark ? '#1E293B' : '#fff',
-                    borderColor: isDark ? '#334155' : '#E2E8F0',
+                    backgroundColor: isDark ? colors.slateDark : colors.card,
+                    borderColor: isDark ? Colors.dark.border : colors.border,
                     opacity: section.isEnabled ? 1 : 0.6,
                   },
                 ]}
               >
                 <View style={styles.sectionHeader}>
                   <View style={styles.sectionInfo}>
-                    <View style={[styles.iconCircle, { backgroundColor: section.isEnabled ? '#DBEAFE' : '#F1F5F9' }]}>
+                    <View style={[styles.iconCircle, { backgroundColor: section.isEnabled ? colors.infoLighter : colors.slate }]}>
                       <Ionicons
                         name={(SECTION_ICONS[section.sectionKey] || 'list') as any}
                         size={18}
-                        color={section.isEnabled ? '#3B82F6' : '#94A3B8'}
+                        color={section.isEnabled ? colors.info : colors.slateMedium}
                       />
                     </View>
                     <View style={styles.sectionText}>
@@ -337,8 +337,8 @@ export default function OffersSectionsScreen() {
                     value={section.isEnabled}
                     onValueChange={() => handleToggle(section)}
                     disabled={isUpdating}
-                    trackColor={{ false: '#CBD5E1', true: '#86EFAC' }}
-                    thumbColor={section.isEnabled ? '#10B981' : '#94A3B8'}
+                    trackColor={{ false: colors.slateLight, true: '#86EFAC' }}
+                    thumbColor={section.isEnabled ? colors.success : colors.slateMedium}
                   />
                 </View>
 
@@ -362,10 +362,10 @@ export default function OffersSectionsScreen() {
                           onPress={() => handleMaxItemsSave(section.sectionKey)}
                           disabled={isUpdating}
                         >
-                          <Ionicons name="checkmark-circle" size={22} color="#10B981" />
+                          <Ionicons name="checkmark-circle" size={22} color={colors.success} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setEditingMaxItems(null)}>
-                          <Ionicons name="close-circle" size={22} color="#EF4444" />
+                          <Ionicons name="close-circle" size={22} color={colors.error} />
                         </TouchableOpacity>
                       </View>
                     ) : (
@@ -394,7 +394,7 @@ export default function OffersSectionsScreen() {
                       <Ionicons
                         name="chevron-up"
                         size={18}
-                        color={isFirst ? '#CBD5E1' : colors.tint}
+                        color={isFirst ? colors.slateLight : colors.tint}
                       />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -405,7 +405,7 @@ export default function OffersSectionsScreen() {
                       <Ionicons
                         name="chevron-down"
                         size={18}
-                        color={isLast ? '#CBD5E1' : colors.tint}
+                        color={isLast ? colors.slateLight : colors.tint}
                       />
                     </TouchableOpacity>
                   </View>
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 6,
   },
-  seedButtonText: { color: '#fff', fontSize: 13, fontWeight: '600' },
+  seedButtonText: { color: Colors.light.card, fontSize: 13, fontWeight: '600' },
   statsRow: {
     flexDirection: 'row',
     gap: 10,
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: Colors.light.border,
   },
   maxItemsRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   actionLabel: { fontSize: 12 },
@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: Colors.light.slate,
   },
   reorderBtnDisabled: { opacity: 0.3 },
   updatingOverlay: {

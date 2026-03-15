@@ -173,8 +173,8 @@ export default function StoreCollectionsScreen() {
             Manage delivery category display on the Store page
           </Text>
         </View>
-        <TouchableOpacity style={styles.seedButton} onPress={handleSeed}>
-          <Ionicons name="flash" size={16} color="#FFFFFF" />
+        <TouchableOpacity style={[styles.seedButton, { backgroundColor: colors.success }]} onPress={handleSeed}>
+          <Ionicons name="flash" size={16} color={colors.card} />
           <Text style={styles.seedButtonText}>Seed Defaults</Text>
         </TouchableOpacity>
       </View>
@@ -209,8 +209,8 @@ export default function StoreCollectionsScreen() {
                   <Switch
                     value={config.isEnabled}
                     onValueChange={() => handleToggleEnabled(config)}
-                    trackColor={{ false: '#D1D5DB', true: '#86EFAC' }}
-                    thumbColor={config.isEnabled ? '#10B981' : '#9CA3AF'}
+                    trackColor={{ false: colors.gray300, true: '#86EFAC' }}
+                    thumbColor={config.isEnabled ? colors.success : colors.icon}
                   />
                   <TouchableOpacity
                     style={styles.editButton}
@@ -322,13 +322,12 @@ const styles = StyleSheet.create({
   seedButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#10B981',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
     gap: 6,
   },
-  seedButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
+  seedButtonText: { color: Colors.light.card, fontSize: 13, fontWeight: '600' },
   scrollView: { flex: 1, paddingHorizontal: 16, paddingTop: 12 },
   emptyContainer: { alignItems: 'center', paddingVertical: 60, gap: 12 },
   emptyText: { fontSize: 14, textAlign: 'center', maxWidth: 280 },

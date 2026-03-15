@@ -273,7 +273,7 @@ export default function EventRewardsScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={20} color="#FFF" />
+        <Ionicons name="add" size={20} color={colors.card} />
         <Text style={styles.createBtnText}>Add Config</Text>
       </TouchableOpacity>
     </View>
@@ -299,8 +299,8 @@ export default function EventRewardsScreen() {
       <View style={[styles.globalCard, { backgroundColor: colors.card }]}>
         <View style={styles.globalCardHeader}>
           <View style={styles.globalCardTitleRow}>
-            <View style={[styles.globalIconBox, { backgroundColor: '#3B82F620' }]}>
-              <Ionicons name="globe" size={24} color="#3B82F6" />
+            <View style={[styles.globalIconBox, { backgroundColor: `${colors.info}20` }]}>
+              <Ionicons name="globe" size={24} color={colors.info} />
             </View>
             <View>
               <Text style={[styles.globalTitle, { color: colors.text }]}>Global Default Config</Text>
@@ -311,13 +311,13 @@ export default function EventRewardsScreen() {
           </View>
           <View style={[
             styles.activeChip,
-            { backgroundColor: globalConfig.isActive ? '#10B98115' : '#6B728015' },
+            { backgroundColor: globalConfig.isActive ? `${colors.success}15` : `${colors.mutedDark}15` },
           ]}>
             <View style={[
               styles.activeDot,
-              { backgroundColor: globalConfig.isActive ? '#10B981' : '#6B7280' },
+              { backgroundColor: globalConfig.isActive ? colors.success : colors.mutedDark },
             ]} />
-            <Text style={{ color: globalConfig.isActive ? '#10B981' : '#6B7280', fontSize: 11, fontWeight: '600' }}>
+            <Text style={{ color: globalConfig.isActive ? colors.success : colors.mutedDark, fontSize: 11, fontWeight: '600' }}>
               {globalConfig.isActive ? 'Active' : 'Inactive'}
             </Text>
           </View>
@@ -331,7 +331,7 @@ export default function EventRewardsScreen() {
               <Text style={[styles.rewardPreviewText, { color: colors.text }]}>
                 {getActionLabel(reward.action)}
               </Text>
-              <Text style={[styles.rewardPreviewCoins, { color: '#F59E0B' }]}>
+              <Text style={[styles.rewardPreviewCoins, { color: colors.warning }]}>
                 {reward.coins} coins
               </Text>
             </View>
@@ -345,7 +345,7 @@ export default function EventRewardsScreen() {
             <Text style={[styles.summaryLabel, { color: colors.icon }]}>Rewards</Text>
           </View>
           <View style={styles.summaryItem}>
-            <Text style={[styles.summaryValue, { color: '#F59E0B' }]}>
+            <Text style={[styles.summaryValue, { color: colors.warning }]}>
               {getTotalCoins(globalConfig.rewards)}
             </Text>
             <Text style={[styles.summaryLabel, { color: colors.icon }]}>Total Coins</Text>
@@ -355,18 +355,18 @@ export default function EventRewardsScreen() {
         {/* Actions */}
         <View style={styles.globalActions}>
           <TouchableOpacity
-            style={[styles.globalActionBtn, { backgroundColor: '#3B82F610' }]}
+            style={[styles.globalActionBtn, { backgroundColor: `${colors.info}10` }]}
             onPress={() => handleEdit(globalConfig)}
           >
-            <Ionicons name="pencil" size={16} color="#3B82F6" />
-            <Text style={[styles.globalActionText, { color: '#3B82F6' }]}>Edit</Text>
+            <Ionicons name="pencil" size={16} color={colors.info} />
+            <Text style={[styles.globalActionText, { color: colors.info }]}>Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.globalActionBtn, { backgroundColor: '#EF444410' }]}
+            style={[styles.globalActionBtn, { backgroundColor: `${colors.error}10` }]}
             onPress={() => handleDelete(globalConfig)}
           >
-            <Ionicons name="trash" size={16} color="#EF4444" />
-            <Text style={[styles.globalActionText, { color: '#EF4444' }]}>Delete</Text>
+            <Ionicons name="trash" size={16} color={colors.error} />
+            <Text style={[styles.globalActionText, { color: colors.error }]}>Delete</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -389,8 +389,8 @@ export default function EventRewardsScreen() {
               </Text>
             </View>
             <View style={styles.metaChip}>
-              <Ionicons name="logo-bitcoin" size={11} color="#F59E0B" />
-              <Text style={[styles.metaText, { color: '#F59E0B' }]}>
+              <Ionicons name="logo-bitcoin" size={11} color={colors.warning} />
+              <Text style={[styles.metaText, { color: colors.warning }]}>
                 {getTotalCoins(item.rewards)} coins
               </Text>
             </View>
@@ -398,13 +398,13 @@ export default function EventRewardsScreen() {
         </View>
         <View style={[
           styles.activeChip,
-          { backgroundColor: item.isActive ? '#10B98115' : '#6B728015' },
+          { backgroundColor: item.isActive ? `${colors.success}15` : `${colors.mutedDark}15` },
         ]}>
           <View style={[
             styles.activeDot,
-            { backgroundColor: item.isActive ? '#10B981' : '#6B7280' },
+            { backgroundColor: item.isActive ? colors.success : colors.mutedDark },
           ]} />
-          <Text style={{ color: item.isActive ? '#10B981' : '#6B7280', fontSize: 11, fontWeight: '600' }}>
+          <Text style={{ color: item.isActive ? colors.success : colors.mutedDark, fontSize: 11, fontWeight: '600' }}>
             {item.isActive ? 'Active' : 'Inactive'}
           </Text>
         </View>
@@ -418,7 +418,7 @@ export default function EventRewardsScreen() {
             <Text style={[styles.rewardItemAction, { color: colors.text }]} numberOfLines={1}>
               {getActionLabel(reward.action)}
             </Text>
-            <Text style={[styles.rewardItemCoins, { color: '#F59E0B' }]}>
+            <Text style={[styles.rewardItemCoins, { color: colors.warning }]}>
               {reward.coins}c
             </Text>
             {reward.dailyLimit && (
@@ -427,7 +427,7 @@ export default function EventRewardsScreen() {
               </Text>
             )}
             {reward.requiresVerification && (
-              <Ionicons name="shield-checkmark" size={12} color="#8B5CF6" />
+              <Ionicons name="shield-checkmark" size={12} color={colors.purple} />
             )}
           </View>
         ))}
@@ -451,16 +451,16 @@ export default function EventRewardsScreen() {
       {/* Actions */}
       <View style={[styles.actionRow, { borderTopColor: colors.border }]}>
         <TouchableOpacity
-          style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+          style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
           onPress={() => handleEdit(item)}
         >
-          <Ionicons name="pencil" size={16} color="#3B82F6" />
+          <Ionicons name="pencil" size={16} color={colors.info} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
+          style={[styles.actionIconBtn, { backgroundColor: `${colors.error}10` }]}
           onPress={() => handleDelete(item)}
         >
-          <Ionicons name="trash" size={16} color="#EF4444" />
+          <Ionicons name="trash" size={16} color={colors.error} />
         </TouchableOpacity>
       </View>
     </View>
@@ -505,7 +505,7 @@ export default function EventRewardsScreen() {
             disabled={isSaving}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Save</Text>
             )}
@@ -557,7 +557,7 @@ export default function EventRewardsScreen() {
                 style={[styles.addRewardBtn, { backgroundColor: colors.tint }]}
                 onPress={addRewardItem}
               >
-                <Ionicons name="add" size={16} color="#FFF" />
+                <Ionicons name="add" size={16} color={colors.card} />
                 <Text style={styles.addRewardBtnText}>Add</Text>
               </TouchableOpacity>
             </View>
@@ -570,7 +570,7 @@ export default function EventRewardsScreen() {
                 <View style={styles.rewardFormHeader}>
                   <Text style={[styles.rewardFormIndex, { color: colors.icon }]}>#{index + 1}</Text>
                   <TouchableOpacity onPress={() => removeRewardItem(index)}>
-                    <Ionicons name="close-circle" size={20} color="#EF4444" />
+                    <Ionicons name="close-circle" size={20} color={colors.error} />
                   </TouchableOpacity>
                 </View>
 
@@ -591,12 +591,12 @@ export default function EventRewardsScreen() {
                         <Ionicons
                           name={action.icon as any}
                           size={12}
-                          color={reward.action === action.value ? '#FFF' : colors.icon}
+                          color={reward.action === action.value ? colors.card : colors.icon}
                         />
                         <Text
                           style={[
                             styles.actionChipText,
-                            { color: reward.action === action.value ? '#FFF' : colors.text },
+                            { color: reward.action === action.value ? colors.card : colors.text },
                           ]}
                           numberOfLines={1}
                         >
@@ -911,7 +911,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   createBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1195,7 +1195,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1296,7 +1296,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   addRewardBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontSize: 12,
     fontWeight: '600',
   },

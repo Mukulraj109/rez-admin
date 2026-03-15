@@ -63,7 +63,7 @@ const VERIFICATION_TYPES: { value: VerificationType; label: string }[] = [
 const COMMON_EMOJIS = ['💳', '📍', '🔥', '🎁', '⚡', '💰', '🪙', '🎉', '📄', '🎓', '💼', '👩', '🎂', '👴', '🎖️', '🛍️', '✨', '🏷️'];
 
 const GRADIENT_PRESETS = [
-  ['#FFD700', '#FFA500'],
+  [Colors.light.goldBright, '#FFA500'],
   ['#4CAF50', '#2E7D32'],
   ['#FF5722', '#D84315'],
   ['#9C27B0', '#6A1B9A'],
@@ -84,7 +84,7 @@ const DEFAULT_ITEM: Partial<CreateItemRequest> = {
   subtitle: '',
   icon: '🛍️',
   iconType: 'emoji',
-  gradientColors: ['#FFD700', '#FFA500'],
+  gradientColors: [Colors.light.goldBright, '#FFA500'],
   navigationPath: '/offers',
   showCount: true,
   countLabel: 'offers',
@@ -313,7 +313,7 @@ export default function HomepageDealsScreen() {
     return (
       <View style={[styles.itemCard, { backgroundColor: colors.card }]}>
         {/* Preview */}
-        <View style={[styles.itemPreview, { backgroundColor: item.gradientColors?.[0] || '#FFD700' }]}>
+        <View style={[styles.itemPreview, { backgroundColor: item.gradientColors?.[0] || colors.goldBright }]}>
           <Text style={styles.itemEmoji}>{item.icon}</Text>
         </View>
 
@@ -335,22 +335,22 @@ export default function HomepageDealsScreen() {
             onPress={() => handleMoveItem(item, 'up')}
             disabled={isFirst}
           >
-            <Ionicons name="chevron-up" size={18} color={isFirst ? '#ccc' : colors.text} />
+            <Ionicons name="chevron-up" size={18} color={isFirst ? colors.gray300 : colors.text} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.moveBtn, isLast && styles.moveBtnDisabled]}
             onPress={() => handleMoveItem(item, 'down')}
             disabled={isLast}
           >
-            <Ionicons name="chevron-down" size={18} color={isLast ? '#ccc' : colors.text} />
+            <Ionicons name="chevron-down" size={18} color={isLast ? colors.gray300 : colors.text} />
           </TouchableOpacity>
 
           {/* Toggle */}
           <Switch
             value={item.isActive}
             onValueChange={() => handleToggleItem(item)}
-            trackColor={{ false: '#ccc', true: '#4CAF50' }}
-            thumbColor="#fff"
+            trackColor={{ false: colors.gray300, true: colors.success }}
+            thumbColor={colors.card}
             style={styles.itemSwitch}
           />
 
@@ -361,7 +361,7 @@ export default function HomepageDealsScreen() {
 
           {/* Delete */}
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleDeleteItem(item)}>
-            <Ionicons name="trash-outline" size={20} color="#EF4444" />
+            <Ionicons name="trash-outline" size={20} color={colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -387,7 +387,7 @@ export default function HomepageDealsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.card }]}>
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <View>
           <Text style={[styles.headerTitle, { color: colors.text }]}>Homepage Deals</Text>
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
@@ -398,18 +398,18 @@ export default function HomepageDealsScreen() {
           style={[styles.configBtn, { backgroundColor: colors.primary }]}
           onPress={() => setShowConfigModal(true)}
         >
-          <Ionicons name="settings-outline" size={20} color="#fff" />
+          <Ionicons name="settings-outline" size={20} color={colors.card} />
         </TouchableOpacity>
       </View>
 
       {/* Stats */}
       {stats && (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statsContainer}>
-          {renderStatCard('Total Items', stats.total, 'layers', '#3B82F6')}
-          {renderStatCard('Active', stats.active, 'checkmark-circle', '#22C55E')}
-          {renderStatCard('Impressions', stats.totalImpressions.toLocaleString(), 'eye', '#8B5CF6')}
-          {renderStatCard('Clicks', stats.totalClicks.toLocaleString(), 'hand-left', '#F59E0B')}
-          {renderStatCard('CTR', `${stats.ctr}%`, 'trending-up', '#EC4899')}
+          {renderStatCard('Total Items', stats.total, 'layers', colors.info)}
+          {renderStatCard('Active', stats.active, 'checkmark-circle', colors.success)}
+          {renderStatCard('Impressions', stats.totalImpressions.toLocaleString(), 'eye', colors.purple)}
+          {renderStatCard('Clicks', stats.totalClicks.toLocaleString(), 'hand-left', colors.warning)}
+          {renderStatCard('CTR', `${stats.ctr}%`, 'trending-up', colors.pink)}
         </ScrollView>
       )}
 
@@ -428,12 +428,12 @@ export default function HomepageDealsScreen() {
               <Ionicons
                 name={tab.icon as any}
                 size={16}
-                color={activeFilterTab === tab.key ? '#fff' : colors.textSecondary}
+                color={activeFilterTab === tab.key ? colors.card : colors.textSecondary}
               />
               <Text
                 style={[
                   styles.tabText,
-                  { color: activeFilterTab === tab.key ? '#fff' : colors.textSecondary },
+                  { color: activeFilterTab === tab.key ? colors.card : colors.textSecondary },
                 ]}
               >
                 {tab.label}
@@ -448,7 +448,7 @@ export default function HomepageDealsScreen() {
           style={[styles.addBtn, { backgroundColor: colors.primary }]}
           onPress={handleCreateItem}
         >
-          <Ionicons name="add" size={24} color="#fff" />
+          <Ionicons name="add" size={24} color={colors.card} />
         </TouchableOpacity>
       </View>
 
@@ -481,7 +481,7 @@ export default function HomepageDealsScreen() {
       <Modal visible={showConfigModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <View style={styles.modalHeader}>
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>Section Settings</Text>
               <TouchableOpacity onPress={() => setShowConfigModal(false)}>
                 <Ionicons name="close" size={24} color={colors.text} />
@@ -514,12 +514,12 @@ export default function HomepageDealsScreen() {
                 <Switch
                   value={configForm.isActive}
                   onValueChange={val => setConfigForm(f => ({ ...f, isActive: val }))}
-                  trackColor={{ false: '#ccc', true: '#4CAF50' }}
+                  trackColor={{ false: colors.gray300, true: colors.success }}
                 />
               </View>
             </ScrollView>
 
-            <View style={styles.modalFooter}>
+            <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
               <TouchableOpacity
                 style={[styles.modalBtn, styles.cancelBtn]}
                 onPress={() => setShowConfigModal(false)}
@@ -532,7 +532,7 @@ export default function HomepageDealsScreen() {
                 disabled={isSaving}
               >
                 {isSaving ? (
-                  <ActivityIndicator size="small" color="#fff" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
                   <Text style={styles.saveBtnText}>Save</Text>
                 )}
@@ -546,7 +546,7 @@ export default function HomepageDealsScreen() {
       <Modal visible={showItemModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, styles.itemModalContent, { backgroundColor: colors.card }]}>
-            <View style={styles.modalHeader}>
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {editingItem ? 'Edit Item' : 'Add Item'}
               </Text>
@@ -571,7 +571,7 @@ export default function HomepageDealsScreen() {
                     <Text
                       style={[
                         styles.segmentText,
-                        { color: itemFormData.tabType === tab ? '#fff' : colors.text },
+                        { color: itemFormData.tabType === tab ? colors.card : colors.text },
                       ]}
                     >
                       {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -651,7 +651,7 @@ export default function HomepageDealsScreen() {
                 <Switch
                   value={itemFormData.showCount}
                   onValueChange={val => setItemFormData(f => ({ ...f, showCount: val }))}
-                  trackColor={{ false: '#ccc', true: '#4CAF50' }}
+                  trackColor={{ false: colors.gray300, true: colors.success }}
                 />
               </View>
 
@@ -691,7 +691,7 @@ export default function HomepageDealsScreen() {
                     <Switch
                       value={itemFormData.requiresVerification}
                       onValueChange={val => setItemFormData(f => ({ ...f, requiresVerification: val }))}
-                      trackColor={{ false: '#ccc', true: '#4CAF50' }}
+                      trackColor={{ false: colors.gray300, true: colors.success }}
                     />
                   </View>
 
@@ -711,7 +711,7 @@ export default function HomepageDealsScreen() {
                             <Text
                               style={[
                                 styles.verificationBtnText,
-                                { color: itemFormData.verificationType === vt.value ? '#fff' : colors.text },
+                                { color: itemFormData.verificationType === vt.value ? colors.card : colors.text },
                               ]}
                             >
                               {vt.label}
@@ -732,12 +732,12 @@ export default function HomepageDealsScreen() {
                 <Switch
                   value={itemFormData.isActive}
                   onValueChange={val => setItemFormData(f => ({ ...f, isActive: val }))}
-                  trackColor={{ false: '#ccc', true: '#4CAF50' }}
+                  trackColor={{ false: colors.gray300, true: colors.success }}
                 />
               </View>
             </ScrollView>
 
-            <View style={styles.modalFooter}>
+            <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
               <TouchableOpacity
                 style={[styles.modalBtn, styles.cancelBtn]}
                 onPress={() => { setShowItemModal(false); setEditingItem(null); }}
@@ -750,7 +750,7 @@ export default function HomepageDealsScreen() {
                 disabled={isSaving}
               >
                 {isSaving ? (
-                  <ActivityIndicator size="small" color="#fff" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
                   <Text style={styles.saveBtnText}>{editingItem ? 'Update' : 'Create'}</Text>
                 )}
@@ -782,7 +782,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
   },
   headerTitle: {
     fontSize: 20,
@@ -839,7 +838,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   tabText: {
     fontSize: 13,
@@ -919,7 +918,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   emptyBtnText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontWeight: '600',
   },
   modalOverlay: {
@@ -941,7 +940,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
   },
   modalTitle: {
     fontSize: 18,
@@ -964,7 +962,7 @@ const styles = StyleSheet.create({
   },
   cancelBtn: {
     marginRight: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   cancelBtnText: {
     fontWeight: '600',
@@ -975,7 +973,7 @@ const styles = StyleSheet.create({
   },
   saveBtnText: {
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.light.card,
   },
   inputLabel: {
     fontSize: 13,
@@ -996,7 +994,7 @@ const styles = StyleSheet.create({
   },
   segmentedControl: {
     flexDirection: 'row',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.backgroundSecondary,
     borderRadius: 10,
     padding: 4,
   },
@@ -1021,7 +1019,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   emojiBtnText: {
     fontSize: 22,
@@ -1055,7 +1053,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 8,
     marginBottom: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   verificationBtnText: {
     fontSize: 12,

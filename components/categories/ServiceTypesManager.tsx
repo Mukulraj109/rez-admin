@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PageConfig, FILTER_FIELD_OPTIONS } from '../../services/api/categories';
 import FormField from './FormField';
+import { Colors } from '../../constants/Colors';
 import IconInput from './IconInput';
 import ChipSelector from './ChipSelector';
 import ColorInput from './ColorInput';
@@ -11,7 +12,7 @@ import { showConfirm } from '../../utils/alert';
 interface ServiceTypesManagerProps {
   pageConfig: PageConfig;
   setPageConfig: React.Dispatch<React.SetStateAction<PageConfig>>;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 const ServiceTypesManager = React.memo(({ pageConfig, setPageConfig, colors }: ServiceTypesManagerProps) => {
@@ -20,7 +21,7 @@ const ServiceTypesManager = React.memo(({ pageConfig, setPageConfig, colors }: S
       ...prev,
       serviceTypes: [...prev.serviceTypes, {
         id: `st-${Date.now()}`, label: 'New Service', icon: 'bicycle-outline',
-        description: '', filterField: 'homeDelivery', color: '#3B82F6', gradient: ['#3B82F6', '#60A5FA'],
+        description: '', filterField: 'homeDelivery', color: colors.info, gradient: [colors.info, '#60A5FA'],
         enabled: true, sortOrder: prev.serviceTypes.length,
       }],
     }));
@@ -53,7 +54,7 @@ const ServiceTypesManager = React.memo(({ pageConfig, setPageConfig, colors }: S
           <View style={styles.cardHeader}>
             <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
             <TouchableOpacity onPress={() => removeServiceType(index)}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
             </TouchableOpacity>
           </View>
 
@@ -79,14 +80,14 @@ const ServiceTypesManager = React.memo(({ pageConfig, setPageConfig, colors }: S
 
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <ColorInput label="Color" value={st.color || '#3B82F6'} onChange={(v) => updateST(index, 'color', v)} placeholder="#3B82F6" colors={colors} small />
+              <ColorInput label="Color" value={st.color || colors.info} onChange={(v) => updateST(index, 'color', v)} placeholder={colors.info} colors={colors} small />
             </View>
             <View style={{ flex: 1 }}>
               <ColorInput label="Gradient Start" value={st.gradient?.[0] || ''} onChange={(v) => {
                 const g = [...(st.gradient || ['', ''])];
                 g[0] = v;
                 updateST(index, 'gradient', g);
-              }} placeholder="#3B82F6" colors={colors} small />
+              }} placeholder={colors.info} colors={colors} small />
             </View>
           </View>
           <ColorInput label="Gradient End" value={st.gradient?.[1] || ''} onChange={(v) => {
@@ -110,8 +111,8 @@ const ServiceTypesManager = React.memo(({ pageConfig, setPageConfig, colors }: S
             <Switch
               value={st.enabled}
               onValueChange={(v) => updateST(index, 'enabled', v)}
-              trackColor={{ false: '#D1D5DB', true: `${colors.success}80` }}
-              thumbColor={st.enabled ? colors.success : '#9CA3AF'}
+              trackColor={{ false: colors.gray300, true: `${colors.success}80` }}
+              thumbColor={st.enabled ? colors.success : Colors.light.icon}
             />
           </View>
         </View>

@@ -21,21 +21,21 @@ import { socialImpactService, Sponsor, SponsorBudget, INDUSTRIES } from '../../s
 // ==================== CONSTANTS ====================
 
 const INDUSTRY_COLORS: Record<string, string> = {
-  technology: '#3B82F6',
-  healthcare: '#10B981',
-  finance: '#8B5CF6',
-  retail: '#F59E0B',
-  manufacturing: '#6366F1',
-  fmcg: '#EC4899',
+  technology: Colors.light.info,
+  healthcare: Colors.light.success,
+  finance: Colors.light.purple,
+  retail: Colors.light.warning,
+  manufacturing: Colors.light.indigo,
+  fmcg: Colors.light.pink,
   energy: '#14B8A6',
-  education: '#F97316',
-  hospitality: '#06B6D4',
-  other: '#6B7280',
+  education: Colors.light.orange,
+  hospitality: Colors.light.cyan,
+  other: Colors.light.mutedDark,
 };
 
 const LOGO_COLORS = [
-  '#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444',
-  '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#06B6D4',
+  Colors.light.info, Colors.light.success, Colors.light.purple, Colors.light.warning, Colors.light.error,
+  Colors.light.pink, '#14B8A6', Colors.light.orange, Colors.light.indigo, Colors.light.cyan,
 ];
 
 interface SponsorFormData {
@@ -527,7 +527,7 @@ export default function SponsorsScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreate}
       >
-        <Ionicons name="add-circle-outline" size={18} color="#FFF" />
+        <Ionicons name="add-circle-outline" size={18} color={colors.card} />
         <Text style={styles.createBtnText}>New Sponsor</Text>
       </TouchableOpacity>
     </View>
@@ -539,7 +539,7 @@ export default function SponsorsScreen() {
 
   const renderSponsorItem = useCallback(({ item }: { item: Sponsor }) => {
     const logoColor = getLogoColor(item.name);
-    const industryColor = INDUSTRY_COLORS[item.industry || 'other'] || '#6B7280';
+    const industryColor = INDUSTRY_COLORS[item.industry || 'other'] || colors.mutedDark;
     const isProcessing = processing === item._id;
 
     return (
@@ -615,8 +615,8 @@ export default function SponsorsScreen() {
             </Text>
           </View>
           <View style={styles.metaChip}>
-            <Ionicons name="logo-bitcoin" size={13} color="#F59E0B" />
-            <Text style={[styles.metaText, { color: '#F59E0B', fontWeight: '700' }]}>
+            <Ionicons name="logo-bitcoin" size={13} color={colors.warning} />
+            <Text style={[styles.metaText, { color: colors.warning, fontWeight: '700' }]}>
               {formatNumber(item.totalCoinsDistributed || 0)} coins
             </Text>
           </View>
@@ -722,7 +722,7 @@ export default function SponsorsScreen() {
               style={[styles.modalSaveBtn, { backgroundColor: colors.tint, opacity: isSaving ? 0.6 : 1 }]}
             >
               {isSaving ? (
-                <ActivityIndicator size="small" color="#FFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <Text style={styles.modalSaveBtnText}>Save</Text>
               )}
@@ -876,7 +876,7 @@ export default function SponsorsScreen() {
                 <View style={styles.selectRow}>
                   {INDUSTRIES.map(industry => {
                     const isSelected = form.industry === industry;
-                    const indColor = INDUSTRY_COLORS[industry] || '#6B7280';
+                    const indColor = INDUSTRY_COLORS[industry] || colors.mutedDark;
                     return (
                       <TouchableOpacity
                         key={industry}
@@ -1032,10 +1032,10 @@ export default function SponsorsScreen() {
                 disabled={isFunding}
               >
                 {isFunding ? (
-                  <ActivityIndicator size="small" color="#FFF" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
                   <>
-                    <Ionicons name="wallet-outline" size={18} color="#FFF" />
+                    <Ionicons name="wallet-outline" size={18} color={colors.card} />
                     <Text style={styles.fundNowBtnText}>Fund Now</Text>
                   </>
                 )}
@@ -1213,7 +1213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   countBadgeText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -1284,7 +1284,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   createBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1498,7 +1498,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1638,7 +1638,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   fundNowBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '700',
     fontSize: 15,
   },

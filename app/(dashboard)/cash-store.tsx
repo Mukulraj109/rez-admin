@@ -94,7 +94,7 @@ export default function CashStoreScreen() {
   const [campaignForm, setCampaignForm] = useState({
     title: '', subtitle: '', description: '', multiplier: '2',
     startTime: '', endTime: '', terms: '', minOrderValue: '0',
-    maxCashback: '0', backgroundColor: '#10B981', isActive: true,
+    maxCashback: '0', backgroundColor: colors.success, isActive: true,
   });
 
   // ─── Coin Drops State ──────────────────────────────────────
@@ -392,14 +392,14 @@ export default function CashStoreScreen() {
         terms: campaign.terms?.join('\n') || '',
         minOrderValue: campaign.minOrderValue?.toString() || '0',
         maxCashback: campaign.maxCashback?.toString() || '0',
-        backgroundColor: campaign.backgroundColor || '#10B981', isActive: campaign.isActive,
+        backgroundColor: campaign.backgroundColor || colors.success, isActive: campaign.isActive,
       });
     } else {
       setEditingCampaign(null);
       setCampaignForm({
         title: '', subtitle: '', description: '', multiplier: '2',
         startTime: '', endTime: '', terms: '', minOrderValue: '0',
-        maxCashback: '0', backgroundColor: '#10B981', isActive: true,
+        maxCashback: '0', backgroundColor: colors.success, isActive: true,
       });
     }
     setShowCampaignModal(true);
@@ -574,7 +574,7 @@ export default function CashStoreScreen() {
   const renderSwitchField = (label: string, value: boolean, onChange: (v: boolean) => void) => (
     <View style={styles.switchRow}>
       <Text style={[styles.fieldLabel, { color: colors.text, flex: 1 }]}>{label}</Text>
-      <Switch value={value} onValueChange={onChange} trackColor={{ false: '#E2E8F0', true: colors.tint }} thumbColor="#FFF" />
+      <Switch value={value} onValueChange={onChange} trackColor={{ false: colors.border, true: colors.tint }} thumbColor={colors.card} />
     </View>
   );
 
@@ -631,8 +631,8 @@ export default function CashStoreScreen() {
 
   const renderStatusBadge = (isActive: boolean) => (
     <View style={[styles.badge, isActive ? styles.badgeActive : styles.badgeInactive]}>
-      <View style={[styles.badgeDot, { backgroundColor: isActive ? '#10B981' : '#EF4444' }]} />
-      <Text style={[styles.badgeText, { color: isActive ? '#059669' : '#DC2626' }]}>
+      <View style={[styles.badgeDot, { backgroundColor: isActive ? colors.success : colors.error }]} />
+      <Text style={[styles.badgeText, { color: isActive ? colors.successDark : colors.errorDark }]}>
         {isActive ? 'Active' : 'Inactive'}
       </Text>
     </View>
@@ -646,16 +646,16 @@ export default function CashStoreScreen() {
     isProcessing: boolean,
   ) => (
     <View style={styles.actions}>
-      {isProcessing ? <ActivityIndicator size="small" color="#1a3a52" /> : (
+      {isProcessing ? <ActivityIndicator size="small" color={colors.navy} /> : (
         <>
-          <TouchableOpacity onPress={onToggle} style={[styles.actionBtn, { backgroundColor: isItemActive ? '#F0FDF4' : '#FEF2F2' }]}>
-            <Ionicons name={isItemActive ? 'eye' : 'eye-off'} size={15} color={isItemActive ? '#10B981' : '#EF4444'} />
+          <TouchableOpacity onPress={onToggle} style={[styles.actionBtn, { backgroundColor: isItemActive ? colors.successLighter : colors.errorLight }]}>
+            <Ionicons name={isItemActive ? 'eye' : 'eye-off'} size={15} color={isItemActive ? colors.success : colors.error} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={onEdit} style={[styles.actionBtn, { backgroundColor: '#EFF6FF' }]}>
-            <Ionicons name="create-outline" size={15} color="#3B82F6" />
+          <TouchableOpacity onPress={onEdit} style={[styles.actionBtn, { backgroundColor: colors.infoLight }]}>
+            <Ionicons name="create-outline" size={15} color={colors.info} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={onDelete} style={[styles.actionBtn, { backgroundColor: '#FEF2F2' }]}>
-            <Ionicons name="trash-outline" size={15} color="#EF4444" />
+          <TouchableOpacity onPress={onDelete} style={[styles.actionBtn, { backgroundColor: colors.errorLight }]}>
+            <Ionicons name="trash-outline" size={15} color={colors.error} />
           </TouchableOpacity>
         </>
       )}
@@ -672,7 +672,7 @@ export default function CashStoreScreen() {
         {item.logo ? (
           <Image source={{ uri: item.logo }} style={styles.itemImage} resizeMode="contain" />
         ) : (
-          <View style={[styles.itemImageFallback, { backgroundColor: '#1a3a52' }]}>
+          <View style={[styles.itemImageFallback, { backgroundColor: colors.navy }]}>
             <Text style={styles.itemInitial}>{item.name?.charAt(0)}</Text>
           </View>
         )}
@@ -681,7 +681,7 @@ export default function CashStoreScreen() {
           <Text style={styles.itemSubtitle}>{item.category} • {item.cashbackRate}% cashback</Text>
           <View style={styles.tagRow}>
             {renderStatusBadge(item.isActive)}
-            {item.isFeatured && <View style={[styles.badge, { backgroundColor: '#FEF3C7' }]}><Text style={[styles.badgeText, { color: '#D97706' }]}>Featured</Text></View>}
+            {item.isFeatured && <View style={[styles.badge, { backgroundColor: colors.warningLight }]}><Text style={[styles.badgeText, { color: colors.warningDark }]}>Featured</Text></View>}
           </View>
         </View>
       </View>
@@ -700,15 +700,15 @@ export default function CashStoreScreen() {
       <View style={styles.listItem}>
         <View style={styles.listItemRow}>
           <View style={[styles.itemImageFallback, { backgroundColor: '#E8B896' }]}>
-            <Ionicons name="pricetag" size={18} color="#FFF" />
+            <Ionicons name="pricetag" size={18} color={colors.card} />
           </View>
           <View style={styles.itemInfo}>
             <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
             <Text style={[styles.itemSubtitle, { color: '#C4956A' }]}>{discount} OFF  •  <Text style={{ fontFamily: 'monospace', letterSpacing: 1 }}>{item.couponCode}</Text></Text>
             <View style={styles.tagRow}>
               {renderStatusBadge(item.status === 'active')}
-              {item.isAutoApply && <View style={[styles.badge, { backgroundColor: '#DBEAFE' }]}><Text style={[styles.badgeText, { color: '#2563EB' }]}>Auto</Text></View>}
-              {item.isFeatured && <View style={[styles.badge, { backgroundColor: '#FEF3C7' }]}><Text style={[styles.badgeText, { color: '#D97706' }]}>Featured</Text></View>}
+              {item.isAutoApply && <View style={[styles.badge, { backgroundColor: colors.infoLighter }]}><Text style={[styles.badgeText, { color: '#2563EB' }]}>Auto</Text></View>}
+              {item.isFeatured && <View style={[styles.badge, { backgroundColor: colors.warningLight }]}><Text style={[styles.badgeText, { color: colors.warningDark }]}>Featured</Text></View>}
               {item.applicableTo?.stores && item.applicableTo.stores.length > 0 && (
                 <View style={[styles.badge, { backgroundColor: '#E8F5E9' }]}>
                   <Ionicons name="storefront-outline" size={10} color="#2E7D32" />
@@ -733,7 +733,7 @@ export default function CashStoreScreen() {
     return (
       <View style={styles.listItem}>
         <View style={styles.listItemRow}>
-          <View style={[styles.itemImageFallback, { backgroundColor: item.backgroundColor || '#10B981' }]}>
+          <View style={[styles.itemImageFallback, { backgroundColor: item.backgroundColor || colors.success }]}>
             <Text style={styles.multiplierText}>{item.multiplier}X</Text>
           </View>
           <View style={styles.itemInfo}>
@@ -741,7 +741,7 @@ export default function CashStoreScreen() {
             <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
             <View style={styles.tagRow}>
               {renderStatusBadge(item.isActive)}
-              {isRunning && <View style={[styles.badge, { backgroundColor: '#DCFCE7' }]}><View style={[styles.badgeDot, { backgroundColor: '#10B981' }]} /><Text style={[styles.badgeText, { color: '#059669' }]}>LIVE</Text></View>}
+              {isRunning && <View style={[styles.badge, { backgroundColor: colors.successLight2 }]}><View style={[styles.badgeDot, { backgroundColor: colors.success }]} /><Text style={[styles.badgeText, { color: colors.successDark }]}>LIVE</Text></View>}
             </View>
           </View>
         </View>
@@ -760,8 +760,8 @@ export default function CashStoreScreen() {
         {item.storeLogo ? (
           <Image source={{ uri: item.storeLogo }} style={styles.itemImage} resizeMode="contain" />
         ) : (
-          <View style={[styles.itemImageFallback, { backgroundColor: '#F59E0B' }]}>
-            <Ionicons name="flash" size={18} color="#FFF" />
+          <View style={[styles.itemImageFallback, { backgroundColor: colors.warning }]}>
+            <Ionicons name="flash" size={18} color={colors.card} />
           </View>
         )}
         <View style={styles.itemInfo}>
@@ -793,7 +793,7 @@ export default function CashStoreScreen() {
           />
         </View>
         <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.tint }]} onPress={loadAffiliateAnalytics}>
-          <Text style={{ color: '#FFF', fontWeight: '600' }}>Search</Text>
+          <Text style={{ color: colors.card, fontWeight: '600' }}>Search</Text>
         </TouchableOpacity>
       </View>
 
@@ -802,11 +802,11 @@ export default function CashStoreScreen() {
       {affiliateData && !affiliateLoading && (
         <View style={styles.analyticsGrid}>
           {[
-            { label: 'Total Clicks', value: affiliateData.clicks || 0, icon: 'hand-left', color: '#3B82F6' },
-            { label: 'Purchases', value: affiliateData.purchases || 0, icon: 'cart', color: '#10B981' },
-            { label: 'Revenue', value: `₹${affiliateData.revenue || 0}`, icon: 'cash', color: '#F59E0B' },
-            { label: 'Cashback Paid', value: `₹${affiliateData.cashbackPaid || 0}`, icon: 'wallet', color: '#8B5CF6' },
-            { label: 'Conversion Rate', value: `${(affiliateData.conversionRate || 0).toFixed(1)}%`, icon: 'trending-up', color: '#06B6D4' },
+            { label: 'Total Clicks', value: affiliateData.clicks || 0, icon: 'hand-left', color: colors.info },
+            { label: 'Purchases', value: affiliateData.purchases || 0, icon: 'cart', color: colors.success },
+            { label: 'Revenue', value: `₹${affiliateData.revenue || 0}`, icon: 'cash', color: colors.warning },
+            { label: 'Cashback Paid', value: `₹${affiliateData.cashbackPaid || 0}`, icon: 'wallet', color: colors.purple },
+            { label: 'Conversion Rate', value: `${(affiliateData.conversionRate || 0).toFixed(1)}%`, icon: 'trending-up', color: colors.cyan },
           ].map((stat, i) => (
             <View key={i} style={[styles.statCard, { backgroundColor: colors.card }]}>
               <View style={[styles.statIcon, { backgroundColor: `${stat.color}20` }]}>
@@ -898,7 +898,7 @@ export default function CashStoreScreen() {
         <View style={styles.headerTop}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
             <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-              <Ionicons name="arrow-back" size={20} color="#FFF" />
+              <Ionicons name="arrow-back" size={20} color={colors.card} />
             </TouchableOpacity>
             <View>
               <Text style={styles.headerTitle}>Cash Store</Text>
@@ -907,7 +907,7 @@ export default function CashStoreScreen() {
           </View>
           {activeTab !== 'affiliate' && (
             <TouchableOpacity style={styles.addBtnHeader} onPress={handleAdd} activeOpacity={0.8}>
-              <Ionicons name="add" size={20} color="#FFF" />
+              <Ionicons name="add" size={20} color={colors.card} />
               <Text style={styles.addBtnText}>Add</Text>
             </TouchableOpacity>
           )}
@@ -925,7 +925,7 @@ export default function CashStoreScreen() {
                 onPress={() => setActiveTab(tab.key)}
                 activeOpacity={0.7}
               >
-                <Ionicons name={tab.icon as any} size={14} color={isTabActive ? '#FFF' : 'rgba(255,255,255,0.5)'} />
+                <Ionicons name={tab.icon as any} size={14} color={isTabActive ? colors.card : 'rgba(255,255,255,0.5)'} />
                 <Text style={[styles.tabText, isTabActive && styles.tabTextActive]}>{tab.label}</Text>
                 {count > 0 && tab.key !== 'affiliate' && (
                   <View style={[styles.tabBadge, isTabActive && styles.tabBadgeActive]}>
@@ -946,11 +946,11 @@ export default function CashStoreScreen() {
             <View style={styles.toolbarContainer}>
               <View style={styles.searchRow}>
                 <View style={styles.searchInput}>
-                  <Ionicons name="search" size={16} color="#9CA3AF" />
+                  <Ionicons name="search" size={16} color={colors.muted} />
                   <TextInput
                     style={styles.searchText}
                     placeholder={`Search ${activeTab}...`}
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colors.muted}
                     value={activeTab === 'vouchers' ? voucherSearch : couponSearch}
                     onChangeText={activeTab === 'vouchers' ? setVoucherSearch : setCouponSearch}
                     onSubmitEditing={handleSearch}
@@ -985,17 +985,17 @@ export default function CashStoreScreen() {
             renderItem={getListRenderer() as any}
             keyExtractor={(item: any) => item._id}
             contentContainerStyle={styles.listContent}
-            refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} tintColor="#1a3a52" />}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={handleRefresh} tintColor={colors.navy} />}
             ListEmptyComponent={
               getIsLoading() ? (
                 <View style={styles.loadingWrap}>
-                  <ActivityIndicator size="large" color="#1a3a52" />
+                  <ActivityIndicator size="large" color={colors.navy} />
                   <Text style={styles.loadingText}>Loading...</Text>
                 </View>
               ) : (
                 <View style={styles.emptyState}>
                   <View style={styles.emptyIconWrap}>
-                    <Ionicons name="folder-open-outline" size={36} color="#9CA3AF" />
+                    <Ionicons name="folder-open-outline" size={36} color={colors.muted} />
                   </View>
                   <Text style={styles.emptyTitle}>No {activeTab} found</Text>
                   <Text style={styles.emptySubtext}>Tap the "Add" button to create one</Text>
@@ -1042,11 +1042,11 @@ export default function CashStoreScreen() {
             <View style={{ backgroundColor: '#667eea', borderRadius: 14, padding: 16, marginBottom: 20 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <View style={{ backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 }}>
-                  <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 12, fontFamily: 'monospace' }}>{couponForm.couponCode || 'CODE'}</Text>
+                  <Text style={{ color: colors.card, fontWeight: '700', fontSize: 12, fontFamily: 'monospace' }}>{couponForm.couponCode || 'CODE'}</Text>
                 </View>
                 {couponForm.isFeatured && <Text style={{ color: '#FDE68A', fontSize: 11, fontWeight: '600' }}>★ Featured</Text>}
               </View>
-              <Text style={{ color: '#FFF', fontSize: 26, fontWeight: '800' }}>
+              <Text style={{ color: colors.card, fontSize: 26, fontWeight: '800' }}>
                 {couponForm.discountType === 'PERCENTAGE' ? `${couponForm.discountValue || '0'}% OFF` : `₹${couponForm.discountValue || '0'} OFF`}
               </Text>
               <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, marginTop: 4 }} numberOfLines={1}>{couponForm.title || 'Coupon Title'}</Text>
@@ -1072,7 +1072,7 @@ export default function CashStoreScreen() {
                   setCouponForm(p => ({ ...p, couponCode: code }));
                 }}
               >
-                <Ionicons name="dice" size={18} color="#FFF" />
+                <Ionicons name="dice" size={18} color={colors.card} />
               </TouchableOpacity>
             </View>
             {renderFormField('Description', couponForm.description, v => setCouponForm(p => ({ ...p, description: v })), { multiline: true, placeholder: 'Describe the coupon offer...' })}
@@ -1087,7 +1087,7 @@ export default function CashStoreScreen() {
               <View style={styles.chipRow}>
                 {[{ key: 'PERCENTAGE', label: '% Percentage' }, { key: 'FIXED', label: '₹ Fixed Amount' }].map(type => (
                   <TouchableOpacity key={type.key} style={[styles.chip, { flex: 1, alignItems: 'center' as any }, couponForm.discountType === type.key ? { backgroundColor: colors.tint } : { backgroundColor: colors.card }]} onPress={() => setCouponForm(p => ({ ...p, discountType: type.key }))}>
-                    <Text style={{ color: couponForm.discountType === type.key ? '#FFF' : colors.icon, fontWeight: '600', fontSize: 13 }}>{type.label}</Text>
+                    <Text style={{ color: couponForm.discountType === type.key ? colors.card : colors.icon, fontWeight: '600', fontSize: 13 }}>{type.label}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -1098,7 +1098,7 @@ export default function CashStoreScreen() {
 
             {/* ── Section: Validity & Limits ── */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 10 }}>
-              <Ionicons name="time" size={16} color="#F59E0B" />
+              <Ionicons name="time" size={16} color={colors.warning} />
               <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text, textTransform: 'uppercase', letterSpacing: 0.5 }}>Validity & Limits</Text>
             </View>
             {renderDateTimeField('Valid From', couponForm.validFrom, v => setCouponForm(p => ({ ...p, validFrom: v })))}
@@ -1108,7 +1108,7 @@ export default function CashStoreScreen() {
 
             {/* ── Section: Targeting ── */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 10 }}>
-              <Ionicons name="funnel" size={16} color="#8B5CF6" />
+              <Ionicons name="funnel" size={16} color={colors.purple} />
               <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text, textTransform: 'uppercase', letterSpacing: 0.5 }}>Targeting</Text>
             </View>
             {renderFormField('Tags', couponForm.tags, v => setCouponForm(p => ({ ...p, tags: v })), { placeholder: 'shopping, food, nquta-exclusive, etc.' })}
@@ -1123,7 +1123,7 @@ export default function CashStoreScreen() {
                     setCouponForm(p => ({ ...p, tags: updated.join(', ') }));
                   }}
                 >
-                  <Text style={{ fontSize: 11, fontWeight: '600', color: couponForm.tags.includes(tag) ? '#FFF' : colors.icon }}>{tag}</Text>
+                  <Text style={{ fontSize: 11, fontWeight: '600', color: couponForm.tags.includes(tag) ? colors.card : colors.icon }}>{tag}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -1197,20 +1197,20 @@ export default function CashStoreScreen() {
 
             {/* ── Section: Settings ── */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 10 }}>
-              <Ionicons name="settings" size={16} color="#6B7280" />
+              <Ionicons name="settings" size={16} color={colors.mutedDark} />
               <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text, textTransform: 'uppercase', letterSpacing: 0.5 }}>Settings</Text>
             </View>
             <View style={styles.field}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: couponForm.status === 'active' ? '#10B981' : '#EF4444' }} />
+                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: couponForm.status === 'active' ? colors.success : colors.error }} />
                   <Text style={[styles.fieldLabel, { color: colors.text, marginBottom: 0 }]}>Status: {couponForm.status === 'active' ? 'Active' : 'Inactive'}</Text>
                 </View>
                 <Switch
                   value={couponForm.status === 'active'}
                   onValueChange={(v) => setCouponForm(p => ({ ...p, status: v ? 'active' : 'inactive' }))}
-                  trackColor={{ false: '#D1D5DB', true: '#A7F3D0' }}
-                  thumbColor={couponForm.status === 'active' ? '#10B981' : '#9CA3AF'}
+                  trackColor={{ false: colors.gray300, true: '#A7F3D0' }}
+                  thumbColor={couponForm.status === 'active' ? colors.success : colors.muted}
                 />
               </View>
             </View>
@@ -1275,78 +1275,78 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
 
   // Header — dark navy
-  header: { backgroundColor: '#1a3a52', paddingTop: 48, paddingBottom: 4, paddingHorizontal: 20 },
+  header: { backgroundColor: Colors.light.navy, paddingTop: 48, paddingBottom: 4, paddingHorizontal: 20 },
   headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  headerTitle: { fontSize: 22, fontWeight: '700', color: '#FFF' },
+  headerTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.card },
   headerSubtitle: { fontSize: 13, marginTop: 2, color: 'rgba(255,255,255,0.6)' },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.15)', justifyContent: 'center', alignItems: 'center' },
   addBtnHeader: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
-  addBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  addBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
 
   // Tab Bar (inside header)
   tabBarContent: { paddingBottom: 10, gap: 6, alignItems: 'center' },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.08)' },
   tabActive: { backgroundColor: 'rgba(255,255,255,0.22)' },
   tabText: { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
-  tabTextActive: { color: '#FFF' },
+  tabTextActive: { color: Colors.light.card },
   tabBadge: { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1, minWidth: 20, alignItems: 'center' },
   tabBadgeActive: { backgroundColor: 'rgba(255,255,255,0.3)' },
   tabBadgeText: { fontSize: 10, fontWeight: '700', color: 'rgba(255,255,255,0.5)' },
-  tabBadgeTextActive: { color: '#FFF' },
+  tabBadgeTextActive: { color: Colors.light.card },
 
   // Toolbar (search + filter)
-  toolbarContainer: { backgroundColor: '#FFF', paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  toolbarContainer: { backgroundColor: Colors.light.card, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   searchRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 12, gap: 10 },
-  searchInput: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 9, borderRadius: 10, backgroundColor: '#F3F4F6', flex: 1 },
-  searchText: { flex: 1, fontSize: 14, color: '#1F2937' },
+  searchInput: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 9, borderRadius: 10, backgroundColor: Colors.light.backgroundSecondary, flex: 1 },
+  searchText: { flex: 1, fontSize: 14, color: Colors.light.gray800 },
   addBtn: { width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
 
   // Filter chips
   filterRow: { flexDirection: 'row', paddingHorizontal: 16, marginTop: 10, gap: 8 },
   filterContent: { paddingHorizontal: 16, gap: 8, alignItems: 'center' },
-  chip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 18, backgroundColor: '#F3F4F6' },
-  chipActive: { backgroundColor: '#1a3a52' },
-  chipText: { fontSize: 12, fontWeight: '600', color: '#6B7280' },
-  chipTextActive: { color: '#FFF' },
+  chip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 18, backgroundColor: Colors.light.backgroundSecondary },
+  chipActive: { backgroundColor: Colors.light.navy },
+  chipText: { fontSize: 12, fontWeight: '600', color: Colors.light.mutedDark },
+  chipTextActive: { color: Colors.light.card },
   chipRow: { flexDirection: 'row', gap: 8, marginTop: 6 },
 
   // List
   listContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 40 },
-  listItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 14, borderRadius: 12, marginBottom: 8, gap: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 },
+  listItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.card, padding: 14, borderRadius: 12, marginBottom: 8, gap: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1 },
   listItemRow: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   itemImage: { width: 44, height: 44, borderRadius: 12 },
   itemImageFallback: { width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  itemInitial: { fontSize: 18, fontWeight: '700', color: '#FFF' },
-  multiplierText: { fontSize: 16, fontWeight: '800', color: '#FFF' },
+  itemInitial: { fontSize: 18, fontWeight: '700', color: Colors.light.card },
+  multiplierText: { fontSize: 16, fontWeight: '800', color: Colors.light.card },
   itemInfo: { flex: 1 },
-  itemTitle: { fontSize: 15, fontWeight: '600', color: '#1F2937' },
-  itemSubtitle: { fontSize: 12, marginTop: 2, color: '#6B7280' },
+  itemTitle: { fontSize: 15, fontWeight: '600', color: Colors.light.gray800 },
+  itemSubtitle: { fontSize: 12, marginTop: 2, color: Colors.light.mutedDark },
   tagRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' },
-  usageText: { fontSize: 11, color: '#9CA3AF' },
+  usageText: { fontSize: 11, color: Colors.light.muted },
   actions: { flexDirection: 'column', gap: 4, alignItems: 'center' },
   actionBtn: { padding: 6, borderRadius: 8 },
 
   // Badge
   badge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  badgeActive: { backgroundColor: '#DCFCE7' },
-  badgeInactive: { backgroundColor: '#FEE2E2' },
+  badgeActive: { backgroundColor: Colors.light.successLight2 },
+  badgeInactive: { backgroundColor: Colors.light.errorLight },
   badgeDot: { width: 6, height: 6, borderRadius: 3 },
   badgeText: { fontSize: 11, fontWeight: '600' },
 
   // Loading
   loadingWrap: { alignItems: 'center', paddingVertical: 60, gap: 12 },
-  loadingText: { fontSize: 14, color: '#9CA3AF' },
+  loadingText: { fontSize: 14, color: Colors.light.muted },
 
   // Empty
   emptyState: { alignItems: 'center', paddingVertical: 60, gap: 12 },
-  emptyIconWrap: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: '#374151' },
-  emptySubtext: { fontSize: 13, color: '#9CA3AF' },
-  emptyText: { fontSize: 14, color: '#9CA3AF' },
+  emptyIconWrap: { width: 64, height: 64, borderRadius: 32, backgroundColor: Colors.light.backgroundSecondary, justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: Colors.light.gray700 },
+  emptySubtext: { fontSize: 13, color: Colors.light.muted },
+  emptyText: { fontSize: 14, color: Colors.light.muted },
 
   // Modal
   modalContainer: { flex: 1 },
-  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 60, paddingBottom: 14, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 60, paddingBottom: 14, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   modalCancel: { fontSize: 15, fontWeight: '500' },
   modalTitle: { fontSize: 17, fontWeight: '700' },
   modalSave: { fontSize: 15, fontWeight: '600' },

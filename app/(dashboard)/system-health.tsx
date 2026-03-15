@@ -28,14 +28,14 @@ function StatusBadge({ status, label }: { status: 'healthy' | 'degraded' | 'unhe
   const colors = Colors[colorScheme ?? 'light'];
 
   const statusColors: Record<string, { bg: string; text: string }> = {
-    healthy: { bg: '#DCFCE7', text: '#16A34A' },
-    connected: { bg: '#DCFCE7', text: '#16A34A' },
-    active: { bg: '#DCFCE7', text: '#16A34A' },
-    degraded: { bg: '#FEF3C7', text: '#D97706' },
-    unknown: { bg: '#FEF3C7', text: '#D97706' },
-    disabled: { bg: '#F1F5F9', text: '#64748B' },
-    unhealthy: { bg: '#FEE2E2', text: '#DC2626' },
-    disconnected: { bg: '#FEE2E2', text: '#DC2626' },
+    healthy: { bg: colors.successLight2, text: colors.greenDark },
+    connected: { bg: colors.successLight2, text: colors.greenDark },
+    active: { bg: colors.successLight2, text: colors.greenDark },
+    degraded: { bg: Colors.light.warningLight, text: Colors.light.warningDark },
+    unknown: { bg: Colors.light.warningLight, text: Colors.light.warningDark },
+    disabled: { bg: Colors.light.slate, text: '#64748B' },
+    unhealthy: { bg: Colors.light.errorLight, text: Colors.light.errorDark },
+    disconnected: { bg: Colors.light.errorLight, text: Colors.light.errorDark },
   };
 
   const colorSet = statusColors[status] || statusColors.unknown;
@@ -53,10 +53,10 @@ function StatusBadge({ status, label }: { status: 'healthy' | 'degraded' | 'unhe
 
 function SeverityBadge({ severity }: { severity: string }) {
   const severityColors: Record<string, { bg: string; text: string }> = {
-    critical: { bg: '#FEE2E2', text: '#DC2626' },
+    critical: { bg: Colors.light.errorLight, text: Colors.light.errorDark },
     high: { bg: '#FED7AA', text: '#EA580C' },
-    medium: { bg: '#FEF3C7', text: '#D97706' },
-    low: { bg: '#F1F5F9', text: '#64748B' },
+    medium: { bg: Colors.light.warningLight, text: Colors.light.warningDark },
+    low: { bg: Colors.light.slate, text: '#64748B' },
   };
 
   const colorSet = severityColors[severity] || severityColors.low;
@@ -78,8 +78,8 @@ function InfoRow({ label, value, valueColor }: { label: string; value: string | 
 
   return (
     <View style={styles.infoRow}>
-      <Text style={[styles.infoLabel, { color: colors.icon }]}>{label}</Text>
-      <Text style={[styles.infoValue, { color: valueColor || colors.text }]}>{value}</Text>
+      <Text style={[styles.infoLabel, { color: Colors.light.icon }]}>{label}</Text>
+      <Text style={[styles.infoValue, { color: valueColor || Colors.light.text }]}>{value}</Text>
     </View>
   );
 }
@@ -97,13 +97,13 @@ function SectionCard({ title, icon, iconColor, children, headerRight }: {
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.card }]}>
+    <View style={[styles.card, { backgroundColor: Colors.light.card }]}>
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderLeft}>
           <View style={[styles.cardIcon, { backgroundColor: `${iconColor}20` }]}>
             <Ionicons name={icon} size={18} color={iconColor} />
           </View>
-          <Text style={[styles.cardTitle, { color: colors.text }]}>{title}</Text>
+          <Text style={[styles.cardTitle, { color: Colors.light.text }]}>{title}</Text>
         </View>
         {headerRight}
       </View>
@@ -212,7 +212,7 @@ export default function SystemHealthScreen() {
 
       {/* Server Status */}
       {healthData && (
-        <SectionCard title="Server Status" icon="server" iconColor="#3B82F6">
+        <SectionCard title="Server Status" icon="server" iconColor={colors.info}>
           <InfoRow label="Uptime" value={healthData.server.uptimeFormatted} />
           <InfoRow
             label="Memory (Heap)"
@@ -236,7 +236,7 @@ export default function SystemHealthScreen() {
         <SectionCard
           title="Database (MongoDB)"
           icon="layers"
-          iconColor="#10B981"
+          iconColor={colors.success}
           headerRight={<StatusBadge status={healthData.database.status as any} />}
         >
           <InfoRow label="Status" value={healthData.database.status} />
@@ -251,7 +251,7 @@ export default function SystemHealthScreen() {
         <SectionCard
           title="Redis"
           icon="flash"
-          iconColor="#EF4444"
+          iconColor={colors.error}
           headerRight={
             <StatusBadge
               status={!healthData.redis.enabled ? 'disabled' : healthData.redis.status as any}
@@ -272,7 +272,7 @@ export default function SystemHealthScreen() {
         <SectionCard
           title="Queue Health"
           icon="list"
-          iconColor="#8B5CF6"
+          iconColor={colors.purple}
           headerRight={<StatusBadge status={healthData.queues.overall as any} />}
         >
           {/* Table header */}
@@ -304,7 +304,7 @@ export default function SystemHealthScreen() {
               <Text style={[styles.tableCell, styles.tableNumCol, { color: colors.text }]}>
                 {queue.status === 'disabled' ? '-' : queue.completed ?? 0}
               </Text>
-              <Text style={[styles.tableCell, styles.tableNumCol, { color: (queue.failed ?? 0) > 0 ? '#DC2626' : colors.text }]}>
+              <Text style={[styles.tableCell, styles.tableNumCol, { color: (queue.failed ?? 0) > 0 ? colors.errorDark : colors.text }]}>
                 {queue.status === 'disabled' ? '-' : queue.failed ?? 0}
               </Text>
               <View style={[styles.tableStatusCol, { justifyContent: 'center' }]}>
@@ -317,7 +317,7 @@ export default function SystemHealthScreen() {
 
       {/* Scheduled Jobs */}
       {healthData?.jobs && (
-        <SectionCard title="Scheduled Jobs" icon="time" iconColor="#F59E0B">
+        <SectionCard title="Scheduled Jobs" icon="time" iconColor={colors.warning}>
           {healthData.jobs.map((job: ScheduledJob, index: number) => (
             <View
               key={job.name}
@@ -340,7 +340,7 @@ export default function SystemHealthScreen() {
                 </View>
                 {job.lastRun && (
                   <View style={styles.jobMetaRow}>
-                    <Ionicons name="checkmark-circle" size={12} color="#10B981" />
+                    <Ionicons name="checkmark-circle" size={12} color={colors.success} />
                     <Text style={[styles.jobMetaText, { color: colors.icon }]}>
                       Last: {formatTimestamp(job.lastRun)}
                     </Text>
@@ -370,10 +370,10 @@ export default function SystemHealthScreen() {
             disabled={triggeringRecon}
           >
             {triggeringRecon ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="play" size={14} color="#FFFFFF" />
+                <Ionicons name="play" size={14} color={colors.card} />
                 <Text style={styles.runButtonText}>Run Now</Text>
               </>
             )}
@@ -389,13 +389,13 @@ export default function SystemHealthScreen() {
                 </Text>
                 <Text style={[styles.reconStatLabel, { color: colors.icon }]}>Discrepancies</Text>
               </View>
-              <View style={[styles.reconStat, { backgroundColor: '#FEE2E210' }]}>
-                <Text style={[styles.reconStatValue, { color: '#DC2626' }]}>
+              <View style={[styles.reconStat, { backgroundColor: `${colors.errorLight}10` }]}>
+                <Text style={[styles.reconStatValue, { color: colors.errorDark }]}>
                   {reconciliation.summary?.criticalCount ?? 0}
                 </Text>
                 <Text style={[styles.reconStatLabel, { color: colors.icon }]}>Critical</Text>
               </View>
-              <View style={[styles.reconStat, { backgroundColor: '#FED7AA10' }]}>
+              <View style={[styles.reconStat, { backgroundColor: `${colors.warningLight}10` }]}>
                 <Text style={[styles.reconStatValue, { color: '#EA580C' }]}>
                   {reconciliation.summary?.highCount ?? 0}
                 </Text>
@@ -638,7 +638,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   infoLabel: {
     fontSize: 13,
@@ -725,7 +725,7 @@ const styles = StyleSheet.create({
   runButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#06B6D4',
+    backgroundColor: Colors.light.cyan,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -735,7 +735,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   runButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: Colors.light.border,
   },
   discrepancyTitle: {
     fontSize: 14,

@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AdminStore } from '../../services/api/stores';
+import { Colors } from '../../constants/Colors';
 
 interface StoreRowProps {
   store: AdminStore;
@@ -14,16 +15,16 @@ interface StoreRowProps {
   onReassignCategory: (storeId: string, categoryId: string) => void;
   onToggleFeatured: (storeId: string, featured: boolean) => void;
   onToggleCapability: (storeId: string, capability: string, enabled: boolean) => void;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 // All service capability definitions
 const ALL_SERVICE_CAPS: Record<string, { label: string; fullLabel: string; color: string }> = {
-  homeDelivery: { label: 'HD', fullLabel: 'Home Delivery', color: '#3B82F6' },
-  driveThru:    { label: 'DT', fullLabel: 'Drive Thru', color: '#8B5CF6' },
-  tableBooking: { label: 'TB', fullLabel: 'Table Booking', color: '#EC4899' },
-  dineIn:       { label: 'DI', fullLabel: 'Dine In', color: '#F59E0B' },
-  storePickup:  { label: 'SP', fullLabel: 'Store Pickup', color: '#10B981' },
+  homeDelivery: { label: 'HD', fullLabel: 'Home Delivery', color: Colors.light.info },
+  driveThru:    { label: 'DT', fullLabel: 'Drive Thru', color: Colors.light.purple },
+  tableBooking: { label: 'TB', fullLabel: 'Table Booking', color: Colors.light.pink },
+  dineIn:       { label: 'DI', fullLabel: 'Dine In', color: Colors.light.warning },
+  storePickup:  { label: 'SP', fullLabel: 'Store Pickup', color: Colors.light.success },
 };
 
 // Service capabilities per parent category
@@ -120,10 +121,10 @@ const StoreRow = React.memo(({
 
   // Status determination
   const getStatus = () => {
-    if (store.isSuspended) return { label: 'Suspended', color: '#EF4444', bg: '#FEE2E2' };
-    if (store.adminApproved === false) return { label: 'Pending', color: '#F59E0B', bg: '#FEF3C7' };
-    if (store.isActive) return { label: 'Active', color: '#10B981', bg: '#D1FAE5' };
-    return { label: 'Inactive', color: '#6B7280', bg: '#F3F4F6' };
+    if (store.isSuspended) return { label: 'Suspended', color: Colors.light.error, bg: colors.errorLight };
+    if (store.adminApproved === false) return { label: 'Pending', color: Colors.light.warning, bg: colors.warningLight };
+    if (store.isActive) return { label: 'Active', color: Colors.light.success, bg: colors.successLight };
+    return { label: 'Inactive', color: Colors.light.secondaryText, bg: colors.backgroundSecondary };
   };
 
   const status = getStatus();
@@ -192,7 +193,7 @@ const StoreRow = React.memo(({
           {/* Rating */}
           {store.ratings && store.ratings.count > 0 && (
             <View style={styles.ratingBadge}>
-              <Ionicons name="star" size={11} color="#F59E0B" />
+              <Ionicons name="star" size={11} color={Colors.light.warning} />
               <Text style={[styles.ratingText, { color: colors.text }]}>
                 {store.ratings.average.toFixed(1)}
               </Text>
@@ -250,13 +251,13 @@ const StoreRow = React.memo(({
 
         {/* Featured toggle */}
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: store.isFeatured ? '#FEF3C7' : `${colors.icon}12` }]}
+          style={[styles.actionBtn, { backgroundColor: store.isFeatured ? colors.warningLight : `${colors.icon}12` }]}
           onPress={() => onToggleFeatured(store._id, !store.isFeatured)}
         >
           <Ionicons
             name={store.isFeatured ? 'star' : 'star-outline'}
             size={16}
-            color={store.isFeatured ? '#F59E0B' : colors.icon}
+            color={store.isFeatured ? Colors.light.warning : colors.icon}
           />
         </TouchableOpacity>
       </View>
@@ -326,7 +327,7 @@ const StoreRow = React.memo(({
                       { borderColor: isCurrent ? colors.tint : colors.border },
                       isCurrent && { backgroundColor: colors.tint, borderColor: colors.tint },
                     ]}>
-                      {isCurrent && <Ionicons name="checkmark" size={12} color="#FFF" />}
+                      {isCurrent && <Ionicons name="checkmark" size={12} color={colors.card} />}
                     </View>
                     <Text
                       style={[

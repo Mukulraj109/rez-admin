@@ -212,10 +212,10 @@ export default function DailyCheckinConfigScreen() {
             disabled={!dirty || saving}
           >
             {saving ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="save" size={16} color="#FFFFFF" />
+                <Ionicons name="save" size={16} color={colors.card} />
                 <Text style={styles.saveButtonText}>Save</Text>
               </>
             )}
@@ -249,7 +249,7 @@ export default function DailyCheckinConfigScreen() {
         {/* Day Rewards */}
         <View style={[styles.section, { backgroundColor: colors.card }]}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="gift" size={18} color="#F59E0B" />
+            <Ionicons name="gift" size={18} color={colors.warning} />
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Day Rewards (7-day cycle)</Text>
           </View>
           <Text style={[styles.sectionDescription, { color: colors.secondaryText }]}>
@@ -280,7 +280,7 @@ export default function DailyCheckinConfigScreen() {
         {/* Milestone Rewards */}
         <View style={[styles.section, { backgroundColor: colors.card }]}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="trophy" size={18} color="#8B5CF6" />
+            <Ionicons name="trophy" size={18} color={colors.purple} />
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Streak Milestone Rewards</Text>
           </View>
           <Text style={[styles.sectionDescription, { color: colors.secondaryText }]}>
@@ -332,7 +332,7 @@ export default function DailyCheckinConfigScreen() {
         {/* Pro Tips */}
         <View style={[styles.section, { backgroundColor: colors.card }]}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="bulb" size={18} color="#F59E0B" />
+            <Ionicons name="bulb" size={18} color={colors.warning} />
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Pro Tips</Text>
           </View>
           <Text style={[styles.sectionDescription, { color: colors.secondaryText }]}>
@@ -362,7 +362,7 @@ export default function DailyCheckinConfigScreen() {
         {/* Affiliate & Review Settings */}
         <View style={[styles.section, { backgroundColor: colors.card }]}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="share-social" size={18} color="#3B82F6" />
+            <Ionicons name="share-social" size={18} color={colors.info} />
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Affiliate & Review Settings</Text>
           </View>
           <View style={styles.textFieldContainer}>
@@ -449,15 +449,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
   },
   saveButtonDisabled: {
-    backgroundColor: '#9CA3AF',
+    backgroundColor: Colors.light.muted,
   },
   saveButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.light.card,
   },
   scrollContent: {
     padding: 16,

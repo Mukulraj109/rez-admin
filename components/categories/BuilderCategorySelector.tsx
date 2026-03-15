@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MainCategory } from '../../services/api/categories';
+import { Colors } from '@/constants/Colors';
 
 const isIoniconName = (icon: string) => /^[a-z0-9-]+$/.test(icon) && icon.length > 2;
 
@@ -29,12 +30,12 @@ const BuilderCategorySelector = React.memo(({ categories, selectedId, onSelect, 
         >
           {cat.icon ? (
             isIoniconName(cat.icon) ? (
-              <Ionicons name={cat.icon as any} size={16} color={selectedId === cat._id ? '#FFF' : colors.icon} />
+              <Ionicons name={cat.icon as any} size={16} color={selectedId === cat._id ? colors.card : colors.icon} />
             ) : (
               <Text style={styles.emoji}>{cat.icon}</Text>
             )
           ) : null}
-          <Text style={[styles.chipText, { color: selectedId === cat._id ? '#FFF' : colors.text }]}>
+          <Text style={[styles.chipText, { color: selectedId === cat._id ? colors.card : colors.text }]}>
             {cat.name}
           </Text>
         </TouchableOpacity>

@@ -32,16 +32,16 @@ const COMMON_ICONS = [
 ];
 
 const COLOR_PRESETS = [
-  '#EF4444', '#F59E0B', '#10B981', '#3B82F6',
-  '#8B5CF6', '#EC4899', '#06B6D4', '#F97316',
-  '#14B8A6', '#6366F1', '#D946EF', '#84CC16',
+  Colors.light.error, Colors.light.warning, Colors.light.success, Colors.light.info,
+  Colors.light.purple, Colors.light.pink, Colors.light.cyan, Colors.light.orange,
+  '#14B8A6', Colors.light.indigo, '#D946EF', '#84CC16',
 ];
 
 const DEFAULT_FORM: Partial<EventCategoryRequest> = {
   name: '',
   slug: '',
   icon: '',
-  color: '#3B82F6',
+  color: Colors.light.info,
   gradient: [],
   description: '',
   isActive: true,
@@ -120,7 +120,7 @@ export default function EventCategoriesScreen() {
       name: category.name,
       slug: category.slug,
       icon: category.icon || '',
-      color: category.color || '#3B82F6',
+      color: category.color || colors.info,
       gradient: category.gradient || [],
       description: category.description || '',
       isActive: category.isActive,
@@ -231,7 +231,7 @@ export default function EventCategoriesScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={20} color="#FFF" />
+        <Ionicons name="add" size={20} color={colors.card} />
         <Text style={styles.createBtnText}>Add Category</Text>
       </TouchableOpacity>
     </View>
@@ -256,7 +256,7 @@ export default function EventCategoriesScreen() {
             <Text style={[styles.cardName, { color: colors.text }]}>{item.name}</Text>
             {item.isFeatured && (
               <View style={styles.featuredBadge}>
-                <Ionicons name="star" size={10} color="#F59E0B" />
+                <Ionicons name="star" size={10} color={colors.warning} />
               </View>
             )}
           </View>
@@ -295,35 +295,35 @@ export default function EventCategoriesScreen() {
       {/* Actions Row */}
       <View style={[styles.actionRow, { borderTopColor: colors.border }]}>
         <TouchableOpacity
-          style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+          style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
           onPress={() => handleMoveUp(index)}
           disabled={index === 0}
         >
-          <Ionicons name="chevron-up" size={16} color={index === 0 ? '#D1D5DB' : '#3B82F6'} />
+          <Ionicons name="chevron-up" size={16} color={index === 0 ? colors.gray300 : colors.info} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+          style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
           onPress={() => handleMoveDown(index)}
           disabled={index === categories.length - 1}
         >
           <Ionicons
             name="chevron-down"
             size={16}
-            color={index === categories.length - 1 ? '#D1D5DB' : '#3B82F6'}
+            color={index === categories.length - 1 ? colors.gray300 : colors.info}
           />
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
         <TouchableOpacity
-          style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+          style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
           onPress={() => handleEdit(item)}
         >
-          <Ionicons name="pencil" size={16} color="#3B82F6" />
+          <Ionicons name="pencil" size={16} color={colors.info} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
+          style={[styles.actionIconBtn, { backgroundColor: `${colors.error}10` }]}
           onPress={() => handleDelete(item)}
         >
-          <Ionicons name="trash" size={16} color="#EF4444" />
+          <Ionicons name="trash" size={16} color={colors.error} />
         </TouchableOpacity>
       </View>
     </View>
@@ -340,7 +340,7 @@ export default function EventCategoriesScreen() {
         style={[styles.emptyBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={18} color="#FFF" />
+        <Ionicons name="add" size={18} color={colors.card} />
         <Text style={styles.emptyBtnText}>Add Category</Text>
       </TouchableOpacity>
     </View>
@@ -366,7 +366,7 @@ export default function EventCategoriesScreen() {
             disabled={isSaving}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Save</Text>
             )}
@@ -442,7 +442,7 @@ export default function EventCategoriesScreen() {
               style={[styles.formInput, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
               value={formData.color || ''}
               onChangeText={text => setFormData(p => ({ ...p, color: text }))}
-              placeholder="#3B82F6"
+              placeholder={colors.info}
               placeholderTextColor={colors.icon}
             />
             <View style={styles.colorPresetsRow}>
@@ -622,7 +622,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   createBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -667,7 +667,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   featuredBadge: {
-    backgroundColor: '#F59E0B15',
+    backgroundColor: `${Colors.light.warning}15`,
     padding: 3,
     borderRadius: 10,
   },
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   emptyBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
   },
 
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -856,7 +856,7 @@ const styles = StyleSheet.create({
   },
   colorPresetSelected: {
     borderWidth: 3,
-    borderColor: '#FFF',
+    borderColor: Colors.light.card,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,

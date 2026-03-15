@@ -56,7 +56,7 @@ export default function LoginScreen() {
         {/* Logo Section */}
         <View style={styles.logoSection}>
           <View style={styles.logoContainer}>
-            <Ionicons name="shield-checkmark" size={48} color="#DC2626" />
+            <Ionicons name="shield-checkmark" size={48} color={colors.tint} />
           </View>
           <Text style={[styles.title, { color: colors.text }]}>Rez Admin</Text>
           <Text style={[styles.subtitle, { color: colors.icon }]}>
@@ -109,7 +109,7 @@ export default function LoginScreen() {
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color={Colors.light.card} />
             ) : (
               <Text style={styles.loginButtonText}>Sign In</Text>
             )}
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 20,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: Colors.light.errorLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: Colors.light.slate,
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 12,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   loginButton: {
-    backgroundColor: '#DC2626',
+    backgroundColor: Colors.light.tint,
     borderRadius: 12,
     height: 50,
     justifyContent: 'center',
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   loginButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontSize: 16,
     fontWeight: '600',
   },

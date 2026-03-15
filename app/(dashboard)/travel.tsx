@@ -49,18 +49,18 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: '#F59E0B',
-  confirmed: '#3B82F6',
-  completed: '#22C55E',
-  cancelled: '#EF4444',
-  no_show: '#6B7280',
+  pending: Colors.light.warning,
+  confirmed: Colors.light.info,
+  completed: Colors.light.green,
+  cancelled: Colors.light.error,
+  no_show: Colors.light.mutedDark,
 };
 
 const CASHBACK_STATUS_COLORS: Record<string, string> = {
-  pending: '#94A3B8',
-  held: '#F59E0B',
-  credited: '#22C55E',
-  clawed_back: '#EF4444',
+  pending: Colors.light.slateMedium,
+  held: Colors.light.warning,
+  credited: Colors.light.green,
+  clawed_back: Colors.light.error,
 };
 
 export default function TravelManagementPage() {
@@ -92,19 +92,19 @@ export default function TravelManagementPage() {
               key={tab.key}
               style={[
                 styles.tab,
-                activeTab === tab.key && { backgroundColor: '#1a3a52' },
+                activeTab === tab.key && { backgroundColor: colors.navy },
               ]}
               onPress={() => setActiveTab(tab.key)}
             >
               <Ionicons
                 name={tab.icon as any}
                 size={16}
-                color={activeTab === tab.key ? '#FFF' : colors.icon}
+                color={activeTab === tab.key ? colors.card : colors.icon}
               />
               <Text
                 style={[
                   styles.tabLabel,
-                  { color: activeTab === tab.key ? '#FFF' : colors.secondaryText },
+                  { color: activeTab === tab.key ? colors.card : colors.secondaryText },
                 ]}
               >
                 {tab.label}
@@ -148,10 +148,10 @@ function DashboardTab({ colors }: { colors: any }) {
   if (!stats) return <EmptyView message="Failed to load dashboard" />;
 
   const statCards = [
-    { label: 'Total Bookings', value: stats.totalBookings, icon: 'calendar', color: '#3B82F6' },
-    { label: 'Total Revenue', value: `₹${(stats.revenue.total || 0).toLocaleString()}`, icon: 'cash', color: '#22C55E' },
-    { label: 'Avg Booking', value: `₹${Math.round(stats.revenue.average || 0).toLocaleString()}`, icon: 'trending-up', color: '#8B5CF6' },
-    { label: 'Cashback Credited', value: `₹${(stats.cashback?.credited?.amount || 0).toLocaleString()}`, icon: 'gift', color: '#F59E0B' },
+    { label: 'Total Bookings', value: stats.totalBookings, icon: 'calendar', color: colors.info },
+    { label: 'Total Revenue', value: `₹${(stats.revenue.total || 0).toLocaleString()}`, icon: 'cash', color: colors.green },
+    { label: 'Avg Booking', value: `₹${Math.round(stats.revenue.average || 0).toLocaleString()}`, icon: 'trending-up', color: colors.purple },
+    { label: 'Cashback Credited', value: `₹${(stats.cashback?.credited?.amount || 0).toLocaleString()}`, icon: 'gift', color: colors.warning },
   ];
 
   return (
@@ -177,7 +177,7 @@ function DashboardTab({ colors }: { colors: any }) {
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Booking Status</Text>
         {Object.entries(stats.statusCounts || {}).map(([status, count]) => (
           <View key={status} style={styles.breakdownRow}>
-            <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || '#6B7280' }]} />
+            <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || colors.mutedDark }]} />
             <Text style={[styles.breakdownLabel, { color: colors.text }]}>
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </Text>
@@ -194,7 +194,7 @@ function DashboardTab({ colors }: { colors: any }) {
             <Ionicons
               name={(CATEGORY_ICONS[cat.categorySlug] || 'airplane') as any}
               size={18}
-              color="#1a3a52"
+              color={colors.navy}
             />
             <Text style={[styles.breakdownLabel, { color: colors.text }]}>{cat.categoryName}</Text>
             <View style={styles.breakdownRight}>
@@ -222,8 +222,8 @@ function DashboardTab({ colors }: { colors: any }) {
                 #{booking.bookingNumber} · {booking.user?.name || booking.customerName}
               </Text>
             </View>
-            <View style={[styles.miniStatusBadge, { backgroundColor: (STATUS_COLORS[booking.status] || '#6B7280') + '20' }]}>
-              <Text style={[styles.miniStatusText, { color: STATUS_COLORS[booking.status] || '#6B7280' }]}>
+            <View style={[styles.miniStatusBadge, { backgroundColor: (STATUS_COLORS[booking.status] || colors.mutedDark) + '20' }]}>
+              <Text style={[styles.miniStatusText, { color: STATUS_COLORS[booking.status] || colors.mutedDark }]}>
                 {booking.status}
               </Text>
             </View>
@@ -277,8 +277,8 @@ function CategoriesTab({ colors }: { colors: any }) {
       {categories.map((cat) => (
         <View key={cat._id} style={[styles.categoryCard, { backgroundColor: colors.card }]}>
           <View style={styles.categoryCardRow}>
-            <View style={[styles.categoryIconBox, { backgroundColor: '#EFF6FF' }]}>
-              <Ionicons name={(CATEGORY_ICONS[cat.slug] || 'airplane') as any} size={24} color="#1a3a52" />
+            <View style={[styles.categoryIconBox, { backgroundColor: colors.infoLight }]}>
+              <Ionicons name={(CATEGORY_ICONS[cat.slug] || 'airplane') as any} size={24} color={colors.navy} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.categoryName, { color: colors.text }]}>{cat.name}</Text>
@@ -293,7 +293,7 @@ function CategoriesTab({ colors }: { colors: any }) {
                 setEditCashback(String(cat.cashbackPercentage || 0));
               }}
             >
-              <Ionicons name="create-outline" size={20} color="#3B82F6" />
+              <Ionicons name="create-outline" size={20} color={colors.info} />
             </TouchableOpacity>
           </View>
         </View>
@@ -422,14 +422,14 @@ function ServicesTab({ colors }: { colors: any }) {
                     <Ionicons
                       name={item.isFeatured ? 'star' : 'star-outline'}
                       size={18}
-                      color={item.isFeatured ? '#F59E0B' : colors.secondaryText}
+                      color={item.isFeatured ? colors.warning : colors.secondaryText}
                     />
                   </TouchableOpacity>
                   <Switch
                     value={item.isActive}
                     onValueChange={() => toggleActive(item)}
-                    trackColor={{ false: '#CBD5E1', true: '#86EFAC' }}
-                    thumbColor={item.isActive ? '#22C55E' : '#94A3B8'}
+                    trackColor={{ false: colors.slateLight, true: '#86EFAC' }}
+                    thumbColor={item.isActive ? colors.green : colors.slateMedium}
                   />
                 </View>
               </View>
@@ -564,11 +564,11 @@ function BookingsTab({ colors }: { colors: any }) {
             key={`s-${s}`}
             style={[
               styles.chip,
-              statusFilter === s && { backgroundColor: '#1a3a52' },
+              statusFilter === s && { backgroundColor: colors.navy },
             ]}
             onPress={() => { setStatusFilter(s); setPage(1); }}
           >
-            <Text style={[styles.chipText, statusFilter === s && { color: '#FFF' }]}>
+            <Text style={[styles.chipText, statusFilter === s && { color: colors.card }]}>
               {s || 'All Status'}
             </Text>
           </TouchableOpacity>
@@ -579,11 +579,11 @@ function BookingsTab({ colors }: { colors: any }) {
             key={`c-${c}`}
             style={[
               styles.chip,
-              cashbackFilter === c && { backgroundColor: '#F59E0B' },
+              cashbackFilter === c && { backgroundColor: colors.warning },
             ]}
             onPress={() => { setCashbackFilter(c); setPage(1); }}
           >
-            <Text style={[styles.chipText, cashbackFilter === c && { color: '#FFF' }]}>
+            <Text style={[styles.chipText, cashbackFilter === c && { color: colors.card }]}>
               {c ? c.replace('_', ' ') : 'All Cashback'}
             </Text>
           </TouchableOpacity>
@@ -619,14 +619,14 @@ function BookingsTab({ colors }: { colors: any }) {
                   </Text>
                 </View>
                 <View>
-                  <View style={[styles.miniStatusBadge, { backgroundColor: (STATUS_COLORS[item.status] || '#6B7280') + '20' }]}>
-                    <Text style={[styles.miniStatusText, { color: STATUS_COLORS[item.status] || '#6B7280' }]}>
+                  <View style={[styles.miniStatusBadge, { backgroundColor: (STATUS_COLORS[item.status] || colors.mutedDark) + '20' }]}>
+                    <Text style={[styles.miniStatusText, { color: STATUS_COLORS[item.status] || colors.mutedDark }]}>
                       {item.status}
                     </Text>
                   </View>
                   {item.cashbackStatus && item.cashbackStatus !== 'pending' && (
-                    <View style={[styles.miniStatusBadge, { backgroundColor: (CASHBACK_STATUS_COLORS[item.cashbackStatus] || '#6B7280') + '20', marginTop: 4 }]}>
-                      <Text style={[styles.miniStatusText, { color: CASHBACK_STATUS_COLORS[item.cashbackStatus] || '#6B7280' }]}>
+                    <View style={[styles.miniStatusBadge, { backgroundColor: (CASHBACK_STATUS_COLORS[item.cashbackStatus] || colors.mutedDark) + '20', marginTop: 4 }]}>
+                      <Text style={[styles.miniStatusText, { color: CASHBACK_STATUS_COLORS[item.cashbackStatus] || colors.mutedDark }]}>
                         CB: {item.cashbackStatus.replace('_', ' ')}
                       </Text>
                     </View>
@@ -640,7 +640,7 @@ function BookingsTab({ colors }: { colors: any }) {
                 {item.pnr && (
                   <Text style={[styles.bookingPnr, { color: colors.text }]}>PNR: {item.pnr}</Text>
                 )}
-                <Text style={[styles.bookingPrice, { color: '#1a3a52' }]}>
+                <Text style={[styles.bookingPrice, { color: colors.navy }]}>
                   ₹{item.pricing?.total?.toLocaleString()}
                 </Text>
               </View>
@@ -708,16 +708,16 @@ function BookingsTab({ colors }: { colors: any }) {
                   </Text>
                   <View style={styles.statusActions}>
                     <TouchableOpacity
-                      style={[styles.statusActionBtn, { borderColor: '#22C55E' }]}
+                      style={[styles.statusActionBtn, { borderColor: colors.green }]}
                       onPress={() => handleCashbackAction(selectedBooking._id, 'credit')}
                     >
-                      <Text style={[styles.statusActionText, { color: '#22C55E' }]}>Force Credit</Text>
+                      <Text style={[styles.statusActionText, { color: colors.green }]}>Force Credit</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={[styles.statusActionBtn, { borderColor: '#EF4444' }]}
+                      style={[styles.statusActionBtn, { borderColor: colors.error }]}
                       onPress={() => handleCashbackAction(selectedBooking._id, 'clawback')}
                     >
-                      <Text style={[styles.statusActionText, { color: '#EF4444' }]}>Claw Back</Text>
+                      <Text style={[styles.statusActionText, { color: colors.error }]}>Claw Back</Text>
                     </TouchableOpacity>
                   </View>
 
@@ -794,12 +794,12 @@ function AnalyticsTab({ colors }: { colors: any }) {
       {/* Cashback Breakdown */}
       <View style={[styles.section, { backgroundColor: colors.card }]}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Cashback Overview</Text>
-        <Text style={[styles.analyticsTotal, { color: '#1a3a52' }]}>
+        <Text style={[styles.analyticsTotal, { color: colors.navy }]}>
           ₹{totalCashback.toLocaleString()} Total
         </Text>
         {cashbackEntries.map(([status, data]) => {
           const pct = totalCashback > 0 ? (data.amount / totalCashback) * 100 : 0;
-          const color = CASHBACK_STATUS_COLORS[status] || '#6B7280';
+          const color = CASHBACK_STATUS_COLORS[status] || colors.mutedDark;
           return (
             <View key={status} style={styles.analyticsRow}>
               <View style={styles.analyticsRowLeft}>
@@ -833,13 +833,13 @@ function AnalyticsTab({ colors }: { colors: any }) {
                 <Ionicons
                   name={(CATEGORY_ICONS[cat.categorySlug] || 'airplane') as any}
                   size={16}
-                  color="#1a3a52"
+                  color={colors.navy}
                 />
                 <Text style={[styles.analyticsLabel, { color: colors.text }]}>{cat.categoryName}</Text>
               </View>
               <View style={styles.analyticsRowRight}>
                 <View style={styles.barContainer}>
-                  <View style={[styles.bar, { width: `${pct}%`, backgroundColor: '#1a3a52' }]} />
+                  <View style={[styles.bar, { width: `${pct}%`, backgroundColor: colors.navy }]} />
                 </View>
                 <Text style={[styles.analyticsValue, { color: colors.text }]}>
                   ₹{cat.revenue.toLocaleString()}
@@ -859,14 +859,14 @@ function AnalyticsTab({ colors }: { colors: any }) {
           return (
             <View key={status} style={styles.analyticsRow}>
               <View style={styles.analyticsRowLeft}>
-                <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || '#6B7280' }]} />
+                <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || colors.mutedDark }]} />
                 <Text style={[styles.analyticsLabel, { color: colors.text }]}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
                 </Text>
               </View>
               <View style={styles.analyticsRowRight}>
                 <View style={styles.barContainer}>
-                  <View style={[styles.bar, { width: `${pct}%`, backgroundColor: STATUS_COLORS[status] || '#6B7280' }]} />
+                  <View style={[styles.bar, { width: `${pct}%`, backgroundColor: STATUS_COLORS[status] || colors.mutedDark }]} />
                 </View>
                 <Text style={[styles.analyticsValue, { color: colors.text }]}>
                   {count} ({Math.round(pct)}%)
@@ -885,7 +885,7 @@ function AnalyticsTab({ colors }: { colors: any }) {
 function LoadingView() {
   return (
     <View style={styles.loadingView}>
-      <ActivityIndicator size="large" color="#1a3a52" />
+      <ActivityIndicator size="large" color={Colors.light.navy} />
     </View>
   );
 }
@@ -893,7 +893,7 @@ function LoadingView() {
 function EmptyView({ message }: { message: string }) {
   return (
     <View style={styles.emptyView}>
-      <Ionicons name="airplane-outline" size={48} color="#CBD5E1" />
+      <Ionicons name="airplane-outline" size={48} color={Colors.light.slateLight} />
       <Text style={styles.emptyText}>{message}</Text>
     </View>
   );
@@ -911,7 +911,7 @@ const styles = StyleSheet.create({
   tab: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: Colors.light.slate,
   },
   tabLabel: { fontSize: 13, fontWeight: '600' },
   tabContent: { padding: 16, paddingBottom: 40 },
@@ -934,14 +934,14 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 14 },
 
   // Breakdown
-  breakdownRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: '#F1F5F9' },
+  breakdownRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: Colors.light.slate },
   breakdownLabel: { flex: 1, fontSize: 14 },
   breakdownValue: { fontSize: 14, fontWeight: '600' },
   breakdownRight: { alignItems: 'flex-end' },
   breakdownSub: { fontSize: 11, marginTop: 2 },
 
   // Recent bookings
-  recentBookingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#F1F5F9' },
+  recentBookingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: Colors.light.slate },
   recentBookingName: { fontSize: 14, fontWeight: '600' },
   recentBookingSub: { fontSize: 12, marginTop: 2 },
   miniStatusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
@@ -964,9 +964,9 @@ const styles = StyleSheet.create({
   // Filters
   filtersRow: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
   filterChips: { paddingHorizontal: 16, paddingBottom: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: '#F1F5F9', marginRight: 8 },
+  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: Colors.light.slate, marginRight: 8 },
   chipText: { fontSize: 12, fontWeight: '600', color: '#475569', textTransform: 'capitalize' },
-  chipDivider: { width: 1, backgroundColor: '#CBD5E1', marginHorizontal: 4 },
+  chipDivider: { width: 1, backgroundColor: Colors.light.slateLight, marginHorizontal: 4 },
 
   // Service cards
   serviceCard: { borderRadius: 14, padding: 16, marginBottom: 10 },
@@ -982,7 +982,7 @@ const styles = StyleSheet.create({
   bookingNum: { fontSize: 14, fontWeight: '700' },
   bookingSub: { fontSize: 13, marginTop: 2 },
   bookingUser: { fontSize: 12, marginTop: 4 },
-  bookingCardBottom: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 10, paddingTop: 10, borderTopWidth: 0.5, borderTopColor: '#F1F5F9' },
+  bookingCardBottom: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 10, paddingTop: 10, borderTopWidth: 0.5, borderTopColor: Colors.light.slate },
   bookingDate: { fontSize: 12 },
   bookingPnr: { fontSize: 12, fontWeight: '600' },
   bookingPrice: { fontSize: 14, fontWeight: '700', marginLeft: 'auto' },
@@ -992,9 +992,9 @@ const styles = StyleSheet.create({
 
   // Pagination
   pagination: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, paddingVertical: 16 },
-  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#1a3a52', borderRadius: 8 },
+  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: Colors.light.navy, borderRadius: 8 },
   pageBtnDisabled: { opacity: 0.3 },
-  pageBtnText: { color: '#FFF', fontSize: 13, fontWeight: '600' },
+  pageBtnText: { color: Colors.light.card, fontSize: 13, fontWeight: '600' },
   pageInfo: { fontSize: 13 },
 
   // Modal
@@ -1006,10 +1006,10 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15, marginBottom: 12 },
   modalActions: { flexDirection: 'row', gap: 12, marginTop: 8 },
   modalBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
-  cancelBtn: { backgroundColor: '#F1F5F9' },
+  cancelBtn: { backgroundColor: Colors.light.slate },
   cancelBtnText: { fontSize: 15, fontWeight: '600', color: '#64748B' },
-  saveBtn: { backgroundColor: '#1a3a52' },
-  saveBtnText: { fontSize: 15, fontWeight: '600', color: '#FFF' },
+  saveBtn: { backgroundColor: Colors.light.navy },
+  saveBtnText: { fontSize: 15, fontWeight: '600', color: Colors.light.card },
 
   // Status actions
   statusActions: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
@@ -1018,16 +1018,16 @@ const styles = StyleSheet.create({
 
   // Analytics
   analyticsTotal: { fontSize: 28, fontWeight: '700', marginBottom: 16 },
-  analyticsRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#F1F5F9' },
+  analyticsRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: Colors.light.slate },
   analyticsRowLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, width: 120 },
   analyticsLabel: { fontSize: 13 },
   analyticsRowRight: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  barContainer: { flex: 1, height: 8, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' },
+  barContainer: { flex: 1, height: 8, backgroundColor: Colors.light.slate, borderRadius: 4, overflow: 'hidden' },
   bar: { height: '100%', borderRadius: 4 },
   analyticsValue: { fontSize: 12, fontWeight: '600', width: 90, textAlign: 'right' },
 
   // Loading/Empty
   loadingView: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 80 },
   emptyView: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 80, gap: 12 },
-  emptyText: { fontSize: 14, color: '#94A3B8' },
+  emptyText: { fontSize: 14, color: Colors.light.slateMedium },
 });

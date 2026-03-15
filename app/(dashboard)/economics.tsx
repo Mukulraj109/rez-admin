@@ -41,14 +41,14 @@ function StatCard({ icon, iconColor, label, value, bgColor, textColor }: StatCar
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View style={[statCardStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <View style={[statCardStyles.card, { backgroundColor: Colors.light.card, borderColor: Colors.light.border }]}>
       <View style={[statCardStyles.iconWrap, { backgroundColor: bgColor }]}>
         <Ionicons name={icon} size={20} color={iconColor} />
       </View>
-      <Text style={[statCardStyles.value, { color: textColor || colors.text }]}>
+      <Text style={[statCardStyles.value, { color: textColor || Colors.light.text }]}>
         {typeof value === 'number' ? formatNumber(value) : value}
       </Text>
-      <Text style={[statCardStyles.label, { color: colors.icon }]}>{label}</Text>
+      <Text style={[statCardStyles.label, { color: Colors.light.icon }]}>{label}</Text>
     </View>
   );
 }
@@ -116,9 +116,9 @@ export default function EconomicsScreen() {
 
   if (loading && !data) {
     return (
-      <View style={[styles.centered, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color="#F59E0B" />
-        <Text style={[styles.loadingText, { color: colors.icon }]}>Loading economics data...</Text>
+      <View style={[styles.centered, { backgroundColor: Colors.light.background }]}>
+        <ActivityIndicator size="large" color={Colors.light.warning} />
+        <Text style={[styles.loadingText, { color: Colors.light.icon }]}>Loading economics data...</Text>
       </View>
     );
   }
@@ -132,20 +132,20 @@ export default function EconomicsScreen() {
     : 1;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: Colors.light.background }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { borderBottomColor: Colors.light.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Economic Control Center</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.icon }]}>
+          <Text style={[styles.headerTitle, { color: Colors.light.text }]}>Economic Control Center</Text>
+          <Text style={[styles.headerSubtitle, { color: Colors.light.icon }]}>
             Auto-refreshes every 30s
           </Text>
         </View>
         <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
-          <Ionicons name="refresh" size={22} color={colors.icon} />
+          <Ionicons name="refresh" size={22} color={Colors.light.icon} />
         </TouchableOpacity>
       </View>
 
@@ -153,22 +153,22 @@ export default function EconomicsScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F59E0B" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.light.warning} />
         }
       >
         {data && (
           <>
             {/* ── Section 1: Cashback Hero ─────────────────────── */}
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Cashback Today</Text>
+            <Text style={[styles.sectionTitle, { color: Colors.light.text }]}>Cashback Today</Text>
 
-            <View style={[styles.heroCard, { backgroundColor: '#F59E0B', borderColor: '#D97706' }]}>
+            <View style={[styles.heroCard, { backgroundColor: Colors.light.warning, borderColor: Colors.light.warningDark }]}>
               <View style={styles.heroRow}>
                 <View>
                   <Text style={styles.heroLabel}>Total Cashback Issued</Text>
                   <Text style={styles.heroValue}>{formatNumber(data.cashbackToday.totalAmount)}</Text>
                 </View>
                 <View style={styles.heroIconWrap}>
-                  <Ionicons name="cash" size={32} color="#fff" />
+                  <Ionicons name="cash" size={32} color={Colors.light.card} />
                 </View>
               </View>
               <View style={styles.heroSubRow}>
@@ -190,73 +190,73 @@ export default function EconomicsScreen() {
             </View>
 
             {/* ── Section 2: Merchant Liability ────────────────── */}
-            <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Merchant Liability</Text>
+            <Text style={[styles.sectionTitle, { color: Colors.light.text, marginTop: 24 }]}>Merchant Liability</Text>
 
             <View style={styles.cardGrid}>
               <StatCard
                 icon="wallet"
-                iconColor="#F59E0B"
+                iconColor={Colors.light.warning}
                 label="Total Pending"
                 value={data.merchantLiability.totalPending}
-                bgColor="#F59E0B20"
-                textColor="#D97706"
+                bgColor={`${Colors.light.warning}20`}
+                textColor={Colors.light.warningDark}
               />
               <StatCard
                 icon="checkmark-circle"
-                iconColor="#10B981"
+                iconColor={Colors.light.success}
                 label="Total Settled"
                 value={data.merchantLiability.totalSettled}
-                bgColor="#10B98120"
-                textColor="#059669"
+                bgColor={`${Colors.light.success}20`}
+                textColor={Colors.light.successDark}
               />
               <StatCard
                 icon="hourglass"
-                iconColor="#3B82F6"
+                iconColor={Colors.light.info}
                 label="Awaiting Settlement"
                 value={data.merchantLiability.pendingSettlementCount}
-                bgColor="#3B82F620"
+                bgColor={`${Colors.light.info}20`}
               />
               <StatCard
                 icon="alert-circle"
-                iconColor="#EF4444"
+                iconColor={Colors.light.error}
                 label="Disputed"
                 value={data.merchantLiability.disputedCount}
-                bgColor="#EF444420"
-                textColor="#DC2626"
+                bgColor={`${Colors.light.error}20`}
+                textColor={Colors.light.errorDark}
               />
             </View>
 
             {/* ── Section 3: Fraud Spike Monitor ───────────────── */}
-            <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Fraud Spike Monitor</Text>
+            <Text style={[styles.sectionTitle, { color: Colors.light.text, marginTop: 24 }]}>Fraud Spike Monitor</Text>
 
             {data.fraudAlerts.alertCount > 0 ? (
               <View>
-                <View style={[styles.alertBanner, { backgroundColor: '#FEF3C7', borderColor: '#F59E0B' }]}>
-                  <Ionicons name="warning" size={20} color="#D97706" />
-                  <Text style={[styles.alertBannerText, { color: '#92400E' }]}>
+                <View style={[styles.alertBanner, { backgroundColor: Colors.light.warningLight, borderColor: Colors.light.warning }]}>
+                  <Ionicons name="warning" size={20} color={Colors.light.warningDark} />
+                  <Text style={[styles.alertBannerText, { color: Colors.light.warningDeep }]}>
                     {data.fraudAlerts.alertCount} user(s) earned &gt; {formatNumber(data.fraudAlerts.threshold)} coins in {data.fraudAlerts.window}
                   </Text>
                 </View>
 
                 {/* Hourly bar chart */}
                 {data.fraudAlerts.hourlyAlertCounts.length > 0 && (
-                  <View style={[styles.chartCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                    <Text style={[styles.chartTitle, { color: colors.text }]}>Hourly Fraud Alerts (24h)</Text>
+                  <View style={[styles.chartCard, { backgroundColor: Colors.light.card, borderColor: Colors.light.border }]}>
+                    <Text style={[styles.chartTitle, { color: Colors.light.text }]}>Hourly Fraud Alerts (24h)</Text>
                     {data.fraudAlerts.hourlyAlertCounts.map((item) => (
                       <View key={item.hour} style={styles.barRow}>
-                        <Text style={[styles.barLabel, { color: colors.icon }]}>{item.hour}h</Text>
+                        <Text style={[styles.barLabel, { color: Colors.light.icon }]}>{item.hour}h</Text>
                         <View style={styles.barTrack}>
                           <View
                             style={[
                               styles.barFill,
                               {
                                 width: `${(item.count / maxHourlyCount) * 100}%`,
-                                backgroundColor: item.count > 0 ? '#EF4444' : '#E5E7EB',
+                                backgroundColor: item.count > 0 ? Colors.light.error : Colors.light.gray200,
                               },
                             ]}
                           />
                         </View>
-                        <Text style={[styles.barCount, { color: colors.icon }]}>{item.count}</Text>
+                        <Text style={[styles.barCount, { color: Colors.light.icon }]}>{item.count}</Text>
                       </View>
                     ))}
                   </View>
@@ -266,31 +266,31 @@ export default function EconomicsScreen() {
                 {data.fraudAlerts.topFlaggedUsers.map((user, idx) => (
                   <View
                     key={user.userId || idx}
-                    style={[styles.fraudCard, { backgroundColor: '#FEF2F2', borderColor: '#FECACA' }]}
+                    style={[styles.fraudCard, { backgroundColor: Colors.light.errorLight, borderColor: '#FECACA' }]}
                   >
                     <View style={styles.fraudHeader}>
-                      <View style={[styles.fraudIconWrap, { backgroundColor: '#FEE2E2' }]}>
-                        <Ionicons name="alert-circle" size={20} color="#EF4444" />
+                      <View style={[styles.fraudIconWrap, { backgroundColor: Colors.light.errorLight }]}>
+                        <Ionicons name="alert-circle" size={20} color={Colors.light.error} />
                       </View>
                       <View style={styles.fraudInfo}>
-                        <Text style={[styles.fraudName, { color: '#991B1B' }]}>
+                        <Text style={[styles.fraudName, { color: Colors.light.errorDeep }]}>
                           {user.userName?.trim() || 'Unknown User'}
                         </Text>
-                        <Text style={[styles.fraudId, { color: '#B91C1C' }]}>
+                        <Text style={[styles.fraudId, { color: colors.errorDarker }]}>
                           ID: {String(user.userId).substring(0, 12)}...
                         </Text>
                       </View>
                     </View>
                     <View style={styles.fraudMetrics}>
                       <View style={styles.fraudMetricItem}>
-                        <Text style={[styles.fraudMetricLabel, { color: '#B91C1C' }]}>Coins Earned</Text>
-                        <Text style={[styles.fraudMetricValue, { color: '#991B1B' }]}>
+                        <Text style={[styles.fraudMetricLabel, { color: colors.errorDarker }]}>Coins Earned</Text>
+                        <Text style={[styles.fraudMetricValue, { color: Colors.light.errorDeep }]}>
                           {formatNumber(user.totalEarned)}
                         </Text>
                       </View>
                       <View style={styles.fraudMetricItem}>
-                        <Text style={[styles.fraudMetricLabel, { color: '#B91C1C' }]}>Transactions</Text>
-                        <Text style={[styles.fraudMetricValue, { color: '#991B1B' }]}>
+                        <Text style={[styles.fraudMetricLabel, { color: colors.errorDarker }]}>Transactions</Text>
+                        <Text style={[styles.fraudMetricValue, { color: Colors.light.errorDeep }]}>
                           {user.transactionCount}
                         </Text>
                       </View>
@@ -299,7 +299,7 @@ export default function EconomicsScreen() {
                 ))}
               </View>
             ) : (
-              <View style={[styles.noAlertsCard, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}>
+              <View style={[styles.noAlertsCard, { backgroundColor: colors.successLighter, borderColor: '#BBF7D0' }]}>
                 <Ionicons name="checkmark-circle" size={24} color="#16A34A" />
                 <Text style={[styles.noAlertsText, { color: '#166534' }]}>
                   No fraud alerts in the last 24 hours
@@ -308,36 +308,36 @@ export default function EconomicsScreen() {
             )}
 
             {/* ── Section 4: Coin Issuance Rate ────────────────── */}
-            <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Coin Issuance Rate</Text>
+            <Text style={[styles.sectionTitle, { color: Colors.light.text, marginTop: 24 }]}>Coin Issuance Rate</Text>
 
             <View
               style={[
                 styles.issuanceCard,
                 {
-                  backgroundColor: data.coinIssuance.changePercent >= 0 ? '#10B98115' : '#EF444415',
-                  borderColor: data.coinIssuance.changePercent >= 0 ? '#10B981' : '#EF4444',
+                  backgroundColor: data.coinIssuance.changePercent >= 0 ? `${Colors.light.success}15` : `${Colors.light.error}15`,
+                  borderColor: data.coinIssuance.changePercent >= 0 ? Colors.light.success : Colors.light.error,
                 },
               ]}
             >
               <View style={styles.issuanceRow}>
                 <View style={styles.issuanceItem}>
-                  <Text style={[styles.issuanceLabel, { color: colors.icon }]}>Today</Text>
-                  <Text style={[styles.issuanceBigValue, { color: colors.text }]}>
+                  <Text style={[styles.issuanceLabel, { color: Colors.light.icon }]}>Today</Text>
+                  <Text style={[styles.issuanceBigValue, { color: Colors.light.text }]}>
                     {formatNumber(data.coinIssuance.todayTotal)}
                   </Text>
                 </View>
                 <View style={styles.issuanceItem}>
-                  <Text style={[styles.issuanceLabel, { color: colors.icon }]}>Rate</Text>
-                  <Text style={[styles.issuanceBigValue, { color: colors.text }]}>
+                  <Text style={[styles.issuanceLabel, { color: Colors.light.icon }]}>Rate</Text>
+                  <Text style={[styles.issuanceBigValue, { color: Colors.light.text }]}>
                     {formatNumber(data.coinIssuance.hourlyRate)}/hr
                   </Text>
                 </View>
                 <View style={styles.issuanceItem}>
-                  <Text style={[styles.issuanceLabel, { color: colors.icon }]}>vs Yesterday</Text>
+                  <Text style={[styles.issuanceLabel, { color: Colors.light.icon }]}>vs Yesterday</Text>
                   <Text
                     style={[
                       styles.issuanceBigValue,
-                      { color: data.coinIssuance.changePercent >= 0 ? '#10B981' : '#EF4444' },
+                      { color: data.coinIssuance.changePercent >= 0 ? Colors.light.success : Colors.light.error },
                     ]}
                   >
                     {data.coinIssuance.changePercent >= 0 ? '↑' : '↓'} {Math.abs(data.coinIssuance.changePercent)}%
@@ -348,24 +348,24 @@ export default function EconomicsScreen() {
 
             {/* Top Sources */}
             {data.coinIssuance.topSources.length > 0 && (
-              <View style={[styles.sourcesCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                <Text style={[styles.sourcesTitle, { color: colors.text }]}>Top Sources Today</Text>
+              <View style={[styles.sourcesCard, { backgroundColor: Colors.light.card, borderColor: Colors.light.border }]}>
+                <Text style={[styles.sourcesTitle, { color: Colors.light.text }]}>Top Sources Today</Text>
                 {data.coinIssuance.topSources.map((src, idx) => (
                   <View
                     key={src.source}
                     style={[
                       styles.sourceRow,
-                      idx < data.coinIssuance.topSources.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
+                      idx < data.coinIssuance.topSources.length - 1 && { borderBottomWidth: 1, borderBottomColor: Colors.light.border },
                     ]}
                   >
                     <View style={styles.sourceInfo}>
-                      <Text style={[styles.sourceRank, { color: colors.icon }]}>#{idx + 1}</Text>
-                      <Text style={[styles.sourceName, { color: colors.text }]}>
+                      <Text style={[styles.sourceRank, { color: Colors.light.icon }]}>#{idx + 1}</Text>
+                      <Text style={[styles.sourceName, { color: Colors.light.text }]}>
                         {formatSourceName(src.source)}
                       </Text>
                     </View>
                     <View style={styles.sourceStats}>
-                      <Text style={[styles.sourceAmount, { color: colors.text }]}>
+                      <Text style={[styles.sourceAmount, { color: Colors.light.text }]}>
                         {formatNumber(src.amount)}
                       </Text>
                       <View style={styles.sourceBadge}>
@@ -378,30 +378,30 @@ export default function EconomicsScreen() {
             )}
 
             {/* ── Section 5: Reward Reversal Queue ─────────────── */}
-            <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Reward Reversal Queue</Text>
+            <Text style={[styles.sectionTitle, { color: Colors.light.text, marginTop: 24 }]}>Reward Reversal Queue</Text>
 
             <View style={styles.cardGrid}>
               <StatCard
                 icon="time"
-                iconColor="#F59E0B"
+                iconColor={Colors.light.warning}
                 label="Pending Reversals"
                 value={data.rewardReversals.pendingReversals}
-                bgColor="#F59E0B20"
-                textColor={data.rewardReversals.pendingReversals > 0 ? '#D97706' : undefined}
+                bgColor={`${Colors.light.warning}20`}
+                textColor={data.rewardReversals.pendingReversals > 0 ? Colors.light.warningDark : undefined}
               />
               <StatCard
                 icon="checkmark-done"
-                iconColor="#10B981"
+                iconColor={Colors.light.success}
                 label="Completed Today"
                 value={data.rewardReversals.completedReversalsToday}
-                bgColor="#10B98120"
+                bgColor={`${Colors.light.success}20`}
               />
             </View>
 
             {data.rewardReversals.completedReversalAmount > 0 && (
-              <View style={[styles.infoRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                <Text style={[styles.infoLabel, { color: colors.icon }]}>Reversed Amount Today</Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>
+              <View style={[styles.infoRow, { backgroundColor: Colors.light.card, borderColor: Colors.light.border }]}>
+                <Text style={[styles.infoLabel, { color: Colors.light.icon }]}>Reversed Amount Today</Text>
+                <Text style={[styles.infoValue, { color: Colors.light.text }]}>
                   {formatNumber(data.rewardReversals.completedReversalAmount)} NC
                 </Text>
               </View>
@@ -412,7 +412,7 @@ export default function EconomicsScreen() {
                 style={[
                   styles.warningRow,
                   {
-                    backgroundColor: data.rewardReversals.oldestPendingAge > 24 ? '#FEF2F2' : '#FFFBEB',
+                    backgroundColor: data.rewardReversals.oldestPendingAge > 24 ? Colors.light.errorLight : '#FFFBEB',
                     borderColor: data.rewardReversals.oldestPendingAge > 24 ? '#FECACA' : '#FDE68A',
                   },
                 ]}
@@ -420,12 +420,12 @@ export default function EconomicsScreen() {
                 <Ionicons
                   name="warning"
                   size={16}
-                  color={data.rewardReversals.oldestPendingAge > 24 ? '#EF4444' : '#F59E0B'}
+                  color={data.rewardReversals.oldestPendingAge > 24 ? Colors.light.error : Colors.light.warning}
                 />
                 <Text
                   style={[
                     styles.warningText,
-                    { color: data.rewardReversals.oldestPendingAge > 24 ? '#991B1B' : '#92400E' },
+                    { color: data.rewardReversals.oldestPendingAge > 24 ? Colors.light.errorDeep : Colors.light.warningDeep },
                   ]}
                 >
                   Oldest pending reversal: {data.rewardReversals.oldestPendingAge}h ago
@@ -434,47 +434,47 @@ export default function EconomicsScreen() {
             )}
 
             {/* ── Section 6: Settlement Due ────────────────────── */}
-            <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Settlement Due Merchants</Text>
+            <Text style={[styles.sectionTitle, { color: Colors.light.text, marginTop: 24 }]}>Settlement Due Merchants</Text>
 
             <View style={styles.cardGrid}>
               <StatCard
                 icon="people"
-                iconColor="#3B82F6"
+                iconColor={Colors.light.info}
                 label="Merchants Due"
                 value={data.settlementDue.totalDueMerchants}
-                bgColor="#3B82F620"
+                bgColor={`${Colors.light.info}20`}
               />
               <StatCard
                 icon="cash"
-                iconColor="#F59E0B"
+                iconColor={Colors.light.warning}
                 label="Total Pending"
                 value={data.settlementDue.totalPendingAmount}
-                bgColor="#F59E0B20"
-                textColor="#D97706"
+                bgColor={`${Colors.light.warning}20`}
+                textColor={Colors.light.warningDark}
               />
             </View>
 
             {/* Top merchants table */}
             {data.settlementDue.topMerchants.length > 0 && (
-              <View style={[styles.tableCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                <Text style={[styles.tableTitle, { color: colors.text }]}>Top Pending Settlements</Text>
+              <View style={[styles.tableCard, { backgroundColor: Colors.light.card, borderColor: Colors.light.border }]}>
+                <Text style={[styles.tableTitle, { color: Colors.light.text }]}>Top Pending Settlements</Text>
                 <View style={styles.tableHeader}>
-                  <Text style={[styles.tableHeaderText, { color: colors.icon, flex: 2 }]}>Store</Text>
-                  <Text style={[styles.tableHeaderText, { color: colors.icon, flex: 1, textAlign: 'right' }]}>Amount</Text>
-                  <Text style={[styles.tableHeaderText, { color: colors.icon, flex: 1, textAlign: 'right' }]}>Cycle</Text>
+                  <Text style={[styles.tableHeaderText, { color: Colors.light.icon, flex: 2 }]}>Store</Text>
+                  <Text style={[styles.tableHeaderText, { color: Colors.light.icon, flex: 1, textAlign: 'right' }]}>Amount</Text>
+                  <Text style={[styles.tableHeaderText, { color: Colors.light.icon, flex: 1, textAlign: 'right' }]}>Cycle</Text>
                 </View>
                 {data.settlementDue.topMerchants.map((m, idx) => (
                   <View
                     key={m.merchantId || idx}
                     style={[
                       styles.tableRow,
-                      idx < data.settlementDue.topMerchants.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
+                      idx < data.settlementDue.topMerchants.length - 1 && { borderBottomWidth: 1, borderBottomColor: Colors.light.border },
                     ]}
                   >
-                    <Text style={[styles.tableCell, { color: colors.text, flex: 2 }]} numberOfLines={1}>
+                    <Text style={[styles.tableCell, { color: Colors.light.text, flex: 2 }]} numberOfLines={1}>
                       {m.storeName}
                     </Text>
-                    <Text style={[styles.tableCell, { color: '#D97706', flex: 1, textAlign: 'right', fontWeight: '600' }]}>
+                    <Text style={[styles.tableCell, { color: Colors.light.warningDark, flex: 1, textAlign: 'right', fontWeight: '600' }]}>
                       {formatNumber(m.pendingAmount)}
                     </Text>
                     <View style={{ flex: 1, alignItems: 'flex-end' }}>
@@ -489,7 +489,7 @@ export default function EconomicsScreen() {
 
             {/* Last updated */}
             <View style={styles.lastUpdated}>
-              <Text style={[styles.lastUpdatedText, { color: colors.icon }]}>
+              <Text style={[styles.lastUpdatedText, { color: Colors.light.icon }]}>
                 Last updated: {new Date(data.lastUpdated).toLocaleTimeString()}
               </Text>
             </View>
@@ -525,8 +525,8 @@ const styles = StyleSheet.create({
   // Hero card
   heroCard: { borderRadius: 16, borderWidth: 1, padding: 20, marginBottom: 14 },
   heroRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  heroLabel: { fontSize: 13, color: '#FEF3C7', fontWeight: '500' },
-  heroValue: { fontSize: 32, fontWeight: '800', color: '#fff', marginTop: 4 },
+  heroLabel: { fontSize: 13, color: Colors.light.warningLight, fontWeight: '500' },
+  heroValue: { fontSize: 32, fontWeight: '800', color: Colors.light.card, marginTop: 4 },
   heroIconWrap: {
     width: 50, height: 50, borderRadius: 25,
     backgroundColor: 'rgba(255,255,255,0.2)',
@@ -534,8 +534,8 @@ const styles = StyleSheet.create({
   },
   heroSubRow: { flexDirection: 'row', marginTop: 16, gap: 20 },
   heroSubItem: { flex: 1 },
-  heroSubLabel: { fontSize: 11, color: '#FEF3C7' },
-  heroSubValue: { fontSize: 16, fontWeight: '700', color: '#fff', marginTop: 2 },
+  heroSubLabel: { fontSize: 11, color: Colors.light.warningLight },
+  heroSubValue: { fontSize: 16, fontWeight: '700', color: Colors.light.card, marginTop: 2 },
 
   // Card grid
   cardGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
   chartTitle: { fontSize: 13, fontWeight: '600', marginBottom: 10 },
   barRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
   barLabel: { width: 28, fontSize: 10, textAlign: 'right', marginRight: 8 },
-  barTrack: { flex: 1, height: 14, backgroundColor: '#F3F4F6', borderRadius: 4, overflow: 'hidden' },
+  barTrack: { flex: 1, height: 14, backgroundColor: Colors.light.backgroundSecondary, borderRadius: 4, overflow: 'hidden' },
   barFill: { height: '100%', borderRadius: 4 },
   barCount: { width: 24, fontSize: 10, textAlign: 'center', marginLeft: 6 },
 
@@ -591,8 +591,8 @@ const styles = StyleSheet.create({
   sourceName: { fontSize: 13, fontWeight: '500' },
   sourceStats: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   sourceAmount: { fontSize: 14, fontWeight: '700' },
-  sourceBadge: { backgroundColor: '#EFF6FF', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
-  sourceBadgeText: { fontSize: 10, color: '#3B82F6', fontWeight: '600' },
+  sourceBadge: { backgroundColor: Colors.light.infoLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
+  sourceBadgeText: { fontSize: 10, color: Colors.light.info, fontWeight: '600' },
 
   // Info row
   infoRow: {
@@ -612,12 +612,12 @@ const styles = StyleSheet.create({
   // Settlement table
   tableCard: { borderRadius: 12, borderWidth: 1, padding: 14 },
   tableTitle: { fontSize: 13, fontWeight: '600', marginBottom: 10 },
-  tableHeader: { flexDirection: 'row', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  tableHeader: { flexDirection: 'row', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   tableHeaderText: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase' },
   tableRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
   tableCell: { fontSize: 13 },
-  cycleBadge: { backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  cycleBadgeText: { fontSize: 10, color: '#6B7280', fontWeight: '600' },
+  cycleBadge: { backgroundColor: Colors.light.backgroundSecondary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  cycleBadgeText: { fontSize: 10, color: Colors.light.mutedDark, fontWeight: '600' },
 
   // Last updated
   lastUpdated: { alignItems: 'center', marginTop: 16 },

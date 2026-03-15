@@ -5,11 +5,12 @@ import FormField from './FormField';
 import IconInput from './IconInput';
 import ColorInput from './ColorInput';
 import { showConfirm } from '../../utils/alert';
+import { Colors } from '../../constants/Colors';
 
 interface SortFilterManagerProps {
   pageConfig: any;
   setPageConfig: (config: any) => void;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 const DEFAULT_SORT_OPTIONS = [
@@ -97,7 +98,7 @@ const SortFilterManager = React.memo(({ pageConfig, setPageConfig, colors }: Sor
   const addTrustBadge = () => {
     setPageConfig((prev: any) => ({
       ...prev,
-      trustBadges: [...(prev.trustBadges || []), { icon: 'shield-checkmark-outline', label: '', color: '#22C55E' }],
+      trustBadges: [...(prev.trustBadges || []), { icon: 'shield-checkmark-outline', label: '', color: Colors.light.green }],
     }));
   };
 
@@ -192,7 +193,7 @@ const SortFilterManager = React.memo(({ pageConfig, setPageConfig, colors }: Sor
                   <Ionicons name="chevron-down" size={18} color={index === sortOptions.length - 1 ? colors.border : colors.icon} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => removeSortOption(index)}>
-                  <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                  <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -220,8 +221,8 @@ const SortFilterManager = React.memo(({ pageConfig, setPageConfig, colors }: Sor
               <Switch
                 value={opt.enabled}
                 onValueChange={(v) => updateSortOption(index, 'enabled', v)}
-                trackColor={{ false: '#D1D5DB', true: `${colors.success}80` }}
-                thumbColor={opt.enabled ? colors.success : '#9CA3AF'}
+                trackColor={{ false: colors.gray300, true: `${colors.success}80` }}
+                thumbColor={opt.enabled ? colors.success : Colors.light.icon}
               />
             </View>
           </View>
@@ -277,8 +278,8 @@ const SortFilterManager = React.memo(({ pageConfig, setPageConfig, colors }: Sor
           <Switch
             value={filterOptions.showPriceFilter ?? true}
             onValueChange={(v) => updateFilter('showPriceFilter', v)}
-            trackColor={{ false: '#D1D5DB', true: `${colors.success}80` }}
-            thumbColor={filterOptions.showPriceFilter !== false ? colors.success : '#9CA3AF'}
+            trackColor={{ false: colors.gray300, true: `${colors.success}80` }}
+            thumbColor={filterOptions.showPriceFilter !== false ? colors.success : Colors.light.icon}
           />
         </View>
 
@@ -287,8 +288,8 @@ const SortFilterManager = React.memo(({ pageConfig, setPageConfig, colors }: Sor
           <Switch
             value={filterOptions.showRatingFilter ?? true}
             onValueChange={(v) => updateFilter('showRatingFilter', v)}
-            trackColor={{ false: '#D1D5DB', true: `${colors.success}80` }}
-            thumbColor={filterOptions.showRatingFilter !== false ? colors.success : '#9CA3AF'}
+            trackColor={{ false: colors.gray300, true: `${colors.success}80` }}
+            thumbColor={filterOptions.showRatingFilter !== false ? colors.success : Colors.light.icon}
           />
         </View>
 
@@ -297,8 +298,8 @@ const SortFilterManager = React.memo(({ pageConfig, setPageConfig, colors }: Sor
           <Switch
             value={filterOptions.showOpenNow ?? true}
             onValueChange={(v) => updateFilter('showOpenNow', v)}
-            trackColor={{ false: '#D1D5DB', true: `${colors.success}80` }}
-            thumbColor={filterOptions.showOpenNow !== false ? colors.success : '#9CA3AF'}
+            trackColor={{ false: colors.gray300, true: `${colors.success}80` }}
+            thumbColor={filterOptions.showOpenNow !== false ? colors.success : Colors.light.icon}
           />
         </View>
       </View>
@@ -385,7 +386,7 @@ const SortFilterManager = React.memo(({ pageConfig, setPageConfig, colors }: Sor
             <View style={styles.cardHeader}>
               <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
               <TouchableOpacity onPress={() => removeTrustBadge(index)}>
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
               </TouchableOpacity>
             </View>
 
@@ -450,7 +451,7 @@ const SortFilterManager = React.memo(({ pageConfig, setPageConfig, colors }: Sor
             <View style={styles.cardHeader}>
               <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
               <TouchableOpacity onPress={() => removeExperienceBenefit(index)}>
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
               </TouchableOpacity>
             </View>
 

@@ -15,11 +15,11 @@ import supportConfigService, {
 type SectionKey = 'hours' | 'phones' | 'callback' | 'categories' | 'queue';
 
 const SECTIONS: { key: SectionKey; title: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
-  { key: 'hours', title: 'Support Hours', icon: 'time', color: '#3B82F6' },
-  { key: 'phones', title: 'Phone Numbers', icon: 'call', color: '#10B981' },
-  { key: 'callback', title: 'Callback Settings', icon: 'arrow-undo', color: '#8B5CF6' },
-  { key: 'categories', title: 'Categories', icon: 'grid', color: '#F59E0B' },
-  { key: 'queue', title: 'Queue Settings', icon: 'warning', color: '#EF4444' },
+  { key: 'hours', title: 'Support Hours', icon: 'time', color: Colors.light.info },
+  { key: 'phones', title: 'Phone Numbers', icon: 'call', color: Colors.light.success },
+  { key: 'callback', title: 'Callback Settings', icon: 'arrow-undo', color: Colors.light.purple },
+  { key: 'categories', title: 'Categories', icon: 'grid', color: Colors.light.warning },
+  { key: 'queue', title: 'Queue Settings', icon: 'warning', color: Colors.light.error },
 ];
 
 const TIMEZONES = ['Asia/Dubai', 'Asia/Kolkata', 'UTC', 'America/New_York', 'Europe/London'];
@@ -153,7 +153,7 @@ export default function SupportConfigScreen() {
   if (error || !config) {
     return (
       <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
-        <Ionicons name="alert-circle" size={48} color="#EF4444" />
+        <Ionicons name="alert-circle" size={48} color={colors.error} />
         <Text style={[styles.errorText, { color: colors.text }]}>{error || 'Unknown error'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={() => loadConfig()}>
           <Text style={styles.retryButtonText}>Retry</Text>
@@ -175,11 +175,11 @@ export default function SupportConfigScreen() {
             style={[
               styles.chip,
               { borderColor: colors.border },
-              config.supportHours.timezone === tz && { backgroundColor: '#3B82F6', borderColor: '#3B82F6' },
+              config.supportHours.timezone === tz && { backgroundColor: colors.info, borderColor: colors.info },
             ]}
             onPress={() => updateConfig(c => { c.supportHours.timezone = tz; return c; })}
           >
-            <Text style={[styles.chipText, config.supportHours.timezone === tz && { color: '#fff' }, { color: config.supportHours.timezone === tz ? '#fff' : colors.text }]}>
+            <Text style={[styles.chipText, config.supportHours.timezone === tz && { color: colors.card }, { color: config.supportHours.timezone === tz ? colors.card : colors.text }]}>
               {tz.split('/').pop()?.replace('_', ' ')}
             </Text>
           </TouchableOpacity>
@@ -238,7 +238,7 @@ export default function SupportConfigScreen() {
             placeholderTextColor={colors.icon}
           />
           <TouchableOpacity onPress={() => updateConfig(c => { c.supportHours.holidays.splice(idx, 1); return c; })}>
-            <Ionicons name="trash-outline" size={20} color="#EF4444" />
+            <Ionicons name="trash-outline" size={20} color={colors.error} />
           </TouchableOpacity>
         </View>
       ))}
@@ -246,7 +246,7 @@ export default function SupportConfigScreen() {
         style={styles.addButton}
         onPress={() => updateConfig(c => { c.supportHours.holidays.push({ date: '', name: '' }); return c; })}
       >
-        <Ionicons name="add-circle-outline" size={18} color="#3B82F6" />
+        <Ionicons name="add-circle-outline" size={18} color={colors.info} />
         <Text style={styles.addButtonText}>Add Holiday</Text>
       </TouchableOpacity>
     </View>
@@ -259,7 +259,7 @@ export default function SupportConfigScreen() {
           <View style={styles.itemHeader}>
             <Text style={[styles.itemTitle, { color: colors.text }]}>Phone #{idx + 1}</Text>
             <TouchableOpacity onPress={() => updateConfig(c => { c.phoneNumbers.splice(idx, 1); return c; })}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              <Ionicons name="trash-outline" size={18} color={colors.error} />
             </TouchableOpacity>
           </View>
           {renderTextInput('Region', phone.region, (v) => updateConfig(c => { c.phoneNumbers[idx].region = v; return c; }))}
@@ -277,7 +277,7 @@ export default function SupportConfigScreen() {
           return c;
         })}
       >
-        <Ionicons name="add-circle-outline" size={18} color="#3B82F6" />
+        <Ionicons name="add-circle-outline" size={18} color={colors.info} />
         <Text style={styles.addButtonText}>Add Phone Number</Text>
       </TouchableOpacity>
     </View>
@@ -298,7 +298,7 @@ export default function SupportConfigScreen() {
           <View style={styles.itemHeader}>
             <Text style={[styles.itemTitle, { color: colors.text }]}>{cat.name || `Category #${idx + 1}`}</Text>
             <TouchableOpacity onPress={() => updateConfig(c => { c.categories.splice(idx, 1); return c; })}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              <Ionicons name="trash-outline" size={18} color={colors.error} />
             </TouchableOpacity>
           </View>
           {renderTextInput('ID', cat.id, (v) => updateConfig(c => { c.categories[idx].id = v; return c; }))}
@@ -316,11 +316,11 @@ export default function SupportConfigScreen() {
                 style={[
                   styles.chip,
                   { borderColor: colors.border },
-                  cat.priority === p && { backgroundColor: '#8B5CF6', borderColor: '#8B5CF6' },
+                  cat.priority === p && { backgroundColor: colors.purple, borderColor: colors.purple },
                 ]}
                 onPress={() => updateConfig(c => { c.categories[idx].priority = p; return c; })}
               >
-                <Text style={[styles.chipText, { color: cat.priority === p ? '#fff' : colors.text }]}>{p}</Text>
+                <Text style={[styles.chipText, { color: cat.priority === p ? colors.card : colors.text }]}>{p}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -343,7 +343,7 @@ export default function SupportConfigScreen() {
           return c;
         })}
       >
-        <Ionicons name="add-circle-outline" size={18} color="#3B82F6" />
+        <Ionicons name="add-circle-outline" size={18} color={colors.info} />
         <Text style={styles.addButtonText}>Add Category</Text>
       </TouchableOpacity>
     </View>
@@ -363,13 +363,13 @@ export default function SupportConfigScreen() {
               styles.chip,
               { borderColor: colors.border },
               config.queueStatus.severity === s && {
-                backgroundColor: s === 'normal' ? '#10B981' : s === 'busy' ? '#F59E0B' : '#EF4444',
-                borderColor: s === 'normal' ? '#10B981' : s === 'busy' ? '#F59E0B' : '#EF4444',
+                backgroundColor: s === 'normal' ? colors.success : s === 'busy' ? colors.warning : colors.error,
+                borderColor: s === 'normal' ? colors.success : s === 'busy' ? colors.warning : colors.error,
               },
             ]}
             onPress={() => updateConfig(c => { c.queueStatus.severity = s; return c; })}
           >
-            <Text style={[styles.chipText, { color: config.queueStatus.severity === s ? '#fff' : colors.text }]}>{s}</Text>
+            <Text style={[styles.chipText, { color: config.queueStatus.severity === s ? colors.card : colors.text }]}>{s}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -391,10 +391,10 @@ export default function SupportConfigScreen() {
             disabled={!dirty || saving}
           >
             {saving ? (
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="save" size={16} color="#fff" />
+                <Ionicons name="save" size={16} color={colors.card} />
                 <Text style={styles.saveButtonText}>Save</Text>
               </>
             )}
@@ -404,7 +404,7 @@ export default function SupportConfigScreen() {
 
       {dirty && (
         <View style={styles.dirtyBanner}>
-          <Ionicons name="alert-circle" size={16} color="#F59E0B" />
+          <Ionicons name="alert-circle" size={16} color={colors.warning} />
           <Text style={styles.dirtyText}>You have unsaved changes</Text>
         </View>
       )}
@@ -429,17 +429,17 @@ const styles = StyleSheet.create({
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12, padding: 24 },
   loadingText: { fontSize: 14, marginTop: 8 },
   errorText: { fontSize: 14, textAlign: 'center', marginTop: 8 },
-  retryButton: { backgroundColor: '#3B82F6', borderRadius: 8, paddingHorizontal: 20, paddingVertical: 10, marginTop: 12 },
-  retryButtonText: { color: '#fff', fontWeight: '600' },
+  retryButton: { backgroundColor: Colors.light.info, borderRadius: 8, paddingHorizontal: 20, paddingVertical: 10, marginTop: 12 },
+  retryButtonText: { color: Colors.light.card, fontWeight: '600' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1 },
   headerTitle: { fontSize: 18, fontWeight: '700' },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   headerBtn: { padding: 8 },
-  saveButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#3B82F6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8, gap: 4 },
+  saveButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.info, borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8, gap: 4 },
   saveButtonDisabled: { opacity: 0.5 },
-  saveButtonText: { color: '#fff', fontWeight: '600', fontSize: 13 },
-  dirtyBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEF3C7', paddingHorizontal: 16, paddingVertical: 8, gap: 6 },
-  dirtyText: { color: '#92400E', fontSize: 12, fontWeight: '500' },
+  saveButtonText: { color: Colors.light.card, fontWeight: '600', fontSize: 13 },
+  dirtyBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.warningLight, paddingHorizontal: 16, paddingVertical: 8, gap: 6 },
+  dirtyText: { color: Colors.light.warningDeep, fontSize: 12, fontWeight: '500' },
   scrollView: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 100, gap: 12 },
   card: { borderRadius: 12, borderWidth: 1, overflow: 'hidden' },
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
   listItemRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   smallInput: { borderWidth: 1, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 6, fontSize: 13, width: 110 },
   addButton: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 8 },
-  addButtonText: { color: '#3B82F6', fontSize: 13, fontWeight: '500' },
+  addButtonText: { color: Colors.light.info, fontSize: 13, fontWeight: '500' },
   itemCard: { borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 10 },
   itemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   itemTitle: { fontSize: 14, fontWeight: '600' },

@@ -4,12 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { PageConfig } from '../../services/api/categories';
 import FormField from './FormField';
 import ColorInput from './ColorInput';
+import { Colors } from '../../constants/Colors';
 import { showConfirm } from '../../utils/alert';
 
 interface CuratedCollectionsManagerProps {
   pageConfig: PageConfig;
   setPageConfig: React.Dispatch<React.SetStateAction<PageConfig>>;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 const CuratedCollectionsManager = React.memo(({ pageConfig, setPageConfig, colors }: CuratedCollectionsManagerProps) => {
@@ -20,7 +21,7 @@ const CuratedCollectionsManager = React.memo(({ pageConfig, setPageConfig, color
       ...prev,
       curatedCollections: [...(prev.curatedCollections || []), {
         id: `col-${Date.now()}`, title: '', subtitle: '', icon: '',
-        gradient: ['#8B5CF6', '#A78BFA'], tags: '',
+        gradient: [colors.purple, '#A78BFA'], tags: '',
       }],
     }));
   };
@@ -63,7 +64,7 @@ const CuratedCollectionsManager = React.memo(({ pageConfig, setPageConfig, color
           <View style={styles.cardHeader}>
             <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
             <TouchableOpacity onPress={() => removeCollection(index)}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
             </TouchableOpacity>
           </View>
 
@@ -81,7 +82,7 @@ const CuratedCollectionsManager = React.memo(({ pageConfig, setPageConfig, color
 
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <ColorInput label="Gradient Start" value={col.gradient?.[0] || ''} onChange={(v) => updateGradient(index, 0, v)} placeholder="#8B5CF6" colors={colors} small />
+              <ColorInput label="Gradient Start" value={col.gradient?.[0] || ''} onChange={(v) => updateGradient(index, 0, v)} placeholder={colors.purple} colors={colors} small />
             </View>
             <View style={{ flex: 1 }}>
               <ColorInput label="Gradient End" value={col.gradient?.[1] || ''} onChange={(v) => updateGradient(index, 1, v)} placeholder="#A78BFA" colors={colors} small />

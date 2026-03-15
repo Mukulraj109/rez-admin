@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 const HEX_REGEX = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 
@@ -28,11 +29,11 @@ const ColorInput = React.memo(({ label, value, onChange, placeholder, colors, sm
     <View style={styles.container}>
       <Text style={[small ? styles.labelSmall : styles.label, { color: colors.text }]}>{label}</Text>
       <View style={styles.row}>
-        <View style={[styles.preview, { backgroundColor: isValid && value ? value : '#ccc' }]} />
+        <View style={[styles.preview, { backgroundColor: isValid && value ? value : Colors.light.gray300 }]} />
         <TextInput
           style={[
             small ? styles.inputSmall : styles.input,
-            { color: colors.text, borderColor: error ? '#EF4444' : colors.border, flex: 1 },
+            { color: colors.text, borderColor: error ? Colors.light.error : colors.border, flex: 1 },
           ]}
           value={value}
           onChangeText={(v) => { onChange(v); if (error) setError(''); }}
@@ -57,5 +58,5 @@ const styles = StyleSheet.create({
   preview: { width: 32, height: 32, borderRadius: 8 },
   input: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14 },
   inputSmall: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, fontSize: 13 },
-  errorText: { color: '#EF4444', fontSize: 11, marginTop: 2 },
+  errorText: { color: Colors.light.error, fontSize: 11, marginTop: 2 },
 });

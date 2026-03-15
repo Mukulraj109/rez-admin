@@ -36,9 +36,9 @@ import { showAlert, showConfirm } from '../../utils/alert';
 type StatusFilter = 'all' | LeaderboardStatus;
 
 const STATUS_COLORS: Record<string, string> = {
-  active: '#10B981',
-  paused: '#F59E0B',
-  archived: '#6B7280',
+  active: Colors.light.success,
+  paused: Colors.light.warning,
+  archived: Colors.light.mutedDark,
 };
 
 const LEADERBOARD_TYPE_LABELS: Record<LeaderboardType, string> = {
@@ -128,7 +128,7 @@ const DEFAULT_FORM: LeaderboardFormData = {
   },
   display: {
     icon: 'trophy',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.light.warningLight,
     featured: false,
     priority: 50,
   },
@@ -284,7 +284,7 @@ export default function LeaderboardConfigScreen() {
       },
       display: {
         icon: config.display?.icon || 'trophy',
-        backgroundColor: config.display?.backgroundColor || '#FEF3C7',
+        backgroundColor: config.display?.backgroundColor || colors.warningLight,
         featured: config.display?.featured || false,
         priority: config.display?.priority || 50,
       },
@@ -424,9 +424,9 @@ export default function LeaderboardConfigScreen() {
   // ==========================================
 
   const renderStatusBadge = (status: string) => (
-    <View style={[styles.statusBadge, { backgroundColor: `${STATUS_COLORS[status] || '#94A3B8'}20` }]}>
-      <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || '#94A3B8' }]} />
-      <Text style={[styles.statusText, { color: STATUS_COLORS[status] || '#94A3B8' }]}>
+    <View style={[styles.statusBadge, { backgroundColor: `${STATUS_COLORS[status] || colors.slateMedium}20` }]}>
+      <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || colors.slateMedium }]} />
+      <Text style={[styles.statusText, { color: STATUS_COLORS[status] || colors.slateMedium }]}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Text>
     </View>
@@ -444,8 +444,8 @@ export default function LeaderboardConfigScreen() {
       {/* Header */}
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderLeft}>
-          <View style={[styles.iconCircle, { backgroundColor: item.display?.backgroundColor || '#FEF3C7' }]}>
-            <Ionicons name={(item.display?.icon as any) || 'trophy'} size={20} color="#1a3a52" />
+          <View style={[styles.iconCircle, { backgroundColor: item.display?.backgroundColor || colors.warningLight }]}>
+            <Ionicons name={(item.display?.icon as any) || 'trophy'} size={20} color={colors.navy} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={[styles.cardTitle, { color: colors.text }]} numberOfLines={1}>
@@ -475,8 +475,8 @@ export default function LeaderboardConfigScreen() {
           </Text>
         </View>
         {item.display?.featured && (
-          <View style={[styles.infoChip, { backgroundColor: '#FEF3C7' }]}>
-            <Text style={[styles.infoChipText, { color: '#D97706' }]}>Featured</Text>
+          <View style={[styles.infoChip, { backgroundColor: colors.warningLight }]}>
+            <Text style={[styles.infoChipText, { color: colors.warningDark }]}>Featured</Text>
           </View>
         )}
       </View>
@@ -494,52 +494,52 @@ export default function LeaderboardConfigScreen() {
       {/* Actions */}
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(item)}>
-          <Ionicons name="create-outline" size={18} color="#3B82F6" />
-          <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+          <Ionicons name="create-outline" size={18} color={colors.info} />
+          <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionBtn} onPress={() => loadAnalytics(item._id)}>
-          <Ionicons name="bar-chart-outline" size={18} color="#8B5CF6" />
-          <Text style={[styles.actionText, { color: '#8B5CF6' }]}>Analytics</Text>
+          <Ionicons name="bar-chart-outline" size={18} color={colors.purple} />
+          <Text style={[styles.actionText, { color: colors.purple }]}>Analytics</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleViewPrizeHistory(item)}>
-          <Ionicons name="time-outline" size={18} color="#06B6D4" />
-          <Text style={[styles.actionText, { color: '#06B6D4' }]}>History</Text>
+          <Ionicons name="time-outline" size={18} color={colors.cyan} />
+          <Text style={[styles.actionText, { color: colors.cyan }]}>History</Text>
         </TouchableOpacity>
 
         {item.status === 'active' && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleDistributePrizes(item)}>
-            <Ionicons name="gift-outline" size={18} color="#10B981" />
-            <Text style={[styles.actionText, { color: '#10B981' }]}>Prizes</Text>
+            <Ionicons name="gift-outline" size={18} color={colors.success} />
+            <Text style={[styles.actionText, { color: colors.success }]}>Prizes</Text>
           </TouchableOpacity>
         )}
 
         {item.status === 'active' && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleStatusChange(item, 'paused')}>
-            <Ionicons name="pause-circle-outline" size={18} color="#F59E0B" />
-            <Text style={[styles.actionText, { color: '#F59E0B' }]}>Pause</Text>
+            <Ionicons name="pause-circle-outline" size={18} color={colors.warning} />
+            <Text style={[styles.actionText, { color: colors.warning }]}>Pause</Text>
           </TouchableOpacity>
         )}
 
         {item.status === 'paused' && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleStatusChange(item, 'active')}>
-            <Ionicons name="play-circle-outline" size={18} color="#10B981" />
-            <Text style={[styles.actionText, { color: '#10B981' }]}>Activate</Text>
+            <Ionicons name="play-circle-outline" size={18} color={colors.success} />
+            <Text style={[styles.actionText, { color: colors.success }]}>Activate</Text>
           </TouchableOpacity>
         )}
 
         {item.status !== 'archived' && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleStatusChange(item, 'archived')}>
-            <Ionicons name="archive-outline" size={18} color="#6B7280" />
-            <Text style={[styles.actionText, { color: '#6B7280' }]}>Archive</Text>
+            <Ionicons name="archive-outline" size={18} color={colors.mutedDark} />
+            <Text style={[styles.actionText, { color: colors.mutedDark }]}>Archive</Text>
           </TouchableOpacity>
         )}
 
         {item.status !== 'active' && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item)}>
-            <Ionicons name="trash-outline" size={18} color="#EF4444" />
-            <Text style={[styles.actionText, { color: '#EF4444' }]}>Del</Text>
+            <Ionicons name="trash-outline" size={18} color={colors.error} />
+            <Text style={[styles.actionText, { color: colors.error }]}>Del</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -552,22 +552,22 @@ export default function LeaderboardConfigScreen() {
 
   const renderStatsRow = () => {
     if (statsLoading) {
-      return <ActivityIndicator size="small" color="#3B82F6" style={{ paddingVertical: 12 }} />;
+      return <ActivityIndicator size="small" color={colors.info} style={{ paddingVertical: 12 }} />;
     }
     if (!stats) return null;
 
     return (
       <View style={styles.dashboardGrid}>
-        <View style={[styles.dashboardCard, { backgroundColor: '#EFF6FF' }]}>
+        <View style={[styles.dashboardCard, { backgroundColor: colors.infoLight }]}>
           <Text style={[styles.dashboardValue, { color: '#1D4ED8' }]}>{stats.activeLeaderboards}</Text>
           <Text style={styles.dashboardLabel}>Active</Text>
         </View>
-        <View style={[styles.dashboardCard, { backgroundColor: '#F0FDF4' }]}>
-          <Text style={[styles.dashboardValue, { color: '#16A34A' }]}>{stats.totalPrizesDistributed?.toLocaleString()}</Text>
+        <View style={[styles.dashboardCard, { backgroundColor: colors.successLighter }]}>
+          <Text style={[styles.dashboardValue, { color: colors.greenDark }]}>{stats.totalPrizesDistributed?.toLocaleString()}</Text>
           <Text style={styles.dashboardLabel}>Prizes Given</Text>
         </View>
-        <View style={[styles.dashboardCard, { backgroundColor: '#FEF3C7' }]}>
-          <Text style={[styles.dashboardValue, { color: '#D97706' }]}>{stats.participationRate}%</Text>
+        <View style={[styles.dashboardCard, { backgroundColor: colors.warningLight }]}>
+          <Text style={[styles.dashboardValue, { color: colors.warningDark }]}>{stats.participationRate}%</Text>
           <Text style={styles.dashboardLabel}>Participation</Text>
         </View>
       </View>
@@ -590,7 +590,7 @@ export default function LeaderboardConfigScreen() {
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
             {isSaving ? (
-              <ActivityIndicator size="small" color="#3B82F6" />
+              <ActivityIndicator size="small" color={colors.info} />
             ) : (
               <Text style={styles.saveBtn}>Save</Text>
             )}
@@ -607,7 +607,7 @@ export default function LeaderboardConfigScreen() {
             value={formData.slug}
             onChangeText={(v) => setFormData(prev => ({ ...prev, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))}
             placeholder="weekly-top-spenders"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             editable={!editingConfig}
           />
 
@@ -617,7 +617,7 @@ export default function LeaderboardConfigScreen() {
             value={formData.title}
             onChangeText={(v) => setFormData(prev => ({ ...prev, title: v }))}
             placeholder="Top Spenders This Week"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Subtitle</Text>
@@ -626,7 +626,7 @@ export default function LeaderboardConfigScreen() {
             value={formData.subtitle}
             onChangeText={(v) => setFormData(prev => ({ ...prev, subtitle: v }))}
             placeholder="Compete for weekly prizes!"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Leaderboard Type</Text>
@@ -706,7 +706,7 @@ export default function LeaderboardConfigScreen() {
               <View style={styles.prizeRowHeader}>
                 <Text style={styles.prizeRowLabel}>Prize Tier {index + 1}</Text>
                 <TouchableOpacity onPress={() => removePrizeRow(index)}>
-                  <Ionicons name="close-circle" size={20} color="#EF4444" />
+                  <Ionicons name="close-circle" size={20} color={colors.error} />
                 </TouchableOpacity>
               </View>
               <View style={styles.formRow}>
@@ -718,7 +718,7 @@ export default function LeaderboardConfigScreen() {
                     onChangeText={(v) => updatePrizeRow(index, 'rankStart', v)}
                     keyboardType="numeric"
                     placeholder="1"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colors.muted}
                   />
                 </View>
                 <View style={styles.formRowItem}>
@@ -729,7 +729,7 @@ export default function LeaderboardConfigScreen() {
                     onChangeText={(v) => updatePrizeRow(index, 'rankEnd', v)}
                     keyboardType="numeric"
                     placeholder="1"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colors.muted}
                   />
                 </View>
               </View>
@@ -742,7 +742,7 @@ export default function LeaderboardConfigScreen() {
                     onChangeText={(v) => updatePrizeRow(index, 'prizeAmount', v)}
                     keyboardType="numeric"
                     placeholder="500"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colors.muted}
                   />
                 </View>
                 <View style={styles.formRowItem}>
@@ -752,14 +752,14 @@ export default function LeaderboardConfigScreen() {
                     value={prize.prizeLabel}
                     onChangeText={(v) => updatePrizeRow(index, 'prizeLabel', v)}
                     placeholder="Gold Prize"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colors.muted}
                   />
                 </View>
               </View>
             </View>
           ))}
           <TouchableOpacity style={styles.addPrizeBtn} onPress={addPrizeRow}>
-            <Ionicons name="add-circle" size={22} color="#3B82F6" />
+            <Ionicons name="add-circle" size={22} color={colors.info} />
             <Text style={styles.addPrizeBtnText}>Add Prize Tier</Text>
           </TouchableOpacity>
 
@@ -778,7 +778,7 @@ export default function LeaderboardConfigScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="0"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={styles.formRowItem}>
@@ -792,7 +792,7 @@ export default function LeaderboardConfigScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="0"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
           </View>
@@ -821,7 +821,7 @@ export default function LeaderboardConfigScreen() {
             value={excludedIdsInput}
             onChangeText={setExcludedIdsInput}
             placeholder="userId1, userId2"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           {/* Anti-Fraud */}
@@ -839,7 +839,7 @@ export default function LeaderboardConfigScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="50"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={styles.formRowItem}>
@@ -853,7 +853,7 @@ export default function LeaderboardConfigScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="3"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
           </View>
@@ -883,7 +883,7 @@ export default function LeaderboardConfigScreen() {
                   display: { ...prev.display, icon: v },
                 }))}
                 placeholder="trophy"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={styles.formRowItem}>
@@ -895,8 +895,8 @@ export default function LeaderboardConfigScreen() {
                   ...prev,
                   display: { ...prev.display, backgroundColor: v },
                 }))}
-                placeholder="#FEF3C7"
-                placeholderTextColor="#9CA3AF"
+                placeholder={colors.warningLight}
+                placeholderTextColor={colors.muted}
               />
               {formData.display.backgroundColor ? (
                 <View style={[styles.colorPreview, { backgroundColor: formData.display.backgroundColor }]} />
@@ -916,7 +916,7 @@ export default function LeaderboardConfigScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="50"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={styles.formRowItem}>
@@ -930,7 +930,7 @@ export default function LeaderboardConfigScreen() {
                 }}
                 keyboardType="numeric"
                 placeholder="100"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
           </View>
@@ -966,7 +966,7 @@ export default function LeaderboardConfigScreen() {
           </View>
 
           {analyticsLoading ? (
-            <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+            <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           ) : analytics ? (
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
               <View style={styles.analyticsGrid}>
@@ -1018,7 +1018,7 @@ export default function LeaderboardConfigScreen() {
           </View>
 
           {prizeHistoryLoading ? (
-            <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+            <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           ) : prizeHistory.length > 0 ? (
             <ScrollView>
               {prizeHistory.map((entry) => (
@@ -1060,7 +1060,7 @@ export default function LeaderboardConfigScreen() {
             </ScrollView>
           ) : (
             <View style={styles.emptyContainer}>
-              <Ionicons name="time-outline" size={48} color="#D1D5DB" />
+              <Ionicons name="time-outline" size={48} color={colors.gray300} />
               <Text style={styles.emptyText}>No prize history found</Text>
             </View>
           )}
@@ -1079,7 +1079,7 @@ export default function LeaderboardConfigScreen() {
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Leaderboard Config</Text>
         <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.createBtnText}>Create</Text>
         </TouchableOpacity>
       </View>
@@ -1092,7 +1092,7 @@ export default function LeaderboardConfigScreen() {
           onChangeText={setSearchQuery}
           onSubmitEditing={() => loadConfigs(1)}
           placeholder="Search leaderboards..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.muted}
           returnKeyType="search"
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChips}>
@@ -1120,10 +1120,10 @@ export default function LeaderboardConfigScreen() {
         ListHeaderComponent={renderStatsRow}
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+            <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           ) : (
             <View style={styles.emptyContainer}>
-              <Ionicons name="trophy-outline" size={48} color="#D1D5DB" />
+              <Ionicons name="trophy-outline" size={48} color={colors.gray300} />
               <Text style={styles.emptyText}>No leaderboard configs found</Text>
             </View>
           )
@@ -1177,16 +1177,16 @@ const styles = StyleSheet.create({
   createBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
     gap: 4,
   },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
 
   // Filters
-  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   searchInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -1200,18 +1200,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
     marginRight: 8,
   },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  filterChipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  filterChipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  filterChipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  filterChipTextActive: { color: Colors.light.card, fontWeight: '600' },
 
   // Dashboard Stats
   dashboardGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
   dashboardCard: { flex: 1, minWidth: '30%', borderRadius: 12, padding: 14, alignItems: 'center' },
   dashboardValue: { fontSize: 22, fontWeight: '700' },
-  dashboardLabel: { fontSize: 11, color: '#6B7280', marginTop: 4, fontWeight: '500' },
+  dashboardLabel: { fontSize: 11, color: Colors.light.mutedDark, marginTop: 4, fontWeight: '500' },
 
   // Config Card
   card: {
@@ -1219,19 +1219,19 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 10 },
   iconCircle: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   cardTitle: { fontSize: 15, fontWeight: '600' },
-  cardSlug: { fontSize: 11, color: '#9CA3AF', marginTop: 1 },
+  cardSlug: { fontSize: 11, color: Colors.light.muted, marginTop: 1 },
   cardInfoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 },
-  infoChip: { backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  infoChipText: { fontSize: 11, fontWeight: '500', color: '#374151' },
+  infoChip: { backgroundColor: Colors.light.backgroundSecondary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  infoChipText: { fontSize: 11, fontWeight: '500', color: Colors.light.gray700 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
-  statsText: { fontSize: 11, color: '#9CA3AF' },
-  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10 },
+  statsText: { fontSize: 11, color: Colors.light.muted },
+  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 4, paddingHorizontal: 6 },
   actionText: { fontSize: 12, fontWeight: '500' },
 
@@ -1249,14 +1249,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.gray200,
   },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formSectionTitle: { fontSize: 15, fontWeight: '700', color: '#1a3a52', marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', paddingBottom: 6 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
-  formHint: { fontSize: 12, color: '#9CA3AF', fontStyle: 'italic', marginBottom: 4 },
+  formSectionTitle: { fontSize: 15, fontWeight: '700', color: Colors.light.navy, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.backgroundSecondary, paddingBottom: 6 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
+  formHint: { fontSize: 12, color: Colors.light.muted, fontStyle: 'italic', marginBottom: 4 },
   formInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -1267,20 +1267,20 @@ const styles = StyleSheet.create({
   formRow: { flexDirection: 'row', gap: 12 },
   formRowItem: { flex: 1 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: '#F3F4F6' },
-  chipSelected: { backgroundColor: '#3B82F6' },
-  chipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  chipTextSelected: { color: '#FFF', fontWeight: '600' },
+  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: Colors.light.backgroundSecondary },
+  chipSelected: { backgroundColor: Colors.light.info },
+  chipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  chipTextSelected: { color: Colors.light.card, fontWeight: '600' },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 },
 
   // Prize Pool rows
   prizeRow: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: Colors.light.backgroundTertiary,
     borderRadius: 10,
     padding: 12,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   prizeRowHeader: {
     flexDirection: 'row',
@@ -1288,7 +1288,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  prizeRowLabel: { fontSize: 13, fontWeight: '600', color: '#374151' },
+  prizeRowLabel: { fontSize: 13, fontWeight: '600', color: Colors.light.gray700 },
   addPrizeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1296,7 +1296,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     justifyContent: 'center',
   },
-  addPrizeBtnText: { fontSize: 14, fontWeight: '600', color: '#3B82F6' },
+  addPrizeBtnText: { fontSize: 14, fontWeight: '600', color: Colors.light.info },
 
   // Color preview
   colorPreview: {
@@ -1305,7 +1305,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginTop: 4,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
 
   // Analytics Modal
@@ -1314,9 +1314,9 @@ const styles = StyleSheet.create({
   analyticsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   analyticsTitle: { fontSize: 18, fontWeight: '700' },
   analyticsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  analyticsCard: { width: '47%', backgroundColor: '#F9FAFB', borderRadius: 10, padding: 14, alignItems: 'center' },
-  analyticsCardValue: { fontSize: 22, fontWeight: '700', color: '#1a3a52' },
-  analyticsCardLabel: { fontSize: 11, color: '#6B7280', marginTop: 4, fontWeight: '500' },
+  analyticsCard: { width: '47%', backgroundColor: Colors.light.backgroundTertiary, borderRadius: 10, padding: 14, alignItems: 'center' },
+  analyticsCardValue: { fontSize: 22, fontWeight: '700', color: Colors.light.navy },
+  analyticsCardLabel: { fontSize: 11, color: Colors.light.mutedDark, marginTop: 4, fontWeight: '500' },
 
   // Prize History
   prizeHistoryRow: {
@@ -1328,16 +1328,16 @@ const styles = StyleSheet.create({
   },
   prizeHistoryInfo: { flex: 1, gap: 2 },
   prizeHistoryUser: { fontSize: 14, fontWeight: '600' },
-  prizeHistoryMeta: { fontSize: 12, color: '#6B7280' },
-  prizeHistoryDate: { fontSize: 11, color: '#9CA3AF' },
-  prizeHistoryAmount: { fontSize: 14, fontWeight: '700', color: '#10B981', marginLeft: 8 },
+  prizeHistoryMeta: { fontSize: 12, color: Colors.light.mutedDark },
+  prizeHistoryDate: { fontSize: 11, color: Colors.light.muted },
+  prizeHistoryAmount: { fontSize: 14, fontWeight: '700', color: Colors.light.success, marginLeft: 8 },
 
   // Empty & Pagination
   emptyContainer: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
   pagination: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16 },
-  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#3B82F6', borderRadius: 8 },
+  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: Colors.light.info, borderRadius: 8 },
   pageBtnDisabled: { opacity: 0.4 },
-  pageBtnText: { color: '#FFF', fontWeight: '500', fontSize: 13 },
-  pageInfo: { fontSize: 13, color: '#6B7280' },
+  pageBtnText: { color: Colors.light.card, fontWeight: '500', fontSize: 13 },
+  pageInfo: { fontSize: 13, color: Colors.light.mutedDark },
 });

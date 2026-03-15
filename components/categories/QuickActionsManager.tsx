@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PageConfig } from '../../services/api/categories';
 import FormField from './FormField';
+import { Colors } from '../../constants/Colors';
 import IconInput from './IconInput';
 import ColorInput from './ColorInput';
 import { showConfirm } from '../../utils/alert';
@@ -10,7 +11,7 @@ import { showConfirm } from '../../utils/alert';
 interface QuickActionsManagerProps {
   pageConfig: PageConfig;
   setPageConfig: React.Dispatch<React.SetStateAction<PageConfig>>;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 const QuickActionsManager = React.memo(({ pageConfig, setPageConfig, colors }: QuickActionsManagerProps) => {
@@ -19,7 +20,7 @@ const QuickActionsManager = React.memo(({ pageConfig, setPageConfig, colors }: Q
       ...prev,
       quickActions: [...prev.quickActions, {
         id: `qa-${Date.now()}`, label: 'New Action', icon: 'flash-outline',
-        route: '/explore', color: '#3B82F6', enabled: true, sortOrder: prev.quickActions.length,
+        route: '/explore', color: colors.info, enabled: true, sortOrder: prev.quickActions.length,
       }],
     }));
   };
@@ -51,7 +52,7 @@ const QuickActionsManager = React.memo(({ pageConfig, setPageConfig, colors }: Q
           <View style={styles.cardHeader}>
             <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
             <TouchableOpacity onPress={() => removeQuickAction(index)}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
             </TouchableOpacity>
           </View>
 
@@ -75,7 +76,7 @@ const QuickActionsManager = React.memo(({ pageConfig, setPageConfig, colors }: Q
 
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <ColorInput label="Color" value={qa.color} onChange={(v) => updateQA(index, 'color', v)} placeholder="#3B82F6" colors={colors} small />
+              <ColorInput label="Color" value={qa.color} onChange={(v) => updateQA(index, 'color', v)} placeholder={colors.info} colors={colors} small />
             </View>
             <View style={{ flex: 1 }}>
               <FormField label="Sort Order" value={qa.sortOrder?.toString() || '0'} onChangeText={(v) => updateQA(index, 'sortOrder', parseInt(v) || 0)} keyboardType="numeric" colors={colors} small />
@@ -87,8 +88,8 @@ const QuickActionsManager = React.memo(({ pageConfig, setPageConfig, colors }: Q
             <Switch
               value={qa.enabled}
               onValueChange={(v) => updateQA(index, 'enabled', v)}
-              trackColor={{ false: '#D1D5DB', true: `${colors.success}80` }}
-              thumbColor={qa.enabled ? colors.success : '#9CA3AF'}
+              trackColor={{ false: colors.gray300, true: `${colors.success}80` }}
+              thumbColor={qa.enabled ? colors.success : Colors.light.icon}
             />
           </View>
         </View>

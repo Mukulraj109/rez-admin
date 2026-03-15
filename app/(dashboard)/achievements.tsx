@@ -55,7 +55,7 @@ const DEFAULT_FORM: AchievementFormData = {
   title: '',
   description: '',
   icon: '',
-  color: '#10B981',
+  color: Colors.light.success,
   category: '',
   target: 1,
   coinReward: 100,
@@ -210,7 +210,7 @@ export default function AchievementsScreen() {
       title: achievement.title,
       description: achievement.description,
       icon: achievement.icon,
-      color: achievement.color || '#10B981',
+      color: achievement.color || colors.success,
       category: achievement.category || '',
       target: achievement.target,
       coinReward: achievement.coinReward,
@@ -325,12 +325,12 @@ export default function AchievementsScreen() {
         </View>
         <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: '#10B981' }]}>{stats.activeCount}</Text>
+          <Text style={[styles.statValue, { color: colors.success }]}>{stats.activeCount}</Text>
           <Text style={[styles.statLabel, { color: colors.icon }]}>Active</Text>
         </View>
         <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: '#F59E0B' }]}>{stats.totalUnlocks}</Text>
+          <Text style={[styles.statValue, { color: colors.warning }]}>{stats.totalUnlocks}</Text>
           <Text style={[styles.statLabel, { color: colors.icon }]}>Unlocks</Text>
         </View>
       </View>
@@ -346,15 +346,15 @@ export default function AchievementsScreen() {
             style={[
               styles.filterChip,
               {
-                backgroundColor: activeFilter === opt.value ? '#F59E0B' : colors.card,
-                borderColor: activeFilter === opt.value ? '#F59E0B' : colors.border,
+                backgroundColor: activeFilter === opt.value ? colors.warning : colors.card,
+                borderColor: activeFilter === opt.value ? colors.warning : colors.border,
               }
             ]}
             onPress={() => setActiveFilter(opt.value)}
           >
             <Text style={[
               styles.filterChipText,
-              { color: activeFilter === opt.value ? '#fff' : colors.text }
+              { color: activeFilter === opt.value ? colors.card : colors.text }
             ]}>
               {opt.label}
             </Text>
@@ -371,8 +371,8 @@ export default function AchievementsScreen() {
           <Text style={styles.cardIcon}>{item.icon}</Text>
           <View style={styles.cardTitleArea}>
             <Text style={[styles.cardTitle, { color: colors.text }]}>{item.title}</Text>
-            <View style={[styles.typeBadge, { backgroundColor: (item.color || '#10B981') + '20' }]}>
-              <Text style={[styles.typeBadgeText, { color: item.color || '#10B981' }]}>
+            <View style={[styles.typeBadge, { backgroundColor: (item.color || colors.success) + '20' }]}>
+              <Text style={[styles.typeBadgeText, { color: item.color || colors.success }]}>
                 {item.type}
               </Text>
             </View>
@@ -381,8 +381,8 @@ export default function AchievementsScreen() {
         <Switch
           value={item.isActive}
           onValueChange={() => handleToggle(item)}
-          trackColor={{ false: '#ccc', true: '#10B981' }}
-          thumbColor="#fff"
+          trackColor={{ false: colors.gray300, true: colors.success }}
+          thumbColor={colors.card}
         />
       </View>
 
@@ -392,20 +392,20 @@ export default function AchievementsScreen() {
 
       <View style={styles.cardMetrics}>
         <View style={styles.metricItem}>
-          <Ionicons name="flag" size={14} color="#F59E0B" />
+          <Ionicons name="flag" size={14} color={colors.warning} />
           <Text style={[styles.metricText, { color: colors.text }]}>Target: {item.target}</Text>
         </View>
         <View style={styles.metricItem}>
-          <Ionicons name="wallet" size={14} color="#10B981" />
+          <Ionicons name="wallet" size={14} color={colors.success} />
           <Text style={[styles.metricText, { color: colors.text }]}>{item.coinReward} coins</Text>
         </View>
         <View style={styles.metricItem}>
-          <Ionicons name="people" size={14} color="#3B82F6" />
+          <Ionicons name="people" size={14} color={colors.info} />
           <Text style={[styles.metricText, { color: colors.text }]}>{item.unlockCount || 0} unlocks</Text>
         </View>
         {item.category && (
           <View style={styles.metricItem}>
-            <Ionicons name="pricetag" size={14} color="#8B5CF6" />
+            <Ionicons name="pricetag" size={14} color={colors.purple} />
             <Text style={[styles.metricText, { color: colors.text }]}>{item.category}</Text>
           </View>
         )}
@@ -413,18 +413,18 @@ export default function AchievementsScreen() {
 
       <View style={styles.cardActions}>
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: '#3B82F620' }]}
+          style={[styles.actionBtn, { backgroundColor: colors.info + '20' }]}
           onPress={() => handleEdit(item)}
         >
-          <Ionicons name="pencil" size={16} color="#3B82F6" />
-          <Text style={[styles.actionBtnText, { color: '#3B82F6' }]}>Edit</Text>
+          <Ionicons name="pencil" size={16} color={colors.info} />
+          <Text style={[styles.actionBtnText, { color: colors.info }]}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: '#EF444420' }]}
+          style={[styles.actionBtn, { backgroundColor: colors.error + '20' }]}
           onPress={() => handleDelete(item)}
         >
-          <Ionicons name="trash" size={16} color="#EF4444" />
-          <Text style={[styles.actionBtnText, { color: '#EF4444' }]}>Delete</Text>
+          <Ionicons name="trash" size={16} color={colors.error} />
+          <Text style={[styles.actionBtnText, { color: colors.error }]}>Delete</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -447,7 +447,7 @@ export default function AchievementsScreen() {
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
             {isSaving ? (
-              <ActivityIndicator size="small" color="#F59E0B" />
+              <ActivityIndicator size="small" color={colors.warning} />
             ) : (
               <Text style={styles.saveBtn}>Save</Text>
             )}
@@ -515,7 +515,7 @@ export default function AchievementsScreen() {
                 style={[styles.formInput, { flex: 1, backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
                 value={form.color}
                 onChangeText={(v) => setForm(prev => ({ ...prev, color: v }))}
-                placeholder="#10B981"
+                placeholder={colors.success}
                 placeholderTextColor={colors.icon}
               />
             </View>
@@ -531,15 +531,15 @@ export default function AchievementsScreen() {
                   style={[
                     styles.categoryChip,
                     {
-                      backgroundColor: form.category === cat ? '#F59E0B' : colors.card,
-                      borderColor: form.category === cat ? '#F59E0B' : colors.border,
+                      backgroundColor: form.category === cat ? colors.warning : colors.card,
+                      borderColor: form.category === cat ? colors.warning : colors.border,
                     }
                   ]}
                   onPress={() => setForm(prev => ({ ...prev, category: cat }))}
                 >
                   <Text style={[
                     styles.categoryChipText,
-                    { color: form.category === cat ? '#fff' : colors.text }
+                    { color: form.category === cat ? colors.card : colors.text }
                   ]}>
                     {cat}
                   </Text>
@@ -601,7 +601,7 @@ export default function AchievementsScreen() {
 
           {/* === NEW: Condition Builder === */}
           <View style={[styles.formGroup, { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 16, marginTop: 8 }]}>
-            <Text style={[styles.formLabel, { color: '#F59E0B', fontWeight: '700', fontSize: 15 }]}>Condition Builder</Text>
+            <Text style={[styles.formLabel, { color: colors.warning, fontWeight: '700', fontSize: 15 }]}>Condition Builder</Text>
           </View>
 
           {/* Condition Type */}
@@ -611,10 +611,10 @@ export default function AchievementsScreen() {
               {CONDITION_TYPE_OPTIONS.map(opt => (
                 <TouchableOpacity
                   key={opt}
-                  style={[styles.categoryChip, { backgroundColor: form.conditionType === opt ? '#8B5CF6' : colors.card, borderColor: form.conditionType === opt ? '#8B5CF6' : colors.border }]}
+                  style={[styles.categoryChip, { backgroundColor: form.conditionType === opt ? colors.purple : colors.card, borderColor: form.conditionType === opt ? colors.purple : colors.border }]}
                   onPress={() => setForm(prev => ({ ...prev, conditionType: opt }))}
                 >
-                  <Text style={[styles.categoryChipText, { color: form.conditionType === opt ? '#fff' : colors.text }]}>{opt}</Text>
+                  <Text style={[styles.categoryChipText, { color: form.conditionType === opt ? colors.card : colors.text }]}>{opt}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -628,10 +628,10 @@ export default function AchievementsScreen() {
                 {['AND', 'OR'].map(c => (
                   <TouchableOpacity
                     key={c}
-                    style={[styles.categoryChip, { backgroundColor: form.conditionCombinator === c ? '#3B82F6' : colors.card, borderColor: form.conditionCombinator === c ? '#3B82F6' : colors.border }]}
+                    style={[styles.categoryChip, { backgroundColor: form.conditionCombinator === c ? colors.info : colors.card, borderColor: form.conditionCombinator === c ? colors.info : colors.border }]}
                     onPress={() => setForm(prev => ({ ...prev, conditionCombinator: c }))}
                   >
-                    <Text style={[styles.categoryChipText, { color: form.conditionCombinator === c ? '#fff' : colors.text }]}>{c}</Text>
+                    <Text style={[styles.categoryChipText, { color: form.conditionCombinator === c ? colors.card : colors.text }]}>{c}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -649,14 +649,14 @@ export default function AchievementsScreen() {
                     {METRIC_OPTIONS.map(m => (
                       <TouchableOpacity
                         key={m}
-                        style={[styles.categoryChip, { paddingHorizontal: 6, paddingVertical: 3, backgroundColor: rule.metric === m ? '#8B5CF6' : colors.background, borderColor: rule.metric === m ? '#8B5CF6' : colors.border }]}
+                        style={[styles.categoryChip, { paddingHorizontal: 6, paddingVertical: 3, backgroundColor: rule.metric === m ? colors.purple : colors.background, borderColor: rule.metric === m ? colors.purple : colors.border }]}
                         onPress={() => {
                           const rules = [...form.conditionRules];
                           rules[idx] = { ...rules[idx], metric: m };
                           setForm(prev => ({ ...prev, conditionRules: rules }));
                         }}
                       >
-                        <Text style={{ fontSize: 10, color: rule.metric === m ? '#fff' : colors.text }}>{m}</Text>
+                        <Text style={{ fontSize: 10, color: rule.metric === m ? colors.card : colors.text }}>{m}</Text>
                       </TouchableOpacity>
                     ))}
                   </ScrollView>
@@ -669,14 +669,14 @@ export default function AchievementsScreen() {
                     {OPERATOR_OPTIONS.map(op => (
                       <TouchableOpacity
                         key={op}
-                        style={[styles.categoryChip, { paddingHorizontal: 6, paddingVertical: 3, backgroundColor: rule.operator === op ? '#3B82F6' : colors.background, borderColor: rule.operator === op ? '#3B82F6' : colors.border }]}
+                        style={[styles.categoryChip, { paddingHorizontal: 6, paddingVertical: 3, backgroundColor: rule.operator === op ? colors.info : colors.background, borderColor: rule.operator === op ? colors.info : colors.border }]}
                         onPress={() => {
                           const rules = [...form.conditionRules];
                           rules[idx] = { ...rules[idx], operator: op };
                           setForm(prev => ({ ...prev, conditionRules: rules }));
                         }}
                       >
-                        <Text style={{ fontSize: 10, color: rule.operator === op ? '#fff' : colors.text }}>{op}</Text>
+                        <Text style={{ fontSize: 10, color: rule.operator === op ? colors.card : colors.text }}>{op}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -703,7 +703,7 @@ export default function AchievementsScreen() {
                     setForm(prev => ({ ...prev, conditionRules: rules }));
                   }}
                 >
-                  <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                  <Ionicons name="trash-outline" size={16} color={colors.error} />
                 </TouchableOpacity>
               )}
             </View>
@@ -712,13 +712,13 @@ export default function AchievementsScreen() {
             style={{ alignSelf: 'flex-start', marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}
             onPress={() => setForm(prev => ({ ...prev, conditionRules: [...prev.conditionRules, { metric: 'totalOrders', operator: 'gte', target: 1, weight: 1 }] }))}
           >
-            <Ionicons name="add-circle-outline" size={18} color="#8B5CF6" />
-            <Text style={{ color: '#8B5CF6', fontSize: 13, fontWeight: '600' }}>Add Rule</Text>
+            <Ionicons name="add-circle-outline" size={18} color={colors.purple} />
+            <Text style={{ color: colors.purple, fontSize: 13, fontWeight: '600' }}>Add Rule</Text>
           </TouchableOpacity>
 
           {/* === NEW: Achievement Properties === */}
           <View style={[styles.formGroup, { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 16, marginTop: 8 }]}>
-            <Text style={[styles.formLabel, { color: '#F59E0B', fontWeight: '700', fontSize: 15 }]}>Properties</Text>
+            <Text style={[styles.formLabel, { color: colors.warning, fontWeight: '700', fontSize: 15 }]}>Properties</Text>
           </View>
 
           {/* Tier */}
@@ -728,10 +728,10 @@ export default function AchievementsScreen() {
               {TIER_OPTIONS.map(t => (
                 <TouchableOpacity
                   key={t}
-                  style={[styles.categoryChip, { backgroundColor: form.tier === t ? '#F59E0B' : colors.card, borderColor: form.tier === t ? '#F59E0B' : colors.border }]}
+                  style={[styles.categoryChip, { backgroundColor: form.tier === t ? colors.warning : colors.card, borderColor: form.tier === t ? colors.warning : colors.border }]}
                   onPress={() => setForm(prev => ({ ...prev, tier: t }))}
                 >
-                  <Text style={[styles.categoryChipText, { color: form.tier === t ? '#fff' : colors.text }]}>{t}</Text>
+                  <Text style={[styles.categoryChipText, { color: form.tier === t ? colors.card : colors.text }]}>{t}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -744,10 +744,10 @@ export default function AchievementsScreen() {
               {VISIBILITY_OPTIONS.map(v => (
                 <TouchableOpacity
                   key={v}
-                  style={[styles.categoryChip, { backgroundColor: form.visibility === v ? '#3B82F6' : colors.card, borderColor: form.visibility === v ? '#3B82F6' : colors.border }]}
+                  style={[styles.categoryChip, { backgroundColor: form.visibility === v ? colors.info : colors.card, borderColor: form.visibility === v ? colors.info : colors.border }]}
                   onPress={() => setForm(prev => ({ ...prev, visibility: v }))}
                 >
-                  <Text style={[styles.categoryChipText, { color: form.visibility === v ? '#fff' : colors.text }]}>{v.replace(/_/g, ' ')}</Text>
+                  <Text style={[styles.categoryChipText, { color: form.visibility === v ? colors.card : colors.text }]}>{v.replace(/_/g, ' ')}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -760,10 +760,10 @@ export default function AchievementsScreen() {
               {REPEATABILITY_OPTIONS.map(r => (
                 <TouchableOpacity
                   key={r}
-                  style={[styles.categoryChip, { backgroundColor: form.repeatability === r ? '#10B981' : colors.card, borderColor: form.repeatability === r ? '#10B981' : colors.border }]}
+                  style={[styles.categoryChip, { backgroundColor: form.repeatability === r ? colors.success : colors.card, borderColor: form.repeatability === r ? colors.success : colors.border }]}
                   onPress={() => setForm(prev => ({ ...prev, repeatability: r }))}
                 >
-                  <Text style={[styles.categoryChipText, { color: form.repeatability === r ? '#fff' : colors.text }]}>{r.replace(/_/g, ' ')}</Text>
+                  <Text style={[styles.categoryChipText, { color: form.repeatability === r ? colors.card : colors.text }]}>{r.replace(/_/g, ' ')}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -776,8 +776,8 @@ export default function AchievementsScreen() {
               <Switch
                 value={form.isActive}
                 onValueChange={(v) => setForm(prev => ({ ...prev, isActive: v }))}
-                trackColor={{ false: '#ccc', true: '#10B981' }}
-                thumbColor="#fff"
+                trackColor={{ false: colors.gray300, true: colors.success }}
+                thumbColor={colors.card}
               />
             </View>
           </View>
@@ -791,7 +791,7 @@ export default function AchievementsScreen() {
   if (loading && achievements.length === 0) {
     return (
       <View style={[styles.centered, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color="#F59E0B" />
+        <ActivityIndicator size="large" color={colors.warning} />
         <Text style={[styles.loadingText, { color: colors.icon }]}>Loading achievements...</Text>
       </View>
     );
@@ -809,7 +809,7 @@ export default function AchievementsScreen() {
           <Text style={[styles.headerSubtitle, { color: colors.icon }]}>Manage user achievements & badges</Text>
         </View>
         <TouchableOpacity onPress={handleCreate} style={styles.addBtn}>
-          <Ionicons name="add-circle" size={28} color="#F59E0B" />
+          <Ionicons name="add-circle" size={28} color={colors.warning} />
         </TouchableOpacity>
       </View>
 
@@ -819,25 +819,25 @@ export default function AchievementsScreen() {
       {/* Action Buttons */}
       <View style={styles.actionRow}>
         <TouchableOpacity
-          style={[styles.seedBtn, { backgroundColor: '#8B5CF620', borderColor: '#8B5CF6' }]}
+          style={[styles.seedBtn, { backgroundColor: `${colors.purple}20`, borderColor: colors.purple }]}
           onPress={handleSeed}
           disabled={isSeeding}
         >
           {isSeeding ? (
-            <ActivityIndicator size="small" color="#8B5CF6" />
+            <ActivityIndicator size="small" color={colors.purple} />
           ) : (
-            <Ionicons name="download" size={18} color="#8B5CF6" />
+            <Ionicons name="download" size={18} color={colors.purple} />
           )}
-          <Text style={[styles.seedBtnText, { color: '#8B5CF6' }]}>
+          <Text style={[styles.seedBtnText, { color: colors.purple }]}>
             {isSeeding ? 'Seeding...' : 'Seed from Config'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.seedBtn, { backgroundColor: '#F59E0B20', borderColor: '#F59E0B' }]}
+          style={[styles.seedBtn, { backgroundColor: `${colors.warning}20`, borderColor: colors.warning }]}
           onPress={handleCreate}
         >
-          <Ionicons name="add" size={18} color="#F59E0B" />
-          <Text style={[styles.seedBtnText, { color: '#F59E0B' }]}>Create Achievement</Text>
+          <Ionicons name="add" size={18} color={colors.warning} />
+          <Text style={[styles.seedBtnText, { color: colors.warning }]}>Create Achievement</Text>
         </TouchableOpacity>
       </View>
 
@@ -851,7 +851,7 @@ export default function AchievementsScreen() {
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F59E0B" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.warning} />
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
@@ -1086,7 +1086,7 @@ const styles = StyleSheet.create({
   saveBtn: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#F59E0B',
+    color: Colors.light.warning,
   },
   formScroll: {
     flex: 1,

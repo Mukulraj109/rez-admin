@@ -37,8 +37,8 @@ const DateTimeInput = ({ value, onChange, isDark, placeholder }: {
           fontSize: 15,
           borderRadius: 8,
           border: '1px solid #D1D5DB',
-          backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-          color: isDark ? '#F1F5F9' : '#1F2937',
+          backgroundColor: isDark ? Colors.light.slateDark : Colors.light.card,
+          color: isDark ? Colors.light.slate : Colors.light.gray800,
           fontFamily: 'inherit',
           outline: 'none',
           boxSizing: 'border-box' as any,
@@ -51,34 +51,34 @@ const DateTimeInput = ({ value, onChange, isDark, placeholder }: {
     <TextInput
       style={{
         borderWidth: 1,
-        borderColor: '#D1D5DB',
+        borderColor: Colors.light.gray300,
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
         fontSize: 15,
-        color: isDark ? '#F1F5F9' : '#1F2937',
-        backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+        color: isDark ? Colors.light.slate : Colors.light.gray800,
+        backgroundColor: isDark ? Colors.light.slateDark : Colors.light.card,
       }}
       value={value}
       onChangeText={onChange}
       placeholder={placeholder || 'YYYY-MM-DDTHH:mm'}
-      placeholderTextColor="#9CA3AF"
+      placeholderTextColor={Colors.light.muted}
     />
   );
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  upcoming: '#3B82F6',
-  active: '#10B981',
-  completed: '#6B7280',
-  cancelled: '#EF4444',
+  upcoming: Colors.light.info,
+  active: Colors.light.success,
+  completed: Colors.light.mutedDark,
+  cancelled: Colors.light.error,
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  daily: '#3B82F6',
-  weekly: '#8B5CF6',
-  monthly: '#F59E0B',
-  special: '#EF4444',
+  daily: Colors.light.info,
+  weekly: Colors.light.purple,
+  monthly: Colors.light.warning,
+  special: Colors.light.error,
 };
 
 const GAME_TYPES = ['spin_wheel', 'memory_match', 'coin_hunt', 'guess_price', 'quiz', 'mixed'] as const;
@@ -129,6 +129,7 @@ function formatDate(dateString: string): string {
 export default function TournamentsPage() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const colors = isDark ? Colors.dark : Colors.light;
 
   const [items, setItems] = useState<TournamentAdmin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -332,16 +333,16 @@ export default function TournamentsPage() {
   };
 
   const renderItem = ({ item }: { item: TournamentAdmin }) => {
-    const statusColor = STATUS_COLORS[item.status] || '#6B7280';
-    const typeColor = TYPE_COLORS[item.type] || '#6B7280';
+    const statusColor = STATUS_COLORS[item.status] || colors.mutedDark;
+    const typeColor = TYPE_COLORS[item.type] || colors.mutedDark;
 
     return (
       <TouchableOpacity
-        style={[styles.card, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+        style={[styles.card, { backgroundColor: isDark ? colors.slateDark : colors.card }]}
         onPress={() => viewDetail(item)}
       >
         <View style={styles.cardHeader}>
-          <Text style={[styles.cardTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]} numberOfLines={1}>
+          <Text style={[styles.cardTitle, { color: isDark ? colors.slate : colors.gray800 }]} numberOfLines={1}>
             {item.name}
           </Text>
           <View style={[styles.statusBadge, { backgroundColor: statusColor + '20' }]}>
@@ -370,37 +371,37 @@ export default function TournamentsPage() {
           {item.status === 'upcoming' && (
             <>
               <TouchableOpacity style={styles.actionBtn} onPress={() => openEditModal(item)}>
-                <Ionicons name="create-outline" size={16} color="#3B82F6" />
-                <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+                <Ionicons name="create-outline" size={16} color={colors.info} />
+                <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionBtn} onPress={() => handleActivate(item)}>
-                <Ionicons name="play-outline" size={16} color="#10B981" />
-                <Text style={[styles.actionText, { color: '#10B981' }]}>Activate</Text>
+                <Ionicons name="play-outline" size={16} color={colors.success} />
+                <Text style={[styles.actionText, { color: colors.success }]}>Activate</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item)}>
-                <Ionicons name="trash-outline" size={16} color="#EF4444" />
-                <Text style={[styles.actionText, { color: '#EF4444' }]}>Delete</Text>
+                <Ionicons name="trash-outline" size={16} color={colors.error} />
+                <Text style={[styles.actionText, { color: colors.error }]}>Delete</Text>
               </TouchableOpacity>
             </>
           )}
           {/* Active: Cancel */}
           {item.status === 'active' && (
             <TouchableOpacity style={styles.actionBtn} onPress={() => handleCancel(item)}>
-              <Ionicons name="close-circle-outline" size={16} color="#EF4444" />
-              <Text style={[styles.actionText, { color: '#EF4444' }]}>Cancel</Text>
+              <Ionicons name="close-circle-outline" size={16} color={colors.error} />
+              <Text style={[styles.actionText, { color: colors.error }]}>Cancel</Text>
             </TouchableOpacity>
           )}
           {/* Completed/Cancelled: Reactivate */}
           {(item.status === 'completed' || item.status === 'cancelled') && (
             <TouchableOpacity style={styles.actionBtn} onPress={() => openReactivateModal(item)}>
-              <Ionicons name="refresh-outline" size={16} color="#F59E0B" />
-              <Text style={[styles.actionText, { color: '#F59E0B' }]}>Reactivate</Text>
+              <Ionicons name="refresh-outline" size={16} color={colors.warning} />
+              <Text style={[styles.actionText, { color: colors.warning }]}>Reactivate</Text>
             </TouchableOpacity>
           )}
           {/* Clone: available for all statuses */}
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleClone(item)}>
-            <Ionicons name="copy-outline" size={16} color="#8B5CF6" />
-            <Text style={[styles.actionText, { color: '#8B5CF6' }]}>Clone</Text>
+            <Ionicons name="copy-outline" size={16} color={colors.purple} />
+            <Text style={[styles.actionText, { color: colors.purple }]}>Clone</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -408,14 +409,14 @@ export default function TournamentsPage() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? Colors.dark.background : colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.pageTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+        <Text style={[styles.pageTitle, { color: isDark ? colors.slate : colors.gray800 }]}>
           Tournaments
         </Text>
         <TouchableOpacity style={styles.createButton} onPress={openCreateModal}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.createButtonText}>Create</Text>
         </TouchableOpacity>
       </View>
@@ -438,7 +439,7 @@ export default function TournamentsPage() {
       {/* List */}
       {loading ? (
         <View style={styles.loadingCenter}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          <ActivityIndicator size="large" color={colors.info} />
         </View>
       ) : (
         <FlatList
@@ -449,7 +450,7 @@ export default function TournamentsPage() {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="trophy-outline" size={48} color="#9CA3AF" />
+              <Ionicons name="trophy-outline" size={48} color={colors.muted} />
               <Text style={styles.emptyText}>No tournaments found</Text>
             </View>
           }
@@ -464,7 +465,7 @@ export default function TournamentsPage() {
             onPress={() => fetchItems(page - 1)}
             style={[styles.pageBtn, page <= 1 && styles.pageBtnDisabled]}
           >
-            <Ionicons name="chevron-back" size={18} color={page <= 1 ? '#9CA3AF' : '#3B82F6'} />
+            <Ionicons name="chevron-back" size={18} color={page <= 1 ? colors.muted : colors.info} />
           </TouchableOpacity>
           <Text style={styles.pageInfo}>Page {page} of {totalPages}</Text>
           <TouchableOpacity
@@ -472,24 +473,24 @@ export default function TournamentsPage() {
             onPress={() => fetchItems(page + 1)}
             style={[styles.pageBtn, page >= totalPages && styles.pageBtnDisabled]}
           >
-            <Ionicons name="chevron-forward" size={18} color={page >= totalPages ? '#9CA3AF' : '#3B82F6'} />
+            <Ionicons name="chevron-forward" size={18} color={page >= totalPages ? colors.muted : colors.info} />
           </TouchableOpacity>
         </View>
       )}
 
       {/* Create/Edit Modal */}
       <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={[styles.modalContainer, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
+        <SafeAreaView style={[styles.modalContainer, { backgroundColor: isDark ? Colors.dark.background : colors.background }]}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Ionicons name="close" size={24} color={isDark ? '#F1F5F9' : '#1F2937'} />
+              <Ionicons name="close" size={24} color={isDark ? colors.slate : colors.gray800} />
             </TouchableOpacity>
-            <Text style={[styles.modalTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+            <Text style={[styles.modalTitle, { color: isDark ? colors.slate : colors.gray800 }]}>
               {editingItem ? 'Edit Tournament' : 'Create Tournament'}
             </Text>
             <TouchableOpacity onPress={handleSave} disabled={saving}>
               {saving ? (
-                <ActivityIndicator size="small" color="#3B82F6" />
+                <ActivityIndicator size="small" color={colors.info} />
               ) : (
                 <Text style={styles.saveText}>Save</Text>
               )}
@@ -497,33 +498,33 @@ export default function TournamentsPage() {
           </View>
 
           <ScrollView style={styles.modalBody} contentContainerStyle={styles.modalBodyContent}>
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Name *</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Name *</Text>
             <TextInput
-              style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+              style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
               value={form.name}
               onChangeText={(v) => setForm(f => ({ ...f, name: v }))}
               placeholder="Tournament name"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Description</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Description</Text>
             <TextInput
-              style={[styles.textArea, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+              style={[styles.textArea, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
               value={form.description}
               onChangeText={(v) => setForm(f => ({ ...f, description: v }))}
               placeholder="Tournament description"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Type</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Type</Text>
             <View style={styles.chipRow}>
               {TOURNAMENT_TYPES.map(t => (
                 <TouchableOpacity
                   key={t}
-                  style={[styles.selectChip, form.type === t && { backgroundColor: (TYPE_COLORS[t] || '#6B7280') + '20', borderColor: TYPE_COLORS[t] }]}
+                  style={[styles.selectChip, form.type === t && { backgroundColor: (TYPE_COLORS[t] || colors.mutedDark) + '20', borderColor: TYPE_COLORS[t] }]}
                   onPress={() => setForm(f => ({ ...f, type: t }))}
                 >
                   <Text style={[styles.selectChipText, form.type === t && { color: TYPE_COLORS[t] }]}>{t}</Text>
@@ -531,7 +532,7 @@ export default function TournamentsPage() {
               ))}
             </View>
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Game Type</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Game Type</Text>
             <View style={styles.chipRow}>
               {GAME_TYPES.map(g => (
                 <TouchableOpacity
@@ -539,12 +540,12 @@ export default function TournamentsPage() {
                   style={[styles.selectChip, form.gameType === g && styles.selectChipActive]}
                   onPress={() => setForm(f => ({ ...f, gameType: g }))}
                 >
-                  <Text style={[styles.selectChipText, form.gameType === g && { color: '#3B82F6' }]}>{g.replace('_', ' ')}</Text>
+                  <Text style={[styles.selectChipText, form.gameType === g && { color: colors.info }]}>{g.replace('_', ' ')}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Start Date</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Start Date</Text>
             <DateTimeInput
               value={form.startDate}
               onChange={(v) => setForm(f => ({ ...f, startDate: v }))}
@@ -552,7 +553,7 @@ export default function TournamentsPage() {
               placeholder="Select start date & time"
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>End Date</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>End Date</Text>
             <DateTimeInput
               value={form.endDate}
               onChange={(v) => setForm(f => ({ ...f, endDate: v }))}
@@ -562,27 +563,27 @@ export default function TournamentsPage() {
 
             <View style={styles.numberRow}>
               <View style={styles.numberField}>
-                <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Max Players</Text>
+                <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Max Players</Text>
                 <TextInput
-                  style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                  style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
                   value={String(form.maxParticipants)}
                   onChangeText={(v) => setForm(f => ({ ...f, maxParticipants: parseInt(v) || 100 }))}
                   keyboardType="numeric"
                 />
               </View>
               <View style={styles.numberField}>
-                <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Prize Pool</Text>
+                <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Prize Pool</Text>
                 <TextInput
-                  style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                  style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
                   value={String(form.totalPrizePool)}
                   onChangeText={(v) => setForm(f => ({ ...f, totalPrizePool: parseInt(v) || 0 }))}
                   keyboardType="numeric"
                 />
               </View>
               <View style={styles.numberField}>
-                <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Entry Fee</Text>
+                <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Entry Fee</Text>
                 <TextInput
-                  style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                  style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
                   value={String(form.entryFee)}
                   onChangeText={(v) => setForm(f => ({ ...f, entryFee: parseInt(v) || 0 }))}
                   keyboardType="numeric"
@@ -595,12 +596,12 @@ export default function TournamentsPage() {
 
       {/* Detail Modal */}
       <Modal visible={detailModalVisible} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={[styles.modalContainer, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
+        <SafeAreaView style={[styles.modalContainer, { backgroundColor: isDark ? Colors.dark.background : colors.background }]}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setDetailModalVisible(false)}>
-              <Ionicons name="close" size={24} color={isDark ? '#F1F5F9' : '#1F2937'} />
+              <Ionicons name="close" size={24} color={isDark ? colors.slate : colors.gray800} />
             </TouchableOpacity>
-            <Text style={[styles.modalTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+            <Text style={[styles.modalTitle, { color: isDark ? colors.slate : colors.gray800 }]}>
               Tournament Details
             </Text>
             <View style={{ width: 24 }} />
@@ -608,53 +609,53 @@ export default function TournamentsPage() {
 
           {detailItem && (
             <ScrollView style={styles.modalBody} contentContainerStyle={styles.modalBodyContent}>
-              <Text style={[styles.detailName, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{detailItem.name}</Text>
+              <Text style={[styles.detailName, { color: isDark ? colors.slate : colors.gray800 }]}>{detailItem.name}</Text>
 
               <View style={styles.metaRow}>
-                <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[detailItem.status] || '#6B7280') + '20' }]}>
-                  <Text style={{ color: STATUS_COLORS[detailItem.status] || '#6B7280', fontSize: 12, fontWeight: '600' }}>
+                <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[detailItem.status] || colors.mutedDark) + '20' }]}>
+                  <Text style={{ color: STATUS_COLORS[detailItem.status] || colors.mutedDark, fontSize: 12, fontWeight: '600' }}>
                     {detailItem.status}
                   </Text>
                 </View>
-                <View style={[styles.chip, { backgroundColor: (TYPE_COLORS[detailItem.type] || '#6B7280') + '20' }]}>
-                  <Text style={[styles.chipText, { color: TYPE_COLORS[detailItem.type] || '#6B7280' }]}>{detailItem.type}</Text>
+                <View style={[styles.chip, { backgroundColor: (TYPE_COLORS[detailItem.type] || colors.mutedDark) + '20' }]}>
+                  <Text style={[styles.chipText, { color: TYPE_COLORS[detailItem.type] || colors.mutedDark }]}>{detailItem.type}</Text>
                 </View>
               </View>
 
               {detailItem.description ? (
-                <Text style={[styles.detailDescription, { color: isDark ? '#94A3B8' : '#6B7280' }]}>{detailItem.description}</Text>
+                <Text style={[styles.detailDescription, { color: isDark ? colors.slateMedium : colors.mutedDark }]}>{detailItem.description}</Text>
               ) : null}
 
               <View style={styles.detailGrid}>
                 <View style={styles.detailCell}>
                   <Text style={styles.detailLabel}>Game Type</Text>
-                  <Text style={[styles.detailValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{detailItem.gameType}</Text>
+                  <Text style={[styles.detailValue, { color: isDark ? colors.slate : colors.gray800 }]}>{detailItem.gameType}</Text>
                 </View>
                 <View style={styles.detailCell}>
                   <Text style={styles.detailLabel}>Players</Text>
-                  <Text style={[styles.detailValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{detailItem.participantsCount || 0}/{detailItem.maxParticipants}</Text>
+                  <Text style={[styles.detailValue, { color: isDark ? colors.slate : colors.gray800 }]}>{detailItem.participantsCount || 0}/{detailItem.maxParticipants}</Text>
                 </View>
                 <View style={styles.detailCell}>
                   <Text style={styles.detailLabel}>Prize Pool</Text>
-                  <Text style={[styles.detailValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{detailItem.totalPrizePool} coins</Text>
+                  <Text style={[styles.detailValue, { color: isDark ? colors.slate : colors.gray800 }]}>{detailItem.totalPrizePool} coins</Text>
                 </View>
                 <View style={styles.detailCell}>
                   <Text style={styles.detailLabel}>Entry Fee</Text>
-                  <Text style={[styles.detailValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{detailItem.entryFee || 'Free'}</Text>
+                  <Text style={[styles.detailValue, { color: isDark ? colors.slate : colors.gray800 }]}>{detailItem.entryFee || 'Free'}</Text>
                 </View>
               </View>
 
-              <Text style={[styles.detailSectionTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>Dates</Text>
+              <Text style={[styles.detailSectionTitle, { color: isDark ? colors.slate : colors.gray800 }]}>Dates</Text>
               <Text style={styles.dateText}>Start: {formatDate(detailItem.startDate)}</Text>
               <Text style={styles.dateText}>End: {formatDate(detailItem.endDate)}</Text>
 
               {detailItem.prizes?.length > 0 && (
                 <>
-                  <Text style={[styles.detailSectionTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>Prizes</Text>
+                  <Text style={[styles.detailSectionTitle, { color: isDark ? colors.slate : colors.gray800 }]}>Prizes</Text>
                   {detailItem.prizes.map((prize, idx) => (
                     <View key={idx} style={styles.prizeRow}>
                       <Text style={styles.prizeRank}>#{prize.rank}</Text>
-                      <Text style={[styles.prizeCoins, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{prize.coins} coins</Text>
+                      <Text style={[styles.prizeCoins, { color: isDark ? colors.slate : colors.gray800 }]}>{prize.coins} coins</Text>
                       {prize.description ? <Text style={styles.prizeDesc}>{prize.description}</Text> : null}
                     </View>
                   ))}
@@ -663,7 +664,7 @@ export default function TournamentsPage() {
 
               {detailItem.participants?.length > 0 && (
                 <>
-                  <Text style={[styles.detailSectionTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+                  <Text style={[styles.detailSectionTitle, { color: isDark ? colors.slate : colors.gray800 }]}>
                     Top Participants ({detailItem.participants.length})
                   </Text>
                   {detailItem.participants
@@ -672,7 +673,7 @@ export default function TournamentsPage() {
                     .map((p, idx) => (
                       <View key={idx} style={styles.participantRow}>
                         <Text style={styles.participantRank}>#{idx + 1}</Text>
-                        <Text style={[styles.participantName, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+                        <Text style={[styles.participantName, { color: isDark ? colors.slate : colors.gray800 }]}>
                           {p.user?.name || p.user?.toString()?.slice(-6) || 'User'}
                         </Text>
                         <Text style={styles.participantScore}>{p.score} pts</Text>
@@ -688,15 +689,15 @@ export default function TournamentsPage() {
       {/* Reactivate Modal */}
       <Modal visible={reactivateModalVisible} animationType="slide" transparent>
         <View style={styles.reactivateOverlay}>
-          <View style={[styles.reactivateCard, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
-            <Text style={[styles.reactivateTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+          <View style={[styles.reactivateCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
+            <Text style={[styles.reactivateTitle, { color: isDark ? colors.slate : colors.gray800 }]}>
               Reactivate Tournament
             </Text>
             {reactivateItem && (
               <Text style={styles.reactivateSubtitle}>{reactivateItem.name}</Text>
             )}
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151', marginTop: 16 }]}>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700, marginTop: 16 }]}>
               New Start Date
             </Text>
             <DateTimeInput
@@ -706,7 +707,7 @@ export default function TournamentsPage() {
               placeholder="Select start date & time"
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151', marginTop: 12 }]}>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700, marginTop: 12 }]}>
               New End Date
             </Text>
             <DateTimeInput
@@ -733,7 +734,7 @@ export default function TournamentsPage() {
                 disabled={reactivating}
               >
                 {reactivating ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
                   <Text style={styles.reactivateConfirmText}>Reactivate</Text>
                 )}
@@ -760,32 +761,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
   },
-  createButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
+  createButtonText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
   filterRow: { paddingHorizontal: 16, paddingBottom: 12, maxHeight: 48 },
   filterChip: {
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.light.gray200,
     marginRight: 8,
   },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  filterChipText: { fontSize: 13, fontWeight: '500', color: '#6B7280' },
-  filterChipTextActive: { color: '#FFFFFF' },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  filterChipText: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark },
+  filterChipTextActive: { color: Colors.light.card },
   loadingCenter: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   listContent: { padding: 16, gap: 12 },
   emptyContainer: { alignItems: 'center', paddingTop: 60, gap: 12 },
-  emptyText: { fontSize: 16, color: '#9CA3AF' },
+  emptyText: { fontSize: 16, color: Colors.light.muted },
   card: {
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
     gap: 8,
   },
   cardHeader: {
@@ -812,14 +813,14 @@ const styles = StyleSheet.create({
   },
   chip: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   chipText: { fontSize: 11, fontWeight: '600' },
-  metaText: { fontSize: 12, color: '#6B7280' },
+  metaText: { fontSize: 12, color: Colors.light.mutedDark },
   dateRow: { marginTop: 2 },
-  dateText: { fontSize: 12, color: '#9CA3AF' },
+  dateText: { fontSize: 12, color: Colors.light.muted },
   cardActions: {
     flexDirection: 'row',
     gap: 16,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: Colors.light.backgroundSecondary,
     paddingTop: 8,
     marginTop: 4,
   },
@@ -832,18 +833,18 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: Colors.light.gray200,
   },
   pageBtn: {
     width: 36,
     height: 36,
     borderRadius: 8,
-    backgroundColor: '#EFF6FF',
+    backgroundColor: Colors.light.infoLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  pageBtnDisabled: { backgroundColor: '#F3F4F6' },
-  pageInfo: { fontSize: 14, color: '#6B7280' },
+  pageBtnDisabled: { backgroundColor: Colors.light.backgroundSecondary },
+  pageInfo: { fontSize: 14, color: Colors.light.mutedDark },
   // Modal
   modalContainer: { flex: 1 },
   modalHeader: {
@@ -853,16 +854,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.gray200,
   },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveText: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveText: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   modalBody: { flex: 1 },
   modalBodyContent: { padding: 16, gap: 4, paddingBottom: 40 },
   fieldLabel: { fontSize: 13, fontWeight: '600', marginBottom: 6, marginTop: 12 },
   input: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.light.gray300,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -870,7 +871,7 @@ const styles = StyleSheet.create({
   },
   textArea: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.light.gray300,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -886,10 +887,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.light.gray300,
   },
-  selectChipActive: { backgroundColor: '#EFF6FF', borderColor: '#3B82F6' },
-  selectChipText: { fontSize: 13, fontWeight: '500', color: '#6B7280' },
+  selectChipActive: { backgroundColor: Colors.light.infoLight, borderColor: Colors.light.info },
+  selectChipText: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark },
   numberRow: { flexDirection: 'row', gap: 12 },
   numberField: { flex: 1 },
   // Detail modal
@@ -906,9 +907,9 @@ const styles = StyleSheet.create({
     width: '46%',
     padding: 12,
     borderRadius: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
-  detailLabel: { fontSize: 11, color: '#6B7280', marginBottom: 4 },
+  detailLabel: { fontSize: 11, color: Colors.light.mutedDark, marginBottom: 4 },
   detailValue: { fontSize: 16, fontWeight: '600' },
   detailSectionTitle: { fontSize: 16, fontWeight: '700', marginTop: 20, marginBottom: 8 },
   prizeRow: {
@@ -917,23 +918,23 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.light.backgroundSecondary,
   },
-  prizeRank: { fontSize: 14, fontWeight: '700', color: '#F59E0B', width: 30 },
+  prizeRank: { fontSize: 14, fontWeight: '700', color: Colors.light.warning, width: 30 },
   prizeCoins: { fontSize: 14, fontWeight: '600' },
-  prizeDesc: { fontSize: 12, color: '#6B7280' },
+  prizeDesc: { fontSize: 12, color: Colors.light.mutedDark },
   participantRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     paddingVertical: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.light.backgroundSecondary,
   },
-  participantRank: { fontSize: 13, fontWeight: '600', color: '#6B7280', width: 28 },
+  participantRank: { fontSize: 13, fontWeight: '600', color: Colors.light.mutedDark, width: 28 },
   participantName: { fontSize: 14, fontWeight: '500', flex: 1 },
-  participantScore: { fontSize: 13, fontWeight: '600', color: '#3B82F6' },
-  participantGames: { fontSize: 12, color: '#9CA3AF' },
+  participantScore: { fontSize: 13, fontWeight: '600', color: Colors.light.info },
+  participantGames: { fontSize: 12, color: Colors.light.muted },
   // Reactivate modal
   reactivateOverlay: {
     flex: 1,
@@ -960,14 +961,14 @@ const styles = StyleSheet.create({
   },
   reactivateSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
   },
   reactivateNote: {
     fontSize: 12,
-    color: '#F59E0B',
+    color: Colors.light.warning,
     marginTop: 12,
     lineHeight: 18,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.light.warningLight,
     padding: 10,
     borderRadius: 8,
   },
@@ -981,22 +982,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   reactivateCancelText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
   },
   reactivateConfirmBtn: {
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.light.warning,
   },
   reactivateConfirmText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.light.card,
   },
 });

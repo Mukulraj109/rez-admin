@@ -2,11 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PageConfig } from '../../services/api/categories';
+import { Colors } from '../../constants/Colors';
 
 interface SearchPlaceholdersEditorProps {
   pageConfig: PageConfig;
   setPageConfig: React.Dispatch<React.SetStateAction<PageConfig>>;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 const SearchPlaceholdersEditor = React.memo(({ pageConfig, setPageConfig, colors }: SearchPlaceholdersEditorProps) => {
@@ -67,7 +68,7 @@ const SearchPlaceholdersEditor = React.memo(({ pageConfig, setPageConfig, colors
                   placeholderTextColor={colors.icon}
                 />
                 <TouchableOpacity onPress={() => removePlaceholder(tabKey, index)}>
-                  <Ionicons name="close-circle" size={20} color="#EF4444" />
+                  <Ionicons name="close-circle" size={20} color={Colors.light.error} />
                 </TouchableOpacity>
               </View>
             ))}

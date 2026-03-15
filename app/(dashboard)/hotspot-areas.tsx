@@ -259,7 +259,7 @@ export default function HotspotAreasScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={22} color="#FFF" />
+        <Ionicons name="add" size={22} color={colors.card} />
       </TouchableOpacity>
     </View>
   );
@@ -271,22 +271,22 @@ export default function HotspotAreasScreen() {
   const renderStatsRow = () => (
     <View style={styles.statsRow}>
       <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-        <View style={[styles.statIcon, { backgroundColor: '#3B82F615' }]}>
-          <Ionicons name="location" size={18} color="#3B82F6" />
+        <View style={[styles.statIcon, { backgroundColor: `${colors.info}15` }]}>
+          <Ionicons name="location" size={18} color={colors.info} />
         </View>
         <Text style={[styles.statValue, { color: colors.text }]}>{areas.length}</Text>
         <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Total</Text>
       </View>
       <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-        <View style={[styles.statIcon, { backgroundColor: '#10B98115' }]}>
-          <Ionicons name="checkmark-circle" size={18} color="#10B981" />
+        <View style={[styles.statIcon, { backgroundColor: `${colors.success}15` }]}>
+          <Ionicons name="checkmark-circle" size={18} color={colors.success} />
         </View>
         <Text style={[styles.statValue, { color: colors.text }]}>{activeCount}</Text>
         <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Active</Text>
       </View>
       <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-        <View style={[styles.statIcon, { backgroundColor: '#EF444415' }]}>
-          <Ionicons name="close-circle" size={18} color="#EF4444" />
+        <View style={[styles.statIcon, { backgroundColor: `${colors.error}15` }]}>
+          <Ionicons name="close-circle" size={18} color={colors.error} />
         </View>
         <Text style={[styles.statValue, { color: colors.text }]}>{inactiveCount}</Text>
         <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Inactive</Text>
@@ -323,7 +323,7 @@ export default function HotspotAreasScreen() {
             <Text
               style={[
                 styles.tabText,
-                { color: isSelected ? '#FFF' : colors.secondaryText },
+                { color: isSelected ? colors.card : colors.secondaryText },
               ]}
             >
               {tab.label}
@@ -377,8 +377,8 @@ export default function HotspotAreasScreen() {
         <Switch
           value={area.isActive}
           onValueChange={() => handleToggleActive(area)}
-          trackColor={{ false: '#D1D5DB', true: `${colors.success}90` }}
-          thumbColor={area.isActive ? colors.success : '#9CA3AF'}
+          trackColor={{ false: colors.gray300, true: `${colors.success}90` }}
+          thumbColor={area.isActive ? colors.success : colors.muted}
         />
       </View>
 
@@ -400,21 +400,21 @@ export default function HotspotAreasScreen() {
 
       {/* Metrics row */}
       <View style={styles.metricsRow}>
-        <View style={[styles.metricChip, { backgroundColor: '#3B82F610' }]}>
-          <Ionicons name="resize-outline" size={13} color="#3B82F6" />
-          <Text style={[styles.metricText, { color: '#3B82F6' }]}>
+        <View style={[styles.metricChip, { backgroundColor: `${colors.info}10` }]}>
+          <Ionicons name="resize-outline" size={13} color={colors.info} />
+          <Text style={[styles.metricText, { color: colors.info }]}>
             {area.radius != null ? `${area.radius} km` : '--'}
           </Text>
         </View>
-        <View style={[styles.metricChip, { backgroundColor: '#F59E0B10' }]}>
-          <Ionicons name="arrow-up-outline" size={13} color="#F59E0B" />
-          <Text style={[styles.metricText, { color: '#F59E0B' }]}>
+        <View style={[styles.metricChip, { backgroundColor: `${colors.warning}10` }]}>
+          <Ionicons name="arrow-up-outline" size={13} color={colors.warning} />
+          <Text style={[styles.metricText, { color: colors.warning }]}>
             Priority: {area.priority ?? 0}
           </Text>
         </View>
-        <View style={[styles.metricChip, { backgroundColor: '#10B98110' }]}>
-          <Ionicons name="pricetag-outline" size={13} color="#10B981" />
-          <Text style={[styles.metricText, { color: '#10B981' }]}>
+        <View style={[styles.metricChip, { backgroundColor: `${colors.success}10` }]}>
+          <Ionicons name="pricetag-outline" size={13} color={colors.success} />
+          <Text style={[styles.metricText, { color: colors.success }]}>
             {area.totalDeals ?? 0} deals
           </Text>
         </View>
@@ -423,18 +423,18 @@ export default function HotspotAreasScreen() {
       {/* Action buttons */}
       <View style={[styles.actionRow, { borderTopColor: colors.border }]}>
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: '#3B82F610' }]}
+          style={[styles.actionBtn, { backgroundColor: `${colors.info}10` }]}
           onPress={() => handleEdit(area)}
         >
-          <Ionicons name="pencil" size={16} color="#3B82F6" />
-          <Text style={[styles.actionBtnText, { color: '#3B82F6' }]}>Edit</Text>
+          <Ionicons name="pencil" size={16} color={colors.info} />
+          <Text style={[styles.actionBtnText, { color: colors.info }]}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: '#EF444410' }]}
+          style={[styles.actionBtn, { backgroundColor: `${colors.error}10` }]}
           onPress={() => handleDelete(area)}
         >
-          <Ionicons name="trash" size={16} color="#EF4444" />
-          <Text style={[styles.actionBtnText, { color: '#EF4444' }]}>Delete</Text>
+          <Ionicons name="trash" size={16} color={colors.error} />
+          <Text style={[styles.actionBtnText, { color: colors.error }]}>Delete</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -458,7 +458,7 @@ export default function HotspotAreasScreen() {
           style={[styles.emptyBtn, { backgroundColor: colors.tint }]}
           onPress={handleCreateNew}
         >
-          <Ionicons name="add" size={18} color="#FFF" />
+          <Ionicons name="add" size={18} color={colors.card} />
           <Text style={styles.emptyBtnText}>Create Area</Text>
         </TouchableOpacity>
       )}
@@ -486,7 +486,7 @@ export default function HotspotAreasScreen() {
             disabled={isSaving}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Save</Text>
             )}
@@ -641,8 +641,8 @@ export default function HotspotAreasScreen() {
               <Switch
                 value={formData.isActive}
                 onValueChange={val => setFormData(p => ({ ...p, isActive: val }))}
-                trackColor={{ false: '#D1D5DB', true: `${colors.success}90` }}
-                thumbColor={formData.isActive ? colors.success : '#9CA3AF'}
+                trackColor={{ false: colors.gray300, true: `${colors.success}90` }}
+                thumbColor={formData.isActive ? colors.success : colors.muted}
               />
             </View>
           </View>
@@ -919,7 +919,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   emptyBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -963,7 +963,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },

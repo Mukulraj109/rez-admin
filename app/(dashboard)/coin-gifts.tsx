@@ -16,16 +16,16 @@ const STATUS_TABS = ['all', 'pending', 'delivered', 'claimed', 'expired', 'cance
 type StatusTab = typeof STATUS_TABS[number];
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  pending: { bg: '#FEF3C7', text: '#D97706' },
-  delivered: { bg: '#DBEAFE', text: '#2563EB' },
-  claimed: { bg: '#D1FAE5', text: '#059669' },
-  expired: { bg: '#F3F4F6', text: '#6B7280' },
-  cancelled: { bg: '#FEE2E2', text: '#DC2626' },
+  pending: { bg: Colors.light.warningLight, text: Colors.light.warningDark },
+  delivered: { bg: Colors.light.infoLighter, text: '#2563EB' },
+  claimed: { bg: Colors.light.successLight, text: Colors.light.successDark },
+  expired: { bg: Colors.light.backgroundSecondary, text: Colors.light.mutedDark },
+  cancelled: { bg: Colors.light.errorLight, text: Colors.light.errorDark },
 };
 
 const COIN_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  nuqta: { bg: '#EDE9FE', text: '#7C3AED' },
-  promo: { bg: '#FEF3C7', text: '#D97706' },
+  nuqta: { bg: '#EDE9FE', text: Colors.light.purpleDark },
+  promo: { bg: Colors.light.warningLight, text: Colors.light.warningDark },
 };
 
 // ============================================
@@ -192,15 +192,15 @@ export default function CoinGiftsAdminScreen() {
         <View style={styles.cardTopRow}>
           <View style={styles.cardLeftCol}>
             <View style={styles.userRow}>
-              <Ionicons name="person-outline" size={13} color="#6B7280" />
-              <Text style={[styles.userLabel, { color: '#6B7280' }]}>From:</Text>
+              <Ionicons name="person-outline" size={13} color={colors.mutedDark} />
+              <Text style={[styles.userLabel, { color: colors.mutedDark }]}>From:</Text>
               <Text style={[styles.userName, { color: colors.text }]} numberOfLines={1}>
                 {getUserDisplay(item.sender)}
               </Text>
             </View>
             <View style={styles.userRow}>
-              <Ionicons name="arrow-forward-outline" size={13} color="#6B7280" />
-              <Text style={[styles.userLabel, { color: '#6B7280' }]}>To:</Text>
+              <Ionicons name="arrow-forward-outline" size={13} color={colors.mutedDark} />
+              <Text style={[styles.userLabel, { color: colors.mutedDark }]}>To:</Text>
               <Text style={[styles.userName, { color: colors.text }]} numberOfLines={1}>
                 {getUserDisplay(item.recipient)}
               </Text>
@@ -221,7 +221,7 @@ export default function CoinGiftsAdminScreen() {
             <Ionicons
               name={item.deliveryType === 'scheduled' ? 'time-outline' : 'flash-outline'}
               size={12}
-              color="#6B7280"
+              color={colors.mutedDark}
             />
             <Text style={styles.deliveryText}>{item.deliveryType}</Text>
           </View>
@@ -243,7 +243,7 @@ export default function CoinGiftsAdminScreen() {
           <View style={{ width: 28 }} />
         </View>
         {detailLoading ? (
-          <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+          <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
         ) : selectedGift ? (
           <ScrollView style={styles.detailScroll} contentContainerStyle={{ paddingBottom: 40 }}>
             {/* Status */}
@@ -337,7 +337,7 @@ export default function CoinGiftsAdminScreen() {
                 {detailData.transactions.map((tx: any, i: number) => (
                   <View key={tx._id || i} style={[styles.txRow, { borderColor: colors.border }]}>
                     <Text style={[styles.txType, { color: colors.text }]}>{tx.type || tx.source}</Text>
-                    <Text style={[styles.txAmount, { color: tx.amount > 0 ? '#059669' : '#DC2626' }]}>
+                    <Text style={[styles.txAmount, { color: tx.amount > 0 ? colors.successDark : colors.errorDark }]}>
                       {tx.amount > 0 ? '+' : ''}{tx.amount} NC
                     </Text>
                   </View>
@@ -352,7 +352,7 @@ export default function CoinGiftsAdminScreen() {
                   style={[styles.actionButton, styles.refundButton]}
                   onPress={() => handleRefund(selectedGift)}
                 >
-                  <Ionicons name="return-down-back-outline" size={18} color="#FFFFFF" />
+                  <Ionicons name="return-down-back-outline" size={18} color={colors.card} />
                   <Text style={styles.actionButtonText}>Refund</Text>
                 </TouchableOpacity>
               )}
@@ -361,7 +361,7 @@ export default function CoinGiftsAdminScreen() {
                   style={[styles.actionButton, styles.deliverButton]}
                   onPress={() => handleDeliver(selectedGift)}
                 >
-                  <Ionicons name="send-outline" size={18} color="#FFFFFF" />
+                  <Ionicons name="send-outline" size={18} color={colors.card} />
                   <Text style={styles.actionButtonText}>Deliver</Text>
                 </TouchableOpacity>
               )}
@@ -378,23 +378,23 @@ export default function CoinGiftsAdminScreen() {
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Coin Gifts</Text>
-        <Text style={[styles.headerSubtitle, { color: '#6B7280' }]}>{total} total</Text>
+        <Text style={[styles.headerSubtitle, { color: colors.mutedDark }]}>{total} total</Text>
       </View>
 
       {/* Search */}
       <View style={[styles.searchBar, { backgroundColor: colors.card }]}>
         <View style={[styles.searchInput, { borderColor: colors.border }]}>
-          <Ionicons name="search-outline" size={18} color="#9CA3AF" />
+          <Ionicons name="search-outline" size={18} color={colors.muted} />
           <TextInput
             style={[styles.searchTextInput, { color: colors.text }]}
             value={search}
             onChangeText={handleSearchChange}
             placeholder="Search by phone or gift ID..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
           {search.length > 0 && (
             <TouchableOpacity onPress={() => setSearch('')}>
-              <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+              <Ionicons name="close-circle" size={18} color={colors.muted} />
             </TouchableOpacity>
           )}
         </View>
@@ -427,13 +427,13 @@ export default function CoinGiftsAdminScreen() {
         onEndReached={onEndReached}
         onEndReachedThreshold={0.3}
         ListFooterComponent={loadingMore ? (
-          <ActivityIndicator size="small" color="#3B82F6" style={{ paddingVertical: 16 }} />
+          <ActivityIndicator size="small" color={colors.info} style={{ paddingVertical: 16 }} />
         ) : null}
         ListEmptyComponent={loading
-          ? <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+          ? <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           : (
             <View style={styles.emptyBox}>
-              <Ionicons name="gift-outline" size={48} color="#D1D5DB" />
+              <Ionicons name="gift-outline" size={48} color={colors.gray300} />
               <Text style={styles.emptyText}>No coin gifts found</Text>
             </View>
           )
@@ -462,15 +462,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12, paddingVertical: 8, gap: 8,
   },
   searchTextInput: { flex: 1, fontSize: 14, paddingVertical: 0 },
-  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   filterRow: { flexDirection: 'row' },
   filterChip: {
     paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16,
-    backgroundColor: '#F3F4F6', marginRight: 8,
+    backgroundColor: Colors.light.backgroundSecondary, marginRight: 8,
   },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  chipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  chipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  chipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  chipTextActive: { color: Colors.light.card, fontWeight: '600' },
   card: {
     borderRadius: 12, marginBottom: 10, borderWidth: 1, padding: 14,
   },
@@ -487,15 +487,15 @@ const styles = StyleSheet.create({
   coinBadgeText: { fontSize: 10, fontWeight: '600', textTransform: 'uppercase' },
   cardBottomRow: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10,
+    borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10,
   },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   statusText: { fontSize: 11, fontWeight: '600', textTransform: 'capitalize' },
   deliveryBadge: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  deliveryText: { fontSize: 11, color: '#6B7280', fontWeight: '500' },
-  dateText: { fontSize: 11, color: '#9CA3AF', marginLeft: 'auto' },
+  deliveryText: { fontSize: 11, color: Colors.light.mutedDark, fontWeight: '500' },
+  dateText: { fontSize: 11, color: Colors.light.muted, marginLeft: 'auto' },
   emptyBox: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
   // Detail Modal
   modalContainer: { flex: 1 },
   modalHeader: {
@@ -505,18 +505,18 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 17, fontWeight: '600' },
   detailScroll: { paddingHorizontal: 20 },
   detailSection: {
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F3F4F6',
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: Colors.light.backgroundSecondary,
   },
-  sectionTitle: { fontSize: 13, fontWeight: '600', color: '#6B7280', marginBottom: 6 },
+  sectionTitle: { fontSize: 13, fontWeight: '600', color: Colors.light.mutedDark, marginBottom: 6 },
   detailRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingVertical: 4,
   },
-  detailLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280' },
+  detailLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark },
   detailValue: { fontSize: 14, fontWeight: '600' },
-  phoneText: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
+  phoneText: { fontSize: 12, color: Colors.light.muted, marginTop: 2 },
   messageText: {
-    fontSize: 14, lineHeight: 20, backgroundColor: '#F9FAFB',
+    fontSize: 14, lineHeight: 20, backgroundColor: Colors.light.backgroundTertiary,
     padding: 10, borderRadius: 8, overflow: 'hidden',
   },
   txRow: {
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     paddingVertical: 12, borderRadius: 10, gap: 6,
   },
-  refundButton: { backgroundColor: '#DC2626' },
+  refundButton: { backgroundColor: Colors.light.errorDark },
   deliverButton: { backgroundColor: '#2563EB' },
-  actionButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' },
+  actionButtonText: { color: Colors.light.card, fontSize: 14, fontWeight: '600' },
 });

@@ -107,9 +107,9 @@ export default function OfferCommentsScreen() {
   };
 
   const getQualityBadge = (score: number) => {
-    if (score >= 3) return { label: 'High', color: '#10B981' };
-    if (score >= 2) return { label: 'Medium', color: '#F59E0B' };
-    return { label: 'Low', color: '#EF4444' };
+    if (score >= 3) return { label: 'High', color: colors.success };
+    if (score >= 2) return { label: 'Medium', color: colors.warning };
+    return { label: 'Low', color: colors.error };
   };
 
   const renderCommentCard = ({ item }: { item: PendingComment }) => {
@@ -120,8 +120,8 @@ export default function OfferCommentsScreen() {
       <View style={[styles.card, { backgroundColor: colors.card }]}>
         {/* Header */}
         <View style={styles.cardHeader}>
-          <View style={[styles.avatar, { backgroundColor: '#FEF3C7' }]}>
-            <Ionicons name="chatbubble-ellipses" size={20} color="#D97706" />
+          <View style={[styles.avatar, { backgroundColor: colors.warningLight }]}>
+            <Ionicons name="chatbubble-ellipses" size={20} color={colors.warningDark} />
           </View>
           <View style={styles.cardInfo}>
             <Text style={[styles.userName, { color: colors.text }]}>
@@ -171,10 +171,10 @@ export default function OfferCommentsScreen() {
             disabled={processingId === item.id}
           >
             {processingId === item.id ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+                <Ionicons name="checkmark" size={18} color={colors.card} />
                 <Text style={styles.actionButtonText}>Approve</Text>
               </>
             )}
@@ -187,7 +187,7 @@ export default function OfferCommentsScreen() {
             }}
             disabled={processingId === item.id}
           >
-            <Ionicons name="close" size={18} color="#FFFFFF" />
+            <Ionicons name="close" size={18} color={colors.card} />
             <Text style={styles.actionButtonText}>Reject</Text>
           </TouchableOpacity>
         </View>
@@ -207,10 +207,10 @@ export default function OfferCommentsScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.card }]}>
-        <Ionicons name="chatbubble-ellipses" size={24} color="#D97706" />
+        <Ionicons name="chatbubble-ellipses" size={24} color={colors.warningDark} />
         <Text style={[styles.headerTitle, { color: colors.text }]}>Offer Comment Moderation</Text>
-        <View style={[styles.countBadge, { backgroundColor: '#FEF3C7' }]}>
-          <Text style={[styles.countText, { color: '#D97706' }]}>{comments.length} pending</Text>
+        <View style={[styles.countBadge, { backgroundColor: colors.warningLight }]}>
+          <Text style={[styles.countText, { color: colors.warningDark }]}>{comments.length} pending</Text>
         </View>
       </View>
 
@@ -266,7 +266,7 @@ export default function OfferCommentsScreen() {
                 style={[styles.modalButton, { backgroundColor: colors.error }]}
                 onPress={handleReject}
               >
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Reject</Text>
+                <Text style={[styles.modalButtonText, { color: colors.card }]}>Reject</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: Colors.light.border,
   },
   metaText: { fontSize: 11 },
   actionButtons: { flexDirection: 'row', marginTop: 12, gap: 8 },
@@ -326,9 +326,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  approveButton: { backgroundColor: '#10B981' },
-  rejectButton: { backgroundColor: '#EF4444' },
-  actionButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
+  approveButton: { backgroundColor: Colors.light.success },
+  rejectButton: { backgroundColor: Colors.light.error },
+  actionButtonText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
   emptyContainer: { padding: 40, alignItems: 'center' },
   emptyText: { marginTop: 12, fontSize: 16 },
   // Modal

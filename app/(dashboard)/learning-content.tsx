@@ -20,10 +20,10 @@ import { Colors } from '../../constants/Colors';
 import { showAlert, showConfirm } from '../../utils/alert';
 
 const CATEGORY_OPTIONS = [
-  { value: 'coin-system', label: 'Coin System', color: '#3B82F6' },
-  { value: 'earning-tips', label: 'Earning Tips', color: '#10B981' },
-  { value: 'platform-guide', label: 'Platform Guide', color: '#8B5CF6' },
-  { value: 'coin-types', label: 'Coin Types', color: '#F59E0B' },
+  { value: 'coin-system', label: 'Coin System', color: Colors.light.info },
+  { value: 'earning-tips', label: 'Earning Tips', color: Colors.light.success },
+  { value: 'platform-guide', label: 'Platform Guide', color: Colors.light.purple },
+  { value: 'coin-types', label: 'Coin Types', color: Colors.light.warning },
 ] as const;
 
 const CONTENT_TYPE_OPTIONS = [
@@ -183,14 +183,14 @@ export default function LearningContentPage() {
   };
 
   const getCategoryInfo = (cat: string) => {
-    return CATEGORY_OPTIONS.find(c => c.value === cat) || { label: cat, color: '#6B7280' };
+    return CATEGORY_OPTIONS.find(c => c.value === cat) || { label: cat, color: colors.mutedDark };
   };
 
   const renderItem = ({ item }: { item: LearningContentAdmin }) => {
     const catInfo = getCategoryInfo(item.category);
 
     return (
-      <View style={[styles.card, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+      <View style={[styles.card, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
         <View style={styles.cardHeader}>
           <View style={styles.cardTitleRow}>
             <Ionicons
@@ -198,7 +198,7 @@ export default function LearningContentPage() {
               size={18}
               color={catInfo.color}
             />
-            <Text style={[styles.cardTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]} numberOfLines={1}>
+            <Text style={[styles.cardTitle, { color: isDark ? colors.slate : colors.gray800 }]} numberOfLines={1}>
               {item.title}
             </Text>
           </View>
@@ -206,19 +206,19 @@ export default function LearningContentPage() {
             onPress={() => handleTogglePublished(item)}
             style={[
               styles.statusBadge,
-              { backgroundColor: item.isPublished ? '#D1FAE5' : '#FEE2E2' },
+              { backgroundColor: item.isPublished ? colors.successLight : colors.errorLight },
             ]}
           >
             <View
               style={[
                 styles.statusDot,
-                { backgroundColor: item.isPublished ? '#10B981' : '#EF4444' },
+                { backgroundColor: item.isPublished ? colors.success : colors.error },
               ]}
             />
             <Text
               style={[
                 styles.statusText,
-                { color: item.isPublished ? '#065F46' : '#991B1B' },
+                { color: item.isPublished ? colors.successDeep : colors.errorDeep },
               ]}
             >
               {item.isPublished ? 'Published' : 'Draft'}
@@ -235,18 +235,18 @@ export default function LearningContentPage() {
           <Text style={styles.metaText}>Order: {item.sortOrder}</Text>
         </View>
 
-        <Text style={[styles.slugText, { color: isDark ? '#94A3B8' : '#9CA3AF' }]}>
+        <Text style={[styles.slugText, { color: isDark ? colors.slateMedium : colors.muted }]}>
           /{item.slug}
         </Text>
 
         <View style={styles.cardActions}>
           <TouchableOpacity style={styles.actionBtn} onPress={() => openEditModal(item)}>
-            <Ionicons name="create-outline" size={18} color="#3B82F6" />
-            <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+            <Ionicons name="create-outline" size={18} color={colors.info} />
+            <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item)}>
-            <Ionicons name="trash-outline" size={18} color="#EF4444" />
-            <Text style={[styles.actionText, { color: '#EF4444' }]}>Delete</Text>
+            <Ionicons name="trash-outline" size={18} color={colors.error} />
+            <Text style={[styles.actionText, { color: colors.error }]}>Delete</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -254,14 +254,14 @@ export default function LearningContentPage() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? Colors.dark.background : colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.pageTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+        <Text style={[styles.pageTitle, { color: isDark ? colors.slate : colors.gray800 }]}>
           Learning Content
         </Text>
         <TouchableOpacity style={styles.createButton} onPress={openCreateModal}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.createButtonText}>Create</Text>
         </TouchableOpacity>
       </View>
@@ -323,7 +323,7 @@ export default function LearningContentPage() {
       {/* List */}
       {loading ? (
         <View style={styles.loadingCenter}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          <ActivityIndicator size="large" color={colors.info} />
         </View>
       ) : (
         <FlatList
@@ -336,10 +336,10 @@ export default function LearningContentPage() {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="book-outline" size={48} color="#9CA3AF" />
+              <Ionicons name="book-outline" size={48} color={colors.muted} />
               <Text style={styles.emptyText}>No learning content found</Text>
               <TouchableOpacity style={styles.createButton} onPress={openCreateModal}>
-                <Ionicons name="add" size={18} color="#FFFFFF" />
+                <Ionicons name="add" size={18} color={colors.card} />
                 <Text style={styles.createButtonText}>Create Content</Text>
               </TouchableOpacity>
             </View>
@@ -355,7 +355,7 @@ export default function LearningContentPage() {
             onPress={() => fetchItems(page - 1)}
             style={[styles.pageBtn, page <= 1 && styles.pageBtnDisabled]}
           >
-            <Ionicons name="chevron-back" size={18} color={page <= 1 ? '#9CA3AF' : '#3B82F6'} />
+            <Ionicons name="chevron-back" size={18} color={page <= 1 ? colors.muted : colors.info} />
           </TouchableOpacity>
           <Text style={styles.pageInfo}>
             Page {page} of {totalPages}
@@ -368,7 +368,7 @@ export default function LearningContentPage() {
             <Ionicons
               name="chevron-forward"
               size={18}
-              color={page >= totalPages ? '#9CA3AF' : '#3B82F6'}
+              color={page >= totalPages ? colors.muted : colors.info}
             />
           </TouchableOpacity>
         </View>
@@ -376,17 +376,17 @@ export default function LearningContentPage() {
 
       {/* Create/Edit Modal */}
       <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView style={[styles.modalContainer, { backgroundColor: isDark ? '#0F172A' : '#F8FAFC' }]}>
+        <SafeAreaView style={[styles.modalContainer, { backgroundColor: isDark ? Colors.dark.background : colors.background }]}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Ionicons name="close" size={24} color={isDark ? '#F1F5F9' : '#1F2937'} />
+              <Ionicons name="close" size={24} color={isDark ? colors.slate : colors.gray800} />
             </TouchableOpacity>
-            <Text style={[styles.modalTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+            <Text style={[styles.modalTitle, { color: isDark ? colors.slate : colors.gray800 }]}>
               {editingItem ? 'Edit Content' : 'Create Content'}
             </Text>
             <TouchableOpacity onPress={handleSave} disabled={saving}>
               {saving ? (
-                <ActivityIndicator size="small" color="#3B82F6" />
+                <ActivityIndicator size="small" color={colors.info} />
               ) : (
                 <Text style={styles.saveText}>Save</Text>
               )}
@@ -395,28 +395,28 @@ export default function LearningContentPage() {
 
           <ScrollView style={styles.modalBody} contentContainerStyle={styles.modalBodyContent}>
             {/* Title */}
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Title *</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Title *</Text>
             <TextInput
-              style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+              style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
               value={form.title}
               onChangeText={(v) => setForm(f => ({ ...f, title: v }))}
               placeholder="Content title"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
             />
 
             {/* Slug */}
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Slug *</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Slug *</Text>
             <TextInput
-              style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+              style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
               value={form.slug}
               onChangeText={(v) => setForm(f => ({ ...f, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))}
               placeholder="content-slug"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
               autoCapitalize="none"
             />
 
             {/* Category */}
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Category</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Category</Text>
             <View style={styles.chipRow}>
               {CATEGORY_OPTIONS.map(cat => (
                 <TouchableOpacity
@@ -440,7 +440,7 @@ export default function LearningContentPage() {
             </View>
 
             {/* Content Type */}
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Content Type</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Content Type</Text>
             <View style={styles.chipRow}>
               {CONTENT_TYPE_OPTIONS.map(ct => (
                 <TouchableOpacity
@@ -454,12 +454,12 @@ export default function LearningContentPage() {
                   <Ionicons
                     name={ct.icon as any}
                     size={16}
-                    color={form.contentType === ct.value ? '#3B82F6' : '#6B7280'}
+                    color={form.contentType === ct.value ? colors.info : colors.mutedDark}
                   />
                   <Text
                     style={[
                       styles.selectChipText,
-                      form.contentType === ct.value && { color: '#3B82F6' },
+                      form.contentType === ct.value && { color: colors.info },
                     ]}
                   >
                     {ct.label}
@@ -469,13 +469,13 @@ export default function LearningContentPage() {
             </View>
 
             {/* Body */}
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Body (Markdown)</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Body (Markdown)</Text>
             <TextInput
-              style={[styles.textArea, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+              style={[styles.textArea, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
               value={form.body}
               onChangeText={(v) => setForm(f => ({ ...f, body: v }))}
               placeholder="Content body in markdown..."
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
               multiline
               numberOfLines={8}
               textAlignVertical="top"
@@ -484,53 +484,53 @@ export default function LearningContentPage() {
             {/* Video URL (conditional) */}
             {form.contentType === 'video' && (
               <>
-                <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Video URL</Text>
+                <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Video URL</Text>
                 <TextInput
-                  style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                  style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
                   value={form.videoUrl}
                   onChangeText={(v) => setForm(f => ({ ...f, videoUrl: v }))}
                   placeholder="https://..."
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={colors.muted}
                   autoCapitalize="none"
                 />
               </>
             )}
 
             {/* Thumbnail URL */}
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Thumbnail URL</Text>
+            <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Thumbnail URL</Text>
             <TextInput
-              style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+              style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
               value={form.thumbnailUrl}
               onChangeText={(v) => setForm(f => ({ ...f, thumbnailUrl: v }))}
               placeholder="https://..."
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
               autoCapitalize="none"
             />
 
             {/* Number Fields Row */}
             <View style={styles.numberRow}>
               <View style={styles.numberField}>
-                <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Coin Reward</Text>
+                <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Coin Reward</Text>
                 <TextInput
-                  style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                  style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
                   value={String(form.coinReward)}
                   onChangeText={(v) => setForm(f => ({ ...f, coinReward: parseInt(v) || 0 }))}
                   keyboardType="numeric"
                 />
               </View>
               <View style={styles.numberField}>
-                <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Est. Minutes</Text>
+                <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Est. Minutes</Text>
                 <TextInput
-                  style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                  style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
                   value={String(form.estimatedMinutes)}
                   onChangeText={(v) => setForm(f => ({ ...f, estimatedMinutes: parseInt(v) || 1 }))}
                   keyboardType="numeric"
                 />
               </View>
               <View style={styles.numberField}>
-                <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Sort Order</Text>
+                <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700 }]}>Sort Order</Text>
                 <TextInput
-                  style={[styles.input, { color: isDark ? '#F1F5F9' : '#1F2937', backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                  style={[styles.input, { color: isDark ? colors.slate : colors.gray800, backgroundColor: isDark ? colors.slateDark : colors.card }]}
                   value={String(form.sortOrder)}
                   onChangeText={(v) => setForm(f => ({ ...f, sortOrder: parseInt(v) || 0 }))}
                   keyboardType="numeric"
@@ -540,14 +540,14 @@ export default function LearningContentPage() {
 
             {/* Published Toggle */}
             <View style={styles.toggleRow}>
-              <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151', marginBottom: 0 }]}>
+              <Text style={[styles.fieldLabel, { color: isDark ? colors.slateLight : colors.gray700, marginBottom: 0 }]}>
                 Published
               </Text>
               <Switch
                 value={form.isPublished}
                 onValueChange={(v) => setForm(f => ({ ...f, isPublished: v }))}
-                trackColor={{ false: '#D1D5DB', true: '#93C5FD' }}
-                thumbColor={form.isPublished ? '#3B82F6' : '#9CA3AF'}
+                trackColor={{ false: colors.gray300, true: '#93C5FD' }}
+                thumbColor={form.isPublished ? colors.info : colors.muted}
               />
             </View>
           </ScrollView>
@@ -576,13 +576,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
   },
   createButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -595,19 +595,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.light.gray200,
     marginRight: 8,
   },
   filterChipActive: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
   },
   filterChipText: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
   },
   filterChipTextActive: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
   },
   loadingCenter: {
     flex: 1,
@@ -625,13 +625,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: Colors.light.muted,
   },
   card: {
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
     gap: 8,
   },
   cardHeader: {
@@ -685,7 +685,7 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
   },
   slugText: {
     fontSize: 12,
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 16,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: Colors.light.backgroundSecondary,
     paddingTop: 8,
     marginTop: 4,
   },
@@ -715,22 +715,22 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: Colors.light.gray200,
   },
   pageBtn: {
     width: 36,
     height: 36,
     borderRadius: 8,
-    backgroundColor: '#EFF6FF',
+    backgroundColor: Colors.light.infoLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
   pageBtnDisabled: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   pageInfo: {
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
   },
   // Modal
   modalContainer: {
@@ -743,7 +743,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.gray200,
   },
   modalTitle: {
     fontSize: 17,
@@ -752,7 +752,7 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3B82F6',
+    color: Colors.light.info,
   },
   modalBody: {
     flex: 1,
@@ -770,7 +770,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.light.gray300,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -778,7 +778,7 @@ const styles = StyleSheet.create({
   },
   textArea: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.light.gray300,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -798,16 +798,16 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.light.gray300,
   },
   selectChipActive: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#3B82F6',
+    backgroundColor: Colors.light.infoLight,
+    borderColor: Colors.light.info,
   },
   selectChipText: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
   },
   numberRow: {
     flexDirection: 'row',

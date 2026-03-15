@@ -44,17 +44,17 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  new: '#3B82F6',
-  investigating: '#F59E0B',
-  resolved: '#10B981',
-  dismissed: '#6B7280',
+  new: Colors.light.info,
+  investigating: Colors.light.warning,
+  resolved: Colors.light.success,
+  dismissed: Colors.light.mutedDark,
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: '#6B7280',
-  medium: '#3B82F6',
-  high: '#F59E0B',
-  critical: '#EF4444',
+  low: Colors.light.mutedDark,
+  medium: Colors.light.info,
+  high: Colors.light.warning,
+  critical: Colors.light.error,
 };
 
 // ============================================
@@ -228,8 +228,8 @@ export default function FraudReportsScreen() {
   };
 
   // HELPERS
-  const getStatusColor = (status: string) => STATUS_COLORS[status] || '#6B7280';
-  const getPriorityColor = (priority: string) => PRIORITY_COLORS[priority] || '#6B7280';
+  const getStatusColor = (status: string) => STATUS_COLORS[status] || colors.mutedDark;
+  const getPriorityColor = (priority: string) => PRIORITY_COLORS[priority] || colors.mutedDark;
 
   const formatDate = (dateStr: string) => {
     try { return format(new Date(dateStr), 'MMM d, yyyy h:mm a'); } catch { return dateStr; }
@@ -258,7 +258,7 @@ export default function FraudReportsScreen() {
           >
             <Text style={[
               styles.filterChipText,
-              { color: statusFilter === status ? '#FFFFFF' : colors.text },
+              { color: statusFilter === status ? colors.card : colors.text },
             ]}>
               {STATUS_LABELS[status]}
             </Text>
@@ -274,13 +274,13 @@ export default function FraudReportsScreen() {
             key={prio}
             style={[
               styles.filterChip,
-              { backgroundColor: priorityFilter === prio ? (PRIORITY_COLORS[prio] || '#1a3a52') : colors.card },
+              { backgroundColor: priorityFilter === prio ? (PRIORITY_COLORS[prio] || colors.navy) : colors.card },
             ]}
             onPress={() => setPriorityFilter(prio)}
           >
             <Text style={[
               styles.filterChipText,
-              { color: priorityFilter === prio ? '#FFFFFF' : colors.text },
+              { color: priorityFilter === prio ? colors.card : colors.text },
             ]}>
               {prio === 'all' ? 'All Priority' : PRIORITY_LABELS[prio]}
             </Text>
@@ -296,13 +296,13 @@ export default function FraudReportsScreen() {
             key={cat}
             style={[
               styles.filterChip,
-              { backgroundColor: categoryFilter === cat ? '#1a3a52' : colors.card },
+              { backgroundColor: categoryFilter === cat ? colors.navy : colors.card },
             ]}
             onPress={() => setCategoryFilter(cat)}
           >
             <Text style={[
               styles.filterChipText,
-              { color: categoryFilter === cat ? '#FFFFFF' : colors.text },
+              { color: categoryFilter === cat ? colors.card : colors.text },
             ]}>
               {CATEGORY_LABELS[cat]}
             </Text>
@@ -388,7 +388,7 @@ export default function FraudReportsScreen() {
           onPress={() => { if (page > 1) loadReports(page - 1); }}
           disabled={page <= 1}
         >
-          <Ionicons name="chevron-back" size={18} color={page > 1 ? '#FFFFFF' : colors.icon} />
+          <Ionicons name="chevron-back" size={18} color={page > 1 ? colors.card : colors.icon} />
         </TouchableOpacity>
         <Text style={[styles.pageText, { color: colors.text }]}>
           Page {page} of {totalPages}
@@ -398,7 +398,7 @@ export default function FraudReportsScreen() {
           onPress={() => { if (page < totalPages) loadReports(page + 1); }}
           disabled={page >= totalPages}
         >
-          <Ionicons name="chevron-forward" size={18} color={page < totalPages ? '#FFFFFF' : colors.icon} />
+          <Ionicons name="chevron-forward" size={18} color={page < totalPages ? colors.card : colors.icon} />
         </TouchableOpacity>
       </View>
     );
@@ -547,14 +547,14 @@ export default function FraudReportsScreen() {
                   numberOfLines={3}
                 />
                 <TouchableOpacity
-                  style={[styles.sendBtn, { backgroundColor: noteText.trim() ? '#1a3a52' : colors.border }]}
+                  style={[styles.sendBtn, { backgroundColor: noteText.trim() ? colors.navy : colors.border }]}
                   onPress={handleAddNote}
                   disabled={noteSending || !noteText.trim()}
                 >
                   {noteSending ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
+                    <ActivityIndicator size="small" color={colors.card} />
                   ) : (
-                    <Ionicons name="send" size={18} color={noteText.trim() ? '#FFFFFF' : colors.icon} />
+                    <Ionicons name="send" size={18} color={noteText.trim() ? colors.card : colors.icon} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -563,23 +563,23 @@ export default function FraudReportsScreen() {
             {/* Action buttons */}
             <View style={styles.modalActions}>
               <TouchableOpacity
-                style={[styles.actionButton, { backgroundColor: '#1a3a52' }]}
+                style={[styles.actionButton, { backgroundColor: colors.navy }]}
                 onPress={() => {
                   setStatusReportId(selectedReport._id);
                   setShowStatusModal(true);
                 }}
               >
-                <Ionicons name="swap-horizontal" size={16} color="#FFFFFF" />
+                <Ionicons name="swap-horizontal" size={16} color={colors.card} />
                 <Text style={styles.actionButtonText}>Change Status</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.actionButton, { backgroundColor: '#3B82F6' }]}
+                style={[styles.actionButton, { backgroundColor: colors.info }]}
                 onPress={() => {
                   setPriorityReportId(selectedReport._id);
                   setShowPriorityModal(true);
                 }}
               >
-                <Ionicons name="flag-outline" size={16} color="#FFFFFF" />
+                <Ionicons name="flag-outline" size={16} color={colors.card} />
                 <Text style={styles.actionButtonText}>Set Priority</Text>
               </TouchableOpacity>
             </View>
@@ -640,7 +640,7 @@ export default function FraudReportsScreen() {
       <View style={styles.pickerModalOverlay}>
         <View style={[styles.pickerModalContent, { backgroundColor: colors.card }]}>
           <View style={styles.pickerModalHeader}>
-            <Ionicons name="flag-outline" size={24} color="#F59E0B" />
+            <Ionicons name="flag-outline" size={24} color={colors.warning} />
             <Text style={[styles.pickerModalTitle, { color: colors.text }]}>Set Priority</Text>
           </View>
           <View style={{ gap: 8 }}>
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
   reportDescription: { fontSize: 13, lineHeight: 19, marginTop: 10 },
   reportFooter: {
     flexDirection: 'row', alignItems: 'center', gap: 16,
-    marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#E2E8F0',
+    marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: Colors.light.border,
   },
   detailRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   dateText: { fontSize: 11 },
@@ -847,7 +847,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     paddingVertical: 10, paddingHorizontal: 14, borderRadius: 8, gap: 4,
   },
-  actionButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 13 },
+  actionButtonText: { color: Colors.light.card, fontWeight: '600', fontSize: 13 },
 
   // Picker modals (status / priority)
   pickerModalOverlay: {

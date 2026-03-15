@@ -138,9 +138,9 @@ export default function AdminWalletScreen() {
       <Ionicons
         name={icon}
         size={16}
-        color={activeTab === tab ? '#FFFFFF' : colors.icon}
+        color={activeTab === tab ? colors.card : colors.icon}
       />
-      <Text style={[styles.tabText, { color: activeTab === tab ? '#FFFFFF' : colors.icon }]}>
+      <Text style={[styles.tabText, { color: activeTab === tab ? colors.card : colors.icon }]}>
         {label}
       </Text>
     </TouchableOpacity>
@@ -148,11 +148,11 @@ export default function AdminWalletScreen() {
 
   const renderTransactionItem = ({ item }: { item: AdminWalletTransaction }) => (
     <View style={[styles.txItem, { backgroundColor: colors.card }]}>
-      <View style={[styles.txIcon, { backgroundColor: item.type === 'commission' ? '#D1FAE5' : '#FEE2E2' }]}>
+      <View style={[styles.txIcon, { backgroundColor: item.type === 'commission' ? colors.successLight : colors.errorLight }]}>
         <Ionicons
           name={item.type === 'commission' ? 'trending-up' : 'swap-horizontal'}
           size={18}
-          color={item.type === 'commission' ? '#10B981' : '#EF4444'}
+          color={item.type === 'commission' ? colors.success : colors.error}
         />
       </View>
       <View style={styles.txDetails}>
@@ -165,7 +165,7 @@ export default function AdminWalletScreen() {
           {formatDate(item.createdAt)}
         </Text>
       </View>
-      <Text style={[styles.txAmount, { color: '#10B981' }]}>
+      <Text style={[styles.txAmount, { color: colors.success }]}>
         +{formatCurrency(item.amount)}
       </Text>
     </View>
@@ -194,8 +194,8 @@ export default function AdminWalletScreen() {
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Statistics</Text>
         <View style={styles.statsGrid}>
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <View style={[styles.statIcon, { backgroundColor: '#D1FAE5' }]}>
-              <Ionicons name="cash" size={20} color="#10B981" />
+            <View style={[styles.statIcon, { backgroundColor: colors.successLight }]}>
+              <Ionicons name="cash" size={20} color={colors.success} />
             </View>
             <Text style={[styles.statValue, { color: colors.text }]}>
               {formatCurrency(summary?.statistics?.totalCommissions || 0)}
@@ -204,8 +204,8 @@ export default function AdminWalletScreen() {
           </View>
 
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <View style={[styles.statIcon, { backgroundColor: '#DBEAFE' }]}>
-              <Ionicons name="receipt" size={20} color="#3B82F6" />
+            <View style={[styles.statIcon, { backgroundColor: colors.infoLighter }]}>
+              <Ionicons name="receipt" size={20} color={colors.info} />
             </View>
             <Text style={[styles.statValue, { color: colors.text }]}>
               {summary?.statistics?.totalOrders || 0}
@@ -214,8 +214,8 @@ export default function AdminWalletScreen() {
           </View>
 
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <View style={[styles.statIcon, { backgroundColor: '#FEF3C7' }]}>
-              <Ionicons name="analytics" size={20} color="#F59E0B" />
+            <View style={[styles.statIcon, { backgroundColor: colors.warningLight }]}>
+              <Ionicons name="analytics" size={20} color={colors.warning} />
             </View>
             <Text style={[styles.statValue, { color: colors.text }]}>
               {formatCurrency(summary?.statistics?.averageCommission || 0)}
@@ -225,7 +225,7 @@ export default function AdminWalletScreen() {
 
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
             <View style={[styles.statIcon, { backgroundColor: '#EDE9FE' }]}>
-              <Ionicons name="pie-chart" size={20} color="#8B5CF6" />
+              <Ionicons name="pie-chart" size={20} color={colors.purple} />
             </View>
             <Text style={[styles.statValue, { color: colors.text }]}>5%</Text>
             <Text style={[styles.statLabel, { color: colors.icon }]}>Commission Rate</Text>
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.light.card,
   },
   headerSubtitle: {
     fontSize: 14,
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   tabText: {
     fontSize: 13,
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
   balanceAmount: {
     fontSize: 36,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.light.card,
   },
   balanceSub: {
     fontSize: 13,
@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
   breakdownBarContainer: {
     flex: 1,
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.light.gray200,
     borderRadius: 4,
     overflow: 'hidden',
   },

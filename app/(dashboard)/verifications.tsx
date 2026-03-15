@@ -274,7 +274,7 @@ export default function VerificationsScreen() {
             <Text
               style={[
                 styles.filterChipText,
-                { color: statusFilter === status ? '#FFFFFF' : colors.text },
+                { color: statusFilter === status ? colors.card : colors.text },
               ]}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -374,10 +374,10 @@ export default function VerificationsScreen() {
               disabled={isProcessing}
             >
               {isProcessing ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <>
-                  <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                  <Ionicons name="checkmark" size={16} color={colors.card} />
                   <Text style={styles.actionButtonText}>Approve</Text>
                 </>
               )}
@@ -387,7 +387,7 @@ export default function VerificationsScreen() {
               onPress={() => handleRejectClick(item)}
               disabled={isProcessing}
             >
-              <Ionicons name="close" size={16} color="#FFFFFF" />
+              <Ionicons name="close" size={16} color={colors.card} />
               <Text style={styles.actionButtonText}>Reject</Text>
             </TouchableOpacity>
           </View>
@@ -402,10 +402,10 @@ export default function VerificationsScreen() {
               disabled={isProcessing}
             >
               {isProcessing ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <>
-                  <Ionicons name="ban" size={16} color="#FFFFFF" />
+                  <Ionicons name="ban" size={16} color={colors.card} />
                   <Text style={styles.actionButtonText}>Revoke</Text>
                 </>
               )}
@@ -422,10 +422,10 @@ export default function VerificationsScreen() {
               disabled={isProcessing}
             >
               {isProcessing ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <>
-                  <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                  <Ionicons name="checkmark" size={16} color={colors.card} />
                   <Text style={styles.actionButtonText}>Re-approve</Text>
                 </>
               )}
@@ -516,7 +516,7 @@ export default function VerificationsScreen() {
                 style={[styles.modalButton, { backgroundColor: colors.error }]}
                 onPress={handleRejectConfirm}
               >
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>
+                <Text style={[styles.modalButtonText, { color: colors.card }]}>
                   {selectedVerification?.status === 'approved' ? 'Revoke' : 'Reject'}
                 </Text>
               </TouchableOpacity>
@@ -699,7 +699,7 @@ export default function VerificationsScreen() {
                         handleApprove(detailVerification);
                       }}
                     >
-                      <Ionicons name="checkmark" size={20} color="#FFFFFF" />
+                      <Ionicons name="checkmark" size={20} color={colors.card} />
                       <Text style={styles.detailActionText}>Approve</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -709,7 +709,7 @@ export default function VerificationsScreen() {
                         handleRejectClick(detailVerification);
                       }}
                     >
-                      <Ionicons name="close" size={20} color="#FFFFFF" />
+                      <Ionicons name="close" size={20} color={colors.card} />
                       <Text style={styles.detailActionText}>Reject</Text>
                     </TouchableOpacity>
                   </View>
@@ -725,7 +725,7 @@ export default function VerificationsScreen() {
                         handleRevoke(detailVerification);
                       }}
                     >
-                      <Ionicons name="ban" size={20} color="#FFFFFF" />
+                      <Ionicons name="ban" size={20} color={colors.card} />
                       <Text style={styles.detailActionText}>Revoke Verification</Text>
                     </TouchableOpacity>
                   </View>
@@ -741,7 +741,7 @@ export default function VerificationsScreen() {
                         handleReApprove(detailVerification);
                       }}
                     >
-                      <Ionicons name="checkmark" size={20} color="#FFFFFF" />
+                      <Ionicons name="checkmark" size={20} color={colors.card} />
                       <Text style={styles.detailActionText}>Re-approve</Text>
                     </TouchableOpacity>
                   </View>
@@ -886,7 +886,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 40,
     borderRadius: 6,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   documentLabel: {
     fontSize: 12,
@@ -906,7 +906,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1042,7 +1042,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 250,
     borderRadius: 12,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   detailActions: {
     flexDirection: 'row',
@@ -1060,7 +1060,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   detailActionText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 16,
   },
@@ -1071,7 +1071,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 16,
   },

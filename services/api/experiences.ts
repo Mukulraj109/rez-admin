@@ -1,4 +1,5 @@
 import { apiClient } from './apiClient';
+import { Colors } from '@/constants/Colors';
 
 // ============================================
 // INTERFACES
@@ -183,7 +184,7 @@ export const EXPERIENCE_TYPES: { value: ExperienceType; label: string }[] = [
 // Background color presets
 export const BACKGROUND_COLORS = [
   '#FEF3C7', // Yellow light
-  '#DBEAFE', // Blue light
+  Colors.light.infoLighter, // Blue light
   '#D1FAE5', // Green light
   '#FCE7F3', // Pink light
   '#E0E7FF', // Indigo light
@@ -191,7 +192,7 @@ export const BACKGROUND_COLORS = [
   '#F3E8FF', // Purple light
   '#ECFDF5', // Emerald light
   '#FFF7ED', // Orange light
-  '#F0FDF4', // Lime light
+  Colors.light.successLighter, // Lime light
 ];
 
 // Common emojis for experiences

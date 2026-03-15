@@ -35,14 +35,14 @@ function StatCard({ icon, iconColor, label, value, bgColor, textColor }: StatCar
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View style={[statCardStyles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <View style={[statCardStyles.card, { backgroundColor: Colors.light.card, borderColor: Colors.light.border }]}>
       <View style={[statCardStyles.iconWrap, { backgroundColor: bgColor }]}>
         <Ionicons name={icon} size={20} color={iconColor} />
       </View>
-      <Text style={[statCardStyles.value, { color: textColor || colors.text }]}>
+      <Text style={[statCardStyles.value, { color: textColor || Colors.light.text }]}>
         {typeof value === 'number' ? formatNumber(value) : value}
       </Text>
-      <Text style={[statCardStyles.label, { color: colors.icon }]}>{label}</Text>
+      <Text style={[statCardStyles.label, { color: Colors.light.icon }]}>{label}</Text>
     </View>
   );
 }
@@ -113,26 +113,26 @@ export default function GamificationEconomyScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.centered, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color="#10B981" />
-        <Text style={[styles.loadingText, { color: colors.icon }]}>Loading economy data...</Text>
+      <View style={[styles.centered, { backgroundColor: Colors.light.background }]}>
+        <ActivityIndicator size="large" color={Colors.light.success} />
+        <Text style={[styles.loadingText, { color: Colors.light.icon }]}>Loading economy data...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: Colors.light.background }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { borderBottomColor: Colors.light.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Gamification Economy</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.icon }]}>Monitor coins, engagement & fraud</Text>
+          <Text style={[styles.headerTitle, { color: Colors.light.text }]}>Gamification Economy</Text>
+          <Text style={[styles.headerSubtitle, { color: Colors.light.icon }]}>Monitor coins, engagement & fraud</Text>
         </View>
         <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
-          <Ionicons name="refresh" size={22} color={colors.icon} />
+          <Ionicons name="refresh" size={22} color={Colors.light.icon} />
         </TouchableOpacity>
       </View>
 
@@ -140,23 +140,23 @@ export default function GamificationEconomyScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#10B981" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.light.success} />
         }
       >
         {/* Economy Overview */}
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Economy Overview</Text>
+        <Text style={[styles.sectionTitle, { color: Colors.light.text }]}>Economy Overview</Text>
 
         {economy && (
           <>
             {/* Hero Card - Total in Circulation */}
-            <View style={[styles.heroCard, { backgroundColor: '#10B981', borderColor: '#059669' }]}>
+            <View style={[styles.heroCard, { backgroundColor: Colors.light.success, borderColor: Colors.light.successDark }]}>
               <View style={styles.heroRow}>
                 <View>
                   <Text style={styles.heroLabel}>Total Coins in Circulation</Text>
                   <Text style={styles.heroValue}>{formatNumber(economy.totalInCirculation)}</Text>
                 </View>
                 <View style={styles.heroIconWrap}>
-                  <Ionicons name="logo-bitcoin" size={32} color="#fff" />
+                  <Ionicons name="logo-bitcoin" size={32} color={Colors.light.card} />
                 </View>
               </View>
               <View style={styles.heroSubRow}>
@@ -175,40 +175,40 @@ export default function GamificationEconomyScreen() {
             <View style={styles.cardGrid}>
               <StatCard
                 icon="trending-up"
-                iconColor="#10B981"
+                iconColor={Colors.light.success}
                 label="Earned Today"
                 value={economy.coinsEarnedToday}
-                bgColor="#10B98120"
-                textColor="#10B981"
+                bgColor={`${Colors.light.success}20`}
+                textColor={Colors.light.success}
               />
               <StatCard
                 icon="trending-down"
-                iconColor="#EF4444"
+                iconColor={Colors.light.error}
                 label="Spent Today"
                 value={economy.coinsSpentToday}
-                bgColor="#EF444420"
-                textColor="#EF4444"
+                bgColor={`${Colors.light.error}20`}
+                textColor={Colors.light.error}
               />
               <StatCard
                 icon="calendar"
-                iconColor="#3B82F6"
+                iconColor={Colors.light.info}
                 label="Earned This Week"
                 value={economy.coinsEarnedThisWeek}
-                bgColor="#3B82F620"
+                bgColor={`${Colors.light.info}20`}
               />
               <StatCard
                 icon="calendar"
-                iconColor="#F59E0B"
+                iconColor={Colors.light.warning}
                 label="Spent This Week"
                 value={economy.coinsSpentThisWeek}
-                bgColor="#F59E0B20"
+                bgColor={`${Colors.light.warning}20`}
               />
               <StatCard
                 icon="stats-chart"
-                iconColor="#8B5CF6"
+                iconColor={Colors.light.purple}
                 label="Earned This Month"
                 value={economy.coinsEarnedThisMonth}
-                bgColor="#8B5CF620"
+                bgColor={`${Colors.light.purple}20`}
               />
               <StatCard
                 icon="stats-chart"
@@ -223,20 +223,20 @@ export default function GamificationEconomyScreen() {
             <View style={[
               styles.netFlowCard,
               {
-                backgroundColor: economy.netFlowToday >= 0 ? '#10B98115' : '#EF444415',
-                borderColor: economy.netFlowToday >= 0 ? '#10B981' : '#EF4444',
+                backgroundColor: economy.netFlowToday >= 0 ? `${Colors.light.success}15` : `${Colors.light.error}15`,
+                borderColor: economy.netFlowToday >= 0 ? Colors.light.success : Colors.light.error,
               }
             ]}>
               <Ionicons
                 name={economy.netFlowToday >= 0 ? 'arrow-up-circle' : 'arrow-down-circle'}
                 size={24}
-                color={economy.netFlowToday >= 0 ? '#10B981' : '#EF4444'}
+                color={economy.netFlowToday >= 0 ? Colors.light.success : Colors.light.error}
               />
               <View style={styles.netFlowText}>
-                <Text style={[styles.netFlowLabel, { color: colors.icon }]}>Net Flow Today</Text>
+                <Text style={[styles.netFlowLabel, { color: Colors.light.icon }]}>Net Flow Today</Text>
                 <Text style={[
                   styles.netFlowValue,
-                  { color: economy.netFlowToday >= 0 ? '#10B981' : '#EF4444' }
+                  { color: economy.netFlowToday >= 0 ? Colors.light.success : Colors.light.error }
                 ]}>
                   {economy.netFlowToday >= 0 ? '+' : ''}{formatNumber(economy.netFlowToday)} coins
                 </Text>
@@ -246,58 +246,58 @@ export default function GamificationEconomyScreen() {
         )}
 
         {/* Engagement Metrics */}
-        <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Engagement Metrics</Text>
+        <Text style={[styles.sectionTitle, { color: Colors.light.text, marginTop: 24 }]}>Engagement Metrics</Text>
 
         {engagement && (
           <View style={styles.cardGrid}>
             <StatCard
               icon="medal"
-              iconColor="#F59E0B"
+              iconColor={Colors.light.warning}
               label="Achievements Unlocked"
               value={engagement.totalAchievementsUnlocked}
-              bgColor="#F59E0B20"
+              bgColor={`${Colors.light.warning}20`}
             />
             <StatCard
               icon="flag"
-              iconColor="#10B981"
+              iconColor={Colors.light.success}
               label="Challenges Completed"
               value={engagement.totalChallengesCompleted}
-              bgColor="#10B98120"
+              bgColor={`${Colors.light.success}20`}
             />
             <StatCard
               icon="hourglass"
-              iconColor="#3B82F6"
+              iconColor={Colors.light.info}
               label="Active Challenges"
               value={engagement.activeChallenges}
-              bgColor="#3B82F620"
+              bgColor={`${Colors.light.info}20`}
             />
             <StatCard
               icon="game-controller"
-              iconColor="#8B5CF6"
+              iconColor={Colors.light.purple}
               label="Game Sessions Today"
               value={engagement.gameSessionsToday}
-              bgColor="#8B5CF620"
+              bgColor={`${Colors.light.purple}20`}
             />
           </View>
         )}
 
         {engagement && (
-          <View style={[styles.totalSessionsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Ionicons name="game-controller" size={20} color="#8B5CF6" />
-            <Text style={[styles.totalSessionsText, { color: colors.text }]}>
+          <View style={[styles.totalSessionsCard, { backgroundColor: Colors.light.card, borderColor: Colors.light.border }]}>
+            <Ionicons name="game-controller" size={20} color={Colors.light.purple} />
+            <Text style={[styles.totalSessionsText, { color: Colors.light.text }]}>
               Total Game Sessions: {formatNumber(engagement.totalGameSessions)}
             </Text>
           </View>
         )}
 
         {/* Fraud Alerts */}
-        <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Fraud Alerts</Text>
+        <Text style={[styles.sectionTitle, { color: Colors.light.text, marginTop: 24 }]}>Fraud Alerts</Text>
 
         {fraudData && fraudData.alertCount > 0 ? (
           <View>
-            <View style={[styles.alertBanner, { backgroundColor: '#FEF3C7', borderColor: '#F59E0B' }]}>
-              <Ionicons name="warning" size={20} color="#D97706" />
-              <Text style={[styles.alertBannerText, { color: '#92400E' }]}>
+            <View style={[styles.alertBanner, { backgroundColor: Colors.light.warningLight, borderColor: Colors.light.warning }]}>
+              <Ionicons name="warning" size={20} color={Colors.light.warningDark} />
+              <Text style={[styles.alertBannerText, { color: Colors.light.warningDeep }]}>
                 {fraudData.alertCount} user(s) earned &gt; {formatNumber(fraudData.threshold)} coins in the last {fraudData.window}
               </Text>
             </View>
@@ -305,31 +305,31 @@ export default function GamificationEconomyScreen() {
             {fraudData.alerts.map((alert, index) => (
               <View
                 key={alert.userId || index}
-                style={[styles.fraudCard, { backgroundColor: '#FEF2F2', borderColor: '#FECACA' }]}
+                style={[styles.fraudCard, { backgroundColor: Colors.light.errorLight, borderColor: '#FECACA' }]}
               >
                 <View style={styles.fraudHeader}>
-                  <View style={[styles.fraudIconWrap, { backgroundColor: '#FEE2E2' }]}>
-                    <Ionicons name="alert-circle" size={20} color="#EF4444" />
+                  <View style={[styles.fraudIconWrap, { backgroundColor: Colors.light.errorLight }]}>
+                    <Ionicons name="alert-circle" size={20} color={Colors.light.error} />
                   </View>
                   <View style={styles.fraudInfo}>
-                    <Text style={[styles.fraudName, { color: '#991B1B' }]}>
+                    <Text style={[styles.fraudName, { color: Colors.light.errorDeep }]}>
                       {alert.userName || 'Unknown User'}
                     </Text>
-                    <Text style={[styles.fraudId, { color: '#B91C1C' }]}>
+                    <Text style={[styles.fraudId, { color: colors.errorDarker }]}>
                       ID: {typeof alert.userId === 'object' ? JSON.stringify(alert.userId) : String(alert.userId).substring(0, 12)}...
                     </Text>
                   </View>
                 </View>
                 <View style={styles.fraudMetrics}>
                   <View style={styles.fraudMetricItem}>
-                    <Text style={[styles.fraudMetricLabel, { color: '#B91C1C' }]}>Coins Earned</Text>
-                    <Text style={[styles.fraudMetricValue, { color: '#991B1B' }]}>
+                    <Text style={[styles.fraudMetricLabel, { color: colors.errorDarker }]}>Coins Earned</Text>
+                    <Text style={[styles.fraudMetricValue, { color: Colors.light.errorDeep }]}>
                       {formatNumber(alert.totalEarned)}
                     </Text>
                   </View>
                   <View style={styles.fraudMetricItem}>
-                    <Text style={[styles.fraudMetricLabel, { color: '#B91C1C' }]}>Transactions</Text>
-                    <Text style={[styles.fraudMetricValue, { color: '#991B1B' }]}>
+                    <Text style={[styles.fraudMetricLabel, { color: colors.errorDarker }]}>Transactions</Text>
+                    <Text style={[styles.fraudMetricValue, { color: Colors.light.errorDeep }]}>
                       {alert.transactionCount}
                     </Text>
                   </View>
@@ -338,7 +338,7 @@ export default function GamificationEconomyScreen() {
             ))}
           </View>
         ) : (
-          <View style={[styles.noAlertsCard, { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' }]}>
+          <View style={[styles.noAlertsCard, { backgroundColor: colors.successLighter, borderColor: '#BBF7D0' }]}>
             <Ionicons name="checkmark-circle" size={24} color="#16A34A" />
             <Text style={[styles.noAlertsText, { color: '#166534' }]}>
               No fraud alerts detected in the last 24 hours
@@ -414,13 +414,13 @@ const styles = StyleSheet.create({
   },
   heroLabel: {
     fontSize: 13,
-    color: '#D1FAE5',
+    color: Colors.light.successLight,
     fontWeight: '500',
   },
   heroValue: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#fff',
+    color: Colors.light.card,
     marginTop: 4,
   },
   heroIconWrap: {
@@ -441,12 +441,12 @@ const styles = StyleSheet.create({
   },
   heroSubLabel: {
     fontSize: 11,
-    color: '#D1FAE5',
+    color: Colors.light.successLight,
   },
   heroSubValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#fff',
+    color: Colors.light.card,
     marginTop: 2,
   },
   cardGrid: {

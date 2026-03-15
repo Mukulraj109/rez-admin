@@ -40,9 +40,9 @@ const SORT_OPTIONS = [
 ];
 
 const TIER_COLORS: Record<string, string> = {
-  Bronze: '#CD7F32',
+  Bronze: Colors.light.bronze,
   Silver: '#C0C0C0',
-  Gold: '#FFD700',
+  Gold: Colors.light.goldBright,
   Platinum: '#E5E4E2',
 };
 
@@ -242,11 +242,11 @@ export default function LoyaltyScreen() {
         <Text style={[styles.statsLabel, { color: colors.icon }]}>Total Users</Text>
       </View>
       <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
-        <Text style={[styles.statsValue, { color: '#F59E0B' }]}>{stats?.activeStreaks || 0}</Text>
+        <Text style={[styles.statsValue, { color: colors.warning }]}>{stats?.activeStreaks || 0}</Text>
         <Text style={[styles.statsLabel, { color: colors.icon }]}>Active Streaks</Text>
       </View>
       <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
-        <Text style={[styles.statsValue, { color: '#10B981' }]}>{stats?.totalCoinsEarned || 0}</Text>
+        <Text style={[styles.statsValue, { color: colors.success }]}>{stats?.totalCoinsEarned || 0}</Text>
         <Text style={[styles.statsLabel, { color: colors.icon }]}>Total Coins</Text>
       </View>
       <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
@@ -278,7 +278,7 @@ export default function LoyaltyScreen() {
           <Text
             style={[
               styles.categoryChipText,
-              { color: selectedCategory === cat.slug ? '#FFFFFF' : colors.icon },
+              { color: selectedCategory === cat.slug ? colors.card : colors.icon },
             ]}
           >
             {cat.label}
@@ -324,7 +324,7 @@ export default function LoyaltyScreen() {
           <Text
             style={[
               styles.sortChipText,
-              { color: sortBy === opt.key ? '#FFFFFF' : colors.icon },
+              { color: sortBy === opt.key ? colors.card : colors.icon },
             ]}
           >
             {opt.label}
@@ -360,13 +360,13 @@ export default function LoyaltyScreen() {
             </Text>
             {item.streak?.current > 0 && (
               <View style={styles.streakRow}>
-                <Ionicons name="flame" size={14} color="#F59E0B" />
+                <Ionicons name="flame" size={14} color={colors.warning} />
                 <Text style={styles.streakText}>{item.streak.current} day streak</Text>
               </View>
             )}
           </View>
           <View style={styles.coinBadge}>
-            <Ionicons name="sparkles" size={14} color="#F59E0B" />
+            <Ionicons name="sparkles" size={14} color={colors.warning} />
             <Text style={styles.coinAmount}>{item.coins?.available || 0}</Text>
           </View>
         </View>
@@ -436,7 +436,7 @@ export default function LoyaltyScreen() {
                 <Text style={[styles.detailSectionTitle, { color: colors.text }]}>Streak</Text>
                 <View style={styles.detailRow}>
                   <View style={styles.detailStatBox}>
-                    <Ionicons name="flame" size={20} color="#F59E0B" />
+                    <Ionicons name="flame" size={20} color={colors.warning} />
                     <Text style={[styles.detailStatValue, { color: colors.text }]}>
                       {selectedUser.streak?.current || 0}
                     </Text>
@@ -464,14 +464,14 @@ export default function LoyaltyScreen() {
                 <Text style={[styles.detailSectionTitle, { color: colors.text }]}>Coins</Text>
                 <View style={styles.detailRow}>
                   <View style={styles.detailStatBox}>
-                    <Ionicons name="sparkles" size={20} color="#F59E0B" />
+                    <Ionicons name="sparkles" size={20} color={colors.warning} />
                     <Text style={[styles.detailStatValue, { color: colors.text }]}>
                       {selectedUser.coins?.available || 0}
                     </Text>
                     <Text style={[styles.detailStatLabel, { color: colors.icon }]}>Available</Text>
                   </View>
                   <View style={styles.detailStatBox}>
-                    <Ionicons name="time-outline" size={20} color="#EF4444" />
+                    <Ionicons name="time-outline" size={20} color={colors.error} />
                     <Text style={[styles.detailStatValue, { color: colors.text }]}>
                       {selectedUser.coins?.expiring || 0}
                     </Text>
@@ -506,13 +506,13 @@ export default function LoyaltyScreen() {
                       <View
                         style={[
                           styles.tierBadge,
-                          { backgroundColor: `${TIER_COLORS[brand.tier] || '#CD7F32'}30` },
+                          { backgroundColor: `${TIER_COLORS[brand.tier] || Colors.light.bronze}30` },
                         ]}
                       >
                         <Text
                           style={[
                             styles.tierText,
-                            { color: TIER_COLORS[brand.tier] || '#CD7F32' },
+                            { color: TIER_COLORS[brand.tier] || Colors.light.bronze },
                           ]}
                         >
                           {brand.tier}
@@ -549,7 +549,7 @@ export default function LoyaltyScreen() {
                               styles.progressBarFill,
                               {
                                 width: `${progressPct}%`,
-                                backgroundColor: progressPct >= 100 ? '#10B981' : colors.tint,
+                                backgroundColor: progressPct >= 100 ? colors.success : colors.tint,
                               },
                             ]}
                           />
@@ -593,26 +593,26 @@ export default function LoyaltyScreen() {
               {/* Action Buttons */}
               <View style={styles.detailActions}>
                 <TouchableOpacity
-                  style={[styles.detailActionButton, { backgroundColor: '#10B981' }]}
+                  style={[styles.detailActionButton, { backgroundColor: colors.success }]}
                   onPress={() => {
                     setShowAddCoinsModal(true);
                   }}
                 >
-                  <Ionicons name="add-circle-outline" size={18} color="#FFFFFF" />
+                  <Ionicons name="add-circle-outline" size={18} color={colors.card} />
                   <Text style={styles.detailActionText}>Add Coins</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.detailActionButton, { backgroundColor: '#F59E0B' }]}
+                  style={[styles.detailActionButton, { backgroundColor: colors.warning }]}
                   onPress={() => handleResetStreak(selectedUser.userId._id)}
                 >
-                  <Ionicons name="refresh-outline" size={18} color="#FFFFFF" />
+                  <Ionicons name="refresh-outline" size={18} color={colors.card} />
                   <Text style={styles.detailActionText}>Reset Streak</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.detailActionButton, { backgroundColor: '#EF4444' }]}
+                  style={[styles.detailActionButton, { backgroundColor: colors.error }]}
                   onPress={() => handleResetMissions(selectedUser.userId._id)}
                 >
-                  <Ionicons name="trash-outline" size={18} color="#FFFFFF" />
+                  <Ionicons name="trash-outline" size={18} color={colors.card} />
                   <Text style={styles.detailActionText}>Reset Missions</Text>
                 </TouchableOpacity>
               </View>
@@ -678,7 +678,7 @@ export default function LoyaltyScreen() {
                 <Text
                   style={[
                     styles.coinCategoryChipText,
-                    { color: coinCategory === cat.slug ? '#FFFFFF' : colors.icon },
+                    { color: coinCategory === cat.slug ? colors.card : colors.icon },
                   ]}
                 >
                   {cat.label}
@@ -700,14 +700,14 @@ export default function LoyaltyScreen() {
               <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: '#10B981' }]}
+              style={[styles.modalButton, { backgroundColor: colors.success }]}
               onPress={handleAddCoins}
               disabled={!coinAmount || !coinReason || processingUser !== null}
             >
               {processingUser ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Add Coins</Text>
+                <Text style={[styles.modalButtonText, { color: colors.card }]}>Add Coins</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -882,12 +882,12 @@ const styles = StyleSheet.create({
   streakText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#F59E0B',
+    color: Colors.light.warning,
   },
   coinBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.light.warningLight,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 16,
@@ -896,14 +896,14 @@ const styles = StyleSheet.create({
   coinAmount: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#D97706',
+    color: Colors.light.warningDark,
   },
   userMiniStats: {
     flexDirection: 'row',
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: Colors.light.border,
     justifyContent: 'space-between',
   },
   miniStat: {
@@ -930,7 +930,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#CBD5E1',
+    backgroundColor: Colors.light.slateLight,
     alignSelf: 'center',
     marginBottom: 8,
   },
@@ -1073,7 +1073,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   detailActionText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 12,
   },

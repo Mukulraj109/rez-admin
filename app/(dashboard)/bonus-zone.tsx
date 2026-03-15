@@ -30,13 +30,13 @@ type CampaignStatusFilter = 'all' | 'draft' | 'scheduled' | 'active' | 'paused' 
 type CampaignTypeFilter = 'all' | 'cashback_boost' | 'bank_offer' | 'bill_upload_bonus' | 'category_multiplier' | 'first_transaction_bonus' | 'festival_offer';
 
 const STATUS_COLORS: Record<string, string> = {
-  draft: '#94A3B8',
-  scheduled: '#3B82F6',
-  active: '#10B981',
-  paused: '#F59E0B',
-  exhausted: '#EF4444',
-  expired: '#6B7280',
-  cancelled: '#DC2626',
+  draft: Colors.light.slateMedium,
+  scheduled: Colors.light.info,
+  active: Colors.light.success,
+  paused: Colors.light.warning,
+  exhausted: Colors.light.error,
+  expired: Colors.light.secondaryText,
+  cancelled: Colors.light.errorDark,
 };
 
 const CAMPAIGN_TYPE_LABELS: Record<string, string> = {
@@ -206,7 +206,7 @@ const DEFAULT_FORM: Partial<BonusCampaignAdmin> = {
     icon: '🎁',
     featured: false,
     priority: 50,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.light.warningLight,
   },
   deepLink: { screen: '/cash-store' },
   terms: [],
@@ -552,9 +552,9 @@ export default function BonusZoneScreen() {
   // ==========================================
 
   const renderStatusBadge = (status: string) => (
-    <View style={[styles.statusBadge, { backgroundColor: `${STATUS_COLORS[status] || '#94A3B8'}20` }]}>
-      <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || '#94A3B8' }]} />
-      <Text style={[styles.statusText, { color: STATUS_COLORS[status] || '#94A3B8' }]}>
+    <View style={[styles.statusBadge, { backgroundColor: `${STATUS_COLORS[status] || colors.slateMedium}20` }]}>
+      <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || colors.slateMedium }]} />
+      <Text style={[styles.statusText, { color: STATUS_COLORS[status] || colors.slateMedium }]}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Text>
     </View>
@@ -589,8 +589,8 @@ export default function BonusZoneScreen() {
           </Text>
         </View>
         {item.display?.featured && (
-          <View style={[styles.infoChip, { backgroundColor: '#FEF3C7' }]}>
-            <Text style={[styles.infoChipText, { color: '#D97706' }]}>Featured</Text>
+          <View style={[styles.infoChip, { backgroundColor: colors.warningLight }]}>
+            <Text style={[styles.infoChipText, { color: colors.warningDark }]}>Featured</Text>
           </View>
         )}
       </View>
@@ -610,7 +610,7 @@ export default function BonusZoneScreen() {
             styles.progressBarFill,
             {
               width: `${item.reward?.totalBudget > 0 ? Math.min(100, Math.round(((item.reward?.consumedBudget || 0) / item.reward.totalBudget) * 100)) : 0}%`,
-              backgroundColor: (item.reward?.consumedBudget || 0) >= (item.reward?.totalBudget || 1) ? '#EF4444' : '#10B981',
+              backgroundColor: (item.reward?.consumedBudget || 0) >= (item.reward?.totalBudget || 1) ? colors.error : colors.success,
             },
           ]}
         />
@@ -618,7 +618,7 @@ export default function BonusZoneScreen() {
 
       {/* Schedule */}
       <View style={styles.scheduleRow}>
-        <Ionicons name="calendar-outline" size={14} color="#6B7280" />
+        <Ionicons name="calendar-outline" size={14} color={colors.mutedDark} />
         <Text style={styles.scheduleText}>
           {formatDate(item.startTime)} → {formatDate(item.endTime)}
         </Text>
@@ -636,52 +636,52 @@ export default function BonusZoneScreen() {
       {/* Actions */}
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(item)}>
-          <Ionicons name="create-outline" size={18} color="#3B82F6" />
-          <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+          <Ionicons name="create-outline" size={18} color={colors.info} />
+          <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionBtn} onPress={() => loadAnalytics(item._id)}>
-          <Ionicons name="bar-chart-outline" size={18} color="#8B5CF6" />
-          <Text style={[styles.actionText, { color: '#8B5CF6' }]}>Analytics</Text>
+          <Ionicons name="bar-chart-outline" size={18} color={colors.purple} />
+          <Text style={[styles.actionText, { color: colors.purple }]}>Analytics</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleDuplicate(item)}>
-          <Ionicons name="copy-outline" size={18} color="#6B7280" />
-          <Text style={[styles.actionText, { color: '#6B7280' }]}>Dup</Text>
+          <Ionicons name="copy-outline" size={18} color={colors.mutedDark} />
+          <Text style={[styles.actionText, { color: colors.secondaryText }]}>Dup</Text>
         </TouchableOpacity>
 
         {item.status === 'active' && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleStatusChange(item, 'paused')}>
-            <Ionicons name="pause-circle-outline" size={18} color="#F59E0B" />
-            <Text style={[styles.actionText, { color: '#F59E0B' }]}>Pause</Text>
+            <Ionicons name="pause-circle-outline" size={18} color={colors.warning} />
+            <Text style={[styles.actionText, { color: colors.warning }]}>Pause</Text>
           </TouchableOpacity>
         )}
 
         {item.status === 'paused' && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleStatusChange(item, 'active')}>
-            <Ionicons name="play-circle-outline" size={18} color="#10B981" />
-            <Text style={[styles.actionText, { color: '#10B981' }]}>Resume</Text>
+            <Ionicons name="play-circle-outline" size={18} color={colors.success} />
+            <Text style={[styles.actionText, { color: colors.success }]}>Resume</Text>
           </TouchableOpacity>
         )}
 
         {item.status === 'draft' && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleStatusChange(item, 'scheduled')}>
-            <Ionicons name="rocket-outline" size={18} color="#10B981" />
-            <Text style={[styles.actionText, { color: '#10B981' }]}>Publish</Text>
+            <Ionicons name="rocket-outline" size={18} color={colors.success} />
+            <Text style={[styles.actionText, { color: colors.success }]}>Publish</Text>
           </TouchableOpacity>
         )}
 
         {['active', 'exhausted'].includes(item.status) && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleFund(item)}>
-            <Ionicons name="add-circle-outline" size={18} color="#10B981" />
-            <Text style={[styles.actionText, { color: '#10B981' }]}>+Fund</Text>
+            <Ionicons name="add-circle-outline" size={18} color={colors.success} />
+            <Text style={[styles.actionText, { color: colors.success }]}>+Fund</Text>
           </TouchableOpacity>
         )}
 
         {['draft', 'cancelled'].includes(item.status) && (
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item)}>
-            <Ionicons name="trash-outline" size={18} color="#EF4444" />
-            <Text style={[styles.actionText, { color: '#EF4444' }]}>Del</Text>
+            <Ionicons name="trash-outline" size={18} color={colors.error} />
+            <Text style={[styles.actionText, { color: colors.error }]}>Del</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -704,7 +704,7 @@ export default function BonusZoneScreen() {
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
             {isSaving ? (
-              <ActivityIndicator size="small" color="#3B82F6" />
+              <ActivityIndicator size="small" color={colors.info} />
             ) : (
               <Text style={styles.saveBtn}>Save</Text>
             )}
@@ -721,7 +721,7 @@ export default function BonusZoneScreen() {
             value={formData.slug || ''}
             onChangeText={(v) => setFormData(prev => ({ ...prev, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))}
             placeholder="super-cashback-feb26"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             editable={!editingCampaign}
           />
 
@@ -731,7 +731,7 @@ export default function BonusZoneScreen() {
             value={formData.title || ''}
             onChangeText={(v) => setFormData(prev => ({ ...prev, title: v }))}
             placeholder="Super Cashback Weekend"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Subtitle</Text>
@@ -740,7 +740,7 @@ export default function BonusZoneScreen() {
             value={formData.subtitle || ''}
             onChangeText={(v) => setFormData(prev => ({ ...prev, subtitle: v }))}
             placeholder="Up to 50% cashback on all stores"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Description</Text>
@@ -751,7 +751,7 @@ export default function BonusZoneScreen() {
             multiline
             numberOfLines={3}
             placeholder="Detailed campaign description..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Campaign Type</Text>
@@ -817,7 +817,7 @@ export default function BonusZoneScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="10"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={styles.formRowItem}>
@@ -831,7 +831,7 @@ export default function BonusZoneScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="10000"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
           </View>
@@ -848,7 +848,7 @@ export default function BonusZoneScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="100"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={styles.formRowItem}>
@@ -862,7 +862,7 @@ export default function BonusZoneScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="50"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
           </View>
@@ -882,7 +882,7 @@ export default function BonusZoneScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="1"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={styles.formRowItem}>
@@ -896,7 +896,7 @@ export default function BonusZoneScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="0 = unlimited"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
           </View>
@@ -920,7 +920,7 @@ export default function BonusZoneScreen() {
                   if (iso) setFormData(prev => ({ ...prev, startTime: iso }));
                 }}
                 placeholder="YYYY-MM-DD"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 maxLength={10}
               />
               <Text style={styles.formInputHint}>Date</Text>
@@ -939,7 +939,7 @@ export default function BonusZoneScreen() {
                   if (iso) setFormData(prev => ({ ...prev, startTime: iso }));
                 }}
                 placeholder="HH:MM"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 maxLength={5}
               />
               <Text style={styles.formInputHint}>Time (24h)</Text>
@@ -965,7 +965,7 @@ export default function BonusZoneScreen() {
                   if (iso) setFormData(prev => ({ ...prev, endTime: iso }));
                 }}
                 placeholder="YYYY-MM-DD"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 maxLength={10}
               />
               <Text style={styles.formInputHint}>Date</Text>
@@ -984,7 +984,7 @@ export default function BonusZoneScreen() {
                   if (iso) setFormData(prev => ({ ...prev, endTime: iso }));
                 }}
                 placeholder="HH:MM"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 maxLength={5}
               />
               <Text style={styles.formInputHint}>Time (24h)</Text>
@@ -1030,7 +1030,7 @@ export default function BonusZoneScreen() {
                   fundingSource: { ...prev.fundingSource!, partnerName: v },
                 }))}
                 placeholder="e.g. HDFC Bank, Swiggy"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </>
           )}
@@ -1069,7 +1069,7 @@ export default function BonusZoneScreen() {
               },
             }))}
             placeholder="all"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Payment Methods</Text>
@@ -1106,7 +1106,7 @@ export default function BonusZoneScreen() {
               },
             }))}
             placeholder="HDFC,ICICI,SBI"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             autoCapitalize="characters"
           />
 
@@ -1122,7 +1122,7 @@ export default function BonusZoneScreen() {
               },
             }))}
             placeholder="411111,523456"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             keyboardType="numeric"
           />
 
@@ -1180,7 +1180,7 @@ export default function BonusZoneScreen() {
             }))}
             keyboardType="numeric"
             placeholder="0 = no minimum"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <View style={styles.switchRow}>
@@ -1208,7 +1208,7 @@ export default function BonusZoneScreen() {
                   display: { ...prev.display!, icon: v },
                 }))}
                 placeholder="🎁"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
             <View style={styles.formRowItem}>
@@ -1222,7 +1222,7 @@ export default function BonusZoneScreen() {
                 }))}
                 keyboardType="numeric"
                 placeholder="50"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </View>
           </View>
@@ -1247,7 +1247,7 @@ export default function BonusZoneScreen() {
               display: { ...prev.display!, badgeText: v },
             }))}
             placeholder="50% OFF"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Banner Image URL</Text>
@@ -1259,7 +1259,7 @@ export default function BonusZoneScreen() {
               display: { ...prev.display!, bannerImage: v } as any,
             }))}
             placeholder="https://example.com/banner.jpg"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             autoCapitalize="none"
             autoCorrect={false}
           />
@@ -1280,7 +1280,7 @@ export default function BonusZoneScreen() {
               display: { ...prev.display!, partnerLogo: v } as any,
             }))}
             placeholder="https://example.com/logo.png"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             autoCapitalize="none"
             autoCorrect={false}
           />
@@ -1304,7 +1304,7 @@ export default function BonusZoneScreen() {
               deepLink: { ...prev.deepLink!, screen: v },
             }))}
             placeholder="/cash-store"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           {/* Terms */}
@@ -1318,7 +1318,7 @@ export default function BonusZoneScreen() {
                   terms: (prev.terms || []).filter((_, idx) => idx !== i),
                 }));
               }}>
-                <Ionicons name="close-circle" size={20} color="#EF4444" />
+                <Ionicons name="close-circle" size={20} color={colors.error} />
               </TouchableOpacity>
             </View>
           ))}
@@ -1328,7 +1328,7 @@ export default function BonusZoneScreen() {
               value={newTerm}
               onChangeText={setNewTerm}
               placeholder="Add a term..."
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
             />
             <TouchableOpacity
               style={styles.addTermBtn}
@@ -1342,14 +1342,14 @@ export default function BonusZoneScreen() {
                 }
               }}
             >
-              <Ionicons name="add-circle" size={28} color="#3B82F6" />
+              <Ionicons name="add-circle" size={28} color={colors.info} />
             </TouchableOpacity>
           </View>
 
           {/* Card Preview */}
           <Text style={styles.formSectionTitle}>Card Preview</Text>
           <View style={styles.previewContainer}>
-            <View style={[styles.previewCard, { backgroundColor: formData.display?.backgroundColor || '#FEF3C7' }]}>
+            <View style={[styles.previewCard, { backgroundColor: formData.display?.backgroundColor || colors.warningLight }]}>
               {/* Preview header row */}
               <View style={styles.previewHeader}>
                 <Text style={styles.previewIcon}>{formData.display?.icon || '🎁'}</Text>
@@ -1384,7 +1384,7 @@ export default function BonusZoneScreen() {
               {/* Featured badge */}
               {formData.display?.featured && (
                 <View style={styles.previewFeaturedBadge}>
-                  <Ionicons name="star" size={10} color="#D97706" />
+                  <Ionicons name="star" size={10} color={colors.warningDark} />
                   <Text style={styles.previewFeaturedText}>Featured</Text>
                 </View>
               )}
@@ -1392,7 +1392,7 @@ export default function BonusZoneScreen() {
               {/* Schedule preview */}
               {formatDatePreview(startDate, startTimeInput) && (
                 <View style={styles.previewScheduleRow}>
-                  <Ionicons name="calendar-outline" size={12} color="#6B7280" />
+                  <Ionicons name="calendar-outline" size={12} color={colors.mutedDark} />
                   <Text style={styles.previewScheduleText} numberOfLines={1}>
                     {formatDatePreview(startDate, startTimeInput)}
                     {formatDatePreview(endDate, endTimeInput) ? ` - ${formatDatePreview(endDate, endTimeInput)}` : ''}
@@ -1423,7 +1423,7 @@ export default function BonusZoneScreen() {
           </View>
 
           {analyticsLoading ? (
-            <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+            <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           ) : analytics ? (
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
               <View style={styles.analyticsGrid}>
@@ -1477,20 +1477,20 @@ export default function BonusZoneScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       {dashboardLoading ? (
-        <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+        <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
       ) : dashboardStats ? (
         <>
           <View style={styles.dashboardGrid}>
-            <View style={[styles.dashboardCard, { backgroundColor: '#EFF6FF' }]}>
+            <View style={[styles.dashboardCard, { backgroundColor: colors.infoLight }]}>
               <Text style={[styles.dashboardValue, { color: '#1D4ED8' }]}>{dashboardStats.activeCampaigns}</Text>
               <Text style={styles.dashboardLabel}>Active Campaigns</Text>
             </View>
-            <View style={[styles.dashboardCard, { backgroundColor: '#F0FDF4' }]}>
-              <Text style={[styles.dashboardValue, { color: '#16A34A' }]}>{dashboardStats.totalBudgetAllocated?.toLocaleString()}</Text>
+            <View style={[styles.dashboardCard, { backgroundColor: colors.successLighter }]}>
+              <Text style={[styles.dashboardValue, { color: colors.greenDark }]}>{dashboardStats.totalBudgetAllocated?.toLocaleString()}</Text>
               <Text style={styles.dashboardLabel}>Total Budget</Text>
             </View>
-            <View style={[styles.dashboardCard, { backgroundColor: '#FEF3C7' }]}>
-              <Text style={[styles.dashboardValue, { color: '#D97706' }]}>{dashboardStats.totalBudgetConsumed?.toLocaleString()}</Text>
+            <View style={[styles.dashboardCard, { backgroundColor: colors.warningLight }]}>
+              <Text style={[styles.dashboardValue, { color: colors.warningDark }]}>{dashboardStats.totalBudgetConsumed?.toLocaleString()}</Text>
               <Text style={styles.dashboardLabel}>Budget Consumed</Text>
             </View>
             <View style={[styles.dashboardCard, { backgroundColor: '#FDF2F8' }]}>
@@ -1504,7 +1504,7 @@ export default function BonusZoneScreen() {
               <Text style={[styles.sectionCardTitle, { color: colors.text }]}>Campaigns by Status</Text>
               {Object.entries(dashboardStats.campaignsByStatus).map(([status, count]) => (
                 <View key={status} style={styles.statusRow}>
-                  <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || '#94A3B8' }]} />
+                  <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[status] || colors.slateMedium }]} />
                   <Text style={[styles.statusRowLabel, { color: colors.text }]}>{status}</Text>
                   <Text style={styles.statusRowCount}>{count as number}</Text>
                 </View>
@@ -1523,12 +1523,12 @@ export default function BonusZoneScreen() {
   // ==========================================
 
   const CLAIM_STATUS_COLORS: Record<string, string> = {
-    pending: '#F59E0B',
-    verified: '#3B82F6',
-    credited: '#10B981',
-    rejected: '#EF4444',
-    expired: '#6B7280',
-    failed: '#DC2626',
+    pending: colors.warning,
+    verified: colors.info,
+    credited: colors.success,
+    rejected: colors.error,
+    expired: colors.secondaryText,
+    failed: colors.errorDark,
   };
 
   const renderClaimRow = (claim: BonusCampaignClaim) => (
@@ -1538,9 +1538,9 @@ export default function BonusZoneScreen() {
           {claim.userName || claim.userPhone || claim.userId}
         </Text>
         <Text style={styles.claimAmount}>{claim.rewardAmount} coins</Text>
-        <View style={[styles.statusBadge, { backgroundColor: `${CLAIM_STATUS_COLORS[claim.status] || '#94A3B8'}20` }]}>
-          <View style={[styles.statusDot, { backgroundColor: CLAIM_STATUS_COLORS[claim.status] || '#94A3B8' }]} />
-          <Text style={[styles.statusText, { color: CLAIM_STATUS_COLORS[claim.status] || '#94A3B8' }]}>
+        <View style={[styles.statusBadge, { backgroundColor: `${CLAIM_STATUS_COLORS[claim.status] || colors.slateMedium}20` }]}>
+          <View style={[styles.statusDot, { backgroundColor: CLAIM_STATUS_COLORS[claim.status] || colors.slateMedium }]} />
+          <Text style={[styles.statusText, { color: CLAIM_STATUS_COLORS[claim.status] || colors.slateMedium }]}>
             {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
           </Text>
         </View>
@@ -1551,7 +1551,7 @@ export default function BonusZoneScreen() {
           style={styles.rejectBtn}
           onPress={() => openRejectModal(claim._id)}
         >
-          <Ionicons name="close-circle-outline" size={18} color="#EF4444" />
+          <Ionicons name="close-circle-outline" size={18} color={colors.error} />
           <Text style={styles.rejectBtnText}>Reject</Text>
         </TouchableOpacity>
       )}
@@ -1560,16 +1560,16 @@ export default function BonusZoneScreen() {
 
   const renderFraudAlertRow = (alert: BonusFraudAlert) => {
     const severityColors: Record<string, string> = {
-      low: '#6B7280',
-      medium: '#F59E0B',
-      high: '#EF4444',
-      critical: '#DC2626',
+      low: colors.secondaryText,
+      medium: colors.warning,
+      high: colors.error,
+      critical: colors.errorDark,
     };
     return (
-      <View key={alert._id} style={[styles.fraudAlertRow, { backgroundColor: colors.card, borderLeftColor: severityColors[alert.severity] || '#6B7280' }]}>
+      <View key={alert._id} style={[styles.fraudAlertRow, { backgroundColor: colors.card, borderLeftColor: severityColors[alert.severity] || colors.secondaryText }]}>
         <View style={styles.fraudAlertHeader}>
-          <View style={[styles.severityBadge, { backgroundColor: `${severityColors[alert.severity] || '#6B7280'}20` }]}>
-            <Text style={[styles.severityText, { color: severityColors[alert.severity] || '#6B7280' }]}>
+          <View style={[styles.severityBadge, { backgroundColor: `${severityColors[alert.severity] || colors.secondaryText}20` }]}>
+            <Text style={[styles.severityText, { color: severityColors[alert.severity] || colors.secondaryText }]}>
               {alert.severity.toUpperCase()}
             </Text>
           </View>
@@ -1647,7 +1647,7 @@ export default function BonusZoneScreen() {
       {/* Claims List */}
       {claimsCampaignId ? (
         claimsLoading ? (
-          <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+          <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
         ) : claims.length > 0 ? (
           <>
             {claims.map(renderClaimRow)}
@@ -1673,13 +1673,13 @@ export default function BonusZoneScreen() {
           </>
         ) : (
           <View style={styles.emptyContainer}>
-            <Ionicons name="receipt-outline" size={48} color="#D1D5DB" />
+            <Ionicons name="receipt-outline" size={48} color={colors.gray300} />
             <Text style={styles.emptyText}>No claims found for this campaign</Text>
           </View>
         )
       ) : (
         <View style={styles.emptyContainer}>
-          <Ionicons name="arrow-up-outline" size={48} color="#D1D5DB" />
+          <Ionicons name="arrow-up-outline" size={48} color={colors.gray300} />
           <Text style={styles.emptyText}>Select a campaign above to view claims</Text>
         </View>
       )}
@@ -1687,22 +1687,22 @@ export default function BonusZoneScreen() {
       {/* Fraud Alerts Section */}
       <View style={{ marginTop: 24 }}>
         <View style={styles.fraudAlertsHeader}>
-          <Ionicons name="warning-outline" size={20} color="#EF4444" />
+          <Ionicons name="warning-outline" size={20} color={colors.error} />
           <Text style={[styles.sectionCardTitle, { color: colors.text, marginBottom: 0, marginLeft: 6 }]}>
             Fraud Alerts
           </Text>
           <TouchableOpacity onPress={loadFraudAlerts} style={{ marginLeft: 'auto' }}>
-            <Ionicons name="refresh-outline" size={18} color="#6B7280" />
+            <Ionicons name="refresh-outline" size={18} color={colors.mutedDark} />
           </TouchableOpacity>
         </View>
         {fraudAlertsLoading ? (
-          <ActivityIndicator size="small" color="#EF4444" style={{ paddingVertical: 20 }} />
+          <ActivityIndicator size="small" color={colors.error} style={{ paddingVertical: 20 }} />
         ) : fraudAlerts.length > 0 ? (
           fraudAlerts.map(renderFraudAlertRow)
         ) : (
           <View style={[styles.emptyContainer, { paddingVertical: 20 }]}>
-            <Ionicons name="shield-checkmark-outline" size={36} color="#10B981" />
-            <Text style={[styles.emptyText, { color: '#10B981' }]}>No fraud alerts detected</Text>
+            <Ionicons name="shield-checkmark-outline" size={36} color={colors.success} />
+            <Text style={[styles.emptyText, { color: colors.success }]}>No fraud alerts detected</Text>
           </View>
         )}
       </View>
@@ -1724,19 +1724,19 @@ export default function BonusZoneScreen() {
             value={rejectReason}
             onChangeText={setRejectReason}
             placeholder="Enter reason for rejection..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             multiline
             numberOfLines={3}
           />
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <TouchableOpacity
-              style={[styles.pageBtn, { flex: 1, backgroundColor: '#6B7280', alignItems: 'center' }]}
+              style={[styles.pageBtn, { flex: 1, backgroundColor: colors.mutedDark, alignItems: 'center' }]}
               onPress={() => { setShowRejectModal(false); setRejectingClaimId(null); }}
             >
               <Text style={styles.pageBtnText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.pageBtn, { flex: 1, backgroundColor: '#EF4444', alignItems: 'center' }]}
+              style={[styles.pageBtn, { flex: 1, backgroundColor: colors.error, alignItems: 'center' }]}
               onPress={handleRejectClaim}
             >
               <Text style={styles.pageBtnText}>Reject</Text>
@@ -1762,19 +1762,19 @@ export default function BonusZoneScreen() {
             value={fundAmount}
             onChangeText={setFundAmount}
             placeholder="Enter amount"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             keyboardType="numeric"
             autoFocus
           />
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <TouchableOpacity
-              style={[styles.pageBtn, { flex: 1, backgroundColor: '#6B7280', alignItems: 'center' }]}
+              style={[styles.pageBtn, { flex: 1, backgroundColor: colors.mutedDark, alignItems: 'center' }]}
               onPress={() => { setShowFundModal(false); setFundCampaignId(null); }}
             >
               <Text style={styles.pageBtnText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.pageBtn, { flex: 1, backgroundColor: '#10B981', alignItems: 'center' }]}
+              style={[styles.pageBtn, { flex: 1, backgroundColor: colors.success, alignItems: 'center' }]}
               onPress={handleFundConfirm}
             >
               <Text style={styles.pageBtnText}>Confirm</Text>
@@ -1796,7 +1796,7 @@ export default function BonusZoneScreen() {
         <Text style={[styles.headerTitle, { color: colors.text }]}>Bonus Zone</Text>
         {activeTab === 'campaigns' && (
           <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
-            <Ionicons name="add" size={20} color="#FFFFFF" />
+            <Ionicons name="add" size={20} color={colors.card} />
             <Text style={styles.createBtnText}>Create</Text>
           </TouchableOpacity>
         )}
@@ -1826,7 +1826,7 @@ export default function BonusZoneScreen() {
             onChangeText={setSearchQuery}
             onSubmitEditing={() => loadCampaigns(1)}
             placeholder="Search campaigns..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             returnKeyType="search"
           />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChips}>
@@ -1855,10 +1855,10 @@ export default function BonusZoneScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           ListEmptyComponent={
             loading ? (
-              <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+              <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
             ) : (
               <View style={styles.emptyContainer}>
-                <Ionicons name="gift-outline" size={48} color="#D1D5DB" />
+                <Ionicons name="gift-outline" size={48} color={colors.gray300} />
                 <Text style={styles.emptyText}>No campaigns found</Text>
               </View>
             )
@@ -1918,23 +1918,23 @@ const styles = StyleSheet.create({
   createBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
     gap: 4,
   },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
 
   // Tabs
   tabs: { flexDirection: 'row', borderBottomWidth: 1 },
   tab: { flex: 1, paddingVertical: 12, alignItems: 'center' },
-  tabActive: { borderBottomWidth: 2, borderBottomColor: '#3B82F6' },
-  tabText: { fontSize: 14, color: '#6B7280', fontWeight: '500' },
-  tabTextActive: { color: '#3B82F6', fontWeight: '600' },
+  tabActive: { borderBottomWidth: 2, borderBottomColor: Colors.light.info },
+  tabText: { fontSize: 14, color: Colors.light.mutedDark, fontWeight: '500' },
+  tabTextActive: { color: Colors.light.info, fontWeight: '600' },
 
   // Filters
-  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   searchInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -1948,12 +1948,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
     marginRight: 8,
   },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  filterChipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  filterChipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  filterChipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  filterChipTextActive: { color: Colors.light.card, fontWeight: '600' },
 
   // Campaign Card
   card: {
@@ -1961,26 +1961,26 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 10 },
   cardIcon: { fontSize: 28 },
   cardTitle: { fontSize: 15, fontWeight: '600' },
-  cardSlug: { fontSize: 11, color: '#9CA3AF', marginTop: 1 },
+  cardSlug: { fontSize: 11, color: Colors.light.muted, marginTop: 1 },
   cardInfoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 },
-  infoChip: { backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  infoChipText: { fontSize: 11, fontWeight: '500', color: '#374151' },
+  infoChip: { backgroundColor: Colors.light.backgroundSecondary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  infoChipText: { fontSize: 11, fontWeight: '500', color: Colors.light.gray700 },
   budgetRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4, gap: 6 },
-  budgetLabel: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  budgetValue: { fontSize: 12, color: '#374151', fontWeight: '600' },
-  progressBarBg: { height: 4, backgroundColor: '#E5E7EB', borderRadius: 2, marginBottom: 8 },
+  budgetLabel: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  budgetValue: { fontSize: 12, color: Colors.light.gray700, fontWeight: '600' },
+  progressBarBg: { height: 4, backgroundColor: Colors.light.gray200, borderRadius: 2, marginBottom: 8 },
   progressBarFill: { height: 4, borderRadius: 2 },
   scheduleRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
-  scheduleText: { fontSize: 11, color: '#6B7280' },
+  scheduleText: { fontSize: 11, color: Colors.light.mutedDark },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
-  statsText: { fontSize: 11, color: '#9CA3AF' },
-  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10 },
+  statsText: { fontSize: 11, color: Colors.light.muted },
+  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 4, paddingHorizontal: 6 },
   actionText: { fontSize: 12, fontWeight: '500' },
 
@@ -1998,14 +1998,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.gray200,
   },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formSectionTitle: { fontSize: 15, fontWeight: '700', color: '#1a3a52', marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', paddingBottom: 6 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
-  formHint: { fontSize: 12, color: '#9CA3AF', fontStyle: 'italic', marginBottom: 4 },
+  formSectionTitle: { fontSize: 15, fontWeight: '700', color: Colors.light.navy, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.backgroundSecondary, paddingBottom: 6 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
+  formHint: { fontSize: 12, color: Colors.light.muted, fontStyle: 'italic', marginBottom: 4 },
   formInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -2017,13 +2017,13 @@ const styles = StyleSheet.create({
   formRow: { flexDirection: 'row', gap: 12 },
   formRowItem: { flex: 1 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: '#F3F4F6' },
-  chipSelected: { backgroundColor: '#3B82F6' },
-  chipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  chipTextSelected: { color: '#FFF', fontWeight: '600' },
+  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: Colors.light.backgroundSecondary },
+  chipSelected: { backgroundColor: Colors.light.info },
+  chipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  chipTextSelected: { color: Colors.light.card, fontWeight: '600' },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 },
-  termRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 10, backgroundColor: '#F9FAFB', borderRadius: 8, marginBottom: 4, gap: 8 },
-  termText: { flex: 1, fontSize: 13, color: '#374151' },
+  termRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 10, backgroundColor: Colors.light.backgroundTertiary, borderRadius: 8, marginBottom: 4, gap: 8 },
+  termText: { flex: 1, fontSize: 13, color: Colors.light.gray700 },
   addTermRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6 },
   addTermBtn: { paddingTop: 4 },
 
@@ -2033,29 +2033,29 @@ const styles = StyleSheet.create({
   analyticsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   analyticsTitle: { fontSize: 18, fontWeight: '700' },
   analyticsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  analyticsCard: { width: '47%', backgroundColor: '#F9FAFB', borderRadius: 10, padding: 14, alignItems: 'center' },
-  analyticsCardValue: { fontSize: 22, fontWeight: '700', color: '#1a3a52' },
-  analyticsCardLabel: { fontSize: 11, color: '#6B7280', marginTop: 4, fontWeight: '500' },
+  analyticsCard: { width: '47%', backgroundColor: Colors.light.backgroundTertiary, borderRadius: 10, padding: 14, alignItems: 'center' },
+  analyticsCardValue: { fontSize: 22, fontWeight: '700', color: Colors.light.navy },
+  analyticsCardLabel: { fontSize: 11, color: Colors.light.mutedDark, marginTop: 4, fontWeight: '500' },
 
   // Dashboard
   dashboardGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
   dashboardCard: { width: '47%', borderRadius: 12, padding: 16, alignItems: 'center' },
   dashboardValue: { fontSize: 24, fontWeight: '700' },
-  dashboardLabel: { fontSize: 12, color: '#6B7280', marginTop: 4, fontWeight: '500' },
-  sectionCard: { borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E5E7EB' },
+  dashboardLabel: { fontSize: 12, color: Colors.light.mutedDark, marginTop: 4, fontWeight: '500' },
+  sectionCard: { borderRadius: 12, padding: 16, borderWidth: 1, borderColor: Colors.light.gray200 },
   sectionCardTitle: { fontSize: 15, fontWeight: '600', marginBottom: 12 },
   statusRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 8 },
   statusRowLabel: { flex: 1, fontSize: 13, textTransform: 'capitalize' },
-  statusRowCount: { fontSize: 14, fontWeight: '600', color: '#374151' },
+  statusRowCount: { fontSize: 14, fontWeight: '600', color: Colors.light.gray700 },
 
   // Empty & Pagination
   emptyContainer: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
   pagination: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16 },
-  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#3B82F6', borderRadius: 8 },
+  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: Colors.light.info, borderRadius: 8 },
   pageBtnDisabled: { opacity: 0.4 },
-  pageBtnText: { color: '#FFF', fontWeight: '500', fontSize: 13 },
-  pageInfo: { fontSize: 13, color: '#6B7280' },
+  pageBtnText: { color: Colors.light.card, fontWeight: '500', fontSize: 13 },
+  pageInfo: { fontSize: 13, color: Colors.light.mutedDark },
 
   // Claims Tab
   claimRow: {
@@ -2065,24 +2065,24 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
     marginBottom: 8,
   },
   claimInfo: { flex: 1, gap: 4 },
   claimUser: { fontSize: 14, fontWeight: '600' },
-  claimAmount: { fontSize: 13, fontWeight: '600', color: '#10B981' },
-  claimDate: { fontSize: 11, color: '#9CA3AF' },
+  claimAmount: { fontSize: 13, fontWeight: '600', color: Colors.light.success },
+  claimDate: { fontSize: 11, color: Colors.light.muted },
   rejectBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: Colors.light.errorLight,
     borderRadius: 8,
     marginLeft: 8,
   },
-  rejectBtnText: { fontSize: 12, fontWeight: '600', color: '#EF4444' },
+  rejectBtnText: { fontSize: 12, fontWeight: '600', color: Colors.light.error },
 
   // Reject Modal
   rejectModalContainer: {
@@ -2100,13 +2100,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.gray200,
   },
   fraudAlertRow: {
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
     borderLeftWidth: 4,
     marginBottom: 8,
   },
@@ -2122,18 +2122,18 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   severityText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
-  fraudAlertDate: { fontSize: 11, color: '#9CA3AF' },
+  fraudAlertDate: { fontSize: 11, color: Colors.light.muted },
   fraudAlertType: { fontSize: 13, fontWeight: '600', marginBottom: 2 },
-  fraudAlertDesc: { fontSize: 12, color: '#6B7280', marginBottom: 4 },
-  fraudAlertUser: { fontSize: 11, color: '#9CA3AF' },
-  fraudAlertCampaign: { fontSize: 11, color: '#9CA3AF' },
+  fraudAlertDesc: { fontSize: 12, color: Colors.light.mutedDark, marginBottom: 4 },
+  fraudAlertUser: { fontSize: 11, color: Colors.light.muted },
+  fraudAlertCampaign: { fontSize: 11, color: Colors.light.muted },
 
   // Date/time input helpers
-  formInputError: { borderColor: '#EF4444', borderWidth: 2 },
-  formInputHint: { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
+  formInputError: { borderColor: Colors.light.error, borderWidth: 2 },
+  formInputHint: { fontSize: 11, color: Colors.light.muted, marginTop: 2 },
   datePreview: {
     fontSize: 13,
-    color: '#10B981',
+    color: Colors.light.success,
     fontWeight: '500',
     marginTop: 4,
     marginBottom: 2,
@@ -2146,14 +2146,14 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 8,
     marginTop: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   imagePreviewSmall: {
     width: 80,
     height: 80,
     borderRadius: 8,
     marginTop: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
 
   // Campaign preview card
@@ -2165,7 +2165,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   previewHeader: {
     flexDirection: 'row',
@@ -2179,11 +2179,11 @@ const styles = StyleSheet.create({
   previewTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a3a52',
+    color: Colors.light.navy,
   },
   previewSubtitle: {
     fontSize: 13,
-    color: '#4B5563',
+    color: Colors.light.gray600,
     marginTop: 2,
   },
   previewRewardRow: {
@@ -2193,7 +2193,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   previewRewardBadge: {
-    backgroundColor: '#10B981',
+    backgroundColor: Colors.light.success,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -2201,7 +2201,7 @@ const styles = StyleSheet.create({
   previewRewardText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.light.card,
   },
   previewTypeBadge: {
     backgroundColor: 'rgba(59, 130, 246, 0.15)',
@@ -2212,13 +2212,13 @@ const styles = StyleSheet.create({
   previewTypeText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#3B82F6',
+    color: Colors.light.info,
   },
   previewFeaturedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.light.warningLight,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
@@ -2228,7 +2228,7 @@ const styles = StyleSheet.create({
   previewFeaturedText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#D97706',
+    color: Colors.light.warningDark,
   },
   previewScheduleRow: {
     flexDirection: 'row',
@@ -2238,11 +2238,11 @@ const styles = StyleSheet.create({
   },
   previewScheduleText: {
     fontSize: 11,
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
   },
   previewLabel: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: Colors.light.muted,
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: 8,

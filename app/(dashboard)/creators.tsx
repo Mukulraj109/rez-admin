@@ -279,16 +279,16 @@ export default function CreatorsScreen() {
   const renderStats = () => {
     if (!stats) return null;
     const row1 = [
-      { label: 'Total Creators', value: stats.totalCreators, color: '#3B82F6' },
-      { label: 'Approved', value: stats.approvedCreators, color: '#16A34A' },
-      { label: 'Pending', value: stats.pendingApplications, color: '#F59E0B' },
-      { label: 'Suspended', value: stats.suspendedCreators, color: '#EF4444' },
+      { label: 'Total Creators', value: stats.totalCreators, color: colors.info },
+      { label: 'Approved', value: stats.approvedCreators, color: colors.greenDark },
+      { label: 'Pending', value: stats.pendingApplications, color: colors.warning },
+      { label: 'Suspended', value: stats.suspendedCreators, color: colors.error },
     ];
     const row2 = [
-      { label: 'Published Picks', value: stats.totalPicks, color: '#8B5CF6' },
-      { label: 'Pending Picks', value: stats.pendingPicks, color: '#D97706' },
-      { label: 'Conversions', value: stats.totalConversions, color: '#16A34A' },
-      { label: 'Commission Paid', value: stats.totalCommissionPaid, color: '#059669' },
+      { label: 'Published Picks', value: stats.totalPicks, color: colors.purple },
+      { label: 'Pending Picks', value: stats.pendingPicks, color: colors.warningDark },
+      { label: 'Conversions', value: stats.totalConversions, color: colors.greenDark },
+      { label: 'Commission Paid', value: stats.totalCommissionPaid, color: colors.successDark },
     ];
 
     return (
@@ -324,10 +324,10 @@ export default function CreatorsScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Text style={[s.cardName, { color: colors.text }]}>{item.displayName}</Text>
             {item.isVerified && (
-              <Ionicons name="checkmark-circle" size={16} color="#3B82F6" />
+              <Ionicons name="checkmark-circle" size={16} color={colors.info} />
             )}
             {item.isFeatured && (
-              <Ionicons name="star" size={14} color="#F59E0B" />
+              <Ionicons name="star" size={14} color={colors.warning} />
             )}
           </View>
           <Text style={[s.cardCategory, { color: colors.secondaryText }]}>
@@ -336,17 +336,17 @@ export default function CreatorsScreen() {
         </View>
         <View style={[
           s.statusBadge,
-          item.status === 'pending' && { backgroundColor: '#FEF3C7' },
-          item.status === 'approved' && { backgroundColor: '#D1FAE5' },
-          item.status === 'rejected' && { backgroundColor: '#FEE2E2' },
-          item.status === 'suspended' && { backgroundColor: '#FEE2E2' },
+          item.status === 'pending' && { backgroundColor: colors.warningLight },
+          item.status === 'approved' && { backgroundColor: colors.successLight },
+          item.status === 'rejected' && { backgroundColor: colors.errorLight },
+          item.status === 'suspended' && { backgroundColor: colors.errorLight },
         ]}>
           <Text style={[
             s.statusText,
-            item.status === 'pending' && { color: '#D97706' },
-            item.status === 'approved' && { color: '#16A34A' },
-            item.status === 'rejected' && { color: '#EF4444' },
-            item.status === 'suspended' && { color: '#DC2626' },
+            item.status === 'pending' && { color: colors.warningDark },
+            item.status === 'approved' && { color: colors.greenDark },
+            item.status === 'rejected' && { color: colors.error },
+            item.status === 'suspended' && { color: colors.errorDark },
           ]}>
             {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
           </Text>
@@ -365,14 +365,14 @@ export default function CreatorsScreen() {
 
       {/* Rejection reason */}
       {item.status === 'rejected' && item.rejectionReason && (
-        <Text style={{ fontSize: 12, color: '#EF4444', marginBottom: 8 }}>
+        <Text style={{ fontSize: 12, color: colors.error, marginBottom: 8 }}>
           Rejection: {item.rejectionReason}
         </Text>
       )}
 
       {/* Suspension reason */}
       {item.status === 'suspended' && item.suspensionReason && (
-        <Text style={{ fontSize: 12, color: '#DC2626', marginBottom: 8 }}>
+        <Text style={{ fontSize: 12, color: colors.errorDark, marginBottom: 8 }}>
           Suspended: {item.suspensionReason}
         </Text>
       )}
@@ -397,18 +397,18 @@ export default function CreatorsScreen() {
         {item.status === 'pending' && (
           <>
             <TouchableOpacity
-              style={[s.actionBtn, { backgroundColor: '#16A34A' }]}
+              style={[s.actionBtn, { backgroundColor: colors.greenDark }]}
               onPress={() => handleApprove(item.id)}
               disabled={processing === item.id}
             >
               {processing === item.id ? (
-                <ActivityIndicator size="small" color="#FFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <Text style={s.actionBtnText}>Approve</Text>
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              style={[s.actionBtn, { backgroundColor: '#EF4444' }]}
+              style={[s.actionBtn, { backgroundColor: colors.error }]}
               onPress={() => setRejectModal({ visible: true, creatorId: item.id, type: 'creator' })}
             >
               <Text style={s.actionBtnText}>Reject</Text>
@@ -418,7 +418,7 @@ export default function CreatorsScreen() {
         {item.status === 'approved' && (
           <>
             <TouchableOpacity
-              style={[s.actionBtn, { backgroundColor: item.isFeatured ? '#6B7280' : '#F59E0B' }]}
+              style={[s.actionBtn, { backgroundColor: item.isFeatured ? colors.secondaryText : colors.warning }]}
               onPress={() => handleToggleFeatured(item.id)}
               disabled={processing === item.id}
             >
@@ -427,7 +427,7 @@ export default function CreatorsScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[s.actionBtn, { backgroundColor: '#3B82F6' }]}
+              style={[s.actionBtn, { backgroundColor: colors.info }]}
               onPress={() => {
                 setSelectedTier(item.tier);
                 setTierModal({ visible: true, creatorId: item.id, currentTier: item.tier });
@@ -436,7 +436,7 @@ export default function CreatorsScreen() {
               <Text style={s.actionBtnText}>Tier</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[s.actionBtn, { backgroundColor: '#EF4444' }]}
+              style={[s.actionBtn, { backgroundColor: colors.error }]}
               onPress={() => handleSuspend(item.id)}
               disabled={processing === item.id}
             >
@@ -447,12 +447,12 @@ export default function CreatorsScreen() {
         {item.status === 'suspended' && (
           <>
             <TouchableOpacity
-              style={[s.actionBtn, { backgroundColor: '#16A34A' }]}
+              style={[s.actionBtn, { backgroundColor: colors.greenDark }]}
               onPress={() => handleUnsuspend(item.id)}
               disabled={processing === item.id}
             >
               {processing === item.id ? (
-                <ActivityIndicator size="small" color="#FFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <Text style={s.actionBtnText}>Unsuspend</Text>
               )}
@@ -461,12 +461,12 @@ export default function CreatorsScreen() {
         )}
         {item.status === 'rejected' && (
           <TouchableOpacity
-            style={[s.actionBtn, { backgroundColor: '#16A34A' }]}
+            style={[s.actionBtn, { backgroundColor: colors.greenDark }]}
             onPress={() => handleApprove(item.id)}
             disabled={processing === item.id}
           >
             {processing === item.id ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={s.actionBtnText}>Re-approve</Text>
             )}
@@ -494,20 +494,20 @@ export default function CreatorsScreen() {
         <View style={{ flexDirection: 'row', gap: 6 }}>
           {isMerchantPending && (
             <View style={[s.statusBadge, { backgroundColor: '#EDE9FE' }]}>
-              <Text style={[s.statusText, { color: '#7C3AED' }]}>Merchant Pending</Text>
+              <Text style={[s.statusText, { color: colors.purpleDark }]}>Merchant Pending</Text>
             </View>
           )}
           <View style={[
             s.statusBadge,
-            item.moderationStatus === 'pending' && { backgroundColor: '#FEF3C7' },
-            item.moderationStatus === 'approved' && { backgroundColor: '#D1FAE5' },
-            item.moderationStatus === 'rejected' && { backgroundColor: '#FEE2E2' },
+            item.moderationStatus === 'pending' && { backgroundColor: colors.warningLight },
+            item.moderationStatus === 'approved' && { backgroundColor: colors.successLight },
+            item.moderationStatus === 'rejected' && { backgroundColor: colors.errorLight },
           ]}>
             <Text style={[
               s.statusText,
-              item.moderationStatus === 'pending' && { color: '#D97706' },
-              item.moderationStatus === 'approved' && { color: '#16A34A' },
-              item.moderationStatus === 'rejected' && { color: '#EF4444' },
+              item.moderationStatus === 'pending' && { color: colors.warningDark },
+              item.moderationStatus === 'approved' && { color: colors.greenDark },
+              item.moderationStatus === 'rejected' && { color: colors.error },
             ]}>
               {item.moderationStatus}
             </Text>
@@ -516,7 +516,7 @@ export default function CreatorsScreen() {
       </View>
 
       {isMerchantPending && (
-        <Text style={{ fontSize: 12, color: '#7C3AED', marginBottom: 8, fontStyle: 'italic' }}>
+        <Text style={{ fontSize: 12, color: colors.purpleDark, marginBottom: 8, fontStyle: 'italic' }}>
           Awaiting merchant store approval before admin can moderate
         </Text>
       )}
@@ -539,18 +539,18 @@ export default function CreatorsScreen() {
       {item.moderationStatus === 'pending' && !isMerchantPending && (
         <View style={s.cardActions}>
           <TouchableOpacity
-            style={[s.actionBtn, { backgroundColor: '#16A34A' }]}
+            style={[s.actionBtn, { backgroundColor: colors.greenDark }]}
             onPress={() => handleApprovePick(item.id)}
             disabled={processing === item.id}
           >
             {processing === item.id ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={s.actionBtnText}>Approve</Text>
             )}
           </TouchableOpacity>
           <TouchableOpacity
-            style={[s.actionBtn, { backgroundColor: '#EF4444' }]}
+            style={[s.actionBtn, { backgroundColor: colors.error }]}
             onPress={() => setRejectModal({ visible: true, creatorId: item.id, type: 'pick' })}
           >
             <Text style={s.actionBtnText}>Reject</Text>
@@ -582,20 +582,20 @@ export default function CreatorsScreen() {
         <Text style={[s.convAmount, { color: colors.text }]}>
           Purchase: {item.purchaseAmount} coins
         </Text>
-        <Text style={[s.convCommission, { color: '#16A34A' }]}>
+        <Text style={[s.convCommission, { color: colors.greenDark }]}>
           Commission: +{item.commissionAmount}
         </Text>
         <View style={[
           s.statusBadge,
-          item.status === 'paid' && { backgroundColor: '#D1FAE5' },
-          item.status === 'confirmed' && { backgroundColor: '#DBEAFE' },
-          item.status === 'pending' && { backgroundColor: '#FEF3C7' },
+          item.status === 'paid' && { backgroundColor: colors.successLight },
+          item.status === 'confirmed' && { backgroundColor: colors.infoLighter },
+          item.status === 'pending' && { backgroundColor: colors.warningLight },
         ]}>
           <Text style={[
             s.statusText,
-            item.status === 'paid' && { color: '#16A34A' },
-            item.status === 'confirmed' && { color: '#3B82F6' },
-            item.status === 'pending' && { color: '#D97706' },
+            item.status === 'paid' && { color: colors.greenDark },
+            item.status === 'confirmed' && { color: colors.info },
+            item.status === 'pending' && { color: colors.warningDark },
           ]}>
             {item.status}
           </Text>
@@ -641,9 +641,9 @@ export default function CreatorsScreen() {
           <Text style={[s.configLabel, { color: colors.secondaryText }]}>{label}</Text>
           <TouchableOpacity
             onPress={() => setConfigDraft(d => ({ ...d, [key]: !value }))}
-            style={[s.filterChip, value ? { backgroundColor: '#16A34A' } : { backgroundColor: '#EF4444' }]}
+            style={[s.filterChip, value ? { backgroundColor: colors.greenDark } : { backgroundColor: colors.error }]}
           >
-            <Text style={{ color: '#FFF', fontSize: 12, fontWeight: '600' }}>{value ? 'Yes' : 'No'}</Text>
+            <Text style={{ color: colors.card, fontSize: 12, fontWeight: '600' }}>{value ? 'Yes' : 'No'}</Text>
           </TouchableOpacity>
         </View>
       );
@@ -652,7 +652,7 @@ export default function CreatorsScreen() {
       <View style={s.configRow}>
         <Text style={[s.configLabel, { color: colors.secondaryText }]}>{label}</Text>
         <TextInput
-          style={[s.configInput, { color: colors.text, borderColor: '#E5E7EB' }]}
+          style={[s.configInput, { color: colors.text, borderColor: colors.border }]}
           value={String(value ?? '')}
           onChangeText={v => setConfigDraft(d => ({ ...d, [key]: Number(v) || 0 }))}
           keyboardType="numeric"
@@ -672,27 +672,27 @@ export default function CreatorsScreen() {
             {editingConfig ? (
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <TouchableOpacity
-                  style={[s.filterChip, { backgroundColor: '#F3F4F6' }]}
+                  style={[s.filterChip, { backgroundColor: colors.background }]}
                   onPress={() => { setEditingConfig(false); setConfigDraft({}); }}
                 >
-                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#374151' }}>Cancel</Text>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: colors.gray700 }}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[s.filterChip, { backgroundColor: '#16A34A' }]}
+                  style={[s.filterChip, { backgroundColor: colors.greenDark }]}
                   onPress={handleSaveConfig}
                   disabled={processing === 'config'}
                 >
-                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFF' }}>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: colors.card }}>
                     {processing === 'config' ? 'Saving...' : 'Save'}
                   </Text>
                 </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity
-                style={[s.filterChip, { backgroundColor: '#3B82F6' }]}
+                style={[s.filterChip, { backgroundColor: colors.info }]}
                 onPress={() => setEditingConfig(true)}
               >
-                <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFF' }}>Edit</Text>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: colors.card }}>Edit</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -720,7 +720,7 @@ export default function CreatorsScreen() {
                 </Text>
                 {editingConfig ? (
                   <TextInput
-                    style={[s.configInput, { color: colors.text, borderColor: '#E5E7EB' }]}
+                    style={[s.configInput, { color: colors.text, borderColor: colors.border }]}
                     value={String(value)}
                     onChangeText={v => setConfigDraft(d => ({
                       ...d,
@@ -746,7 +746,7 @@ export default function CreatorsScreen() {
                 </Text>
                 {editingConfig ? (
                   <TextInput
-                    style={[s.configInput, { color: colors.text, borderColor: '#E5E7EB' }]}
+                    style={[s.configInput, { color: colors.text, borderColor: colors.border }]}
                     value={String(value)}
                     onChangeText={v => setConfigDraft(d => ({
                       ...d,
@@ -789,7 +789,7 @@ export default function CreatorsScreen() {
           >
             <Text style={[
               s.tabText,
-              { color: activeTab === tab ? '#3B82F6' : colors.secondaryText },
+              { color: activeTab === tab ? colors.info : colors.secondaryText },
             ]}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </Text>
@@ -805,13 +805,13 @@ export default function CreatorsScreen() {
               key={f}
               style={[
                 s.filterChip,
-                statusFilter === f && { backgroundColor: '#3B82F6' },
+                statusFilter === f && { backgroundColor: colors.info },
               ]}
               onPress={() => setStatusFilter(f)}
             >
               <Text style={[
                 s.filterChipText,
-                { color: statusFilter === f ? '#FFF' : colors.secondaryText },
+                { color: statusFilter === f ? colors.card : colors.secondaryText },
               ]}>
                 {f.charAt(0).toUpperCase() + f.slice(1)}
                 {f === 'all' && stats?.totalCreators ? ` (${stats.totalCreators})` : ''}
@@ -833,13 +833,13 @@ export default function CreatorsScreen() {
               key={f}
               style={[
                 s.filterChip,
-                pickFilter === f && { backgroundColor: '#3B82F6' },
+                pickFilter === f && { backgroundColor: colors.info },
               ]}
               onPress={() => setPickFilter(f)}
             >
               <Text style={[
                 s.filterChipText,
-                { color: pickFilter === f ? '#FFF' : colors.secondaryText },
+                { color: pickFilter === f ? colors.card : colors.secondaryText },
               ]}>
                 {f.charAt(0).toUpperCase() + f.slice(1)}
                 {f === 'pending' && stats?.pendingPicks ? ` (${stats.pendingPicks})` : ''}
@@ -873,7 +873,7 @@ export default function CreatorsScreen() {
       {activeTab === 'config' ? (
         renderConfig()
       ) : isLoading ? (
-        <ActivityIndicator style={{ marginTop: 40 }} color="#3B82F6" />
+        <ActivityIndicator style={{ marginTop: 40 }} color={colors.info} />
       ) : (
         <FlatList
           data={
@@ -908,7 +908,7 @@ export default function CreatorsScreen() {
               {rejectModal.type === 'suspend' ? 'Suspension Reason' : 'Rejection Reason'}
             </Text>
             <TextInput
-              style={[s.modalInput, { color: colors.text, borderColor: '#E5E7EB' }]}
+              style={[s.modalInput, { color: colors.text, borderColor: colors.border }]}
               value={rejectReason}
               onChangeText={setRejectReason}
               placeholder={rejectModal.type === 'suspend' ? 'Enter reason for suspension...' : 'Enter reason for rejection...'}
@@ -918,23 +918,23 @@ export default function CreatorsScreen() {
             />
             <View style={s.modalActions}>
               <TouchableOpacity
-                style={[s.modalBtn, { backgroundColor: '#F3F4F6' }]}
+                style={[s.modalBtn, { backgroundColor: colors.background }]}
                 onPress={() => {
                   setRejectModal({ visible: false, creatorId: '', type: 'creator' });
                   setRejectReason('');
                 }}
               >
-                <Text style={[s.modalBtnText, { color: '#374151' }]}>Cancel</Text>
+                <Text style={[s.modalBtnText, { color: colors.gray700 }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[s.modalBtn, { backgroundColor: rejectModal.type === 'suspend' ? '#DC2626' : '#EF4444' }]}
+                style={[s.modalBtn, { backgroundColor: rejectModal.type === 'suspend' ? colors.errorDark : colors.error }]}
                 onPress={handleReject}
                 disabled={processing === rejectModal.creatorId}
               >
                 {processing === rejectModal.creatorId ? (
-                  <ActivityIndicator size="small" color="#FFF" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
-                  <Text style={[s.modalBtnText, { color: '#FFF' }]}>
+                  <Text style={[s.modalBtnText, { color: colors.card }]}>
                     {rejectModal.type === 'suspend' ? 'Suspend' : 'Reject'}
                   </Text>
                 )}
@@ -955,14 +955,14 @@ export default function CreatorsScreen() {
                   key={tier}
                   style={[
                     s.tierOption,
-                    { borderColor: selectedTier === tier ? '#3B82F6' : '#E5E7EB' },
-                    selectedTier === tier && { backgroundColor: '#EFF6FF' },
+                    { borderColor: selectedTier === tier ? colors.info : colors.border },
+                    selectedTier === tier && { backgroundColor: colors.infoLight },
                   ]}
                   onPress={() => setSelectedTier(tier)}
                 >
                   <Text style={[
                     s.tierOptionText,
-                    { color: selectedTier === tier ? '#3B82F6' : colors.text },
+                    { color: selectedTier === tier ? colors.info : colors.text },
                   ]}>
                     {tier.charAt(0).toUpperCase() + tier.slice(1)}
                   </Text>
@@ -971,20 +971,20 @@ export default function CreatorsScreen() {
             </View>
             <View style={s.modalActions}>
               <TouchableOpacity
-                style={[s.modalBtn, { backgroundColor: '#F3F4F6' }]}
+                style={[s.modalBtn, { backgroundColor: colors.background }]}
                 onPress={() => setTierModal({ visible: false, creatorId: '', currentTier: '' })}
               >
-                <Text style={[s.modalBtnText, { color: '#374151' }]}>Cancel</Text>
+                <Text style={[s.modalBtnText, { color: colors.gray700 }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[s.modalBtn, { backgroundColor: '#3B82F6' }]}
+                style={[s.modalBtn, { backgroundColor: colors.info }]}
                 onPress={handleUpdateTier}
                 disabled={processing === tierModal.creatorId}
               >
                 {processing === tierModal.creatorId ? (
-                  <ActivityIndicator size="small" color="#FFF" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
-                  <Text style={[s.modalBtnText, { color: '#FFF' }]}>Update</Text>
+                  <Text style={[s.modalBtnText, { color: colors.card }]}>Update</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -1005,7 +1005,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.border,
   },
   title: { fontSize: 22, fontWeight: '700' },
 
@@ -1021,7 +1021,7 @@ const s = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.border,
   },
   statValue: { fontSize: 20, fontWeight: '700' },
   statLabel: { fontSize: 11, fontWeight: '500', marginTop: 2 },
@@ -1031,8 +1031,8 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-    backgroundColor: '#FFF',
+    borderBottomColor: Colors.light.border,
+    backgroundColor: Colors.light.card,
   },
   tab: {
     paddingHorizontal: 16,
@@ -1041,7 +1041,7 @@ const s = StyleSheet.create({
   },
   tabActive: {
     borderBottomWidth: 2,
-    borderBottomColor: '#3B82F6',
+    borderBottomColor: Colors.light.info,
   },
   tabText: { fontSize: 14, fontWeight: '600' },
 
@@ -1057,7 +1057,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   filterChipText: {
     fontSize: 12,
@@ -1075,7 +1075,7 @@ const s = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.border,
   },
   searchInput: { flex: 1, fontSize: 14 },
 
@@ -1087,7 +1087,7 @@ const s = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.border,
     marginBottom: 12,
   },
   cardHeader: {
@@ -1110,7 +1110,7 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: Colors.light.backgroundSecondary,
     paddingTop: 12,
   },
 
@@ -1129,7 +1129,7 @@ const s = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  actionBtnText: { color: '#FFF', fontSize: 13, fontWeight: '600' },
+  actionBtnText: { color: Colors.light.card, fontSize: 13, fontWeight: '600' },
 
   // Conversions
   convRow: {
@@ -1148,7 +1148,7 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.light.backgroundSecondary,
   },
   configLabel: { fontSize: 14, flex: 1 },
   configValue: { fontSize: 14, fontWeight: '600' },

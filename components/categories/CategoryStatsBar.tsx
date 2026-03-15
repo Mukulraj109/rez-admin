@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 interface CategoryStatsBarProps {
   total: number;
@@ -11,9 +12,9 @@ interface CategoryStatsBarProps {
 const CategoryStatsBar = React.memo(({ total, active, inactive, colors }: CategoryStatsBarProps) => (
   <View style={styles.row}>
     {[
-      { label: 'Total', value: total, color: '#3B82F6' },
-      { label: 'Active', value: active, color: '#10B981' },
-      { label: 'Inactive', value: inactive, color: '#EF4444' },
+      { label: 'Total', value: total, color: Colors.light.info },
+      { label: 'Active', value: active, color: Colors.light.success },
+      { label: 'Inactive', value: inactive, color: Colors.light.error },
     ].map((stat, i) => (
       <View key={i} style={[styles.card, { backgroundColor: colors.card }]}>
         <View style={[styles.dot, { backgroundColor: stat.color }]} />

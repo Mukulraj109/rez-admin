@@ -208,7 +208,7 @@ export default function UsersScreen() {
             <Text
               style={[
                 styles.filterChipText,
-                { color: roleFilter === role ? '#FFFFFF' : colors.text },
+                { color: roleFilter === role ? colors.card : colors.text },
               ]}
             >
               {role.charAt(0).toUpperCase() + role.slice(1)}
@@ -234,7 +234,7 @@ export default function UsersScreen() {
             <Text
               style={[
                 styles.filterChipText,
-                { color: statusFilter === status ? '#FFFFFF' : colors.text },
+                { color: statusFilter === status ? colors.card : colors.text },
               ]}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -294,20 +294,20 @@ export default function UsersScreen() {
           style={[styles.actionButton, { backgroundColor: colors.info }]}
           onPress={() => handleViewDetails(item)}
         >
-          <Ionicons name="eye" size={18} color="#FFFFFF" />
+          <Ionicons name="eye" size={18} color={colors.card} />
           <Text style={styles.actionButtonText}>View Details</Text>
         </TouchableOpacity>
         {item.status === 'active' ? (
           <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: '#6B7280' }]}
+            style={[styles.actionButton, { backgroundColor: colors.mutedDark }]}
             onPress={() => handleSuspend(item._id)}
             disabled={processingUser === item._id}
           >
             {processingUser === item._id ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="ban" size={18} color="#FFFFFF" />
+                <Ionicons name="ban" size={18} color={colors.card} />
                 <Text style={styles.actionButtonText}>Suspend</Text>
               </>
             )}
@@ -319,10 +319,10 @@ export default function UsersScreen() {
             disabled={processingUser === item._id}
           >
             {processingUser === item._id ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" />
+                <Ionicons name="checkmark-circle" size={18} color={colors.card} />
                 <Text style={styles.actionButtonText}>Unsuspend</Text>
               </>
             )}
@@ -348,7 +348,7 @@ export default function UsersScreen() {
               {/* User Info Section */}
               <View style={styles.modalSection}>
                 <View style={styles.modalUserHeader}>
-                  <View style={[styles.modalAvatar, { backgroundColor: '#FEE2E2' }]}>
+                  <View style={[styles.modalAvatar, { backgroundColor: colors.errorLight }]}>
                     <Ionicons name="person" size={32} color={colors.tint} />
                   </View>
                   <View style={styles.modalUserInfo}>
@@ -430,7 +430,7 @@ export default function UsersScreen() {
                 ) : userWallet ? (
                   <View style={[styles.walletCard, { backgroundColor: colors.tint }]}>
                     <View style={styles.walletIcon}>
-                      <Ionicons name="wallet" size={28} color="#FFFFFF" />
+                      <Ionicons name="wallet" size={28} color={colors.card} />
                     </View>
                     <View style={styles.walletInfo}>
                       <Text style={styles.walletLabel}>Available Balance</Text>
@@ -480,7 +480,7 @@ export default function UsersScreen() {
             loadData(1);
           }}
         >
-          <Ionicons name="refresh" size={18} color="#FFFFFF" />
+          <Ionicons name="refresh" size={18} color={colors.card} />
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   retryButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -607,7 +607,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: Colors.light.errorLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -671,7 +671,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -791,7 +791,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   walletBalance: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontSize: 24,
     fontWeight: '700',
   },
@@ -813,7 +813,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 16,
   },

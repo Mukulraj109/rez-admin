@@ -135,15 +135,15 @@ export default function PartnerEarningsAdmin() {
 
   // --- RENDER ---
   const renderTabs = () => (
-    <View style={[s.tabBar, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+    <View style={[s.tabBar, { backgroundColor: isDark ? colors.slateDark : colors.background }]}>
       {TABS.map((tab) => (
         <TouchableOpacity
           key={tab.key}
           style={[s.tab, activeTab === tab.key && { backgroundColor: colors.tint, borderRadius: 8 }]}
           onPress={() => setActiveTab(tab.key)}
         >
-          <Ionicons name={tab.icon as any} size={18} color={activeTab === tab.key ? '#fff' : colors.text} />
-          <Text style={[s.tabLabel, { color: activeTab === tab.key ? '#fff' : colors.text }]}>{tab.label}</Text>
+          <Ionicons name={tab.icon as any} size={18} color={activeTab === tab.key ? colors.card : colors.text} />
+          <Text style={[s.tabLabel, { color: activeTab === tab.key ? colors.card : colors.text }]}>{tab.label}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -155,40 +155,40 @@ export default function PartnerEarningsAdmin() {
       <View style={s.section}>
         {/* Summary Cards */}
         <View style={s.cardRow}>
-          <View style={[s.card, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+          <View style={[s.card, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
             <Text style={[s.cardLabel, { color: colors.text }]}>Total Earnings</Text>
             <Text style={[s.cardValue, { color: colors.tint }]}>{analytics.totalPartnerEarnings.toLocaleString()} NC</Text>
           </View>
-          <View style={[s.card, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+          <View style={[s.card, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
             <Text style={[s.cardLabel, { color: colors.text }]}>Pending Liability</Text>
-            <Text style={[s.cardValue, { color: '#F59E0B' }]}>{analytics.pendingLiability.toLocaleString()} NC</Text>
+            <Text style={[s.cardValue, { color: colors.warning }]}>{analytics.pendingLiability.toLocaleString()} NC</Text>
           </View>
         </View>
         <View style={s.cardRow}>
-          <View style={[s.card, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+          <View style={[s.card, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
             <Text style={[s.cardLabel, { color: colors.text }]}>Total Partners</Text>
             <Text style={[s.cardValue, { color: colors.tint }]}>{analytics.totalPartners}</Text>
           </View>
-          <View style={[s.card, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+          <View style={[s.card, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
             <Text style={[s.cardLabel, { color: colors.text }]}>Transactions</Text>
             <Text style={[s.cardValue, { color: colors.tint }]}>{analytics.totalTransactions.toLocaleString()}</Text>
           </View>
         </View>
 
         {/* Breakdown by type */}
-        <View style={[s.tableCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.tableCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.tableTitle, { color: colors.text }]}>Earnings by Type</Text>
           {Object.entries(analytics.breakdown).map(([type, data]) => (
             <View key={type} style={s.tableRow}>
               <Text style={[s.tableCell, { color: colors.text }]}>{type}</Text>
               <Text style={[s.tableCell, { color: colors.text, textAlign: 'right' }]}>{data.amount.toLocaleString()} NC</Text>
-              <Text style={[s.tableCellSmall, { color: '#6B7280' }]}>{data.count} txns</Text>
+              <Text style={[s.tableCellSmall, { color: colors.mutedDark }]}>{data.count} txns</Text>
             </View>
           ))}
         </View>
 
         {/* Level Distribution */}
-        <View style={[s.tableCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.tableCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.tableTitle, { color: colors.text }]}>Level Distribution</Text>
           {analytics.levelDistribution.map((l) => (
             <View key={l.level} style={s.tableRow}>
@@ -199,26 +199,26 @@ export default function PartnerEarningsAdmin() {
         </View>
 
         {/* Top Earners */}
-        <View style={[s.tableCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.tableCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.tableTitle, { color: colors.text }]}>Top 20 Earners</Text>
           {analytics.topEarners.map((e, i) => (
             <View key={e.userId} style={s.tableRow}>
-              <Text style={[s.tableCellSmall, { color: '#6B7280' }]}>#{i + 1}</Text>
+              <Text style={[s.tableCellSmall, { color: colors.mutedDark }]}>#{i + 1}</Text>
               <Text style={[s.tableCell, { color: colors.text, flex: 2 }]}>{e.name}</Text>
-              <Text style={[s.tableCellSmall, { color: '#6B7280' }]}>L{e.level}</Text>
+              <Text style={[s.tableCellSmall, { color: colors.mutedDark }]}>L{e.level}</Text>
               <Text style={[s.tableCell, { color: colors.tint, textAlign: 'right' }]}>{e.totalEarned.toLocaleString()} NC</Text>
             </View>
           ))}
         </View>
 
         {/* Monthly Trend */}
-        <View style={[s.tableCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.tableCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.tableTitle, { color: colors.text }]}>Monthly Trend (Last 6 Months)</Text>
           {analytics.monthlyTrend.map((m) => (
             <View key={`${m.year}-${m.month}`} style={s.tableRow}>
               <Text style={[s.tableCell, { color: colors.text }]}>{m.year}-{String(m.month).padStart(2, '0')}</Text>
               <Text style={[s.tableCell, { color: colors.tint, textAlign: 'right' }]}>{m.amount.toLocaleString()} NC</Text>
-              <Text style={[s.tableCellSmall, { color: '#6B7280' }]}>{m.count} txns</Text>
+              <Text style={[s.tableCellSmall, { color: colors.mutedDark }]}>{m.count} txns</Text>
             </View>
           ))}
         </View>
@@ -228,19 +228,19 @@ export default function PartnerEarningsAdmin() {
 
   const renderUsers = () => (
     <View style={s.section}>
-      <View style={[s.searchBar, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
-        <Ionicons name="search" size={18} color="#6B7280" />
+      <View style={[s.searchBar, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
+        <Ionicons name="search" size={18} color={colors.mutedDark} />
         <TextInput
           style={[s.searchInput, { color: colors.text }]}
           placeholder="Search by name, email, phone..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.muted}
           value={userSearch}
           onChangeText={(t) => { setUserSearch(t); setUserPage(1); }}
         />
       </View>
 
       {users.map((u) => (
-        <View key={u._id} style={[s.userCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View key={u._id} style={[s.userCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <View style={s.userHeader}>
             <View style={s.avatar}>
               <Text style={s.avatarText}>
@@ -249,7 +249,7 @@ export default function PartnerEarningsAdmin() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[s.userName, { color: colors.text }]}>{u.name || 'Unknown'}</Text>
-              <Text style={{ fontSize: 12, color: '#6B7280' }}>
+              <Text style={{ fontSize: 12, color: colors.mutedDark }}>
                 Level {u.currentLevel?.level || 0} ({u.currentLevel?.name || 'None'}) · {u.totalOrders} orders
               </Text>
             </View>
@@ -263,19 +263,19 @@ export default function PartnerEarningsAdmin() {
           </View>
           <View style={s.userStats}>
             <View style={s.userStat}>
-              <Text style={{ fontSize: 11, color: '#6B7280' }}>Total Earned</Text>
+              <Text style={{ fontSize: 11, color: colors.mutedDark }}>Total Earned</Text>
               <Text style={[s.userStatValue, { color: colors.tint }]}>{(u.earnings?.total || 0).toLocaleString()}</Text>
             </View>
             <View style={s.userStat}>
-              <Text style={{ fontSize: 11, color: '#6B7280' }}>Pending</Text>
-              <Text style={[s.userStatValue, { color: '#F59E0B' }]}>{(u.earnings?.pending || 0).toLocaleString()}</Text>
+              <Text style={{ fontSize: 11, color: colors.mutedDark }}>Pending</Text>
+              <Text style={[s.userStatValue, { color: colors.warning }]}>{(u.earnings?.pending || 0).toLocaleString()}</Text>
             </View>
             <View style={s.userStat}>
-              <Text style={{ fontSize: 11, color: '#6B7280' }}>This Month</Text>
+              <Text style={{ fontSize: 11, color: colors.mutedDark }}>This Month</Text>
               <Text style={[s.userStatValue, { color: colors.text }]}>{(u.earnings?.thisMonth || 0).toLocaleString()}</Text>
             </View>
             <View style={s.userStat}>
-              <Text style={{ fontSize: 11, color: '#6B7280' }}>Total Spent</Text>
+              <Text style={{ fontSize: 11, color: colors.mutedDark }}>Total Spent</Text>
               <Text style={[s.userStatValue, { color: colors.text }]}>{(u.totalSpent || 0).toLocaleString()}</Text>
             </View>
           </View>
@@ -311,12 +311,12 @@ export default function PartnerEarningsAdmin() {
         <Text style={[s.fieldLabel, { color: colors.text }]}>{label}</Text>
         <View style={s.fieldInputWrap}>
           <TextInput
-            style={[s.fieldInput, { color: colors.text, borderColor: isDark ? '#334155' : '#D1D5DB' }]}
+            style={[s.fieldInput, { color: colors.text, borderColor: isDark ? Colors.dark.border : colors.gray300 }]}
             value={String(value)}
             keyboardType="numeric"
             onChangeText={(t) => updateConfig(path, parseFloat(t) || 0)}
           />
-          {suffix ? <Text style={{ color: '#6B7280', fontSize: 12 }}>{suffix}</Text> : null}
+          {suffix ? <Text style={{ color: colors.mutedDark, fontSize: 12 }}>{suffix}</Text> : null}
         </View>
       </View>
     );
@@ -324,7 +324,7 @@ export default function PartnerEarningsAdmin() {
     return (
       <View style={s.section}>
         {/* Cashback Rates */}
-        <View style={[s.configCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.configCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.configTitle, { color: colors.text }]}>Cashback Rates</Text>
           {renderField('Partner (Level 1)', 'cashbackRates.partner', config.cashbackRates.partner, '%')}
           {renderField('Influencer (Level 2)', 'cashbackRates.influencer', config.cashbackRates.influencer, '%')}
@@ -332,7 +332,7 @@ export default function PartnerEarningsAdmin() {
         </View>
 
         {/* Level-Up Bonuses */}
-        <View style={[s.configCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.configCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.configTitle, { color: colors.text }]}>Level-Up Bonuses</Text>
           {renderField('To Partner', 'levelUpBonuses.toPartner', config.levelUpBonuses.toPartner, 'NC')}
           {renderField('To Influencer', 'levelUpBonuses.toInfluencer', config.levelUpBonuses.toInfluencer, 'NC')}
@@ -340,7 +340,7 @@ export default function PartnerEarningsAdmin() {
         </View>
 
         {/* Task Rewards */}
-        <View style={[s.configCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.configCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.configTitle, { color: colors.text }]}>Task Rewards</Text>
           {renderField('Profile Completion', 'taskRewards.profile', config.taskRewards.profile, 'pts')}
           {renderField('Review Cashback', 'taskRewards.review', config.taskRewards.review, 'NC')}
@@ -349,13 +349,13 @@ export default function PartnerEarningsAdmin() {
         </View>
 
         {/* Referral */}
-        <View style={[s.configCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.configCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.configTitle, { color: colors.text }]}>Referral</Text>
           {renderField('Referral Bonus', 'referralBonus', config.referralBonus, 'NC')}
         </View>
 
         {/* Settlement */}
-        <View style={[s.configCard, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+        <View style={[s.configCard, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
           <Text style={[s.configTitle, { color: colors.text }]}>Settlement</Text>
           {renderField('Auto-Settle Delay', 'settlementConfig.autoSettleDelayHours', config.settlementConfig.autoSettleDelayHours, 'hours')}
           {renderField('Require Approval Above', 'settlementConfig.requireApprovalAbove', config.settlementConfig.requireApprovalAbove, 'NC')}
@@ -370,7 +370,7 @@ export default function PartnerEarningsAdmin() {
             disabled={savingConfig}
           >
             {savingConfig ? (
-              <ActivityIndicator color="#fff" size="small" />
+              <ActivityIndicator color={colors.card} size="small" />
             ) : (
               <Text style={s.saveBtnText}>Save Configuration</Text>
             )}
@@ -382,7 +382,7 @@ export default function PartnerEarningsAdmin() {
 
   return (
     <ScrollView
-      style={[s.container, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}
+      style={[s.container, { backgroundColor: isDark ? Colors.dark.background : colors.slate }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <Text style={[s.pageTitle, { color: colors.text }]}>Partner Earnings</Text>
@@ -403,36 +403,36 @@ export default function PartnerEarningsAdmin() {
       {/* Adjust Modal */}
       <Modal visible={adjustModal.visible} transparent animationType="fade">
         <View style={s.modalOverlay}>
-          <View style={[s.modalContent, { backgroundColor: isDark ? '#1E293B' : '#fff' }]}>
+          <View style={[s.modalContent, { backgroundColor: isDark ? colors.slateDark : colors.card }]}>
             <Text style={[s.modalTitle, { color: colors.text }]}>Adjust Earnings: {adjustModal.name}</Text>
 
             <View style={s.toggleRow}>
               <TouchableOpacity
-                style={[s.toggleBtn, adjustType === 'credit' && { backgroundColor: '#10B981' }]}
+                style={[s.toggleBtn, adjustType === 'credit' && { backgroundColor: colors.success }]}
                 onPress={() => setAdjustType('credit')}
               >
-                <Text style={{ color: adjustType === 'credit' ? '#fff' : colors.text }}>Credit</Text>
+                <Text style={{ color: adjustType === 'credit' ? colors.card : colors.text }}>Credit</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[s.toggleBtn, adjustType === 'debit' && { backgroundColor: '#EF4444' }]}
+                style={[s.toggleBtn, adjustType === 'debit' && { backgroundColor: colors.error }]}
                 onPress={() => setAdjustType('debit')}
               >
-                <Text style={{ color: adjustType === 'debit' ? '#fff' : colors.text }}>Debit</Text>
+                <Text style={{ color: adjustType === 'debit' ? colors.card : colors.text }}>Debit</Text>
               </TouchableOpacity>
             </View>
 
             <TextInput
-              style={[s.modalInput, { color: colors.text, borderColor: isDark ? '#334155' : '#D1D5DB' }]}
+              style={[s.modalInput, { color: colors.text, borderColor: isDark ? Colors.dark.border : colors.gray300 }]}
               placeholder="Amount (NC)"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
               keyboardType="numeric"
               value={adjustAmount}
               onChangeText={setAdjustAmount}
             />
             <TextInput
-              style={[s.modalInput, s.modalTextArea, { color: colors.text, borderColor: isDark ? '#334155' : '#D1D5DB' }]}
+              style={[s.modalInput, s.modalTextArea, { color: colors.text, borderColor: isDark ? Colors.dark.border : colors.gray300 }]}
               placeholder="Reason (required)"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
               multiline
               value={adjustReason}
               onChangeText={setAdjustReason}
@@ -440,10 +440,10 @@ export default function PartnerEarningsAdmin() {
 
             <View style={s.modalActions}>
               <TouchableOpacity style={s.modalCancel} onPress={() => setAdjustModal({ visible: false, userId: '', name: '' })}>
-                <Text style={{ color: '#6B7280' }}>Cancel</Text>
+                <Text style={{ color: colors.mutedDark }}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[s.modalConfirm, { backgroundColor: colors.tint }]} onPress={handleAdjust}>
-                <Text style={{ color: '#fff', fontWeight: '600' }}>Confirm</Text>
+                <Text style={{ color: colors.card, fontWeight: '600' }}>Confirm</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -476,7 +476,7 @@ const s = StyleSheet.create({
   // Tables
   tableCard: { borderRadius: 12, padding: 16, marginBottom: 12, elevation: 1 },
   tableTitle: { fontSize: 16, fontWeight: '600', marginBottom: 12 },
-  tableRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: '#E5E7EB' },
+  tableRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: Colors.light.gray200 },
   tableCell: { flex: 1, fontSize: 13 },
   tableCellSmall: { width: 70, fontSize: 12, textAlign: 'right' },
 
@@ -487,10 +487,10 @@ const s = StyleSheet.create({
   // User cards
   userCard: { borderRadius: 12, padding: 14, marginBottom: 10, elevation: 1 },
   userHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1a3a52', justifyContent: 'center', alignItems: 'center' },
-  avatarText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.light.navy, justifyContent: 'center', alignItems: 'center' },
+  avatarText: { color: Colors.light.card, fontWeight: '700', fontSize: 15 },
   userName: { fontSize: 14, fontWeight: '600' },
-  adjustBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#D1D5DB' },
+  adjustBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: Colors.light.gray300 },
   userStats: { flexDirection: 'row', marginTop: 10, gap: 4 },
   userStat: { flex: 1, alignItems: 'center' },
   userStatValue: { fontSize: 14, fontWeight: '600', marginTop: 2 },
@@ -507,14 +507,14 @@ const s = StyleSheet.create({
   fieldInputWrap: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   fieldInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, width: 80, textAlign: 'right', fontSize: 14 },
   saveBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginTop: 8, marginBottom: 16 },
-  saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  saveBtnText: { color: Colors.light.card, fontSize: 16, fontWeight: '600' },
 
   // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   modalContent: { width: '90%', maxWidth: 400, borderRadius: 16, padding: 24 },
   modalTitle: { fontSize: 18, fontWeight: '600', marginBottom: 16 },
   toggleRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 8, alignItems: 'center', borderWidth: 1, borderColor: '#D1D5DB' },
+  toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 8, alignItems: 'center', borderWidth: 1, borderColor: Colors.light.gray300 },
   modalInput: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, marginBottom: 12 },
   modalTextArea: { height: 80, textAlignVertical: 'top' },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12, marginTop: 8 },

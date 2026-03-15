@@ -25,11 +25,11 @@ interface GiftCardFormData {
 }
 const CATEGORIES = ['All', 'Food', 'Shopping', 'Entertainment', 'Travel', 'Beauty', 'Other'];
 const CAT_COLORS: Record<string, string> = {
-  Food: '#F97316', Shopping: '#8B5CF6', Entertainment: '#EC4899',
-  Travel: '#06B6D4', Beauty: '#F43F5E', Other: '#6B7280',
+  Food: Colors.light.orange, Shopping: Colors.light.purple, Entertainment: Colors.light.pink,
+  Travel: Colors.light.cyan, Beauty: '#F43F5E', Other: Colors.light.mutedDark,
 };
 const DEFAULT_FORM: GiftCardFormData = {
-  name: '', description: '', category: 'Other', color: '#3B82F6', logo: '',
+  name: '', description: '', category: 'Other', color: Colors.light.info, logo: '',
   denominations: '', cashbackPercentage: '', validityDays: '365',
   termsAndConditions: '', storeId: '', isActive: true,
 };
@@ -76,7 +76,7 @@ export default function GiftCardsAdminScreen() {
     setEditingCard(card);
     setFormData({
       name: card.name, description: card.description || '', category: card.category,
-      color: card.color || '#3B82F6', logo: card.logo || '',
+      color: card.color || colors.info, logo: card.logo || '',
       denominations: (card.denominations || []).join(', '),
       cashbackPercentage: String(card.cashbackPercentage || ''),
       validityDays: String(card.validityDays || 365),
@@ -128,7 +128,7 @@ export default function GiftCardsAdminScreen() {
 
   // RENDERERS
   const renderCard = ({ item }: { item: GiftCard }) => {
-    const catColor = CAT_COLORS[item.category] || '#6B7280';
+    const catColor = CAT_COLORS[item.category] || colors.mutedDark;
     return (
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[styles.colorStrip, { backgroundColor: item.color || catColor }]} />
@@ -156,20 +156,20 @@ export default function GiftCardsAdminScreen() {
               </View>
             )}
             <View style={[styles.statusBadge, item.isActive ? styles.activeBg : styles.inactiveBg]}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: item.isActive ? '#059669' : '#6B7280' }}>
+              <Text style={{ fontSize: 11, fontWeight: '600', color: item.isActive ? colors.successDark : colors.mutedDark }}>
                 {item.isActive ? 'Active' : 'Inactive'}
               </Text>
             </View>
           </View>
           <View style={styles.cardActions}>
             <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(item)}>
-              <Ionicons name="create-outline" size={18} color="#3B82F6" />
-              <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+              <Ionicons name="create-outline" size={18} color={colors.info} />
+              <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
             </TouchableOpacity>
             {item.isActive && (
               <TouchableOpacity style={styles.actionBtn} onPress={() => handleDeactivate(item)}>
-                <Ionicons name="close-circle-outline" size={18} color="#EF4444" />
-                <Text style={[styles.actionText, { color: '#EF4444' }]}>Deactivate</Text>
+                <Ionicons name="close-circle-outline" size={18} color={colors.error} />
+                <Text style={[styles.actionText, { color: colors.error }]}>Deactivate</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -183,7 +183,7 @@ export default function GiftCardsAdminScreen() {
       style={[styles.formInput, opts?.multi && styles.multiline, { color: colors.text, borderColor: colors.border }]}
       value={String(formData[key])}
       onChangeText={(v) => setFormData(p => ({ ...p, [key]: v }))}
-      placeholder={ph} placeholderTextColor="#9CA3AF"
+      placeholder={ph} placeholderTextColor={colors.muted}
       multiline={opts?.multi} keyboardType={opts?.num ? 'numeric' : 'default'}
     />
   );
@@ -200,7 +200,7 @@ export default function GiftCardsAdminScreen() {
             {editingCard ? 'Edit Gift Card' : 'New Gift Card'}
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
-            {isSaving ? <ActivityIndicator size="small" color="#3B82F6" /> : <Text style={styles.saveBtn}>Save</Text>}
+            {isSaving ? <ActivityIndicator size="small" color={colors.info} /> : <Text style={styles.saveBtn}>Save</Text>}
           </TouchableOpacity>
         </View>
         <ScrollView style={styles.formScroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -222,7 +222,7 @@ export default function GiftCardsAdminScreen() {
           <View style={styles.colorRow}>
             <TextInput style={[styles.formInput, { flex: 1, color: colors.text, borderColor: colors.border }]}
               value={formData.color} onChangeText={(v) => setFormData(p => ({ ...p, color: v }))}
-              placeholder="#3B82F6" placeholderTextColor="#9CA3AF" />
+              placeholder={colors.info} placeholderTextColor={colors.muted} />
             <View style={[styles.colorBox, { backgroundColor: formData.color || '#CCC' }]} />
           </View>
           <Text style={styles.formLabel}>Logo URL</Text>
@@ -240,7 +240,7 @@ export default function GiftCardsAdminScreen() {
           <View style={styles.switchRow}>
             <Text style={styles.formLabel}>Active</Text>
             <Switch value={formData.isActive} onValueChange={(v) => setFormData(p => ({ ...p, isActive: v }))}
-              trackColor={{ false: '#E2E8F0', true: '#3B82F6' }} thumbColor="#FFFFFF" />
+              trackColor={{ false: colors.border, true: colors.info }} thumbColor={colors.card} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -253,7 +253,7 @@ export default function GiftCardsAdminScreen() {
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Gift Cards</Text>
         <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.createBtnText}>Add Gift Card</Text>
         </TouchableOpacity>
       </View>
@@ -268,18 +268,18 @@ export default function GiftCardsAdminScreen() {
           ))}
         </ScrollView>
         <View style={styles.toggleRow}>
-          <Text style={{ fontSize: 12, color: '#6B7280', marginRight: 6 }}>Active only</Text>
+          <Text style={{ fontSize: 12, color: colors.mutedDark, marginRight: 6 }}>Active only</Text>
           <Switch value={showActiveOnly === true}
             onValueChange={(v) => setShowActiveOnly(v ? true : undefined)}
-            trackColor={{ false: '#E2E8F0', true: '#10B981' }} thumbColor="#FFFFFF" />
+            trackColor={{ false: colors.border, true: colors.success }} thumbColor={colors.card} />
         </View>
       </View>
       <FlatList data={cards} renderItem={renderCard} keyExtractor={(item) => item._id}
         contentContainerStyle={{ padding: 16 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={loading
-          ? <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
-          : <View style={styles.emptyBox}><Ionicons name="gift-outline" size={48} color="#D1D5DB" />
+          ? <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
+          : <View style={styles.emptyBox}><Ionicons name="gift-outline" size={48} color={colors.gray300} />
               <Text style={styles.emptyText}>No gift cards found</Text></View>} />
       {renderFormModal()}
     </View>
@@ -293,14 +293,14 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1 },
   headerTitle: { fontSize: 22, fontWeight: '700' },
-  createBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#3B82F6', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4 },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
-  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  createBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.info, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
+  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   filterRow: { flexDirection: 'row', marginBottom: 6 },
-  filterChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: '#F3F4F6', marginRight: 8 },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  chipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  chipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, backgroundColor: Colors.light.backgroundSecondary, marginRight: 8 },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  chipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  chipTextActive: { color: Colors.light.card, fontWeight: '600' },
   toggleRow: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
   card: { borderRadius: 12, marginBottom: 10, borderWidth: 1, flexDirection: 'row', overflow: 'hidden' },
   colorStrip: { width: 5 },
@@ -311,28 +311,28 @@ const styles = StyleSheet.create({
   catBadgeText: { fontSize: 11, fontWeight: '600' },
   denomRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 },
   denomPill: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
-  denomText: { fontSize: 11, fontWeight: '600', color: '#374151' },
-  moreText: { fontSize: 11, color: '#9CA3AF', alignSelf: 'center' },
+  denomText: { fontSize: 11, fontWeight: '600', color: Colors.light.gray700 },
+  moreText: { fontSize: 11, color: Colors.light.muted, alignSelf: 'center' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
-  cashbackBadge: { backgroundColor: '#D1FAE5', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  cashbackText: { fontSize: 11, fontWeight: '600', color: '#059669' },
+  cashbackBadge: { backgroundColor: Colors.light.successLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  cashbackText: { fontSize: 11, fontWeight: '600', color: Colors.light.successDark },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  activeBg: { backgroundColor: '#D1FAE5' },
-  inactiveBg: { backgroundColor: '#F3F4F6' },
-  cardActions: { flexDirection: 'row', gap: 12, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10 },
+  activeBg: { backgroundColor: Colors.light.successLight },
+  inactiveBg: { backgroundColor: Colors.light.backgroundSecondary },
+  cardActions: { flexDirection: 'row', gap: 12, borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 4, paddingHorizontal: 6 },
   actionText: { fontSize: 12, fontWeight: '500' },
   modalContainer: { flex: 1 },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
   formInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14 },
   multiline: { minHeight: 70, textAlignVertical: 'top' },
   colorRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  colorBox: { width: 32, height: 32, borderRadius: 6, borderWidth: 1, borderColor: '#E5E7EB' },
+  colorBox: { width: 32, height: 32, borderRadius: 6, borderWidth: 1, borderColor: Colors.light.gray200 },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 },
   emptyBox: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
 });

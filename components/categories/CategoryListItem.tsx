@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Switch, ActivityIndicator, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MainCategory } from '../../services/api/categories';
+import { Colors } from '../../constants/Colors';
 
 interface CategoryListItemProps {
   category: MainCategory;
@@ -17,7 +18,7 @@ interface CategoryListItemProps {
 const isIoniconName = (icon: string) => /^[a-z0-9-]+$/.test(icon) && icon.length > 2;
 
 const CategoryListItem = React.memo(({ category, isProcessing, onToggle, onEditConfig, onToggleFeatured, onDelete, colors }: CategoryListItemProps) => {
-  const metadataColor = category.metadata?.color || '#6B7280';
+  const metadataColor = category.metadata?.color || Colors.light.secondaryText;
   const isFeatured = category.metadata?.featured || false;
   const updatedStr = category.updatedAt
     ? new Date(category.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -57,8 +58,8 @@ const CategoryListItem = React.memo(({ category, isProcessing, onToggle, onEditC
           <Switch
             value={category.isActive}
             onValueChange={onToggle}
-            trackColor={{ false: '#D1D5DB', true: `${colors.success}80` }}
-            thumbColor={category.isActive ? colors.success : '#9CA3AF'}
+            trackColor={{ false: Colors.light.border, true: `${colors.success}80` }}
+            thumbColor={category.isActive ? colors.success : Colors.light.icon}
           />
         )}
       </View>

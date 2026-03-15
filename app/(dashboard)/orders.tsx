@@ -186,7 +186,7 @@ export default function OrdersScreen() {
       case 'confirmed':
       case 'preparing':
       case 'ready': return colors.info;
-      case 'dispatched': return '#8B5CF6';
+      case 'dispatched': return colors.purple;
       case 'returned': return '#795548';
       case 'cancelled':
       case 'refunded': return colors.error;
@@ -246,7 +246,7 @@ export default function OrdersScreen() {
             <Text
               style={[
                 styles.filterChipText,
-                { color: statusFilter === status ? '#FFFFFF' : colors.text },
+                { color: statusFilter === status ? colors.card : colors.text },
               ]}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -263,7 +263,7 @@ export default function OrdersScreen() {
             style={[
               styles.filterChip,
               {
-                backgroundColor: fulfillmentFilter === ft ? '#1a3a52' : colors.card,
+                backgroundColor: fulfillmentFilter === ft ? colors.navy : colors.card,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 4,
@@ -278,13 +278,13 @@ export default function OrdersScreen() {
               <Ionicons
                 name={(FULFILLMENT_ICONS[ft] || 'help-circle-outline') as any}
                 size={13}
-                color={fulfillmentFilter === ft ? '#FFFFFF' : colors.icon}
+                color={fulfillmentFilter === ft ? colors.card : colors.icon}
               />
             )}
             <Text
               style={[
                 styles.filterChipText,
-                { color: fulfillmentFilter === ft ? '#FFFFFF' : colors.text },
+                { color: fulfillmentFilter === ft ? colors.card : colors.text },
               ]}
             >
               {ft === 'all' ? 'All Types' : FULFILLMENT_LABELS[ft] || ft}
@@ -328,9 +328,9 @@ export default function OrdersScreen() {
                 <Ionicons
                   name={(FULFILLMENT_ICONS[item.fulfillmentType] || 'help-circle-outline') as any}
                   size={11}
-                  color="#1a3a52"
+                  color={colors.navy}
                 />
-                <Text style={{ fontSize: 10, fontWeight: '600', color: '#1a3a52' }}>
+                <Text style={{ fontSize: 10, fontWeight: '600', color: colors.navy }}>
                   {FULFILLMENT_LABELS[item.fulfillmentType] || item.fulfillmentType}
                 </Text>
               </View>
@@ -414,10 +414,10 @@ export default function OrdersScreen() {
               {lockFee > 0 && (
                 <View style={styles.feeRow}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Ionicons name="lock-closed" size={13} color="#059669" />
-                    <Text style={[styles.feeLabel, { color: '#059669' }]}>Lock Fee Paid</Text>
+                    <Ionicons name="lock-closed" size={13} color={colors.successDark} />
+                    <Text style={[styles.feeLabel, { color: colors.successDark }]}>Lock Fee Paid</Text>
                   </View>
-                  <Text style={[styles.feeValue, { color: '#059669' }]}>
+                  <Text style={[styles.feeValue, { color: colors.successDark }]}>
                     {formatCurrency(lockFee)}
                   </Text>
                 </View>
@@ -425,10 +425,10 @@ export default function OrdersScreen() {
               {checkoutCoins > 0 && (
                 <View style={styles.feeRow}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Ionicons name="wallet" size={13} color="#7C3AED" />
-                    <Text style={[styles.feeLabel, { color: '#7C3AED' }]}>Coins Used at Checkout</Text>
+                    <Ionicons name="wallet" size={13} color={colors.purpleDark} />
+                    <Text style={[styles.feeLabel, { color: colors.purpleDark }]}>Coins Used at Checkout</Text>
                   </View>
-                  <Text style={[styles.feeValue, { color: '#7C3AED' }]}>
+                  <Text style={[styles.feeValue, { color: colors.purpleDark }]}>
                     {formatCurrency(checkoutCoins)}
                   </Text>
                 </View>
@@ -436,12 +436,12 @@ export default function OrdersScreen() {
               {cashback > 0 && (
                 <View style={styles.feeRow}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Ionicons name="gift" size={13} color="#D97706" />
-                    <Text style={[styles.feeLabel, { color: '#D97706' }]}>
+                    <Ionicons name="gift" size={13} color={colors.warningDark} />
+                    <Text style={[styles.feeLabel, { color: colors.warningDark }]}>
                       {item.status === 'delivered' ? 'Cashback Earned' : 'Cashback (after delivery)'}
                     </Text>
                   </View>
-                  <Text style={[styles.feeValue, { color: '#D97706' }]}>
+                  <Text style={[styles.feeValue, { color: colors.warningDark }]}>
                     {formatCurrency(cashback)}
                   </Text>
                 </View>
@@ -459,10 +459,10 @@ export default function OrdersScreen() {
               disabled={processingOrder === item._id}
             >
               {processingOrder === item._id ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <>
-                  <Ionicons name="refresh" size={16} color="#FFFFFF" />
+                  <Ionicons name="refresh" size={16} color={colors.card} />
                   <Text style={styles.actionButtonText}>Refund</Text>
                 </>
               )}
@@ -478,10 +478,10 @@ export default function OrdersScreen() {
               disabled={processingOrder === item._id}
             >
               {processingOrder === item._id ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <>
-                  <Ionicons name="close" size={16} color="#FFFFFF" />
+                  <Ionicons name="close" size={16} color={colors.card} />
                   <Text style={styles.actionButtonText}>Cancel</Text>
                 </>
               )}
@@ -498,10 +498,10 @@ export default function OrdersScreen() {
               disabled={processingOrder === item._id}
             >
               {processingOrder === item._id ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <>
-                  <Ionicons name="swap-horizontal" size={16} color="#FFFFFF" />
+                  <Ionicons name="swap-horizontal" size={16} color={colors.card} />
                   <Text style={styles.actionButtonText}>Update Status</Text>
                 </>
               )}
@@ -565,13 +565,13 @@ export default function OrdersScreen() {
                 {/* Fulfillment badge in modal */}
                 {selectedOrder.fulfillmentType && selectedOrder.fulfillmentType !== 'delivery' && (
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 6, backgroundColor: '#f0f6fa', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, alignSelf: 'flex-start' }}>
-                    <Ionicons name={(FULFILLMENT_ICONS[selectedOrder.fulfillmentType] || 'help-circle-outline') as any} size={14} color="#1a3a52" />
-                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#1a3a52' }}>{FULFILLMENT_LABELS[selectedOrder.fulfillmentType] || selectedOrder.fulfillmentType}</Text>
+                    <Ionicons name={(FULFILLMENT_ICONS[selectedOrder.fulfillmentType] || 'help-circle-outline') as any} size={14} color={colors.navy} />
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: colors.navy }}>{FULFILLMENT_LABELS[selectedOrder.fulfillmentType] || selectedOrder.fulfillmentType}</Text>
                     {selectedOrder.fulfillmentDetails?.tableNumber && (
-                      <Text style={{ fontSize: 12, color: '#1a3a52' }}>• Table {selectedOrder.fulfillmentDetails.tableNumber}</Text>
+                      <Text style={{ fontSize: 12, color: colors.navy }}>• Table {selectedOrder.fulfillmentDetails.tableNumber}</Text>
                     )}
                     {selectedOrder.fulfillmentDetails?.vehicleInfo && (
-                      <Text style={{ fontSize: 12, color: '#1a3a52' }}>• {selectedOrder.fulfillmentDetails.vehicleInfo}</Text>
+                      <Text style={{ fontSize: 12, color: colors.navy }}>• {selectedOrder.fulfillmentDetails.vehicleInfo}</Text>
                     )}
                   </View>
                 )}
@@ -716,7 +716,7 @@ export default function OrdersScreen() {
                 ]}
                 onPress={handleReasonConfirm}
               >
-                <Text style={[styles.reasonModalButtonText, { color: '#FFFFFF' }]}>
+                <Text style={[styles.reasonModalButtonText, { color: colors.card }]}>
                   {reasonAction === 'refund' ? 'Refund' : 'Cancel Order'}
                 </Text>
               </TouchableOpacity>
@@ -824,7 +824,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: Colors.light.border,
   },
   totalLabel: {
     fontSize: 12,
@@ -884,7 +884,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 13,
   },
@@ -965,7 +965,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 16,
   },

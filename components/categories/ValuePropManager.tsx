@@ -4,13 +4,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { PageConfig } from '../../services/api/categories';
 import FormField from './FormField';
 import IconInput from './IconInput';
+import { Colors } from '../../constants/Colors';
 import ColorInput from './ColorInput';
 import { showConfirm } from '../../utils/alert';
 
 interface ValuePropManagerProps {
   pageConfig: PageConfig;
   setPageConfig: React.Dispatch<React.SetStateAction<PageConfig>>;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 const ValuePropManager = React.memo(({ pageConfig, setPageConfig, colors }: ValuePropManagerProps) => {
@@ -56,7 +57,7 @@ const ValuePropManager = React.memo(({ pageConfig, setPageConfig, colors }: Valu
           <View style={styles.cardHeader}>
             <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
             <TouchableOpacity onPress={() => removeItem(index)}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
             </TouchableOpacity>
           </View>
 

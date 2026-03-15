@@ -148,8 +148,8 @@ export default function UgcModerationScreen() {
         {item.thumbnailUrl ? (
           <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnail} resizeMode="cover" />
         ) : (
-          <View style={[styles.thumbnail, { backgroundColor: '#1F2937' }]}>
-            <Ionicons name="videocam" size={32} color="#6B7280" />
+          <View style={[styles.thumbnail, { backgroundColor: colors.gray800 }]}>
+            <Ionicons name="videocam" size={32} color={colors.mutedDark} />
           </View>
         )}
         <View style={styles.playOverlay}>
@@ -209,10 +209,10 @@ export default function UgcModerationScreen() {
           disabled={processingId === item.id}
         >
           {processingId === item.id ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <>
-              <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+              <Ionicons name="checkmark" size={18} color={colors.card} />
               <Text style={styles.actionButtonText}>Approve & Publish</Text>
             </>
           )}
@@ -225,7 +225,7 @@ export default function UgcModerationScreen() {
           }}
           disabled={processingId === item.id}
         >
-          <Ionicons name="close" size={18} color="#FFFFFF" />
+          <Ionicons name="close" size={18} color={colors.card} />
           <Text style={styles.actionButtonText}>Reject</Text>
         </TouchableOpacity>
       </View>
@@ -244,10 +244,10 @@ export default function UgcModerationScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.card }]}>
-        <Ionicons name="videocam" size={24} color="#EF4444" />
+        <Ionicons name="videocam" size={24} color={colors.error} />
         <Text style={[styles.headerTitle, { color: colors.text }]}>UGC Reel Moderation</Text>
-        <View style={[styles.countBadge, { backgroundColor: '#FEE2E2' }]}>
-          <Text style={[styles.countText, { color: '#EF4444' }]}>{reels.length} pending</Text>
+        <View style={[styles.countBadge, { backgroundColor: colors.errorLight }]}>
+          <Text style={[styles.countText, { color: colors.error }]}>{reels.length} pending</Text>
         </View>
       </View>
 
@@ -303,7 +303,7 @@ export default function UgcModerationScreen() {
                 style={[styles.modalButton, { backgroundColor: colors.error }]}
                 onPress={handleReject}
               >
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Reject</Text>
+                <Text style={[styles.modalButtonText, { color: colors.card }]}>Reject</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 4,
   },
-  durationText: { color: '#FFFFFF', fontSize: 12, fontWeight: '600' },
+  durationText: { color: Colors.light.card, fontSize: 12, fontWeight: '600' },
   reelInfo: { padding: 14 },
   reelTitle: { fontSize: 16, fontWeight: '600' },
   reelDescription: { fontSize: 13, marginTop: 4, lineHeight: 18 },
@@ -383,9 +383,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  approveButton: { backgroundColor: '#10B981' },
-  rejectButton: { backgroundColor: '#EF4444' },
-  actionButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 13 },
+  approveButton: { backgroundColor: Colors.light.success },
+  rejectButton: { backgroundColor: Colors.light.error },
+  actionButtonText: { color: Colors.light.card, fontWeight: '600', fontSize: 13 },
   emptyContainer: { padding: 40, alignItems: 'center' },
   emptyText: { marginTop: 12, fontSize: 16 },
   // Modal

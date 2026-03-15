@@ -187,10 +187,10 @@ export default function PollsScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return '#10B981';
-      case 'closed': return '#F59E0B';
-      case 'archived': return '#6B7280';
-      default: return '#3B82F6';
+      case 'active': return colors.success;
+      case 'closed': return colors.warning;
+      case 'archived': return colors.mutedDark;
+      default: return colors.info;
     }
   };
 
@@ -205,7 +205,7 @@ export default function PollsScreen() {
             setIsLoading(true);
           }}
         >
-          <Text style={[styles.tabText, { color: activeTab === tab ? '#FFFFFF' : colors.icon }]}>
+          <Text style={[styles.tabText, { color: activeTab === tab ? colors.card : colors.icon }]}>
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </Text>
         </TouchableOpacity>
@@ -227,7 +227,7 @@ export default function PollsScreen() {
       >
         <View style={styles.cardHeader}>
           <View style={[styles.avatar, { backgroundColor: '#EEF2FF' }]}>
-            <Ionicons name="bar-chart" size={20} color="#6366F1" />
+            <Ionicons name="bar-chart" size={20} color={colors.indigo} />
           </View>
           <View style={styles.cardInfo}>
             <Text style={[styles.pollTitle, { color: colors.text }]} numberOfLines={1}>
@@ -239,8 +239,8 @@ export default function PollsScreen() {
           </View>
           <View style={styles.badges}>
             {item.isDaily && (
-              <View style={[styles.badge, { backgroundColor: '#FEF3C7' }]}>
-                <Text style={{ color: '#D97706', fontSize: 10, fontWeight: '600' }}>DAILY</Text>
+              <View style={[styles.badge, { backgroundColor: colors.warningLight }]}>
+                <Text style={{ color: colors.warningDark, fontSize: 10, fontWeight: '600' }}>DAILY</Text>
               </View>
             )}
             <View style={[styles.badge, { backgroundColor: `${getStatusColor(item.status)}20` }]}>
@@ -281,17 +281,17 @@ export default function PollsScreen() {
         {item.status === 'active' && (
           <View style={styles.actionButtons}>
             <TouchableOpacity
-              style={[styles.smallButton, { backgroundColor: '#F59E0B' }]}
+              style={[styles.smallButton, { backgroundColor: colors.warning }]}
               onPress={() => handleClosePoll(item._id)}
             >
-              <Ionicons name="lock-closed" size={14} color="#FFFFFF" />
+              <Ionicons name="lock-closed" size={14} color={colors.card} />
               <Text style={styles.smallButtonText}>Close</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.smallButton, { backgroundColor: '#6B7280' }]}
+              style={[styles.smallButton, { backgroundColor: colors.mutedDark }]}
               onPress={() => handleArchivePoll(item._id)}
             >
-              <Ionicons name="archive" size={14} color="#FFFFFF" />
+              <Ionicons name="archive" size={14} color={colors.card} />
               <Text style={styles.smallButtonText}>Archive</Text>
             </TouchableOpacity>
           </View>
@@ -312,13 +312,13 @@ export default function PollsScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.card }]}>
-        <Ionicons name="bar-chart" size={24} color="#6366F1" />
+        <Ionicons name="bar-chart" size={24} color={colors.indigo} />
         <Text style={[styles.headerTitle, { color: colors.text }]}>Poll Management</Text>
         <TouchableOpacity
           style={[styles.createBtn, { backgroundColor: colors.tint }]}
           onPress={() => setShowCreateModal(true)}
         >
-          <Ionicons name="add" size={18} color="#FFFFFF" />
+          <Ionicons name="add" size={18} color={colors.card} />
           <Text style={styles.createBtnText}>New Poll</Text>
         </TouchableOpacity>
       </View>
@@ -413,8 +413,8 @@ export default function PollsScreen() {
                 <Switch
                   value={newIsDaily}
                   onValueChange={setNewIsDaily}
-                  trackColor={{ false: '#E2E8F0', true: colors.tint }}
-                  thumbColor="#FFFFFF"
+                  trackColor={{ false: colors.border, true: colors.tint }}
+                  thumbColor={colors.card}
                 />
               </View>
 
@@ -434,9 +434,9 @@ export default function PollsScreen() {
                   disabled={isCreating}
                 >
                   {isCreating ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
+                    <ActivityIndicator size="small" color={colors.card} />
                   ) : (
-                    <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Create</Text>
+                    <Text style={[styles.modalButtonText, { color: colors.card }]}>Create</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -540,14 +540,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  createBtnText: { color: '#FFFFFF', fontWeight: '600', fontSize: 13 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 13 },
   tabsContainer: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 8, gap: 8 },
   tab: {
     flex: 1,
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
-    backgroundColor: '#E2E8F0',
+    backgroundColor: Colors.light.border,
   },
   tabText: { fontSize: 14, fontWeight: '600' },
   listContent: { padding: 16, paddingTop: 8 },
@@ -585,7 +585,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     gap: 4,
   },
-  smallButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 12 },
+  smallButtonText: { color: Colors.light.card, fontWeight: '600', fontSize: 12 },
   emptyContainer: { padding: 40, alignItems: 'center' },
   emptyText: { marginTop: 12, fontSize: 16 },
   // Create modal
@@ -618,7 +618,7 @@ const styles = StyleSheet.create({
   // Detail modal
   detailDescription: { fontSize: 14, lineHeight: 20, marginBottom: 8 },
   detailStats: { flexDirection: 'row', marginTop: 12, gap: 8 },
-  detailStat: { flex: 1, alignItems: 'center', padding: 10, borderRadius: 8, backgroundColor: '#F8FAFC' },
+  detailStat: { flex: 1, alignItems: 'center', padding: 10, borderRadius: 8, backgroundColor: Colors.light.background },
   detailStatValue: { fontSize: 18, fontWeight: '700' },
   detailStatLabel: { fontSize: 11, marginTop: 2 },
   resultRow: { marginBottom: 12 },

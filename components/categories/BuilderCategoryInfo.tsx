@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MainCategory } from '../../services/api/categories';
+import { Colors } from '../../constants/Colors';
 
 const isIoniconName = (icon: string) => /^[a-z0-9-]+$/.test(icon) && icon.length > 2;
 
@@ -11,7 +12,7 @@ interface BuilderCategoryInfoProps {
 }
 
 const BuilderCategoryInfo = React.memo(({ category, colors }: BuilderCategoryInfoProps) => {
-  const metadataColor = category.metadata?.color || '#6B7280';
+  const metadataColor = category.metadata?.color || Colors.light.secondaryText;
   const updatedStr = category.updatedAt
     ? new Date(category.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : '';

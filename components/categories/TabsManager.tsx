@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PageConfig } from '../../services/api/categories';
 import FormField from './FormField';
+import { Colors } from '../../constants/Colors';
 import IconInput from './IconInput';
 import ChipSelector from './ChipSelector';
 import { showConfirm } from '../../utils/alert';
@@ -10,7 +11,7 @@ import { showConfirm } from '../../utils/alert';
 interface TabsManagerProps {
   pageConfig: PageConfig;
   setPageConfig: React.Dispatch<React.SetStateAction<PageConfig>>;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 const TabsManager = React.memo(({ pageConfig, setPageConfig, colors }: TabsManagerProps) => {
@@ -51,7 +52,7 @@ const TabsManager = React.memo(({ pageConfig, setPageConfig, colors }: TabsManag
           <View style={styles.cardHeader}>
             <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
             <TouchableOpacity onPress={() => removeTab(index)}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
             </TouchableOpacity>
           </View>
 
@@ -92,8 +93,8 @@ const TabsManager = React.memo(({ pageConfig, setPageConfig, colors }: TabsManag
               <Switch
                 value={tab.enabled}
                 onValueChange={(v) => updateTab(index, 'enabled', v)}
-                trackColor={{ false: '#D1D5DB', true: `${colors.success}80` }}
-                thumbColor={tab.enabled ? colors.success : '#9CA3AF'}
+                trackColor={{ false: colors.gray300, true: `${colors.success}80` }}
+                thumbColor={tab.enabled ? colors.success : Colors.light.icon}
               />
             </View>
           </View>

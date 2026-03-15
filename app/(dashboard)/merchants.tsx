@@ -184,7 +184,7 @@ export default function MerchantsScreen() {
       case 'approved': return colors.success;
       case 'pending': return colors.warning;
       case 'rejected': return colors.error;
-      case 'suspended': return '#6B7280';
+      case 'suspended': return colors.mutedDark;
       default: return colors.icon;
     }
   };
@@ -223,7 +223,7 @@ export default function MerchantsScreen() {
             <Text
               style={[
                 styles.filterChipText,
-                { color: statusFilter === status ? '#FFFFFF' : colors.text },
+                { color: statusFilter === status ? colors.card : colors.text },
               ]}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -286,10 +286,10 @@ export default function MerchantsScreen() {
             disabled={processingMerchant === item._id}
           >
             {processingMerchant === item._id ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+                <Ionicons name="checkmark" size={18} color={colors.card} />
                 <Text style={styles.actionButtonText}>Approve</Text>
               </>
             )}
@@ -302,7 +302,7 @@ export default function MerchantsScreen() {
             }}
             disabled={processingMerchant === item._id}
           >
-            <Ionicons name="close" size={18} color="#FFFFFF" />
+            <Ionicons name="close" size={18} color={colors.card} />
             <Text style={styles.actionButtonText}>Reject</Text>
           </TouchableOpacity>
         </View>
@@ -314,15 +314,15 @@ export default function MerchantsScreen() {
             style={[styles.actionButton, { backgroundColor: colors.info }]}
             onPress={() => handleViewDetails(item)}
           >
-            <Ionicons name="eye" size={18} color="#FFFFFF" />
+            <Ionicons name="eye" size={18} color={colors.card} />
             <Text style={styles.actionButtonText}>View Details</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: '#6B7280' }]}
+            style={[styles.actionButton, { backgroundColor: colors.mutedDark }]}
             onPress={() => handleSuspend(item._id)}
             disabled={processingMerchant === item._id}
           >
-            <Ionicons name="ban" size={18} color="#FFFFFF" />
+            <Ionicons name="ban" size={18} color={colors.card} />
             <Text style={styles.actionButtonText}>Suspend</Text>
           </TouchableOpacity>
         </View>
@@ -394,7 +394,7 @@ export default function MerchantsScreen() {
                 style={[styles.modalButton, { backgroundColor: colors.error }]}
                 onPress={handleReject}
               >
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Reject</Text>
+                <Text style={[styles.modalButtonText, { color: colors.card }]}>Reject</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -406,7 +406,7 @@ export default function MerchantsScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.suspendModalHeader}>
-              <Ionicons name="warning" size={24} color="#6B7280" />
+              <Ionicons name="warning" size={24} color={colors.mutedDark} />
               <Text style={[styles.modalTitle, { color: colors.text, marginBottom: 0 }]}>Suspend Merchant</Text>
             </View>
             <TextInput
@@ -430,10 +430,10 @@ export default function MerchantsScreen() {
                 <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: '#6B7280' }]}
+                style={[styles.modalButton, { backgroundColor: colors.mutedDark }]}
                 onPress={handleSuspendConfirm}
               >
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Suspend</Text>
+                <Text style={[styles.modalButtonText, { color: colors.card }]}>Suspend</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -456,7 +456,7 @@ export default function MerchantsScreen() {
                 {/* Merchant Info */}
                 <View style={styles.detailSection}>
                   <View style={styles.detailMerchantHeader}>
-                    <View style={[styles.detailAvatar, { backgroundColor: '#FEE2E2' }]}>
+                    <View style={[styles.detailAvatar, { backgroundColor: colors.errorLight }]}>
                       <Ionicons name="storefront" size={32} color={colors.tint} />
                     </View>
                     <View style={styles.detailMerchantInfo}>
@@ -581,7 +581,7 @@ export default function MerchantsScreen() {
                     <View>
                       <View style={[styles.walletCard, { backgroundColor: colors.tint }]}>
                         <View style={styles.walletIcon}>
-                          <Ionicons name="wallet" size={28} color="#FFFFFF" />
+                          <Ionicons name="wallet" size={28} color={colors.card} />
                         </View>
                         <View style={styles.walletInfo}>
                           <Text style={styles.walletLabel}>Available Balance</Text>
@@ -709,7 +709,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: Colors.light.errorLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -762,7 +762,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -943,7 +943,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   walletBalance: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontSize: 24,
     fontWeight: '700',
   },
@@ -984,7 +984,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 16,
   },

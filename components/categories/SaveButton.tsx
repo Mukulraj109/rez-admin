@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '@/constants/Colors';
 
 interface SaveButtonProps {
   onSave: () => void;
@@ -24,10 +25,10 @@ const SaveButton = React.memo(({ onSave, onReset, saving, isDirty, colors }: Sav
       disabled={saving || !isDirty}
     >
       {saving ? (
-        <ActivityIndicator size="small" color="#FFF" />
+        <ActivityIndicator size="small" color={colors.card} />
       ) : (
         <>
-          <Ionicons name="save" size={20} color="#FFF" />
+          <Ionicons name="save" size={20} color={colors.card} />
           <Text style={styles.saveText}>Save Page Config</Text>
           {isDirty && <View style={styles.dirtyDot} />}
         </>
@@ -42,7 +43,7 @@ export default SaveButton;
 const styles = StyleSheet.create({
   container: { marginTop: 20, gap: 10 },
   saveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 16, borderRadius: 14, gap: 8 },
-  saveText: { color: '#FFF', fontSize: 16, fontWeight: '700' },
+  saveText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
   dirtyDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#FCD34D' },
   resetBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 12, borderRadius: 10, borderWidth: 1, gap: 6 },
   resetText: { fontSize: 14, fontWeight: '600' },

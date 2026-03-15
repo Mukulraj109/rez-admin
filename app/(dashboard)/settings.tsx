@@ -30,7 +30,7 @@ function SettingItem({ icon, iconColor, title, subtitle, onPress, rightElement, 
 
   return (
     <TouchableOpacity
-      style={[styles.settingItem, { backgroundColor: colors.card }]}
+      style={[styles.settingItem, { backgroundColor: Colors.light.card }]}
       onPress={onPress}
       disabled={!onPress}
     >
@@ -38,13 +38,13 @@ function SettingItem({ icon, iconColor, title, subtitle, onPress, rightElement, 
         <Ionicons name={icon} size={20} color={iconColor} />
       </View>
       <View style={styles.settingContent}>
-        <Text style={[styles.settingTitle, { color: colors.text }]}>{title}</Text>
+        <Text style={[styles.settingTitle, { color: Colors.light.text }]}>{title}</Text>
         {subtitle && (
-          <Text style={[styles.settingSubtitle, { color: colors.icon }]}>{subtitle}</Text>
+          <Text style={[styles.settingSubtitle, { color: Colors.light.icon }]}>{subtitle}</Text>
         )}
       </View>
       {rightElement || (showChevron && onPress && (
-        <Ionicons name="chevron-forward" size={20} color={colors.icon} />
+        <Ionicons name="chevron-forward" size={20} color={Colors.light.icon} />
       ))}
     </TouchableOpacity>
   );
@@ -91,10 +91,10 @@ export default function SettingsScreen() {
 
   const getRoleColor = (role?: string) => {
     switch (role) {
-      case 'super_admin': return '#DC2626';
-      case 'admin': return '#7C3AED';
-      case 'operator': return '#3B82F6';
-      case 'support': return '#10B981';
+      case 'super_admin': return colors.errorDark;
+      case 'admin': return colors.purpleDark;
+      case 'operator': return colors.info;
+      case 'support': return colors.success;
       default: return colors.icon;
     }
   };
@@ -104,7 +104,7 @@ export default function SettingsScreen() {
       {/* Profile Section */}
       <View style={[styles.profileSection, { backgroundColor: colors.card }]}>
         <View style={[styles.avatar, { backgroundColor: colors.tint }]}>
-          <Ionicons name="person" size={32} color="#FFFFFF" />
+          <Ionicons name="person" size={32} color={colors.card} />
         </View>
         <View style={styles.profileInfo}>
           <Text style={[styles.profileName, { color: colors.text }]}>
@@ -127,14 +127,14 @@ export default function SettingsScreen() {
         <View style={styles.settingsGroup}>
           <SettingItem
             icon="flash"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Deals Section"
             subtitle="Manage deals that save money"
             onPress={() => router.push('/(dashboard)/homepage-deals')}
           />
           <SettingItem
             icon="sparkles"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Shop by Experience"
             subtitle="Manage homepage experiences"
             onPress={() => router.push('/(dashboard)/experiences')}
@@ -148,7 +148,7 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="apps"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Categories"
             subtitle="Manage main categories & page configs"
             onPress={() => router.push('/(dashboard)/categories')}
@@ -162,21 +162,21 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="rocket"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Extra Rewards"
             subtitle="Double cashback campaigns & coin drops"
             onPress={() => router.push('/(dashboard)/extra-rewards')}
           />
           <SettingItem
             icon="cash"
-            iconColor="#10B981"
+            iconColor={colors.success}
             title="Cash Store Management"
             subtitle="Vouchers, coupons, campaigns & analytics"
             onPress={() => router.push('/(dashboard)/cash-store')}
           />
           <SettingItem
             icon="airplane"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Travel Management"
             subtitle="Bookings, categories, cashback & analytics"
             onPress={() => router.push('/(dashboard)/travel')}
@@ -190,14 +190,14 @@ export default function SettingsScreen() {
         <View style={styles.settingsGroup}>
           <SettingItem
             icon="pricetag"
-            iconColor="#10B981"
+            iconColor={colors.success}
             title="Offers Management"
             subtitle="Create & manage all offers"
             onPress={() => router.push('/(dashboard)/offers')}
           />
           <SettingItem
             icon="layers"
-            iconColor="#6366F1"
+            iconColor={colors.indigo}
             title="Offers Page Sections"
             subtitle="Toggle, reorder & configure all 21 sections"
             onPress={() => router.push('/(dashboard)/offers-sections')}
@@ -211,42 +211,42 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="flame"
-            iconColor="#EF4444"
+            iconColor={colors.error}
             title="Hotspot Areas"
             subtitle="Manage geographic deal hotspots"
             onPress={() => router.push('/(dashboard)/hotspot-areas')}
           />
           <SettingItem
             icon="card"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
             title="Bank Offers"
             subtitle="Manage bank partnership offers"
             onPress={() => router.push('/(dashboard)/bank-offers')}
           />
           <SettingItem
             icon="document-text"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Upload Bill Stores"
             subtitle="Manage bill upload cashback stores"
             onPress={() => router.push('/(dashboard)/upload-bill-stores')}
           />
           <SettingItem
             icon="shield-checkmark"
-            iconColor="#10B981"
+            iconColor={colors.success}
             title="Exclusive Zones"
             subtitle="Manage student, corporate & birthday zones"
             onPress={() => router.push('/(dashboard)/exclusive-zones')}
           />
           <SettingItem
             icon="ribbon"
-            iconColor="#059669"
+            iconColor={colors.successDark}
             title="Special Profiles"
             subtitle="Manage defence, healthcare & other profiles"
             onPress={() => router.push('/(dashboard)/special-profiles')}
           />
           <SettingItem
             icon="trophy"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Loyalty Milestones"
             subtitle="Manage loyalty program milestones"
             onPress={() => router.push('/(dashboard)/loyalty-milestones')}
@@ -260,7 +260,7 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="diamond-outline"
-            iconColor="#C9A962"
+            iconColor={colors.gold}
             title="Privé"
             subtitle="Offers, vouchers, reputation & analytics"
             onPress={() => router.push('/(dashboard)/prive')}
@@ -274,21 +274,21 @@ export default function SettingsScreen() {
         <View style={styles.settingsGroup}>
           <SettingItem
             icon="gift"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Coin Rewards"
             subtitle="Review and approve rewards"
             onPress={() => router.push('/(dashboard)/coin-rewards')}
           />
           <SettingItem
             icon="wallet"
-            iconColor="#10B981"
+            iconColor={colors.success}
             title="Wallet Management"
             subtitle="Manage user wallets"
             onPress={() => router.push('/(dashboard)/wallet')}
           />
           <SettingItem
             icon="settings"
-            iconColor="#6366F1"
+            iconColor={colors.indigo}
             title="Wallet Config"
             subtitle="Transfer limits, cashback tiers, fraud thresholds"
             onPress={() => router.push('/(dashboard)/wallet-config')}
@@ -302,7 +302,7 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="card"
-            iconColor="#D97706"
+            iconColor={colors.warningDark}
             title="Gift Cards"
             subtitle="Manage gift card catalog"
             onPress={() => router.push('/(dashboard)/gift-cards-admin')}
@@ -316,49 +316,49 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="sparkles"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Surprise Coin Drops"
             subtitle="Schedule & manage surprise coin drops"
             onPress={() => router.push('/(dashboard)/surprise-coin-drops')}
           />
           <SettingItem
             icon="cash"
-            iconColor="#059669"
+            iconColor={colors.successDark}
             title="Merchant Withdrawals"
             subtitle="Review & process merchant withdrawals"
             onPress={() => router.push('/(dashboard)/merchant-withdrawals')}
           />
           <SettingItem
             icon="people"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
             title="Users"
             subtitle="Manage user accounts"
             onPress={() => router.push('/(dashboard)/users')}
           />
           <SettingItem
             icon="shield-checkmark"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Verifications"
             subtitle="Review student & zone verifications"
             onPress={() => router.push('/(dashboard)/verifications')}
           />
           <SettingItem
             icon="ribbon"
-            iconColor="#C9A962"
+            iconColor={colors.gold}
             title="Special Programs"
             subtitle="Student Zone, Corporate Perks, Privé"
             onPress={() => router.push('/(dashboard)/special-programs')}
           />
           <SettingItem
             icon="trophy"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Loyalty Management"
             subtitle="Manage user streaks, missions & coins"
             onPress={() => router.push('/(dashboard)/loyalty')}
           />
           <SettingItem
             icon="flag"
-            iconColor="#EF4444"
+            iconColor={colors.error}
             title="Challenges"
             subtitle="Manage Play & Earn challenges"
             onPress={() => router.push('/(dashboard)/challenges')}
@@ -379,35 +379,35 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="trophy"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Tournaments"
             subtitle="Manage tournaments & prize pools"
             onPress={() => router.push('/(dashboard)/tournaments')}
           />
           <SettingItem
             icon="book"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
             title="Learning Content"
             subtitle="Manage educational articles & rewards"
             onPress={() => router.push('/(dashboard)/learning-content')}
           />
           <SettingItem
             icon="game-controller"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
             title="Game Config"
             subtitle="Configure mini-games & rewards"
             onPress={() => router.push('/(dashboard)/game-config')}
           />
           <SettingItem
             icon="toggle"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Feature Flags"
             subtitle="Toggle sections & earning config"
             onPress={() => router.push('/(dashboard)/feature-flags')}
           />
           <SettingItem
             icon="medal"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Achievements"
             subtitle="Manage user achievements & badges"
             onPress={() => router.push('/(dashboard)/achievements')}
@@ -421,35 +421,35 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="stats-chart"
-            iconColor="#10B981"
+            iconColor={colors.success}
             title="Economy Dashboard"
             subtitle="Monitor coin economy & fraud"
             onPress={() => router.push('/(dashboard)/gamification-economy')}
           />
           <SettingItem
             icon="calendar"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Events Management"
             subtitle="Create & manage events"
             onPress={() => router.push('/(dashboard)/events')}
           />
           <SettingItem
             icon="layers"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Event Categories"
             subtitle="Manage event categories"
             onPress={() => router.push('/(dashboard)/event-categories')}
           />
           <SettingItem
             icon="gift"
-            iconColor="#10B981"
+            iconColor={colors.success}
             title="Event Rewards"
             subtitle="Configure event reward rules"
             onPress={() => router.push('/(dashboard)/event-rewards')}
           />
           <SettingItem
             icon="podium"
-            iconColor="#D97706"
+            iconColor={colors.warningDark}
             title="Leaderboard Config"
             subtitle="Manage leaderboards, prizes & anti-fraud"
             onPress={() => router.push('/(dashboard)/leaderboard-config')}
@@ -463,7 +463,7 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="card"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Value Cards"
             subtitle="Manage value proposition cards"
             onPress={() => router.push('/(dashboard)/value-cards')}
@@ -477,21 +477,21 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="cash"
-            iconColor="#059669"
+            iconColor={colors.successDark}
             title="Partner Earnings"
             subtitle="Track partner earnings & payouts"
             onPress={() => router.push('/(dashboard)/partner-earnings')}
           />
           <SettingItem
             icon="albums"
-            iconColor="#7C3AED"
+            iconColor={colors.purpleDark}
             title="Store Collections"
             subtitle="Manage curated store collections"
             onPress={() => router.push('/(dashboard)/store-collections')}
           />
           <SettingItem
             icon="receipt"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Cashback Rules"
             subtitle="Configure cashback rules & tiers"
             onPress={() => router.push('/(dashboard)/cashback-rules')}
@@ -505,14 +505,14 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="ticket"
-            iconColor="#D97706"
+            iconColor={colors.warningDark}
             title="Voucher Management"
             subtitle="Create & manage vouchers"
             onPress={() => router.push('/(dashboard)/voucher-management')}
           />
           <SettingItem
             icon="car"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
             title="Delivery Settings"
             subtitle="Configure delivery zones & fees"
             onPress={() => router.push('/(dashboard)/delivery-settings')}
@@ -533,28 +533,28 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="bar-chart"
-            iconColor="#6366F1"
+            iconColor={colors.indigo}
             title="Polls"
             subtitle="Create & manage polls"
             onPress={() => router.push('/(dashboard)/polls')}
           />
           <SettingItem
             icon="chatbubble-ellipses"
-            iconColor="#D97706"
+            iconColor={colors.warningDark}
             title="Offer Comments"
             subtitle="Moderate offer comments"
             onPress={() => router.push('/(dashboard)/offer-comments')}
           />
           <SettingItem
             icon="videocam"
-            iconColor="#EF4444"
+            iconColor={colors.error}
             title="UGC Reels"
             subtitle="Moderate user-created reels"
             onPress={() => router.push('/(dashboard)/ugc-moderation')}
           />
           <SettingItem
             icon="settings"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
             title="Engagement Config"
             subtitle="View reward settings & limits"
             onPress={() => router.push('/(dashboard)/engagement-config')}
@@ -568,7 +568,7 @@ export default function SettingsScreen() {
         <View style={styles.settingsGroup}>
           <SettingItem
             icon="notifications"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Push Notifications"
             subtitle={notificationsEnabled ? 'Enabled' : 'Disabled'}
             showChevron={false}
@@ -576,14 +576,14 @@ export default function SettingsScreen() {
               <Switch
                 value={notificationsEnabled}
                 onValueChange={setNotificationsEnabled}
-                trackColor={{ false: '#E2E8F0', true: colors.tint }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: colors.border, true: colors.tint }}
+                thumbColor={colors.card}
               />
             }
           />
           <SettingItem
             icon="moon"
-            iconColor="#6366F1"
+            iconColor={colors.indigo}
             title="Dark Mode"
             subtitle={darkModeEnabled ? 'Enabled' : 'Disabled'}
             showChevron={false}
@@ -591,8 +591,8 @@ export default function SettingsScreen() {
               <Switch
                 value={darkModeEnabled}
                 onValueChange={setDarkModeEnabled}
-                trackColor={{ false: '#E2E8F0', true: colors.tint }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: colors.border, true: colors.tint }}
+                thumbColor={colors.card}
               />
             }
           />
@@ -620,7 +620,7 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon="shield-checkmark"
-              iconColor="#10B981"
+              iconColor={colors.success}
               title="Security Settings"
               subtitle="Security policies"
               onPress={() => showAlert('Coming Soon', 'Security settings will be available soon')}
@@ -642,7 +642,7 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="chatbox-ellipses"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
             title="Support Tickets"
             subtitle="Manage user support tickets"
             onPress={() => router.push('/(dashboard)/support-tickets')}
@@ -656,35 +656,35 @@ export default function SettingsScreen() {
           />
           <SettingItem
             icon="help-buoy"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="FAQ Management"
             subtitle="Manage frequently asked questions"
             onPress={() => router.push('/(dashboard)/faq-management')}
           />
           <SettingItem
             icon="notifications"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Notification Management"
             subtitle="Send & manage push notifications"
             onPress={() => router.push('/(dashboard)/notification-management')}
           />
           <SettingItem
             icon="warning"
-            iconColor="#EF4444"
+            iconColor={colors.error}
             title="Fraud Reports"
             subtitle="Review fraud reports & suspicious activity"
             onPress={() => router.push('/(dashboard)/fraud-reports')}
           />
           <SettingItem
             icon="document-text"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
             title="Documentation"
             subtitle="Admin guides and API docs"
             onPress={() => showAlert('Documentation', 'Opening documentation...')}
           />
           <SettingItem
             icon="help-circle"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             title="Help & Support"
             subtitle="Contact support team"
             onPress={() => showAlert('Support', 'Contact: admin-support@rez.app')}
@@ -698,14 +698,14 @@ export default function SettingsScreen() {
         <View style={styles.settingsGroup}>
           <SettingItem
             icon="key"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             title="Change Password"
             subtitle="Update your password"
             onPress={() => showAlert('Coming Soon', 'Password change will be available soon')}
           />
           <SettingItem
             icon="log-out"
-            iconColor="#EF4444"
+            iconColor={colors.error}
             title="Logout"
             subtitle="Sign out of your account"
             onPress={handleLogout}
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   settingIcon: {
     width: 36,

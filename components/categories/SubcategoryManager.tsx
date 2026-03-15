@@ -5,6 +5,7 @@ import { apiClient } from '../../services/api/apiClient';
 import FormField from './FormField';
 import ColorInput from './ColorInput';
 import { showAlert, showConfirm } from '../../utils/alert';
+import { Colors } from '../../constants/Colors';
 
 interface SubcategoryMetadata {
   color?: string;
@@ -26,7 +27,7 @@ interface Subcategory {
 
 interface SubcategoryManagerProps {
   categoryId: string;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string; error?: string };
+  colors: typeof Colors.light;
 }
 
 const generateSlug = (name: string): string =>
@@ -263,7 +264,7 @@ const SubcategoryManager = React.memo(({ categoryId, colors }: SubcategoryManage
               <View style={styles.cardHeaderLeft}>
                 <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
                 {!isEditing && (
-                  <View style={[styles.statusDot, { backgroundColor: sub.isActive ? (colors.success || '#22C55E') : '#9CA3AF' }]} />
+                  <View style={[styles.statusDot, { backgroundColor: sub.isActive ? colors.success : Colors.light.icon }]} />
                 )}
                 {sub.storeCount > 0 && !isEditing && (
                   <View style={[styles.badge, { backgroundColor: colors.tint + '20' }]}>
@@ -301,9 +302,9 @@ const SubcategoryManager = React.memo(({ categoryId, colors }: SubcategoryManage
                       style={{ opacity: sub.storeCount > 0 ? 0.4 : 1 }}
                     >
                       {isSaving ? (
-                        <ActivityIndicator size="small" color="#EF4444" />
+                        <ActivityIndicator size="small" color={Colors.light.error} />
                       ) : (
-                        <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                        <Ionicons name="trash-outline" size={16} color={Colors.light.error} />
                       )}
                     </TouchableOpacity>
                   </>
@@ -371,7 +372,7 @@ const SubcategoryManager = React.memo(({ categoryId, colors }: SubcategoryManage
                   label="Color"
                   value={editColor}
                   onChange={setEditColor}
-                  placeholder="#3B82F6"
+                  placeholder={colors.info}
                   colors={colors}
                   small
                 />
@@ -389,7 +390,7 @@ const SubcategoryManager = React.memo(({ categoryId, colors }: SubcategoryManage
                     disabled={isSaving}
                   >
                     {isSaving ? (
-                      <ActivityIndicator size="small" color="#fff" />
+                      <ActivityIndicator size="small" color={colors.card} />
                     ) : (
                       <Text style={styles.editSaveText}>Save</Text>
                     )}
@@ -409,10 +410,10 @@ const SubcategoryManager = React.memo(({ categoryId, colors }: SubcategoryManage
           disabled={saving === 'reorder'}
         >
           {saving === 'reorder' ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <>
-              <Ionicons name="swap-vertical-outline" size={18} color="#fff" />
+              <Ionicons name="swap-vertical-outline" size={18} color={colors.card} />
               <Text style={styles.reorderBtnText}>Save Order</Text>
             </>
           )}
@@ -473,7 +474,7 @@ const SubcategoryManager = React.memo(({ categoryId, colors }: SubcategoryManage
             disabled={saving === 'new'}
           >
             {saving === 'new' ? (
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.editSaveText}>Create</Text>
             )}
@@ -519,12 +520,12 @@ const styles = StyleSheet.create({
   editCancelBtn: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 14, paddingVertical: 7 },
   editCancelText: { fontSize: 13, fontWeight: '600' },
   editSaveBtn: { borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7, minWidth: 70, alignItems: 'center' },
-  editSaveText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  editSaveText: { fontSize: 13, fontWeight: '700', color: Colors.light.card },
   reorderBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     padding: 10, borderRadius: 10, gap: 6, marginBottom: 10,
   },
-  reorderBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  reorderBtnText: { fontSize: 14, fontWeight: '700', color: Colors.light.card },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     padding: 12, borderRadius: 10, borderWidth: 1.5, borderStyle: 'dashed', gap: 6, marginTop: 4,

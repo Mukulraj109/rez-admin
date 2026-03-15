@@ -14,13 +14,13 @@ type AdjustType = 'credit' | 'debit';
 type CampaignFilter = 'all' | 'active' | 'paused';
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  active: { bg: '#D1FAE5', text: '#065F46' },
-  paused: { bg: '#FEF3C7', text: '#92400E' },
-  draft: { bg: '#E5E7EB', text: '#374151' },
-  scheduled: { bg: '#DBEAFE', text: '#1E40AF' },
-  exhausted: { bg: '#FEE2E2', text: '#991B1B' },
-  expired: { bg: '#F3F4F6', text: '#6B7280' },
-  cancelled: { bg: '#FEE2E2', text: '#991B1B' },
+  active: { bg: Colors.light.successLight, text: Colors.light.successDeep },
+  paused: { bg: Colors.light.warningLight, text: Colors.light.warningDeep },
+  draft: { bg: Colors.light.gray200, text: Colors.light.gray700 },
+  scheduled: { bg: Colors.light.infoLighter, text: Colors.light.infoDark },
+  exhausted: { bg: Colors.light.errorLight, text: Colors.light.errorDeep },
+  expired: { bg: Colors.light.backgroundSecondary, text: Colors.light.mutedDark },
+  cancelled: { bg: Colors.light.errorLight, text: Colors.light.errorDeep },
 };
 
 export default function SupportToolsScreen() {
@@ -45,8 +45,8 @@ export default function SupportToolsScreen() {
             style={[styles.tab, activeTab === tab.key && { backgroundColor: colors.tint }]}
             onPress={() => setActiveTab(tab.key)}
           >
-            <Ionicons name={tab.icon} size={16} color={activeTab === tab.key ? '#fff' : colors.text} />
-            <Text style={[styles.tabText, { color: activeTab === tab.key ? '#fff' : colors.text }]}>
+            <Ionicons name={tab.icon} size={16} color={activeTab === tab.key ? colors.card : colors.text} />
+            <Text style={[styles.tabText, { color: activeTab === tab.key ? colors.card : colors.text }]}>
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -246,7 +246,7 @@ function WalletOpsTab({ colors }: { colors: any }) {
         activeOpacity={0.7}
       >
         <View style={styles.userRow}>
-          <View style={[styles.avatar, { backgroundColor: isFrozen ? '#EF4444' : colors.tint }]}>
+          <View style={[styles.avatar, { backgroundColor: isFrozen ? colors.error : colors.tint }]}>
             <Text style={styles.avatarText}>{getInitials(item.user.fullName)}</Text>
           </View>
           <View style={styles.userInfo}>
@@ -255,8 +255,8 @@ function WalletOpsTab({ colors }: { colors: any }) {
                 {item.user.fullName || 'Unknown'}
               </Text>
               {isFrozen && (
-                <View style={[styles.badge, { backgroundColor: '#FEE2E2' }]}>
-                  <Text style={[styles.badgeText, { color: '#991B1B' }]}>FROZEN</Text>
+                <View style={[styles.badge, { backgroundColor: colors.errorLight }]}>
+                  <Text style={[styles.badgeText, { color: colors.errorDeep }]}>FROZEN</Text>
                 </View>
               )}
             </View>
@@ -268,41 +268,41 @@ function WalletOpsTab({ colors }: { colors: any }) {
         {isSelected && (
           <View style={styles.actionRow}>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: '#D1FAE5' }]}
+              style={[styles.actionBtn, { backgroundColor: colors.successLight }]}
               onPress={() => { setAdjustType('credit'); setAdjustUser(item); }}
             >
               <Ionicons name="add-circle-outline" size={14} color="#065F46" />
-              <Text style={[styles.actionText, { color: '#065F46' }]}>Credit</Text>
+              <Text style={[styles.actionText, { color: colors.successDeep }]}>Credit</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: '#FEE2E2' }]}
+              style={[styles.actionBtn, { backgroundColor: colors.errorLight }]}
               onPress={() => { setAdjustType('debit'); setAdjustUser(item); }}
             >
-              <Ionicons name="remove-circle-outline" size={14} color="#991B1B" />
-              <Text style={[styles.actionText, { color: '#991B1B' }]}>Debit</Text>
+              <Ionicons name="remove-circle-outline" size={14} color={colors.errorDeep} />
+              <Text style={[styles.actionText, { color: colors.errorDeep }]}>Debit</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: '#FEF3C7' }]}
+              style={[styles.actionBtn, { backgroundColor: colors.warningLight }]}
               onPress={() => setReverseUser(item)}
             >
-              <Ionicons name="arrow-undo-outline" size={14} color="#92400E" />
-              <Text style={[styles.actionText, { color: '#92400E' }]}>Reverse</Text>
+              <Ionicons name="arrow-undo-outline" size={14} color={colors.warningDeep} />
+              <Text style={[styles.actionText, { color: colors.warningDeep }]}>Reverse</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: isFrozen ? '#D1FAE5' : '#FEE2E2' }]}
+              style={[styles.actionBtn, { backgroundColor: isFrozen ? colors.successLight : colors.errorLight }]}
               onPress={() => isFrozen ? handleUnfreeze(item) : setFreezeUser(item)}
             >
-              <Ionicons name={isFrozen ? 'lock-open-outline' : 'snow-outline'} size={14} color={isFrozen ? '#065F46' : '#991B1B'} />
-              <Text style={[styles.actionText, { color: isFrozen ? '#065F46' : '#991B1B' }]}>
+              <Ionicons name={isFrozen ? 'lock-open-outline' : 'snow-outline'} size={14} color={isFrozen ? colors.successDeep : colors.errorDeep} />
+              <Text style={[styles.actionText, { color: isFrozen ? colors.successDeep : colors.errorDeep }]}>
                 {isFrozen ? 'Unfreeze' : 'Freeze'}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: '#DBEAFE' }]}
+              style={[styles.actionBtn, { backgroundColor: colors.infoLighter }]}
               onPress={() => openAudit(item)}
             >
               <Ionicons name="list-outline" size={14} color="#1E40AF" />
-              <Text style={[styles.actionText, { color: '#1E40AF' }]}>Audit</Text>
+              <Text style={[styles.actionText, { color: colors.infoDark }]}>Audit</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -361,10 +361,10 @@ function WalletOpsTab({ colors }: { colors: any }) {
               {(['credit', 'debit'] as AdjustType[]).map(t => (
                 <TouchableOpacity
                   key={t}
-                  style={[styles.typePill, adjustType === t && { backgroundColor: t === 'credit' ? '#10B981' : '#EF4444' }]}
+                  style={[styles.typePill, adjustType === t && { backgroundColor: t === 'credit' ? colors.success : colors.error }]}
                   onPress={() => setAdjustType(t)}
                 >
-                  <Text style={[styles.typePillText, adjustType === t && { color: '#fff' }]}>
+                  <Text style={[styles.typePillText, adjustType === t && { color: colors.card }]}>
                     {t === 'credit' ? 'Credit' : 'Debit'}
                   </Text>
                 </TouchableOpacity>
@@ -393,12 +393,12 @@ function WalletOpsTab({ colors }: { colors: any }) {
                 <Text style={{ color: colors.text }}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalBtn, { backgroundColor: adjustType === 'credit' ? '#10B981' : '#EF4444' }]}
+                style={[styles.modalBtn, { backgroundColor: adjustType === 'credit' ? colors.success : colors.error }]}
                 onPress={handleAdjust}
                 disabled={adjustLoading || !adjustAmount || !adjustReason.trim()}
               >
-                {adjustLoading ? <ActivityIndicator size="small" color="#fff" /> : (
-                  <Text style={{ color: '#fff', fontWeight: '600' }}>{adjustType === 'credit' ? 'Credit' : 'Debit'}</Text>
+                {adjustLoading ? <ActivityIndicator size="small" color={colors.card} /> : (
+                  <Text style={{ color: colors.card, fontWeight: '600' }}>{adjustType === 'credit' ? 'Credit' : 'Debit'}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -447,12 +447,12 @@ function WalletOpsTab({ colors }: { colors: any }) {
                 <Text style={{ color: colors.text }}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalBtn, { backgroundColor: '#F59E0B' }]}
+                style={[styles.modalBtn, { backgroundColor: colors.warning }]}
                 onPress={handleReverseCashback}
                 disabled={reverseLoading || !reverseAmount || !reverseReason.trim()}
               >
-                {reverseLoading ? <ActivityIndicator size="small" color="#fff" /> : (
-                  <Text style={{ color: '#fff', fontWeight: '600' }}>Reverse</Text>
+                {reverseLoading ? <ActivityIndicator size="small" color={colors.card} /> : (
+                  <Text style={{ color: colors.card, fontWeight: '600' }}>Reverse</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -483,12 +483,12 @@ function WalletOpsTab({ colors }: { colors: any }) {
                 <Text style={{ color: colors.text }}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalBtn, { backgroundColor: '#EF4444' }]}
+                style={[styles.modalBtn, { backgroundColor: colors.error }]}
                 onPress={handleFreeze}
                 disabled={freezeLoading || !freezeReason.trim()}
               >
-                {freezeLoading ? <ActivityIndicator size="small" color="#fff" /> : (
-                  <Text style={{ color: '#fff', fontWeight: '600' }}>Freeze</Text>
+                {freezeLoading ? <ActivityIndicator size="small" color={colors.card} /> : (
+                  <Text style={{ color: colors.card, fontWeight: '600' }}>Freeze</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -510,8 +510,8 @@ function WalletOpsTab({ colors }: { colors: any }) {
             ) : (
               <ScrollView style={{ maxHeight: 400 }}>
                 {auditLogs.map(log => {
-                  const opColor = log.operation === 'credit' ? '#10B981'
-                    : log.operation === 'debit' ? '#EF4444' : '#3B82F6';
+                  const opColor = log.operation === 'credit' ? colors.success
+                    : log.operation === 'debit' ? colors.error : colors.info;
                   return (
                     <View key={log._id} style={[styles.auditItem, { borderBottomColor: colors.border }]}>
                       <View style={styles.auditHeader}>
@@ -638,8 +638,8 @@ function CampaignsTab({ colors }: { colors: any }) {
         </View>
 
         <View style={styles.campaignMeta}>
-          <View style={[styles.badge, { backgroundColor: '#F3F4F6' }]}>
-            <Text style={[styles.badgeText, { color: '#374151' }]}>{item.campaignType?.replace(/_/g, ' ')}</Text>
+          <View style={[styles.badge, { backgroundColor: colors.backgroundSecondary }]}>
+            <Text style={[styles.badgeText, { color: colors.gray700 }]}>{item.campaignType?.replace(/_/g, ' ')}</Text>
           </View>
           {item.fundingSource?.type !== 'platform' && item.fundingSource?.partnerName && (
             <Text style={[styles.userPhone, { color: colors.icon }]}>by {item.fundingSource.partnerName}</Text>
@@ -649,7 +649,7 @@ function CampaignsTab({ colors }: { colors: any }) {
         {item.reward?.totalBudget > 0 && (
           <View style={styles.budgetRow}>
             <View style={[styles.budgetBar, { backgroundColor: colors.border }]}>
-              <View style={[styles.budgetFill, { width: `${budgetPct}%`, backgroundColor: budgetPct > 90 ? '#EF4444' : '#10B981' }]} />
+              <View style={[styles.budgetFill, { width: `${budgetPct}%`, backgroundColor: budgetPct > 90 ? colors.error : colors.success }]} />
             </View>
             <Text style={[styles.budgetText, { color: colors.icon }]}>
               {(item.reward.consumedBudget || 0).toFixed(0)} / {item.reward.totalBudget.toFixed(0)} NC
@@ -660,7 +660,7 @@ function CampaignsTab({ colors }: { colors: any }) {
         {canToggle && (
           <TouchableOpacity
             style={[styles.actionBtn, {
-              backgroundColor: item.status === 'active' ? '#FEF3C7' : '#D1FAE5',
+              backgroundColor: item.status === 'active' ? colors.warningLight : colors.successLight,
               alignSelf: 'flex-start', marginTop: 8,
             }]}
             onPress={() => handleToggleStatus(item)}
@@ -668,9 +668,9 @@ function CampaignsTab({ colors }: { colors: any }) {
             <Ionicons
               name={item.status === 'active' ? 'pause-outline' : 'play-outline'}
               size={14}
-              color={item.status === 'active' ? '#92400E' : '#065F46'}
+              color={item.status === 'active' ? colors.warningDeep : colors.successDeep}
             />
-            <Text style={[styles.actionText, { color: item.status === 'active' ? '#92400E' : '#065F46' }]}>
+            <Text style={[styles.actionText, { color: item.status === 'active' ? colors.warningDeep : colors.successDeep }]}>
               {item.status === 'active' ? 'Pause' : 'Resume'}
             </Text>
           </TouchableOpacity>
@@ -689,7 +689,7 @@ function CampaignsTab({ colors }: { colors: any }) {
             style={[styles.filterPill, filter === f && { backgroundColor: colors.tint }]}
             onPress={() => setFilter(f)}
           >
-            <Text style={[styles.filterText, { color: filter === f ? '#fff' : colors.text }]}>
+            <Text style={[styles.filterText, { color: filter === f ? colors.card : colors.text }]}>
               {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
             </Text>
           </TouchableOpacity>
@@ -740,7 +740,7 @@ function CampaignsTab({ colors }: { colors: any }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { paddingTop: 60, paddingBottom: 16, paddingHorizontal: 16 },
-  headerTitle: { fontSize: 22, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.card },
   headerSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
 
   tabBar: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1 },
@@ -757,7 +757,7 @@ const styles = StyleSheet.create({
   userCard: { borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1 },
   userRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatar: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-  avatarText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  avatarText: { color: Colors.light.card, fontSize: 14, fontWeight: '700' },
   userInfo: { flex: 1 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   userName: { fontSize: 15, fontWeight: '600' },
@@ -767,7 +767,7 @@ const styles = StyleSheet.create({
   badge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
   badgeText: { fontSize: 10, fontWeight: '700' },
 
-  actionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#E5E7EB' },
+  actionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: Colors.light.gray200 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
   actionText: { fontSize: 12, fontWeight: '600' },
 
@@ -788,8 +788,8 @@ const styles = StyleSheet.create({
   modalSub: { fontSize: 13, marginTop: 2, marginBottom: 16 },
 
   typePicker: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  typePill: { flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: 'center', borderWidth: 1, borderColor: '#E5E7EB' },
-  typePillText: { fontSize: 13, fontWeight: '600', color: '#6B7280' },
+  typePill: { flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: 'center', borderWidth: 1, borderColor: Colors.light.gray200 },
+  typePillText: { fontSize: 13, fontWeight: '600', color: Colors.light.mutedDark },
 
   input: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, marginBottom: 10 },
   textArea: { minHeight: 80, textAlignVertical: 'top' },

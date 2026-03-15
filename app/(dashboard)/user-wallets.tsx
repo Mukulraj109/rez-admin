@@ -172,9 +172,9 @@ export default function UserWalletsScreen() {
     name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '??';
 
   const opColor = (op: string) => {
-    if (op === 'credit') return { bg: '#D1FAE5', text: '#065F46' };
-    if (op === 'debit') return { bg: '#FEE2E2', text: '#991B1B' };
-    return { bg: '#DBEAFE', text: '#1E40AF' };
+    if (op === 'credit') return { bg: colors.successLight, text: colors.successDeep };
+    if (op === 'debit') return { bg: colors.errorLight, text: colors.errorDeep };
+    return { bg: colors.infoLighter, text: colors.infoDark };
   };
 
   const formatDate = (d: string) =>
@@ -193,7 +193,7 @@ export default function UserWalletsScreen() {
             <Text style={[styles.userName, { color: colors.text }]} numberOfLines={1}>{item.fullName}</Text>
             {item.wallet?.isFrozen && (
               <View style={styles.frozenBadge}>
-                <Ionicons name="snow" size={10} color="#991B1B" />
+                <Ionicons name="snow" size={10} color={colors.errorDeep} />
                 <Text style={styles.frozenText}>Frozen</Text>
               </View>
             )}
@@ -206,23 +206,23 @@ export default function UserWalletsScreen() {
       </View>
       <View style={styles.actions}>
         {item.wallet?.isFrozen ? (
-          <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#D1FAE5' }]} onPress={() => handleUnfreeze(item)}>
+          <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.successLight }]} onPress={() => handleUnfreeze(item)}>
             <Ionicons name="sunny-outline" size={14} color="#065F46" />
-            <Text style={[styles.actionLabel, { color: '#065F46' }]}>Unfreeze</Text>
+            <Text style={[styles.actionLabel, { color: colors.successDeep }]}>Unfreeze</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#FEE2E2' }]} onPress={() => { setFreezeUser(item); setFreezeReason(''); }}>
-            <Ionicons name="snow-outline" size={14} color="#991B1B" />
-            <Text style={[styles.actionLabel, { color: '#991B1B' }]}>Freeze</Text>
+          <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.errorLight }]} onPress={() => { setFreezeUser(item); setFreezeReason(''); }}>
+            <Ionicons name="snow-outline" size={14} color={colors.errorDeep} />
+            <Text style={[styles.actionLabel, { color: colors.errorDeep }]}>Freeze</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#DBEAFE' }]} onPress={() => { setAdjustUser(item); setAdjustType('credit'); setAdjustAmount(''); setAdjustReason(''); }}>
+        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.infoLighter }]} onPress={() => { setAdjustUser(item); setAdjustType('credit'); setAdjustAmount(''); setAdjustReason(''); }}>
           <Ionicons name="swap-horizontal-outline" size={14} color="#1E40AF" />
-          <Text style={[styles.actionLabel, { color: '#1E40AF' }]}>Adjust</Text>
+          <Text style={[styles.actionLabel, { color: colors.infoDark }]}>Adjust</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#F3E8FF' }]} onPress={() => openAuditTrail(item)}>
-          <Ionicons name="document-text-outline" size={14} color="#7C3AED" />
-          <Text style={[styles.actionLabel, { color: '#7C3AED' }]}>Audit</Text>
+          <Ionicons name="document-text-outline" size={14} color={colors.purpleDark} />
+          <Text style={[styles.actionLabel, { color: colors.purpleDark }]}>Audit</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -288,8 +288,8 @@ export default function UserWalletsScreen() {
               <TouchableOpacity style={[styles.modalBtn, { backgroundColor: colors.background }]} onPress={() => setFreezeUser(null)}>
                 <Text style={[styles.modalBtnText, { color: colors.text }]}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.modalBtn, { backgroundColor: '#DC2626' }]} onPress={handleFreeze} disabled={freezeLoading}>
-                {freezeLoading ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={[styles.modalBtnText, { color: '#FFF' }]}>Freeze</Text>}
+              <TouchableOpacity style={[styles.modalBtn, { backgroundColor: colors.errorDark }]} onPress={handleFreeze} disabled={freezeLoading}>
+                {freezeLoading ? <ActivityIndicator size="small" color={colors.card} /> : <Text style={[styles.modalBtnText, { color: colors.card }]}>Freeze</Text>}
               </TouchableOpacity>
             </View>
           </View>
@@ -303,11 +303,11 @@ export default function UserWalletsScreen() {
             <Text style={[styles.modalTitle, { color: colors.text }]}>Adjust Wallet</Text>
             <Text style={[styles.modalSub, { color: colors.icon }]}>Adjusting wallet for {adjustUser?.fullName}</Text>
             <View style={styles.typePicker}>
-              <TouchableOpacity style={[styles.typeBtn, adjustType === 'credit' && { backgroundColor: '#D1FAE5', borderColor: '#10B981' }]} onPress={() => setAdjustType('credit')}>
-                <Text style={[styles.typeBtnText, { color: adjustType === 'credit' ? '#065F46' : colors.icon }]}>Credit</Text>
+              <TouchableOpacity style={[styles.typeBtn, adjustType === 'credit' && { backgroundColor: colors.successLight, borderColor: colors.success }]} onPress={() => setAdjustType('credit')}>
+                <Text style={[styles.typeBtnText, { color: adjustType === 'credit' ? colors.successDeep : colors.icon }]}>Credit</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.typeBtn, adjustType === 'debit' && { backgroundColor: '#FEE2E2', borderColor: '#EF4444' }]} onPress={() => setAdjustType('debit')}>
-                <Text style={[styles.typeBtnText, { color: adjustType === 'debit' ? '#991B1B' : colors.icon }]}>Debit</Text>
+              <TouchableOpacity style={[styles.typeBtn, adjustType === 'debit' && { backgroundColor: colors.errorLight, borderColor: colors.error }]} onPress={() => setAdjustType('debit')}>
+                <Text style={[styles.typeBtnText, { color: adjustType === 'debit' ? colors.errorDeep : colors.icon }]}>Debit</Text>
               </TouchableOpacity>
             </View>
             <TextInput style={inputStyle} placeholder="Amount" placeholderTextColor={colors.icon}
@@ -319,7 +319,7 @@ export default function UserWalletsScreen() {
                 <Text style={[styles.modalBtnText, { color: colors.text }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.modalBtn, { backgroundColor: colors.tint }]} onPress={handleAdjust} disabled={adjustLoading}>
-                {adjustLoading ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={[styles.modalBtnText, { color: '#FFF' }]}>Submit</Text>}
+                {adjustLoading ? <ActivityIndicator size="small" color={colors.card} /> : <Text style={[styles.modalBtnText, { color: colors.card }]}>Submit</Text>}
               </TouchableOpacity>
             </View>
           </View>
@@ -352,7 +352,7 @@ export default function UserWalletsScreen() {
                           <Text style={[styles.opBadgeText, { color: oc.text }]}>{entry.operation}</Text>
                         </View>
                         {entry.amount != null && (
-                          <Text style={[styles.auditAmount, { color: entry.operation === 'debit' ? '#DC2626' : '#10B981' }]}>
+                          <Text style={[styles.auditAmount, { color: entry.operation === 'debit' ? colors.errorDark : colors.success }]}>
                             {entry.operation === 'debit' ? '-' : '+'}{entry.amount} NC
                           </Text>
                         )}
@@ -390,21 +390,21 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { paddingTop: 60, paddingBottom: 20, paddingHorizontal: 20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
-  headerTitle: { fontSize: 24, fontWeight: '700', color: '#FFFFFF' },
+  headerTitle: { fontSize: 24, fontWeight: '700', color: Colors.light.card },
   searchBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 8, borderBottomWidth: 1 },
   searchInput: { flex: 1, fontSize: 14, paddingVertical: 6 },
   list: { padding: 16, gap: 10 },
   card: { borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1 },
   cardRow: { flexDirection: 'row', alignItems: 'center' },
   avatar: { width: 42, height: 42, borderRadius: 21, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  avatarText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
+  avatarText: { color: Colors.light.card, fontSize: 14, fontWeight: '700' },
   cardInfo: { flex: 1 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   userName: { fontSize: 15, fontWeight: '600', flexShrink: 1 },
   userPhone: { fontSize: 12, marginTop: 2 },
   walletBal: { fontSize: 13, fontWeight: '600', marginTop: 2 },
-  frozenBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#FEE2E2', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2 },
-  frozenText: { fontSize: 11, fontWeight: '600', color: '#991B1B' },
+  frozenBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: Colors.light.errorLight, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2 },
+  frozenText: { fontSize: 11, fontWeight: '600', color: Colors.light.errorDeep },
   actions: { flexDirection: 'row', marginTop: 10, gap: 8 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
   actionLabel: { fontSize: 12, fontWeight: '600' },
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
   modalBtn: { flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
   modalBtnText: { fontSize: 14, fontWeight: '600' },
   typePicker: { flexDirection: 'row', gap: 10, marginBottom: 12 },
-  typeBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', borderWidth: 1, borderColor: '#E5E7EB' },
+  typeBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', borderWidth: 1, borderColor: Colors.light.border },
   typeBtnText: { fontSize: 14, fontWeight: '600' },
   auditModal: { maxHeight: '80%' },
   auditHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

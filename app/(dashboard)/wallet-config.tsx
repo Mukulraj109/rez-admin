@@ -60,13 +60,13 @@ interface WalletConfigData {
 type SectionKey = 'transfer' | 'gift' | 'recharge' | 'expiry' | 'coinExpiry' | 'commission' | 'fraud';
 
 const SECTIONS: { key: SectionKey; title: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
-  { key: 'transfer', title: 'Transfer Limits', icon: 'swap-horizontal', color: '#3B82F6' },
-  { key: 'gift', title: 'Gift Limits', icon: 'gift', color: '#8B5CF6' },
-  { key: 'recharge', title: 'Recharge Config', icon: 'card', color: '#10B981' },
-  { key: 'expiry', title: 'Expiry Config', icon: 'time', color: '#F59E0B' },
-  { key: 'coinExpiry', title: 'Coin Expiry Rules', icon: 'hourglass', color: '#D97706' },
-  { key: 'commission', title: 'Commission & Conversion', icon: 'calculator', color: '#EC4899' },
-  { key: 'fraud', title: 'Fraud Thresholds', icon: 'shield', color: '#EF4444' },
+  { key: 'transfer', title: 'Transfer Limits', icon: 'swap-horizontal', color: Colors.light.info },
+  { key: 'gift', title: 'Gift Limits', icon: 'gift', color: Colors.light.purple },
+  { key: 'recharge', title: 'Recharge Config', icon: 'card', color: Colors.light.success },
+  { key: 'expiry', title: 'Expiry Config', icon: 'time', color: Colors.light.warning },
+  { key: 'coinExpiry', title: 'Coin Expiry Rules', icon: 'hourglass', color: Colors.light.warningDark },
+  { key: 'commission', title: 'Commission & Conversion', icon: 'calculator', color: Colors.light.pink },
+  { key: 'fraud', title: 'Fraud Thresholds', icon: 'shield', color: Colors.light.error },
 ];
 
 export default function WalletConfigScreen() {
@@ -221,7 +221,7 @@ export default function WalletConfigScreen() {
   if (error || !config) {
     return (
       <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
-        <Ionicons name="alert-circle" size={48} color="#EF4444" />
+        <Ionicons name="alert-circle" size={48} color={colors.error} />
         <Text style={[styles.errorText, { color: colors.text }]}>{error || 'Unknown error'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={() => loadConfig()}>
           <Text style={styles.retryButtonText}>Retry</Text>
@@ -248,10 +248,10 @@ export default function WalletConfigScreen() {
             disabled={!dirty || saving}
           >
             {saving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="save" size={16} color="#FFF" />
+                <Ionicons name="save" size={16} color={colors.card} />
                 <Text style={styles.saveButtonText}>Save</Text>
               </>
             )}
@@ -318,7 +318,7 @@ export default function WalletConfigScreen() {
                 />
               </View>
               <TouchableOpacity style={styles.removeTierBtn} onPress={() => removeTier(i)}>
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                <Ionicons name="trash-outline" size={18} color={colors.error} />
               </TouchableOpacity>
             </View>
           ))}
@@ -338,7 +338,7 @@ export default function WalletConfigScreen() {
         {/* Coin Expiry Rules */}
         {renderSectionCard('coinExpiry', <>
           <Text style={[styles.subHeading, { color: colors.text }]}>Per-Coin-Type Expiry & Usage Rules</Text>
-          <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 8 }}>Set expiry days (0 = never expires) and max usage % per transaction for each coin type.</Text>
+          <Text style={{ fontSize: 12, color: colors.mutedDark, marginBottom: 8 }}>Set expiry days (0 = never expires) and max usage % per transaction for each coin type.</Text>
           {(['rez', 'prive', 'promo', 'branded'] as const).map(coinType => {
             const label = coinType === 'rez' ? `${BRAND.APP_NAME} (${BRAND.COIN_SHORT})` : coinType === 'prive' ? 'Prive' : coinType === 'promo' ? 'Promo' : 'Branded';
             const cfg = config.coinExpiryConfig?.[coinType] || { expiryDays: 0, maxUsagePct: 100 };
@@ -390,12 +390,12 @@ export default function WalletConfigScreen() {
 
         {/* Bottom Save */}
         <TouchableOpacity
-          style={[styles.bottomSave, !dirty && { backgroundColor: '#9CA3AF' }]}
+          style={[styles.bottomSave, !dirty && { backgroundColor: colors.muted }]}
           onPress={handleSave}
           disabled={!dirty || saving}
         >
           {saving ? (
-            <ActivityIndicator size="small" color="#FFF" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <Text style={styles.bottomSaveText}>{dirty ? 'Save All Changes' : 'No Changes'}</Text>
           )}
@@ -411,16 +411,16 @@ const styles = StyleSheet.create({
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
   loadingText: { marginTop: 12, fontSize: 14 },
   errorText: { marginTop: 12, fontSize: 15, textAlign: 'center' },
-  retryButton: { marginTop: 16, backgroundColor: '#1a3a52', borderRadius: 10, paddingHorizontal: 24, paddingVertical: 12 },
-  retryButtonText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  retryButton: { marginTop: 16, backgroundColor: Colors.light.navy, borderRadius: 10, paddingHorizontal: 24, paddingVertical: 12 },
+  retryButtonText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1 },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   headerTitle: { fontSize: 18, fontWeight: '700' },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBtn: { padding: 8 },
-  saveButton: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: '#1a3a52' },
-  saveButtonDisabled: { backgroundColor: '#9CA3AF' },
-  saveButtonText: { fontWeight: '600', color: '#FFF', fontSize: 14 },
+  saveButton: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: Colors.light.navy },
+  saveButtonDisabled: { backgroundColor: Colors.light.muted },
+  saveButtonText: { fontWeight: '600', color: Colors.light.card, fontSize: 14 },
   scrollContent: { padding: 16, paddingBottom: 60 },
   card: { borderRadius: 12, marginBottom: 12, borderWidth: 1, overflow: 'hidden' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 8 },
@@ -435,6 +435,6 @@ const styles = StyleSheet.create({
   removeTierBtn: { padding: 10 },
   addTierBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderWidth: 1, borderStyle: 'dashed', borderRadius: 8, marginTop: 8 },
   addTierText: { fontSize: 13, fontWeight: '600' },
-  bottomSave: { backgroundColor: '#1a3a52', borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
-  bottomSaveText: { color: '#FFF', fontSize: 16, fontWeight: '700' },
+  bottomSave: { backgroundColor: Colors.light.navy, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
+  bottomSaveText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
 });

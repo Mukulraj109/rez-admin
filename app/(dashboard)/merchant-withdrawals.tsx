@@ -13,11 +13,11 @@ import { merchantsService, PendingWithdrawalItem, PendingWithdrawalTransaction }
 // TYPES & CONSTANTS
 // ============================================
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  pending: { bg: '#FEF3C7', text: '#D97706' },
-  completed: { bg: '#D1FAE5', text: '#059669' },
-  rejected: { bg: '#FEE2E2', text: '#DC2626' },
-  failed: { bg: '#F3F4F6', text: '#6B7280' },
-  cancelled: { bg: '#F3F4F6', text: '#6B7280' },
+  pending: { bg: Colors.light.warningLight, text: Colors.light.warningDark },
+  completed: { bg: Colors.light.successLight, text: Colors.light.successDark },
+  rejected: { bg: Colors.light.errorLight, text: Colors.light.errorDark },
+  failed: { bg: Colors.light.backgroundSecondary, text: Colors.light.mutedDark },
+  cancelled: { bg: Colors.light.backgroundSecondary, text: Colors.light.mutedDark },
 };
 
 // Flattened row for display
@@ -254,15 +254,15 @@ export default function MerchantWithdrawalsScreen() {
         <View style={styles.cardTopRow}>
           <View style={styles.cardLeftCol}>
             <View style={styles.userRow}>
-              <Ionicons name="person-outline" size={13} color="#6B7280" />
-              <Text style={[styles.userLabel, { color: '#6B7280' }]}>Merchant:</Text>
+              <Ionicons name="person-outline" size={13} color={colors.mutedDark} />
+              <Text style={[styles.userLabel, { color: colors.mutedDark }]}>Merchant:</Text>
               <Text style={[styles.userName, { color: colors.text }]} numberOfLines={1}>
                 {item.merchantName}
               </Text>
             </View>
             <View style={styles.userRow}>
-              <Ionicons name="storefront-outline" size={13} color="#6B7280" />
-              <Text style={[styles.userLabel, { color: '#6B7280' }]}>Store:</Text>
+              <Ionicons name="storefront-outline" size={13} color={colors.mutedDark} />
+              <Text style={[styles.userLabel, { color: colors.mutedDark }]}>Store:</Text>
               <Text style={[styles.userName, { color: colors.text }]} numberOfLines={1}>
                 {item.storeName}
               </Text>
@@ -277,7 +277,7 @@ export default function MerchantWithdrawalsScreen() {
         </View>
         <View style={styles.cardBottomRow}>
           <View style={styles.countBadge}>
-            <Ionicons name="documents-outline" size={12} color="#6B7280" />
+            <Ionicons name="documents-outline" size={12} color={colors.mutedDark} />
             <Text style={styles.countText}>{item.pendingCount} request{item.pendingCount !== 1 ? 's' : ''}</Text>
           </View>
           <Text style={styles.dateText}>{formatDate(item.lastRequestDate)}</Text>
@@ -312,7 +312,7 @@ export default function MerchantWithdrawalsScreen() {
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Total Pending</Text>
-                <Text style={[styles.detailValue, { color: '#D97706', fontWeight: '700' }]}>
+                <Text style={[styles.detailValue, { color: colors.warningDark, fontWeight: '700' }]}>
                   {formatCurrency(selectedRow.pendingAmount)}
                 </Text>
               </View>
@@ -352,14 +352,14 @@ export default function MerchantWithdrawalsScreen() {
                           style={[styles.actionButton, styles.approveButton]}
                           onPress={() => handleOpenApprove(selectedRow.merchantId, tx)}
                         >
-                          <Ionicons name="checkmark-circle-outline" size={16} color="#FFFFFF" />
+                          <Ionicons name="checkmark-circle-outline" size={16} color={colors.card} />
                           <Text style={styles.actionButtonText}>Approve</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                           style={[styles.actionButton, styles.rejectButton]}
                           onPress={() => handleOpenReject(selectedRow.merchantId, tx)}
                         >
-                          <Ionicons name="close-circle-outline" size={16} color="#FFFFFF" />
+                          <Ionicons name="close-circle-outline" size={16} color={colors.card} />
                           <Text style={styles.actionButtonText}>Reject</Text>
                         </TouchableOpacity>
                       </View>
@@ -385,13 +385,13 @@ export default function MerchantWithdrawalsScreen() {
               Amount: {formatCurrency(approveTransaction.amount)}
             </Text>
           )}
-          <Text style={[styles.inputLabel, { color: '#6B7280' }]}>Transaction Reference *</Text>
+          <Text style={[styles.inputLabel, { color: colors.mutedDark }]}>Transaction Reference *</Text>
           <TextInput
             style={[styles.dialogInput, { borderColor: colors.border, color: colors.text }]}
             value={transactionReference}
             onChangeText={setTransactionReference}
             placeholder="Enter bank transaction reference..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             autoFocus
           />
           <View style={styles.dialogActions}>
@@ -408,7 +408,7 @@ export default function MerchantWithdrawalsScreen() {
               disabled={approving}
             >
               {approving ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <Text style={styles.actionButtonText}>Approve</Text>
               )}
@@ -430,13 +430,13 @@ export default function MerchantWithdrawalsScreen() {
               Amount: {formatCurrency(rejectTransaction.amount)}
             </Text>
           )}
-          <Text style={[styles.inputLabel, { color: '#6B7280' }]}>Rejection Reason *</Text>
+          <Text style={[styles.inputLabel, { color: colors.mutedDark }]}>Rejection Reason *</Text>
           <TextInput
             style={[styles.dialogInput, styles.dialogTextArea, { borderColor: colors.border, color: colors.text }]}
             value={rejectReason}
             onChangeText={setRejectReason}
             placeholder="Enter reason for rejection..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             multiline
             numberOfLines={3}
             autoFocus
@@ -455,7 +455,7 @@ export default function MerchantWithdrawalsScreen() {
               disabled={rejecting}
             >
               {rejecting ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <Text style={styles.actionButtonText}>Reject</Text>
               )}
@@ -472,23 +472,23 @@ export default function MerchantWithdrawalsScreen() {
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Merchant Withdrawals</Text>
-        <Text style={[styles.headerSubtitle, { color: '#6B7280' }]}>{total} pending</Text>
+        <Text style={[styles.headerSubtitle, { color: colors.mutedDark }]}>{total} pending</Text>
       </View>
 
       {/* Search */}
       <View style={[styles.searchBar, { backgroundColor: colors.card }]}>
         <View style={[styles.searchInput, { borderColor: colors.border }]}>
-          <Ionicons name="search-outline" size={18} color="#9CA3AF" />
+          <Ionicons name="search-outline" size={18} color={colors.muted} />
           <TextInput
             style={[styles.searchTextInput, { color: colors.text }]}
             value={search}
             onChangeText={handleSearchChange}
             placeholder="Search by merchant or store name..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
           {search.length > 0 && (
             <TouchableOpacity onPress={() => setSearch('')}>
-              <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+              <Ionicons name="close-circle" size={18} color={colors.muted} />
             </TouchableOpacity>
           )}
         </View>
@@ -502,10 +502,10 @@ export default function MerchantWithdrawalsScreen() {
         contentContainerStyle={{ padding: 16 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={loading
-          ? <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+          ? <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           : (
             <View style={styles.emptyBox}>
-              <Ionicons name="wallet-outline" size={48} color="#D1D5DB" />
+              <Ionicons name="wallet-outline" size={48} color={colors.gray300} />
               <Text style={styles.emptyText}>No pending withdrawals</Text>
             </View>
           )
@@ -552,13 +552,13 @@ const styles = StyleSheet.create({
   statusText: { fontSize: 11, fontWeight: '600', textTransform: 'capitalize' },
   cardBottomRow: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10,
+    borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10,
   },
   countBadge: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  countText: { fontSize: 11, color: '#6B7280', fontWeight: '500' },
-  dateText: { fontSize: 11, color: '#9CA3AF', marginLeft: 'auto' },
+  countText: { fontSize: 11, color: Colors.light.mutedDark, fontWeight: '500' },
+  dateText: { fontSize: 11, color: Colors.light.muted, marginLeft: 'auto' },
   emptyBox: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
   // Detail Modal
   modalContainer: { flex: 1 },
   modalHeader: {
@@ -568,14 +568,14 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 17, fontWeight: '600' },
   detailScroll: { paddingHorizontal: 20 },
   detailSection: {
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F3F4F6',
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: Colors.light.backgroundSecondary,
   },
-  sectionTitle: { fontSize: 13, fontWeight: '600', color: '#6B7280', marginBottom: 6 },
+  sectionTitle: { fontSize: 13, fontWeight: '600', color: Colors.light.mutedDark, marginBottom: 6 },
   detailRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingVertical: 4,
   },
-  detailLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280' },
+  detailLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark },
   detailValue: { fontSize: 14, fontWeight: '600' },
   // Transaction cards inside detail
   txCard: {
@@ -586,9 +586,9 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   txAmount: { fontSize: 16, fontWeight: '700', marginBottom: 2 },
-  txDescription: { fontSize: 12, color: '#6B7280', lineHeight: 16 },
-  txDate: { fontSize: 11, color: '#9CA3AF', marginBottom: 4 },
-  txBank: { fontSize: 11, color: '#6B7280', marginBottom: 8 },
+  txDescription: { fontSize: 12, color: Colors.light.mutedDark, lineHeight: 16 },
+  txDate: { fontSize: 11, color: Colors.light.muted, marginBottom: 4 },
+  txBank: { fontSize: 11, color: Colors.light.mutedDark, marginBottom: 8 },
   txActions: {
     flexDirection: 'row', gap: 10, marginTop: 8,
   },
@@ -596,9 +596,9 @@ const styles = StyleSheet.create({
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     paddingVertical: 10, borderRadius: 8, gap: 5,
   },
-  approveButton: { backgroundColor: '#059669' },
-  rejectButton: { backgroundColor: '#DC2626' },
-  actionButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
+  approveButton: { backgroundColor: Colors.light.successDark },
+  rejectButton: { backgroundColor: Colors.light.errorDark },
+  actionButtonText: { color: Colors.light.card, fontSize: 13, fontWeight: '600' },
   // Dialog overlay
   overlayContainer: {
     flex: 1, justifyContent: 'center', alignItems: 'center',
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15, shadowRadius: 12, elevation: 8,
   },
   dialogTitle: { fontSize: 18, fontWeight: '700', marginBottom: 4 },
-  dialogSubtext: { fontSize: 13, color: '#6B7280', marginBottom: 16 },
+  dialogSubtext: { fontSize: 13, color: Colors.light.mutedDark, marginBottom: 16 },
   inputLabel: { fontSize: 12, fontWeight: '600', marginBottom: 6 },
   dialogInput: {
     borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10,
@@ -622,6 +622,6 @@ const styles = StyleSheet.create({
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     paddingVertical: 12, borderRadius: 8,
   },
-  dialogCancelButton: { backgroundColor: '#F3F4F6' },
-  dialogCancelText: { fontSize: 14, fontWeight: '600', color: '#6B7280' },
+  dialogCancelButton: { backgroundColor: Colors.light.backgroundSecondary },
+  dialogCancelText: { fontSize: 14, fontWeight: '600', color: Colors.light.mutedDark },
 });

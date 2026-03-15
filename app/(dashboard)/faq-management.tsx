@@ -31,16 +31,16 @@ const FAQ_CATEGORIES = [
 ];
 
 const CAT_COLORS: Record<string, string> = {
-  Account: '#3B82F6',
-  Orders: '#F97316',
-  Payments: '#10B981',
-  Delivery: '#8B5CF6',
-  Returns: '#EF4444',
-  'Coins & Rewards': '#F59E0B',
-  Wallet: '#06B6D4',
-  Promotions: '#EC4899',
-  Technical: '#6366F1',
-  General: '#6B7280',
+  Account: Colors.light.info,
+  Orders: Colors.light.orange,
+  Payments: Colors.light.success,
+  Delivery: Colors.light.purple,
+  Returns: Colors.light.error,
+  'Coins & Rewards': Colors.light.warning,
+  Wallet: Colors.light.cyan,
+  Promotions: Colors.light.pink,
+  Technical: Colors.light.indigo,
+  General: Colors.light.mutedDark,
 };
 
 const ACTIVE_FILTERS = [
@@ -285,7 +285,7 @@ export default function FAQManagementScreen() {
             onPress={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <Ionicons name="chevron-back" size={16} color={currentPage === 1 ? '#D1D5DB' : '#3B82F6'} />
+            <Ionicons name="chevron-back" size={16} color={currentPage === 1 ? colors.gray300 : colors.info} />
           </TouchableOpacity>
           {pages.map(p => (
             <TouchableOpacity
@@ -303,7 +303,7 @@ export default function FAQManagementScreen() {
             onPress={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            <Ionicons name="chevron-forward" size={16} color={currentPage === totalPages ? '#D1D5DB' : '#3B82F6'} />
+            <Ionicons name="chevron-forward" size={16} color={currentPage === totalPages ? colors.gray300 : colors.info} />
           </TouchableOpacity>
         </View>
       </View>
@@ -314,7 +314,7 @@ export default function FAQManagementScreen() {
   // RENDER FAQ ROW
   // ============================================
   const renderFaqItem = ({ item }: { item: FAQItem }) => {
-    const catColor = CAT_COLORS[item.category] || '#6B7280';
+    const catColor = CAT_COLORS[item.category] || colors.mutedDark;
     const helpfulPct = getHelpfulPercent(item);
     const isToggling = togglingId === item._id;
 
@@ -335,15 +335,15 @@ export default function FAQManagementScreen() {
           {/* Stats Row */}
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Ionicons name="eye-outline" size={13} color="#6B7280" />
+              <Ionicons name="eye-outline" size={13} color={colors.mutedDark} />
               <Text style={styles.statText}>{item.views ?? 0} views</Text>
             </View>
             <View style={styles.statItem}>
-              <Ionicons name="thumbs-up-outline" size={13} color="#10B981" />
+              <Ionicons name="thumbs-up-outline" size={13} color={colors.success} />
               <Text style={styles.statText}>{helpfulPct} helpful</Text>
             </View>
             <View style={styles.statItem}>
-              <Ionicons name="swap-vertical-outline" size={13} color="#6B7280" />
+              <Ionicons name="swap-vertical-outline" size={13} color={colors.mutedDark} />
               <Text style={styles.statText}>Order: {item.order ?? 0}</Text>
             </View>
           </View>
@@ -366,29 +366,29 @@ export default function FAQManagementScreen() {
           <View style={styles.cardBottomRow}>
             <View style={styles.toggleRow}>
               {isToggling ? (
-                <ActivityIndicator size="small" color="#3B82F6" />
+                <ActivityIndicator size="small" color={colors.info} />
               ) : (
                 <Switch
                   value={item.isActive}
                   onValueChange={() => handleToggleActive(item)}
-                  trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-                  thumbColor="#FFFFFF"
+                  trackColor={{ false: colors.border, true: colors.success }}
+                  thumbColor={colors.card}
                 />
               )}
               <View style={[styles.statusBadge, item.isActive ? styles.activeBg : styles.inactiveBg]}>
-                <Text style={{ fontSize: 11, fontWeight: '600', color: item.isActive ? '#059669' : '#6B7280' }}>
+                <Text style={{ fontSize: 11, fontWeight: '600', color: item.isActive ? colors.successDark : colors.mutedDark }}>
                   {item.isActive ? 'Active' : 'Inactive'}
                 </Text>
               </View>
             </View>
             <View style={styles.cardActions}>
               <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(item)}>
-                <Ionicons name="create-outline" size={18} color="#3B82F6" />
-                <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+                <Ionicons name="create-outline" size={18} color={colors.info} />
+                <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item)}>
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
-                <Text style={[styles.actionText, { color: '#EF4444' }]}>Delete</Text>
+                <Ionicons name="trash-outline" size={18} color={colors.error} />
+                <Text style={[styles.actionText, { color: colors.error }]}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -405,7 +405,7 @@ export default function FAQManagementScreen() {
       style={[styles.formInput, opts?.multi && styles.multiline, { color: colors.text, borderColor: colors.border }]}
       value={String(formData[key])}
       onChangeText={(v) => setFormData(p => ({ ...p, [key]: v }))}
-      placeholder={ph} placeholderTextColor="#9CA3AF"
+      placeholder={ph} placeholderTextColor={colors.muted}
       multiline={opts?.multi} keyboardType={opts?.num ? 'numeric' : 'default'}
     />
   );
@@ -424,7 +424,7 @@ export default function FAQManagementScreen() {
             {editingFaq ? 'Edit FAQ' : 'New FAQ'}
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
-            {isSaving ? <ActivityIndicator size="small" color="#3B82F6" /> : <Text style={styles.saveBtn}>Save</Text>}
+            {isSaving ? <ActivityIndicator size="small" color={colors.info} /> : <Text style={styles.saveBtn}>Save</Text>}
           </TouchableOpacity>
         </View>
         <ScrollView style={styles.formScroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -464,8 +464,8 @@ export default function FAQManagementScreen() {
             <Switch
               value={formData.isActive}
               onValueChange={(v) => setFormData(p => ({ ...p, isActive: v }))}
-              trackColor={{ false: '#E2E8F0', true: '#3B82F6' }}
-              thumbColor="#FFFFFF"
+              trackColor={{ false: colors.border, true: colors.info }}
+              thumbColor={colors.card}
             />
           </View>
         </ScrollView>
@@ -482,7 +482,7 @@ export default function FAQManagementScreen() {
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>FAQ Management</Text>
         <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.createBtnText}>Add FAQ</Text>
         </TouchableOpacity>
       </View>
@@ -490,17 +490,17 @@ export default function FAQManagementScreen() {
       {/* Search Bar */}
       <View style={[styles.searchBar, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <View style={[styles.searchInput, { borderColor: colors.border, backgroundColor: colors.background }]}>
-          <Ionicons name="search-outline" size={18} color="#9CA3AF" />
+          <Ionicons name="search-outline" size={18} color={colors.muted} />
           <TextInput
             style={[styles.searchTextInput, { color: colors.text }]}
             value={searchText}
             onChangeText={setSearchText}
             placeholder="Search questions, answers, tags..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
           {searchText.length > 0 && (
             <TouchableOpacity onPress={() => setSearchText('')}>
-              <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+              <Ionicons name="close-circle" size={18} color={colors.muted} />
             </TouchableOpacity>
           )}
         </View>
@@ -520,7 +520,7 @@ export default function FAQManagementScreen() {
           ))}
         </ScrollView>
         <View style={styles.activeFilterRow}>
-          <Text style={{ fontSize: 12, color: '#6B7280', marginRight: 6 }}>Status:</Text>
+          <Text style={{ fontSize: 12, color: colors.mutedDark, marginRight: 6 }}>Status:</Text>
           {ACTIVE_FILTERS.map(af => (
             <TouchableOpacity
               key={af.label}
@@ -547,10 +547,10 @@ export default function FAQManagementScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={
           loading
-            ? <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+            ? <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
             : (
               <View style={styles.emptyBox}>
-                <Ionicons name="help-circle-outline" size={48} color="#D1D5DB" />
+                <Ionicons name="help-circle-outline" size={48} color={colors.gray300} />
                 <Text style={styles.emptyText}>No FAQs found</Text>
                 <Text style={styles.emptySubtext}>Try adjusting your filters or create a new FAQ</Text>
               </View>
@@ -575,10 +575,10 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 22, fontWeight: '700' },
   createBtn: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#3B82F6',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.info,
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4,
   },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
 
   // Search
   searchBar: {
@@ -593,24 +593,24 @@ const styles = StyleSheet.create({
   // Filters
   filtersBar: {
     paddingHorizontal: 16, paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
+    borderBottomWidth: 1, borderBottomColor: Colors.light.gray200,
   },
   filterRow: { flexDirection: 'row', marginBottom: 6 },
   filterChip: {
     paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16,
-    backgroundColor: '#F3F4F6', marginRight: 8,
+    backgroundColor: Colors.light.backgroundSecondary, marginRight: 8,
   },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  chipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  chipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  chipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  chipTextActive: { color: Colors.light.card, fontWeight: '600' },
   activeFilterRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
   activeChip: {
     paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12,
-    backgroundColor: '#F3F4F6', marginRight: 6,
+    backgroundColor: Colors.light.backgroundSecondary, marginRight: 6,
   },
-  activeChipSelected: { backgroundColor: '#3B82F6' },
-  activeChipText: { fontSize: 11, color: '#6B7280', fontWeight: '500' },
-  activeChipTextSelected: { color: '#FFF', fontWeight: '600' },
+  activeChipSelected: { backgroundColor: Colors.light.info },
+  activeChipText: { fontSize: 11, color: Colors.light.mutedDark, fontWeight: '500' },
+  activeChipTextSelected: { color: Colors.light.card, fontWeight: '600' },
 
   // Card
   card: {
@@ -630,23 +630,23 @@ const styles = StyleSheet.create({
   // Stats
   statsRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 8 },
   statItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  statText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
+  statText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
 
   // Tags
   tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 },
   tagPill: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
-  tagText: { fontSize: 11, fontWeight: '600', color: '#374151' },
-  moreText: { fontSize: 11, color: '#9CA3AF', alignSelf: 'center' },
+  tagText: { fontSize: 11, fontWeight: '600', color: Colors.light.gray700 },
+  moreText: { fontSize: 11, color: Colors.light.muted, alignSelf: 'center' },
 
   // Bottom row
   cardBottomRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10,
+    borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10,
   },
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  activeBg: { backgroundColor: '#D1FAE5' },
-  inactiveBg: { backgroundColor: '#F3F4F6' },
+  activeBg: { backgroundColor: Colors.light.successLight },
+  inactiveBg: { backgroundColor: Colors.light.backgroundSecondary },
   cardActions: { flexDirection: 'row', gap: 12 },
   actionBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
@@ -663,29 +663,29 @@ const styles = StyleSheet.create({
   paginationButtons: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   pageBtn: {
     width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
-  pageBtnActive: { backgroundColor: '#3B82F6' },
+  pageBtnActive: { backgroundColor: Colors.light.info },
   pageBtnDisabled: { opacity: 0.4 },
-  pageBtnText: { fontSize: 13, fontWeight: '500', color: '#374151' },
-  pageBtnTextActive: { color: '#FFFFFF', fontWeight: '600' },
+  pageBtnText: { fontSize: 13, fontWeight: '500', color: Colors.light.gray700 },
+  pageBtnTextActive: { color: Colors.light.card, fontWeight: '600' },
 
   // Empty
   emptyBox: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
-  emptySubtext: { fontSize: 12, color: '#D1D5DB', marginTop: 4 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
+  emptySubtext: { fontSize: 12, color: Colors.light.gray300, marginTop: 4 },
 
   // Modal / Form
   modalContainer: { flex: 1 },
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
+    borderBottomWidth: 1, borderBottomColor: Colors.light.gray200,
   },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
   formInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14 },
   multiline: { minHeight: 100, textAlignVertical: 'top' },
   switchRow: {

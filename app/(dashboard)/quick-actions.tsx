@@ -42,7 +42,7 @@ const DEFAULT_FORM: QuickActionFormData = {
   title: '',
   subtitle: '',
   icon: 'flash',
-  iconColor: '#3B82F6',
+  iconColor: Colors.light.info,
   deepLinkPath: '',
   targetAchievementTypes: [],
   priority: 0,
@@ -133,7 +133,7 @@ export default function QuickActionsScreen() {
       title: action.title,
       subtitle: action.subtitle || '',
       icon: action.icon,
-      iconColor: action.iconColor || '#3B82F6',
+      iconColor: action.iconColor || colors.info,
       deepLinkPath: action.deepLinkPath,
       targetAchievementTypes: action.targetAchievementTypes || [],
       priority: action.priority,
@@ -244,8 +244,8 @@ export default function QuickActionsScreen() {
       {/* Header */}
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderLeft}>
-          <View style={[styles.iconCircle, { backgroundColor: `${item.iconColor || '#3B82F6'}20` }]}>
-            <Ionicons name={(item.icon as any) || 'flash'} size={20} color={item.iconColor || '#3B82F6'} />
+          <View style={[styles.iconCircle, { backgroundColor: `${item.iconColor || colors.info}20` }]}>
+            <Ionicons name={(item.icon as any) || 'flash'} size={20} color={item.iconColor || colors.info} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={[styles.cardTitle, { color: colors.text }]} numberOfLines={1}>
@@ -257,8 +257,8 @@ export default function QuickActionsScreen() {
         <Switch
           value={item.isActive}
           onValueChange={() => handleToggleActive(item)}
-          trackColor={{ false: '#E2E8F0', true: '#3B82F6' }}
-          thumbColor="#FFFFFF"
+          trackColor={{ false: colors.border, true: colors.info }}
+          thumbColor={colors.card}
         />
       </View>
 
@@ -272,7 +272,7 @@ export default function QuickActionsScreen() {
           <Text style={styles.infoChipText}>Priority: {item.priority}</Text>
         </View>
         <View style={styles.infoChip}>
-          <Ionicons name="link-outline" size={10} color="#374151" />
+          <Ionicons name="link-outline" size={10} color={colors.gray700} />
           <Text style={[styles.infoChipText, { marginLeft: 3 }]} numberOfLines={1}>{item.deepLinkPath}</Text>
         </View>
       </View>
@@ -280,8 +280,8 @@ export default function QuickActionsScreen() {
       {/* Actions */}
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(item)}>
-          <Ionicons name="create-outline" size={18} color="#3B82F6" />
-          <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+          <Ionicons name="create-outline" size={18} color={colors.info} />
+          <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -289,8 +289,8 @@ export default function QuickActionsScreen() {
           onPress={() => handleMoveUp(item)}
           disabled={index === 0}
         >
-          <Ionicons name="arrow-up-outline" size={18} color="#6B7280" />
-          <Text style={[styles.actionText, { color: '#6B7280' }]}>Up</Text>
+          <Ionicons name="arrow-up-outline" size={18} color={colors.mutedDark} />
+          <Text style={[styles.actionText, { color: colors.mutedDark }]}>Up</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -298,13 +298,13 @@ export default function QuickActionsScreen() {
           onPress={() => handleMoveDown(item)}
           disabled={index === actions.length - 1}
         >
-          <Ionicons name="arrow-down-outline" size={18} color="#6B7280" />
-          <Text style={[styles.actionText, { color: '#6B7280' }]}>Down</Text>
+          <Ionicons name="arrow-down-outline" size={18} color={colors.mutedDark} />
+          <Text style={[styles.actionText, { color: colors.mutedDark }]}>Down</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item)}>
-          <Ionicons name="trash-outline" size={18} color="#EF4444" />
-          <Text style={[styles.actionText, { color: '#EF4444' }]}>Del</Text>
+          <Ionicons name="trash-outline" size={18} color={colors.error} />
+          <Text style={[styles.actionText, { color: colors.error }]}>Del</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -326,7 +326,7 @@ export default function QuickActionsScreen() {
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
             {isSaving ? (
-              <ActivityIndicator size="small" color="#3B82F6" />
+              <ActivityIndicator size="small" color={colors.info} />
             ) : (
               <Text style={styles.saveBtn}>Save</Text>
             )}
@@ -343,7 +343,7 @@ export default function QuickActionsScreen() {
             value={formData.slug}
             onChangeText={(v) => setFormData(prev => ({ ...prev, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))}
             placeholder="earn-coins"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             editable={!editingAction}
           />
 
@@ -353,7 +353,7 @@ export default function QuickActionsScreen() {
             value={formData.title}
             onChangeText={(v) => setFormData(prev => ({ ...prev, title: v }))}
             placeholder="Earn Coins"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Subtitle</Text>
@@ -362,7 +362,7 @@ export default function QuickActionsScreen() {
             value={formData.subtitle}
             onChangeText={(v) => setFormData(prev => ({ ...prev, subtitle: v }))}
             placeholder="Quick ways to earn rewards"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           {/* Icon */}
@@ -374,7 +374,7 @@ export default function QuickActionsScreen() {
             value={formData.icon}
             onChangeText={(v) => setFormData(prev => ({ ...prev, icon: v }))}
             placeholder="flash"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Common Icons</Text>
@@ -388,7 +388,7 @@ export default function QuickActionsScreen() {
                 ]}
                 onPress={() => setFormData(prev => ({ ...prev, icon: iconName }))}
               >
-                <Ionicons name={iconName as any} size={20} color={formData.icon === iconName ? '#FFF' : '#6B7280'} />
+                <Ionicons name={iconName as any} size={20} color={formData.icon === iconName ? colors.card : colors.mutedDark} />
               </TouchableOpacity>
             ))}
           </View>
@@ -398,8 +398,8 @@ export default function QuickActionsScreen() {
             style={[styles.formInput, { color: colors.text, borderColor: colors.border }]}
             value={formData.iconColor}
             onChangeText={(v) => setFormData(prev => ({ ...prev, iconColor: v }))}
-            placeholder="#3B82F6"
-            placeholderTextColor="#9CA3AF"
+            placeholder={colors.info}
+            placeholderTextColor={colors.muted}
           />
           {formData.iconColor ? (
             <View style={styles.iconPreviewRow}>
@@ -419,7 +419,7 @@ export default function QuickActionsScreen() {
             value={formData.deepLinkPath}
             onChangeText={(v) => setFormData(prev => ({ ...prev, deepLinkPath: v }))}
             placeholder="/earn-coins"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Target Achievement Types (comma-separated)</Text>
@@ -428,7 +428,7 @@ export default function QuickActionsScreen() {
             value={achievementTypesInput}
             onChangeText={setAchievementTypesInput}
             placeholder="daily_login, review_post, share_social"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           {/* Settings */}
@@ -441,7 +441,7 @@ export default function QuickActionsScreen() {
             onChangeText={(v) => setFormData(prev => ({ ...prev, priority: Number(v) || 0 }))}
             keyboardType="numeric"
             placeholder="0"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <View style={styles.switchRow}>
@@ -466,7 +466,7 @@ export default function QuickActionsScreen() {
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Quick Actions</Text>
         <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.createBtnText}>Create</Text>
         </TouchableOpacity>
       </View>
@@ -479,7 +479,7 @@ export default function QuickActionsScreen() {
           onChangeText={setSearchQuery}
           onSubmitEditing={() => loadActions(1)}
           placeholder="Search quick actions..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.muted}
           returnKeyType="search"
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChips}>
@@ -506,10 +506,10 @@ export default function QuickActionsScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+            <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           ) : (
             <View style={styles.emptyContainer}>
-              <Ionicons name="flash-outline" size={48} color="#D1D5DB" />
+              <Ionicons name="flash-outline" size={48} color={colors.gray300} />
               <Text style={styles.emptyText}>No quick actions found</Text>
             </View>
           )
@@ -561,16 +561,16 @@ const styles = StyleSheet.create({
   createBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
     gap: 4,
   },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
 
   // Filters
-  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   searchInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -584,12 +584,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
     marginRight: 8,
   },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  filterChipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  filterChipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  filterChipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  filterChipTextActive: { color: Colors.light.card, fontWeight: '600' },
 
   // Card
   card: {
@@ -597,18 +597,18 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 10 },
   iconCircle: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   cardTitle: { fontSize: 15, fontWeight: '600' },
-  cardSlug: { fontSize: 11, color: '#9CA3AF', marginTop: 1 },
-  subtitleText: { fontSize: 12, color: '#6B7280', marginBottom: 8 },
+  cardSlug: { fontSize: 11, color: Colors.light.muted, marginTop: 1 },
+  subtitleText: { fontSize: 12, color: Colors.light.mutedDark, marginBottom: 8 },
   cardInfoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 },
-  infoChip: { backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, flexDirection: 'row', alignItems: 'center' },
-  infoChipText: { fontSize: 11, fontWeight: '500', color: '#374151' },
-  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10 },
+  infoChip: { backgroundColor: Colors.light.backgroundSecondary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, flexDirection: 'row', alignItems: 'center' },
+  infoChipText: { fontSize: 11, fontWeight: '500', color: Colors.light.gray700 },
+  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 4, paddingHorizontal: 6 },
   actionText: { fontSize: 12, fontWeight: '500' },
 
@@ -621,13 +621,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.gray200,
   },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formSectionTitle: { fontSize: 15, fontWeight: '700', color: '#1a3a52', marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', paddingBottom: 6 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
+  formSectionTitle: { fontSize: 15, fontWeight: '700', color: Colors.light.navy, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.backgroundSecondary, paddingBottom: 6 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
   formInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -645,9 +645,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
-  iconOptionSelected: { backgroundColor: '#3B82F6' },
+  iconOptionSelected: { backgroundColor: Colors.light.info },
 
   // Color/Icon Preview
   iconPreviewRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 },
@@ -656,7 +656,7 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   iconPreviewCircle: {
     width: 48,
@@ -668,10 +668,10 @@ const styles = StyleSheet.create({
 
   // Empty & Pagination
   emptyContainer: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
   pagination: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16 },
-  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#3B82F6', borderRadius: 8 },
+  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: Colors.light.info, borderRadius: 8 },
   pageBtnDisabled: { opacity: 0.4 },
-  pageBtnText: { color: '#FFF', fontWeight: '500', fontSize: 13 },
-  pageInfo: { fontSize: 13, color: '#6B7280' },
+  pageBtnText: { color: Colors.light.card, fontWeight: '500', fontSize: 13 },
+  pageInfo: { fontSize: 13, color: Colors.light.mutedDark },
 });

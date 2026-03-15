@@ -24,6 +24,7 @@ import { campaignsService, uploadsService, Campaign, CampaignStats, CampaignDeal
 import { Colors } from '../../constants/Colors';
 import { format } from 'date-fns';
 import { showAlert, showConfirm } from '../../utils/alert';
+import { CampaignCard, CampaignStatsBar } from '../../components/campaigns';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -223,8 +224,8 @@ export default function CampaignsScreen() {
       subtitle: '',
       description: '',
       badge: '',
-      badgeBg: '#FFFFFF',
-      badgeColor: '#0B2240',
+      badgeBg: colors.card,
+      badgeColor: colors.navyDark,
       gradientColors: DEFAULT_GRADIENT_COLORS,
       type: 'general',
       startTime: new Date().toISOString(),
@@ -422,28 +423,6 @@ export default function CampaignsScreen() {
     }
   };
 
-  const getTypeColor = (type: CampaignType) => {
-    const typeColors: Record<CampaignType, string> = {
-      cashback: '#10B981',
-      coins: '#F59E0B',
-      bank: '#3B82F6',
-      bill: '#8B5CF6',
-      drop: '#EC4899',
-      'new-user': '#06B6D4',
-      flash: '#EF4444',
-      general: '#6B7280',
-    };
-    return typeColors[type] || '#6B7280';
-  };
-
-  const getStatusBadge = (campaign: Campaign) => {
-    if (!campaign.isActive) return { text: 'Inactive', color: '#6B7280', icon: 'pause-circle' };
-    if (campaign.isExpired) return { text: 'Expired', color: '#EF4444', icon: 'close-circle' };
-    if (campaign.isUpcoming) return { text: 'Upcoming', color: '#F59E0B', icon: 'time' };
-    if (campaign.isRunning) return { text: 'Live', color: '#10B981', icon: 'radio-button-on' };
-    return { text: 'Active', color: '#3B82F6', icon: 'checkmark-circle' };
-  };
-
   const renderHeader = () => (
     <View style={styles.header}>
       <View>
@@ -456,26 +435,14 @@ export default function CampaignsScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={20} color="#FFF" />
+        <Ionicons name="add" size={20} color={colors.card} />
         <Text style={styles.createBtnText}>New</Text>
       </TouchableOpacity>
     </View>
   );
 
   const renderStatsCard = () => (
-    <View style={styles.statsRow}>
-      {[
-        { label: 'Total', value: stats?.total || 0, color: colors.text },
-        { label: 'Running', value: stats?.running || 0, color: '#10B981' },
-        { label: 'Upcoming', value: stats?.upcoming || 0, color: '#F59E0B' },
-        { label: 'Deals', value: stats?.totalDeals || 0, color: '#3B82F6' },
-      ].map((item, index) => (
-        <View key={index} style={[styles.statItem, { backgroundColor: colors.card }]}>
-          <Text style={[styles.statValue, { color: item.color }]}>{item.value}</Text>
-          <Text style={[styles.statLabel, { color: colors.icon }]}>{item.label}</Text>
-        </View>
-      ))}
-    </View>
+    <CampaignStatsBar stats={stats} colors={colors} />
   );
 
   const renderSearchAndFilter = () => (
@@ -522,9 +489,9 @@ export default function CampaignsScreen() {
               <Ionicons
                 name={tab.icon as any}
                 size={16}
-                color={isActive ? '#FFF' : colors.icon}
+                color={isActive ? colors.card : colors.icon}
               />
-              <Text style={[styles.tabLabel, { color: isActive ? '#FFF' : colors.icon }]}>
+              <Text style={[styles.tabLabel, { color: isActive ? colors.card : colors.icon }]}>
                 {tab.label}
               </Text>
             </TouchableOpacity>
@@ -534,112 +501,16 @@ export default function CampaignsScreen() {
     </View>
   );
 
-  const renderCampaignItem = ({ item }: { item: Campaign }) => {
-    const status = getStatusBadge(item);
-    const typeColor = getTypeColor(item.type);
-
-    return (
-      <View style={[styles.card, { backgroundColor: colors.card }]}>
-        {/* Card Header */}
-        <View style={styles.cardHeader}>
-          <View style={[styles.typeChip, { backgroundColor: `${typeColor}15` }]}>
-            <View style={[styles.typeDot, { backgroundColor: typeColor }]} />
-            <Text style={[styles.typeLabel, { color: typeColor }]}>
-              {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-            </Text>
-          </View>
-          <View style={[styles.statusChip, { backgroundColor: `${status.color}15` }]}>
-            <Ionicons name={status.icon as any} size={12} color={status.color} />
-            <Text style={[styles.statusLabel, { color: status.color }]}>{status.text}</Text>
-          </View>
-        </View>
-
-        {/* Card Body */}
-        <Text style={[styles.cardTitle, { color: colors.text }]} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={[styles.cardSubtitle, { color: colors.icon }]} numberOfLines={1}>
-          {item.subtitle}
-        </Text>
-
-        {/* Meta Row */}
-        <View style={styles.metaRow}>
-          <View style={styles.metaChip}>
-            <Ionicons name="pricetag-outline" size={12} color={colors.icon} />
-            <Text style={[styles.metaText, { color: colors.icon }]}>{item.badge}</Text>
-          </View>
-          <View style={styles.metaChip}>
-            <Ionicons name="layers-outline" size={12} color={colors.icon} />
-            <Text style={[styles.metaText, { color: colors.icon }]}>{item.dealsCount || 0}</Text>
-          </View>
-          <View style={styles.metaChip}>
-            <Ionicons name="location-outline" size={12} color={colors.icon} />
-            <Text style={[styles.metaText, { color: colors.icon }]}>{item.region || 'all'}</Text>
-          </View>
-        </View>
-
-        {/* Date Row */}
-        <View style={[styles.dateRow, { borderTopColor: colors.border }]}>
-          <View style={styles.dateInfo}>
-            <Ionicons name="calendar-outline" size={12} color={colors.icon} />
-            <Text style={[styles.dateText, { color: colors.icon }]}>
-              {format(new Date(item.startTime), 'MMM d')} - {format(new Date(item.endTime), 'MMM d')}
-            </Text>
-          </View>
-          <Text style={[styles.priorityBadge, { backgroundColor: colors.background, color: colors.icon }]}>
-            P{item.priority}
-          </Text>
-        </View>
-
-        {/* Expired Banner */}
-        {item.isExpired && item.isActive && (
-          <TouchableOpacity
-            style={styles.expiredBanner}
-            onPress={() => handleEdit(item)}
-          >
-            <Ionicons name="refresh" size={14} color="#F59E0B" />
-            <Text style={styles.expiredBannerText}>Tap to extend campaign dates</Text>
-            <Ionicons name="chevron-forward" size={14} color="#F59E0B" />
-          </TouchableOpacity>
-        )}
-
-        {/* Action Row */}
-        <View style={styles.actionRow}>
-          <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
-            onPress={() => handleEdit(item)}
-          >
-            <Ionicons name="pencil" size={16} color="#3B82F6" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.actionIconBtn,
-              { backgroundColor: item.isActive ? '#F59E0B10' : '#10B98110' },
-            ]}
-            onPress={() => handleToggle(item)}
-          >
-            <Ionicons
-              name={item.isActive ? 'pause' : 'play'}
-              size={16}
-              color={item.isActive ? '#F59E0B' : '#10B981'}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#8B5CF610' }]}
-            onPress={() => handleDuplicate(item)}
-          >
-            <Ionicons name="copy" size={16} color="#8B5CF6" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
-            onPress={() => handleDelete(item)}
-          >
-            <Ionicons name="trash" size={16} color="#EF4444" />
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
+  const renderCampaignItem = ({ item }: { item: Campaign }) => (
+    <CampaignCard
+      item={item}
+      colors={colors}
+      onEdit={handleEdit}
+      onToggle={handleToggle}
+      onDuplicate={handleDuplicate}
+      onDelete={handleDelete}
+    />
+  );
 
   const renderFormModal = () => (
     <Modal visible={showFormModal} animationType="slide" presentationStyle="pageSheet">
@@ -657,7 +528,7 @@ export default function CampaignsScreen() {
             style={[styles.modalSaveBtn, { backgroundColor: colors.tint }]}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Save</Text>
             )}
@@ -972,7 +843,7 @@ export default function CampaignsScreen() {
                   <Text
                     style={[
                       styles.chipOptionText,
-                      { color: formData.type === type.value ? '#FFF' : colors.text },
+                      { color: formData.type === type.value ? colors.card : colors.text },
                     ]}
                   >
                     {type.label}
@@ -998,7 +869,7 @@ export default function CampaignsScreen() {
                   <Text
                     style={[
                       styles.chipOptionText,
-                      { color: formData.region === region.value ? '#FFF' : colors.text },
+                      { color: formData.region === region.value ? colors.card : colors.text },
                     ]}
                   >
                     {region.label}
@@ -1039,9 +910,9 @@ export default function CampaignsScreen() {
               <Text style={[styles.formLabel, { color: colors.text }]}>Badge BG</Text>
               <TextInput
                 style={[styles.formInput, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
-                value={formData.badgeBg || '#FFFFFF'}
+                value={formData.badgeBg || colors.card}
                 onChangeText={text => setFormData(p => ({ ...p, badgeBg: text }))}
-                placeholder="#FFFFFF"
+                placeholder={colors.card}
                 placeholderTextColor={colors.icon}
               />
             </View>
@@ -1049,9 +920,9 @@ export default function CampaignsScreen() {
               <Text style={[styles.formLabel, { color: colors.text }]}>Badge Color</Text>
               <TextInput
                 style={[styles.formInput, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
-                value={formData.badgeColor || '#0B2240'}
+                value={formData.badgeColor || colors.navyDark}
                 onChangeText={text => setFormData(p => ({ ...p, badgeColor: text }))}
-                placeholder="#0B2240"
+                placeholder={colors.navyDark}
                 placeholderTextColor={colors.icon}
               />
             </View>
@@ -1073,10 +944,10 @@ export default function CampaignsScreen() {
                   disabled={isUploading}
                 >
                   {isUploading && uploadingField === 'bannerImage' ? (
-                    <ActivityIndicator size="small" color="#FFF" />
+                    <ActivityIndicator size="small" color={colors.card} />
                   ) : (
                     <>
-                      <Ionicons name="cloud-upload" size={14} color="#FFF" />
+                      <Ionicons name="cloud-upload" size={14} color={colors.card} />
                       <Text style={styles.uploadBtnText}>Upload</Text>
                     </>
                   )}
@@ -1093,7 +964,7 @@ export default function CampaignsScreen() {
                     style={styles.removeImageBtn}
                     onPress={() => setFormData(p => ({ ...p, bannerImage: '' }))}
                   >
-                    <Ionicons name="close-circle" size={24} color="#EF4444" />
+                    <Ionicons name="close-circle" size={24} color={colors.error} />
                   </TouchableOpacity>
                 </View>
               ) : null}
@@ -1115,10 +986,10 @@ export default function CampaignsScreen() {
                   disabled={isUploading}
                 >
                   {isUploading && uploadingField === 'icon' ? (
-                    <ActivityIndicator size="small" color="#FFF" />
+                    <ActivityIndicator size="small" color={colors.card} />
                   ) : (
                     <>
-                      <Ionicons name="cloud-upload" size={14} color="#FFF" />
+                      <Ionicons name="cloud-upload" size={14} color={colors.card} />
                       <Text style={styles.uploadBtnText}>Upload</Text>
                     </>
                   )}
@@ -1135,7 +1006,7 @@ export default function CampaignsScreen() {
                     style={styles.removeImageBtn}
                     onPress={() => setFormData(p => ({ ...p, icon: '' }))}
                   >
-                    <Ionicons name="close-circle" size={24} color="#EF4444" />
+                    <Ionicons name="close-circle" size={24} color={colors.error} />
                   </TouchableOpacity>
                 </View>
               ) : null}
@@ -1224,7 +1095,7 @@ export default function CampaignsScreen() {
                   style={[styles.addDealBtn, { backgroundColor: colors.tint }]}
                   onPress={handleAddDeal}
                 >
-                  <Ionicons name="add" size={18} color="#FFF" />
+                  <Ionicons name="add" size={18} color={colors.card} />
                   <Text style={styles.addDealBtnText}>Add</Text>
                 </TouchableOpacity>
               </View>
@@ -1261,12 +1132,12 @@ export default function CampaignsScreen() {
                     {/* Show linked store status */}
                     {deal.storeId ? (
                       <View style={styles.dealLinkedStore}>
-                        <Ionicons name="link" size={10} color="#10B981" />
+                        <Ionicons name="link" size={10} color={colors.success} />
                         <Text style={styles.dealLinkedStoreText}>Store linked</Text>
                       </View>
                     ) : (
                       <View style={styles.dealUnlinkedStore}>
-                        <Ionicons name="warning" size={10} color="#F59E0B" />
+                        <Ionicons name="warning" size={10} color={colors.warning} />
                         <Text style={styles.dealUnlinkedStoreText}>No store linked</Text>
                       </View>
                     )}
@@ -1274,16 +1145,16 @@ export default function CampaignsScreen() {
 
                   <View style={styles.dealItemActions}>
                     <TouchableOpacity
-                      style={[styles.dealActionBtn, { backgroundColor: '#3B82F615' }]}
+                      style={[styles.dealActionBtn, { backgroundColor: `${colors.info}15` }]}
                       onPress={() => handleEditDeal(deal, index)}
                     >
-                      <Ionicons name="pencil" size={16} color="#3B82F6" />
+                      <Ionicons name="pencil" size={16} color={colors.info} />
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={[styles.dealActionBtn, { backgroundColor: '#EF444415' }]}
+                      style={[styles.dealActionBtn, { backgroundColor: `${colors.error}15` }]}
                       onPress={() => handleRemoveDeal(index)}
                     >
-                      <Ionicons name="trash" size={16} color="#EF4444" />
+                      <Ionicons name="trash" size={16} color={colors.error} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -1319,10 +1190,10 @@ export default function CampaignsScreen() {
                   disabled={isUploading}
                 >
                   {isUploading && uploadingField === 'dealImage' ? (
-                    <ActivityIndicator size="small" color="#FFF" />
+                    <ActivityIndicator size="small" color={colors.card} />
                   ) : (
                     <>
-                      <Ionicons name="cloud-upload" size={14} color="#FFF" />
+                      <Ionicons name="cloud-upload" size={14} color={colors.card} />
                       <Text style={styles.uploadBtnText}>Upload</Text>
                     </>
                   )}
@@ -1341,7 +1212,7 @@ export default function CampaignsScreen() {
                     style={styles.removeImageBtn}
                     onPress={() => setDealFormData(p => ({ ...p, image: '' }))}
                   >
-                    <Ionicons name="close-circle" size={24} color="#EF4444" />
+                    <Ionicons name="close-circle" size={24} color={colors.error} />
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -1383,7 +1254,7 @@ export default function CampaignsScreen() {
                       onPress={() => setDealFormData(p => ({ ...p, storeId: undefined }))}
                       style={styles.clearStoreBtn}
                     >
-                      <Ionicons name="close-circle" size={20} color="#EF4444" />
+                      <Ionicons name="close-circle" size={20} color={colors.error} />
                     </TouchableOpacity>
                   </View>
                 ) : (
@@ -1502,10 +1373,10 @@ export default function CampaignsScreen() {
                   <Ionicons
                     name="gift-outline"
                     size={16}
-                    color={!dealFormData.price || dealFormData.price === 0 ? '#FFF' : colors.tint}
+                    color={!dealFormData.price || dealFormData.price === 0 ? colors.card : colors.tint}
                   />
                   <Text style={{
-                    color: !dealFormData.price || dealFormData.price === 0 ? '#FFF' : colors.tint,
+                    color: !dealFormData.price || dealFormData.price === 0 ? colors.card : colors.tint,
                     marginLeft: 6,
                     fontWeight: '600',
                   }}>
@@ -1526,10 +1397,10 @@ export default function CampaignsScreen() {
                   <Ionicons
                     name="pricetag-outline"
                     size={16}
-                    color={dealFormData.price && dealFormData.price > 0 ? '#FFF' : colors.tint}
+                    color={dealFormData.price && dealFormData.price > 0 ? colors.card : colors.tint}
                   />
                   <Text style={{
-                    color: dealFormData.price && dealFormData.price > 0 ? '#FFF' : colors.tint,
+                    color: dealFormData.price && dealFormData.price > 0 ? colors.card : colors.tint,
                     marginLeft: 6,
                     fontWeight: '600',
                   }}>
@@ -1569,7 +1440,7 @@ export default function CampaignsScreen() {
                         onPress={() => setDealFormData(p => ({ ...p, currency: curr }))}
                       >
                         <Text style={{
-                          color: (dealFormData.currency || 'INR') === curr ? '#FFF' : colors.text,
+                          color: (dealFormData.currency || 'INR') === curr ? colors.card : colors.text,
                           fontSize: 12,
                           fontWeight: '600',
                         }}>
@@ -1613,9 +1484,9 @@ export default function CampaignsScreen() {
                 disabled={isSaving}
               >
                 {isSaving ? (
-                  <ActivityIndicator size="small" color="#FFF" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
-                  <Text style={[styles.dealModalBtnText, { color: '#FFF' }]}>
+                  <Text style={[styles.dealModalBtnText, { color: colors.card }]}>
                     {editingDealIndex !== null ? 'Update Deal' : 'Add Deal'}
                   </Text>
                 )}
@@ -1803,32 +1674,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   createBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
-  },
-  // Stats
-  statsRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    gap: 8,
-    marginBottom: 12,
-  },
-  statItem: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  statLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-    marginTop: 2,
   },
   // Search
   searchFilterContainer: {
@@ -1884,108 +1732,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  typeChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    gap: 6,
-  },
-  typeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  typeLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  statusChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    gap: 4,
-  },
-  statusLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 3,
-  },
-  cardSubtitle: {
-    fontSize: 13,
-    marginBottom: 10,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 10,
-  },
-  metaChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  metaText: {
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  dateRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    marginBottom: 10,
-  },
-  dateInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  dateText: {
-    fontSize: 11,
-  },
-  priorityBadge: {
-    fontSize: 10,
-    fontWeight: '600',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  expiredBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FEF3C7',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-    gap: 6,
-  },
-  expiredBannerText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#D97706',
-  },
-  actionIconBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   // Empty state
   emptyContainer: {
     paddingVertical: 60,
@@ -2025,7 +1771,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -2155,7 +1901,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   addDealBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 13,
   },
@@ -2196,8 +1942,8 @@ const styles = StyleSheet.create({
   },
   dealItemBenefit: {
     fontSize: 10,
-    color: '#6B7280',
-    backgroundColor: '#F3F4F6',
+    color: Colors.light.secondaryText,
+    backgroundColor: Colors.light.background,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -2273,7 +2019,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   uploadBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -2310,7 +2056,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.light.card,
     borderRadius: 12,
   },
   // Deal Modal
@@ -2467,7 +2213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.border,
   },
   storeSelectorTitle: {
     fontSize: 18,
@@ -2547,7 +2293,7 @@ const styles = StyleSheet.create({
   },
   dealLinkedStoreText: {
     fontSize: 9,
-    color: '#10B981',
+    color: Colors.light.success,
     fontWeight: '500',
   },
   dealUnlinkedStore: {
@@ -2558,7 +2304,7 @@ const styles = StyleSheet.create({
   },
   dealUnlinkedStoreText: {
     fontSize: 9,
-    color: '#F59E0B',
+    color: Colors.light.warning,
     fontWeight: '500',
   },
 });

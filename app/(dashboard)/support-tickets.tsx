@@ -44,18 +44,18 @@ const PRIORITY_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  open: '#3B82F6',
-  in_progress: '#F59E0B',
-  waiting_customer: '#8B5CF6',
-  resolved: '#10B981',
-  closed: '#6B7280',
+  open: Colors.light.info,
+  in_progress: Colors.light.warning,
+  waiting_customer: Colors.light.purple,
+  resolved: Colors.light.success,
+  closed: Colors.light.secondaryText,
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: '#6B7280',
-  medium: '#3B82F6',
-  high: '#F59E0B',
-  urgent: '#EF4444',
+  low: Colors.light.secondaryText,
+  medium: Colors.light.info,
+  high: Colors.light.warning,
+  urgent: Colors.light.error,
 };
 
 interface AgentOption {
@@ -391,8 +391,8 @@ export default function SupportTicketsScreen() {
   };
 
   // HELPERS
-  const getStatusColor = (status: string) => STATUS_COLORS[status] || '#6B7280';
-  const getPriorityColor = (priority: string) => PRIORITY_COLORS[priority] || '#6B7280';
+  const getStatusColor = (status: string) => STATUS_COLORS[status] || colors.mutedDark;
+  const getPriorityColor = (priority: string) => PRIORITY_COLORS[priority] || colors.mutedDark;
 
   const formatDate = (dateStr: string) => {
     try {
@@ -417,10 +417,10 @@ export default function SupportTicketsScreen() {
   const renderStatsCards = () => {
     if (!stats) return null;
     const cards = [
-      { label: 'Total', value: stats.total, color: '#1a3a52' },
-      { label: 'Open', value: stats.openCount, color: '#3B82F6' },
-      { label: 'Active', value: stats.inProgressCount, color: '#F59E0B' },
-      { label: 'Rating', value: stats.averageRating ? stats.averageRating.toFixed(1) : 'N/A', color: '#10B981' },
+      { label: 'Total', value: stats.total, color: colors.navy },
+      { label: 'Open', value: stats.openCount, color: colors.info },
+      { label: 'Active', value: stats.inProgressCount, color: colors.warning },
+      { label: 'Rating', value: stats.averageRating ? stats.averageRating.toFixed(1) : 'N/A', color: colors.success },
     ];
     return (
       <View style={styles.statsRow}>
@@ -463,7 +463,7 @@ export default function SupportTicketsScreen() {
           >
             <Text style={[
               styles.filterChipText,
-              { color: statusFilter === status ? '#FFFFFF' : colors.text },
+              { color: statusFilter === status ? colors.card : colors.text },
             ]}>
               {STATUS_LABELS[status]}
             </Text>
@@ -579,11 +579,11 @@ export default function SupportTicketsScreen() {
             {/* Assign button */}
             <View style={{ position: 'relative' }}>
               <TouchableOpacity
-                style={[styles.chatActionBtn, { backgroundColor: '#3B82F610', borderColor: '#3B82F630' }]}
+                style={[styles.chatActionBtn, { backgroundColor: `${colors.info}10`, borderColor: `${colors.info}30` }]}
                 onPress={() => setShowAssignDropdown(!showAssignDropdown)}
               >
-                <Ionicons name="person-add-outline" size={14} color="#3B82F6" />
-                <Text style={[styles.chatActionBtnText, { color: '#3B82F6' }]}>
+                <Ionicons name="person-add-outline" size={14} color={colors.info} />
+                <Text style={[styles.chatActionBtnText, { color: colors.info }]}>
                   {selectedTicket.assignedTo?.fullName || 'Assign'}
                 </Text>
               </TouchableOpacity>
@@ -614,32 +614,32 @@ export default function SupportTicketsScreen() {
             {/* Status buttons */}
             {selectedTicket.status !== 'resolved' && selectedTicket.status !== 'closed' && (
               <TouchableOpacity
-                style={[styles.chatActionBtn, { backgroundColor: '#10B98110', borderColor: '#10B98130' }]}
+                style={[styles.chatActionBtn, { backgroundColor: `${colors.success}10`, borderColor: `${colors.success}30` }]}
                 onPress={() => handleStatusUpdate('resolved')}
               >
-                <Ionicons name="checkmark-circle-outline" size={14} color="#10B981" />
-                <Text style={[styles.chatActionBtnText, { color: '#10B981' }]}>Resolve</Text>
+                <Ionicons name="checkmark-circle-outline" size={14} color={colors.success} />
+                <Text style={[styles.chatActionBtnText, { color: colors.success }]}>Resolve</Text>
               </TouchableOpacity>
             )}
             {selectedTicket.status !== 'closed' && (
               <TouchableOpacity
-                style={[styles.chatActionBtn, { backgroundColor: '#EF444410', borderColor: '#EF444430' }]}
+                style={[styles.chatActionBtn, { backgroundColor: `${colors.error}10`, borderColor: `${colors.error}30` }]}
                 onPress={async () => {
                   const confirmed = await showConfirm('Close Ticket', 'Are you sure?');
                   if (confirmed) handleStatusUpdate('closed');
                 }}
               >
-                <Ionicons name="close-circle-outline" size={14} color="#EF4444" />
-                <Text style={[styles.chatActionBtnText, { color: '#EF4444' }]}>Close</Text>
+                <Ionicons name="close-circle-outline" size={14} color={colors.error} />
+                <Text style={[styles.chatActionBtnText, { color: colors.error }]}>Close</Text>
               </TouchableOpacity>
             )}
             {(selectedTicket.status === 'resolved' || selectedTicket.status === 'closed') && (
               <TouchableOpacity
-                style={[styles.chatActionBtn, { backgroundColor: '#3B82F610', borderColor: '#3B82F630' }]}
+                style={[styles.chatActionBtn, { backgroundColor: `${colors.info}10`, borderColor: `${colors.info}30` }]}
                 onPress={() => handleStatusUpdate('in_progress')}
               >
-                <Ionicons name="refresh-outline" size={14} color="#3B82F6" />
-                <Text style={[styles.chatActionBtnText, { color: '#3B82F6' }]}>Reopen</Text>
+                <Ionicons name="refresh-outline" size={14} color={colors.info} />
+                <Text style={[styles.chatActionBtnText, { color: colors.info }]}>Reopen</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -694,8 +694,8 @@ export default function SupportTicketsScreen() {
                   ]}
                 >
                   {!isAdmin && (
-                    <View style={[styles.chatAvatar, { backgroundColor: '#E5E7EB' }]}>
-                      <Ionicons name="person" size={14} color="#6B7280" />
+                    <View style={[styles.chatAvatar, { backgroundColor: colors.border }]}>
+                      <Ionicons name="person" size={14} color={colors.secondaryText} />
                     </View>
                   )}
                   <View
@@ -737,8 +737,8 @@ export default function SupportTicketsScreen() {
                     </View>
                   </View>
                   {isAdmin && (
-                    <View style={[styles.chatAvatar, { backgroundColor: '#1a3a52' }]}>
-                      <Ionicons name="headset" size={14} color="#FFFFFF" />
+                    <View style={[styles.chatAvatar, { backgroundColor: colors.navy }]}>
+                      <Ionicons name="headset" size={14} color={colors.card} />
                     </View>
                   )}
                 </View>
@@ -754,8 +754,8 @@ export default function SupportTicketsScreen() {
             {/* User typing indicator */}
             {userTyping && (
               <View style={[styles.chatBubbleRow, styles.chatBubbleRowLeft]}>
-                <View style={[styles.chatAvatar, { backgroundColor: '#E5E7EB' }]}>
-                  <Ionicons name="person" size={14} color="#6B7280" />
+                <View style={[styles.chatAvatar, { backgroundColor: colors.border }]}>
+                  <Ionicons name="person" size={14} color={colors.secondaryText} />
                 </View>
                 <View style={[styles.chatBubble, styles.chatBubbleUser]}>
                   <View style={styles.typingDots}>
@@ -782,23 +782,23 @@ export default function SupportTicketsScreen() {
               maxLength={2000}
             />
             <TouchableOpacity
-              style={[styles.chatSendBtn, { backgroundColor: replyText.trim() ? '#1a3a52' : colors.border }]}
+              style={[styles.chatSendBtn, { backgroundColor: replyText.trim() ? colors.navy : colors.border }]}
               onPress={handleReply}
               disabled={replySending || !replyText.trim()}
             >
               {replySending ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
-                <Ionicons name="send" size={18} color={replyText.trim() ? '#FFFFFF' : colors.icon} />
+                <Ionicons name="send" size={18} color={replyText.trim() ? colors.card : colors.icon} />
               )}
             </TouchableOpacity>
           </View>
         )}
 
         {selectedTicket.status === 'closed' && (
-          <View style={[styles.chatClosedBanner, { backgroundColor: '#6B728015' }]}>
-            <Ionicons name="lock-closed" size={16} color="#6B7280" />
-            <Text style={[styles.chatClosedText, { color: '#6B7280' }]}>This ticket is closed</Text>
+          <View style={[styles.chatClosedBanner, { backgroundColor: colors.secondaryText + '15' }]}>
+            <Ionicons name="lock-closed" size={16} color={colors.secondaryText} />
+            <Text style={[styles.chatClosedText, { color: colors.secondaryText }]}>This ticket is closed</Text>
           </View>
         )}
       </View>
@@ -836,7 +836,7 @@ export default function SupportTicketsScreen() {
         </View>
         {newTicketAlert && (
           <View style={styles.newTicketBadge}>
-            <Ionicons name="notifications" size={14} color="#FFFFFF" />
+            <Ionicons name="notifications" size={14} color={colors.card} />
             <Text style={styles.newTicketBadgeText}>New ticket!</Text>
           </View>
         )}
@@ -894,15 +894,15 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 20, fontWeight: '700' },
   socketBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: '#10B98115', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10,
+    backgroundColor: `${Colors.light.success}15`, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10,
   },
-  socketDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' },
-  socketText: { fontSize: 11, fontWeight: '600', color: '#10B981' },
+  socketDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.light.success },
+  socketText: { fontSize: 11, fontWeight: '600', color: Colors.light.success },
   newTicketBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: '#EF4444', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12,
+    backgroundColor: Colors.light.error, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12,
   },
-  newTicketBadgeText: { fontSize: 12, fontWeight: '600', color: '#FFFFFF' },
+  newTicketBadgeText: { fontSize: 12, fontWeight: '600', color: Colors.light.card },
 
   // Stats
   statsRow: {
@@ -930,7 +930,7 @@ const styles = StyleSheet.create({
   // Main content split
   mainContent: { flex: 1, flexDirection: 'row' },
   listPanel: { flex: 1 },
-  listPanelWide: { flex: 0, width: 380, borderRightWidth: 1, borderRightColor: '#E2E8F0' },
+  listPanelWide: { flex: 0, width: 380, borderRightWidth: 1, borderRightColor: Colors.light.border },
   chatPanelWide: { flex: 1 },
 
   // Ticket list items
@@ -1001,7 +1001,7 @@ const styles = StyleSheet.create({
 
   // System message
   systemMsg: {
-    alignSelf: 'center', backgroundColor: '#F3F4F6', paddingHorizontal: 14, paddingVertical: 6,
+    alignSelf: 'center', backgroundColor: Colors.light.background, paddingHorizontal: 14, paddingVertical: 6,
     borderRadius: 12, marginBottom: 10,
   },
   systemMsgText: { fontSize: 12, fontStyle: 'italic' },
@@ -1015,13 +1015,13 @@ const styles = StyleSheet.create({
   },
   chatBubble: { maxWidth: '70%', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 16 },
   chatBubbleUser: {
-    backgroundColor: '#F3F4F6', borderBottomLeftRadius: 4,
+    backgroundColor: Colors.light.background, borderBottomLeftRadius: 4,
   },
   chatBubbleAdmin: {
-    backgroundColor: '#1a3a52', borderBottomRightRadius: 4,
+    backgroundColor: Colors.light.navy, borderBottomRightRadius: 4,
   },
   chatBubbleText: { fontSize: 14, lineHeight: 20 },
-  chatBubbleTextAdmin: { color: '#FFFFFF' },
+  chatBubbleTextAdmin: { color: Colors.light.card },
   chatBubbleTime: { fontSize: 10, marginTop: 4 },
   chatBubbleTimeAdmin: { color: 'rgba(255,255,255,0.6)' },
 
@@ -1056,7 +1056,7 @@ const styles = StyleSheet.create({
 
   // Ticket-level attachments
   ticketAttachmentsContainer: {
-    backgroundColor: '#F9FAFB', borderRadius: 10, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: '#E5E7EB',
+    backgroundColor: Colors.light.background, borderRadius: 10, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: Colors.light.border,
   },
   ticketAttachmentsLabel: { fontSize: 11, fontWeight: '600', marginBottom: 8 },
   ticketAttachmentsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

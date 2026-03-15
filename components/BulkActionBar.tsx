@@ -8,6 +8,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '@/constants/Colors';
 
 interface BulkAction {
   label: string;
@@ -42,8 +43,8 @@ interface BulkActionBarProps {
  *   onClearSelection={() => setSelected(new Set())}
  *   isAllSelected={selected.size === items.length}
  *   actions={[
- *     { label: 'Delete', icon: 'trash-outline', color: '#EF4444', onPress: handleBulkDelete },
- *     { label: 'Approve', icon: 'checkmark-circle-outline', color: '#22C55E', onPress: handleBulkApprove },
+ *     { label: 'Delete', icon: 'trash-outline', color: colors.error, onPress: handleBulkDelete },
+ *     { label: 'Approve', icon: 'checkmark-circle-outline', color: Colors.light.green, onPress: handleBulkApprove },
  *   ]}
  * />
  * ```
@@ -62,10 +63,11 @@ const BulkActionBar: React.FC<BulkActionBarProps> = ({
   // Don't render if nothing is selected
   if (selectedCount === 0) return null;
 
-  const bgColor = isDark ? '#1E293B' : '#FFFFFF';
-  const borderColor = isDark ? '#334155' : '#E2E8F0';
-  const textColor = isDark ? '#F1F5F9' : '#1E293B';
-  const mutedColor = isDark ? '#94A3B8' : '#64748B';
+  const colors = isDark ? Colors.dark : Colors.light;
+  const bgColor = Colors.light.card;
+  const borderColor = Colors.light.border;
+  const textColor = Colors.light.text;
+  const mutedColor = Colors.light.secondaryText;
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor, borderTopColor: borderColor }]}>
@@ -96,7 +98,7 @@ const BulkActionBar: React.FC<BulkActionBarProps> = ({
       {/* Right: action buttons */}
       <View style={styles.actionsRow}>
         {actions.map((action, index) => {
-          const actionColor = action.color || '#3B82F6';
+          const actionColor = action.color || Colors.light.info;
           return (
             <TouchableOpacity
               key={`${action.label}-${index}`}
@@ -155,7 +157,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   countBadge: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     borderRadius: 12,
     minWidth: 24,
     height: 24,
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   countText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontSize: 13,
     fontWeight: '700',
   },

@@ -177,10 +177,10 @@ export default function PhotoModerationScreen() {
           disabled={processingId === item._id}
         >
           {processingId === item._id ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <>
-              <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+              <Ionicons name="checkmark" size={18} color={colors.card} />
               <Text style={styles.actionButtonText}>Approve</Text>
             </>
           )}
@@ -193,7 +193,7 @@ export default function PhotoModerationScreen() {
           }}
           disabled={processingId === item._id}
         >
-          <Ionicons name="close" size={18} color="#FFFFFF" />
+          <Ionicons name="close" size={18} color={colors.card} />
           <Text style={styles.actionButtonText}>Reject</Text>
         </TouchableOpacity>
       </View>
@@ -271,7 +271,7 @@ export default function PhotoModerationScreen() {
                 style={[styles.modalButton, { backgroundColor: colors.error }]}
                 onPress={handleReject}
               >
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Reject</Text>
+                <Text style={[styles.modalButtonText, { color: colors.card }]}>Reject</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -285,7 +285,7 @@ export default function PhotoModerationScreen() {
             style={styles.previewClose}
             onPress={() => setShowPreviewModal(false)}
           >
-            <Ionicons name="close" size={28} color="#FFFFFF" />
+            <Ionicons name="close" size={28} color={colors.card} />
           </TouchableOpacity>
           {previewPhotos.length > 0 && (
             <Image
@@ -301,7 +301,7 @@ export default function PhotoModerationScreen() {
                 onPress={() => setPreviewIndex(Math.max(0, previewIndex - 1))}
                 disabled={previewIndex === 0}
               >
-                <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+                <Ionicons name="chevron-back" size={24} color={colors.card} />
               </TouchableOpacity>
               <Text style={styles.previewCounter}>
                 {previewIndex + 1} / {previewPhotos.length}
@@ -311,7 +311,7 @@ export default function PhotoModerationScreen() {
                 onPress={() => setPreviewIndex(Math.min(previewPhotos.length - 1, previewIndex + 1))}
                 disabled={previewIndex === previewPhotos.length - 1}
               >
-                <Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
+                <Ionicons name="chevron-forward" size={24} color={colors.card} />
               </TouchableOpacity>
             </View>
           )}
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 8,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: Colors.light.border,
   },
   moreOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  moreText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  moreText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
   actionButtons: { flexDirection: 'row', marginTop: 12, gap: 8 },
   actionButton: {
     flex: 1,
@@ -384,9 +384,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  approveButton: { backgroundColor: '#10B981' },
-  rejectButton: { backgroundColor: '#EF4444' },
-  actionButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
+  approveButton: { backgroundColor: Colors.light.success },
+  rejectButton: { backgroundColor: Colors.light.error },
+  actionButtonText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
   emptyContainer: { padding: 40, alignItems: 'center' },
   emptyText: { marginTop: 12, fontSize: 16 },
   // Reject modal
@@ -403,5 +403,5 @@ const styles = StyleSheet.create({
   previewImage: { width: '90%', height: '70%' },
   previewNav: { flexDirection: 'row', alignItems: 'center', marginTop: 16, gap: 20 },
   previewNavBtn: { padding: 8 },
-  previewCounter: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' },
+  previewCounter: { color: Colors.light.card, fontSize: 14, fontWeight: '600' },
 });

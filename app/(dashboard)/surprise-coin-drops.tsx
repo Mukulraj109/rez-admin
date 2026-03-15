@@ -28,9 +28,9 @@ type StatusFilter = 'all' | 'available' | 'claimed' | 'expired';
 type ReasonFilter = 'all' | 'random' | 'milestone' | 'promo' | 'special_event' | 'welcome' | 'comeback';
 
 const STATUS_COLORS: Record<string, string> = {
-  available: '#10B981',
-  claimed: '#3B82F6',
-  expired: '#EF4444',
+  available: Colors.light.success,
+  claimed: Colors.light.info,
+  expired: Colors.light.error,
 };
 
 const STATUS_ICONS: Record<string, string> = {
@@ -250,11 +250,11 @@ export default function SurpriseCoinDropsPage() {
   };
 
   const renderDropItem = ({ item }: { item: SurpriseCoinDrop }) => {
-    const statusColor = STATUS_COLORS[item.status] || '#94A3B8';
+    const statusColor = STATUS_COLORS[item.status] || colors.slateMedium;
     const statusIcon = STATUS_ICONS[item.status] || 'help-circle';
 
     return (
-      <View style={[styles.card, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderLeft}>
             <Ionicons name={statusIcon as any} size={18} color={statusColor} />
@@ -262,8 +262,8 @@ export default function SurpriseCoinDropsPage() {
               {item.status.toUpperCase()}
             </Text>
           </View>
-          <View style={[styles.reasonBadge, { backgroundColor: isDark ? '#334155' : '#F1F5F9' }]}>
-            <Text style={[styles.reasonText, { color: isDark ? '#CBD5E1' : '#475569' }]}>
+          <View style={[styles.reasonBadge, { backgroundColor: colors.background }]}>
+            <Text style={[styles.reasonText, { color: colors.secondaryText }]}>
               {REASON_LABELS[item.reason] || item.reason}
             </Text>
           </View>
@@ -271,37 +271,37 @@ export default function SurpriseCoinDropsPage() {
 
         <View style={styles.cardBody}>
           <View style={styles.cardRow}>
-            <Text style={[styles.cardLabel, { color: isDark ? '#94A3B8' : '#6B7280' }]}>User</Text>
-            <Text style={[styles.cardValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+            <Text style={[styles.cardLabel, { color: colors.secondaryText }]}>User</Text>
+            <Text style={[styles.cardValue, { color: colors.text }]}>
               {getUserDisplay(item.userId)}
             </Text>
           </View>
           <View style={styles.cardRow}>
-            <Text style={[styles.cardLabel, { color: isDark ? '#94A3B8' : '#6B7280' }]}>Coins</Text>
-            <Text style={[styles.coinsValue, { color: '#F59E0B' }]}>{item.coins} NC</Text>
+            <Text style={[styles.cardLabel, { color: colors.secondaryText }]}>Coins</Text>
+            <Text style={[styles.coinsValue, { color: colors.warning }]}>{item.coins} NC</Text>
           </View>
           <View style={styles.cardRow}>
-            <Text style={[styles.cardLabel, { color: isDark ? '#94A3B8' : '#6B7280' }]}>Message</Text>
-            <Text style={[styles.cardValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]} numberOfLines={1}>
+            <Text style={[styles.cardLabel, { color: colors.secondaryText }]}>Message</Text>
+            <Text style={[styles.cardValue, { color: colors.text }]} numberOfLines={1}>
               {item.message}
             </Text>
           </View>
           <View style={styles.cardRow}>
-            <Text style={[styles.cardLabel, { color: isDark ? '#94A3B8' : '#6B7280' }]}>Created</Text>
-            <Text style={[styles.cardValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+            <Text style={[styles.cardLabel, { color: colors.secondaryText }]}>Created</Text>
+            <Text style={[styles.cardValue, { color: colors.text }]}>
               {formatDate(item.createdAt)}
             </Text>
           </View>
           <View style={styles.cardRow}>
-            <Text style={[styles.cardLabel, { color: isDark ? '#94A3B8' : '#6B7280' }]}>Expires</Text>
-            <Text style={[styles.cardValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+            <Text style={[styles.cardLabel, { color: colors.secondaryText }]}>Expires</Text>
+            <Text style={[styles.cardValue, { color: colors.text }]}>
               {formatDate(item.expiresAt)}
             </Text>
           </View>
           {item.claimedAt && (
             <View style={styles.cardRow}>
-              <Text style={[styles.cardLabel, { color: isDark ? '#94A3B8' : '#6B7280' }]}>Claimed</Text>
-              <Text style={[styles.cardValue, { color: '#10B981' }]}>
+              <Text style={[styles.cardLabel, { color: colors.secondaryText }]}>Claimed</Text>
+              <Text style={[styles.cardValue, { color: colors.success }]}>
                 {formatDate(item.claimedAt)}
               </Text>
             </View>
@@ -314,7 +314,7 @@ export default function SurpriseCoinDropsPage() {
               style={[styles.actionButton, styles.deleteButton]}
               onPress={() => handleDeleteDrop(item)}
             >
-              <Ionicons name="trash-outline" size={16} color="#EF4444" />
+              <Ionicons name="trash-outline" size={16} color={colors.error} />
               <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
           </View>
@@ -336,51 +336,51 @@ export default function SurpriseCoinDropsPage() {
         {/* Summary Cards */}
         <View style={styles.statsGrid}>
           {[
-            { label: 'Total Drops', value: summary.totalDrops, icon: 'gift-outline', color: '#3B82F6' },
-            { label: 'Total Coins', value: summary.totalCoins.toLocaleString(), icon: 'wallet-outline', color: '#F59E0B' },
-            { label: 'Avg Coins', value: summary.avgCoins, icon: 'analytics-outline', color: '#8B5CF6' },
-            { label: 'Unique Users', value: summary.uniqueUsers, icon: 'people-outline', color: '#10B981' },
-            { label: 'Claim Rate', value: `${summary.claimRate}%`, icon: 'checkmark-circle-outline', color: '#06B6D4' },
-            { label: 'Unclaimed', value: summary.unclaimed, icon: 'time-outline', color: '#EF4444' },
+            { label: 'Total Drops', value: summary.totalDrops, icon: 'gift-outline', color: colors.info },
+            { label: 'Total Coins', value: summary.totalCoins.toLocaleString(), icon: 'wallet-outline', color: colors.warning },
+            { label: 'Avg Coins', value: summary.avgCoins, icon: 'analytics-outline', color: colors.purple },
+            { label: 'Unique Users', value: summary.uniqueUsers, icon: 'people-outline', color: colors.success },
+            { label: 'Claim Rate', value: `${summary.claimRate}%`, icon: 'checkmark-circle-outline', color: colors.cyan },
+            { label: 'Unclaimed', value: summary.unclaimed, icon: 'time-outline', color: colors.error },
           ].map((stat, i) => (
-            <View key={i} style={[styles.statCard, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
+            <View key={i} style={[styles.statCard, { backgroundColor: colors.card }]}>
               <Ionicons name={stat.icon as any} size={24} color={stat.color} />
-              <Text style={[styles.statValue, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{stat.value}</Text>
-              <Text style={[styles.statLabel, { color: isDark ? '#94A3B8' : '#6B7280' }]}>{stat.label}</Text>
+              <Text style={[styles.statValue, { color: colors.text }]}>{stat.value}</Text>
+              <Text style={[styles.statLabel, { color: colors.secondaryText }]}>{stat.label}</Text>
             </View>
           ))}
         </View>
 
         {/* Status Breakdown */}
-        <View style={[styles.sectionCard, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
-          <Text style={[styles.sectionTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>By Status</Text>
+        <View style={[styles.sectionCard, { backgroundColor: colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>By Status</Text>
           {statusBreakdown.map((item: any, i: number) => (
             <View key={i} style={styles.breakdownRow}>
               <View style={styles.breakdownLeft}>
-                <View style={[styles.dot, { backgroundColor: STATUS_COLORS[item._id] || '#94A3B8' }]} />
-                <Text style={[styles.breakdownLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>
+                <View style={[styles.dot, { backgroundColor: STATUS_COLORS[item._id] || colors.slateMedium }]} />
+                <Text style={[styles.breakdownLabel, { color: colors.text }]}>
                   {item._id}
                 </Text>
               </View>
               <View style={styles.breakdownRight}>
-                <Text style={[styles.breakdownCount, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{item.count}</Text>
-                <Text style={[styles.breakdownCoins, { color: '#F59E0B' }]}>{item.totalCoins} NC</Text>
+                <Text style={[styles.breakdownCount, { color: colors.text }]}>{item.count}</Text>
+                <Text style={[styles.breakdownCoins, { color: colors.warning }]}>{item.totalCoins} NC</Text>
               </View>
             </View>
           ))}
         </View>
 
         {/* Reason Breakdown */}
-        <View style={[styles.sectionCard, { backgroundColor: isDark ? '#1E293B' : '#FFF', marginBottom: 40 }]}>
-          <Text style={[styles.sectionTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>By Reason</Text>
+        <View style={[styles.sectionCard, { backgroundColor: isDark ? colors.slateDark : colors.card, marginBottom: 40 }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>By Reason</Text>
           {reasonBreakdown.map((item: any, i: number) => (
             <View key={i} style={styles.breakdownRow}>
-              <Text style={[styles.breakdownLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>
+              <Text style={[styles.breakdownLabel, { color: colors.text }]}>
                 {REASON_LABELS[item._id] || item._id}
               </Text>
               <View style={styles.breakdownRight}>
-                <Text style={[styles.breakdownCount, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>{item.count}</Text>
-                <Text style={[styles.breakdownCoins, { color: '#F59E0B' }]}>{item.totalCoins} NC</Text>
+                <Text style={[styles.breakdownCount, { color: colors.text }]}>{item.count}</Text>
+                <Text style={[styles.breakdownCoins, { color: colors.warning }]}>{item.totalCoins} NC</Text>
               </View>
             </View>
           ))}
@@ -392,70 +392,70 @@ export default function SurpriseCoinDropsPage() {
   const renderCreateModal = () => (
     <Modal visible={showCreateModal} transparent animationType="slide">
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
+        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
           <View style={styles.modalHeader}>
-            <Text style={[styles.modalTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>Create Surprise Drop</Text>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Create Surprise Drop</Text>
             <TouchableOpacity onPress={() => setShowCreateModal(false)}>
-              <Ionicons name="close" size={24} color={isDark ? '#94A3B8' : '#6B7280'} />
+              <Ionicons name="close" size={24} color={colors.secondaryText} />
             </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.modalBody}>
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>User ID *</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>User ID *</Text>
             <TextInput
-              style={[styles.textInput, { backgroundColor: isDark ? '#0F172A' : '#F9FAFB', color: isDark ? '#F1F5F9' : '#1F2937' }]}
+              style={[styles.textInput, { backgroundColor: colors.background, color: colors.text }]}
               value={createForm.userId}
               onChangeText={t => setCreateForm(p => ({ ...p, userId: t }))}
               placeholder="Paste user ObjectId"
-              placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+              placeholderTextColor={colors.icon}
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Coins *</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>Coins *</Text>
             <TextInput
-              style={[styles.textInput, { backgroundColor: isDark ? '#0F172A' : '#F9FAFB', color: isDark ? '#F1F5F9' : '#1F2937' }]}
+              style={[styles.textInput, { backgroundColor: colors.background, color: colors.text }]}
               value={createForm.coins}
               onChangeText={t => setCreateForm(p => ({ ...p, coins: t.replace(/[^0-9]/g, '') }))}
               keyboardType="number-pad"
               placeholder="1 - 10000"
-              placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+              placeholderTextColor={colors.icon}
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Reason</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>Reason</Text>
             <View style={styles.reasonOptions}>
               {Object.entries(REASON_LABELS).map(([key, label]) => (
                 <TouchableOpacity
                   key={key}
                   style={[
                     styles.reasonChip,
-                    { backgroundColor: createForm.reason === key ? '#3B82F6' : (isDark ? '#334155' : '#F1F5F9') },
+                    { backgroundColor: createForm.reason === key ? colors.info : (isDark ? Colors.dark.border : colors.slate) },
                   ]}
                   onPress={() => setCreateForm(p => ({ ...p, reason: key }))}
                 >
-                  <Text style={{ color: createForm.reason === key ? '#FFF' : (isDark ? '#CBD5E1' : '#475569'), fontSize: 13 }}>
+                  <Text style={{ color: createForm.reason === key ? colors.card : (colors.secondaryText), fontSize: 13 }}>
                     {label}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Message</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>Message</Text>
             <TextInput
-              style={[styles.textInput, styles.multilineInput, { backgroundColor: isDark ? '#0F172A' : '#F9FAFB', color: isDark ? '#F1F5F9' : '#1F2937' }]}
+              style={[styles.textInput, styles.multilineInput, { backgroundColor: colors.background, color: colors.text }]}
               value={createForm.message}
               onChangeText={t => setCreateForm(p => ({ ...p, message: t }))}
               multiline
               maxLength={200}
-              placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+              placeholderTextColor={colors.icon}
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Expiry (hours)</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>Expiry (hours)</Text>
             <TextInput
-              style={[styles.textInput, { backgroundColor: isDark ? '#0F172A' : '#F9FAFB', color: isDark ? '#F1F5F9' : '#1F2937' }]}
+              style={[styles.textInput, { backgroundColor: colors.background, color: colors.text }]}
               value={createForm.expiryHours}
               onChangeText={t => setCreateForm(p => ({ ...p, expiryHours: t.replace(/[^0-9]/g, '') }))}
               keyboardType="number-pad"
               placeholder="24"
-              placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+              placeholderTextColor={colors.icon}
             />
           </ScrollView>
 
@@ -465,7 +465,7 @@ export default function SurpriseCoinDropsPage() {
             disabled={creating}
           >
             {creating ? (
-              <ActivityIndicator color="#FFF" size="small" />
+              <ActivityIndicator color={colors.card} size="small" />
             ) : (
               <Text style={styles.submitButtonText}>Create Drop</Text>
             )}
@@ -478,71 +478,71 @@ export default function SurpriseCoinDropsPage() {
   const renderBulkModal = () => (
     <Modal visible={showBulkModal} transparent animationType="slide">
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
+        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
           <View style={styles.modalHeader}>
-            <Text style={[styles.modalTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>Bulk Create Drops</Text>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Bulk Create Drops</Text>
             <TouchableOpacity onPress={() => setShowBulkModal(false)}>
-              <Ionicons name="close" size={24} color={isDark ? '#94A3B8' : '#6B7280'} />
+              <Ionicons name="close" size={24} color={colors.secondaryText} />
             </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.modalBody}>
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>User IDs * (one per line or comma-separated)</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>User IDs * (one per line or comma-separated)</Text>
             <TextInput
-              style={[styles.textInput, styles.multilineInput, { height: 120, backgroundColor: isDark ? '#0F172A' : '#F9FAFB', color: isDark ? '#F1F5F9' : '#1F2937' }]}
+              style={[styles.textInput, styles.multilineInput, { height: 120, backgroundColor: isDark ? Colors.dark.background : colors.backgroundTertiary, color: isDark ? colors.slate : colors.gray800 }]}
               value={bulkForm.userIds}
               onChangeText={t => setBulkForm(p => ({ ...p, userIds: t }))}
               multiline
               placeholder="6abc123...\n6def456..."
-              placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+              placeholderTextColor={colors.icon}
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Coins per user *</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>Coins per user *</Text>
             <TextInput
-              style={[styles.textInput, { backgroundColor: isDark ? '#0F172A' : '#F9FAFB', color: isDark ? '#F1F5F9' : '#1F2937' }]}
+              style={[styles.textInput, { backgroundColor: colors.background, color: colors.text }]}
               value={bulkForm.coins}
               onChangeText={t => setBulkForm(p => ({ ...p, coins: t.replace(/[^0-9]/g, '') }))}
               keyboardType="number-pad"
               placeholder="1 - 10000"
-              placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+              placeholderTextColor={colors.icon}
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Reason</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>Reason</Text>
             <View style={styles.reasonOptions}>
               {Object.entries(REASON_LABELS).map(([key, label]) => (
                 <TouchableOpacity
                   key={key}
                   style={[
                     styles.reasonChip,
-                    { backgroundColor: bulkForm.reason === key ? '#3B82F6' : (isDark ? '#334155' : '#F1F5F9') },
+                    { backgroundColor: bulkForm.reason === key ? colors.info : (isDark ? Colors.dark.border : colors.slate) },
                   ]}
                   onPress={() => setBulkForm(p => ({ ...p, reason: key }))}
                 >
-                  <Text style={{ color: bulkForm.reason === key ? '#FFF' : (isDark ? '#CBD5E1' : '#475569'), fontSize: 13 }}>
+                  <Text style={{ color: bulkForm.reason === key ? colors.card : (colors.secondaryText), fontSize: 13 }}>
                     {label}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Message</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>Message</Text>
             <TextInput
-              style={[styles.textInput, styles.multilineInput, { backgroundColor: isDark ? '#0F172A' : '#F9FAFB', color: isDark ? '#F1F5F9' : '#1F2937' }]}
+              style={[styles.textInput, styles.multilineInput, { backgroundColor: colors.background, color: colors.text }]}
               value={bulkForm.message}
               onChangeText={t => setBulkForm(p => ({ ...p, message: t }))}
               multiline
               maxLength={200}
-              placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+              placeholderTextColor={colors.icon}
             />
 
-            <Text style={[styles.fieldLabel, { color: isDark ? '#CBD5E1' : '#374151' }]}>Expiry (hours)</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text }]}>Expiry (hours)</Text>
             <TextInput
-              style={[styles.textInput, { backgroundColor: isDark ? '#0F172A' : '#F9FAFB', color: isDark ? '#F1F5F9' : '#1F2937' }]}
+              style={[styles.textInput, { backgroundColor: colors.background, color: colors.text }]}
               value={bulkForm.expiryHours}
               onChangeText={t => setBulkForm(p => ({ ...p, expiryHours: t.replace(/[^0-9]/g, '') }))}
               keyboardType="number-pad"
               placeholder="24"
-              placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+              placeholderTextColor={colors.icon}
             />
           </ScrollView>
 
@@ -552,7 +552,7 @@ export default function SurpriseCoinDropsPage() {
             disabled={bulkCreating}
           >
             {bulkCreating ? (
-              <ActivityIndicator color="#FFF" size="small" />
+              <ActivityIndicator color={colors.card} size="small" />
             ) : (
               <Text style={styles.submitButtonText}>Bulk Create</Text>
             )}
@@ -563,29 +563,29 @@ export default function SurpriseCoinDropsPage() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#F5F7FA' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
-        <Text style={[styles.headerTitle, { color: isDark ? '#F1F5F9' : '#1F2937' }]}>
+      <View style={[styles.header, { backgroundColor: colors.card }]}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
           Surprise Coin Drops
         </Text>
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.headerButton} onPress={handleExpireOld}>
-            <Ionicons name="timer-outline" size={18} color="#EF4444" />
+            <Ionicons name="timer-outline" size={18} color={colors.error} />
             <Text style={styles.headerButtonExpireText}>Expire Old</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton} onPress={() => setShowBulkModal(true)}>
-            <Ionicons name="people" size={18} color="#3B82F6" />
+            <Ionicons name="people" size={18} color={colors.info} />
             <Text style={styles.headerButtonBulkText}>Bulk</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.addButton} onPress={() => setShowCreateModal(true)}>
-            <Ionicons name="add" size={20} color="#FFF" />
+            <Ionicons name="add" size={20} color={colors.card} />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Tabs */}
-      <View style={[styles.tabs, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
+      <View style={[styles.tabs, { backgroundColor: colors.card }]}>
         {(['drops', 'analytics'] as TabType[]).map(tab => (
           <TouchableOpacity
             key={tab}
@@ -609,11 +609,11 @@ export default function SurpriseCoinDropsPage() {
                   key={s}
                   style={[
                     styles.filterChip,
-                    { backgroundColor: statusFilter === s ? '#3B82F6' : (isDark ? '#334155' : '#E2E8F0') },
+                    { backgroundColor: statusFilter === s ? colors.info : (colors.border) },
                   ]}
                   onPress={() => setStatusFilter(s)}
                 >
-                  <Text style={{ color: statusFilter === s ? '#FFF' : (isDark ? '#CBD5E1' : '#475569'), fontSize: 13, fontWeight: '600' }}>
+                  <Text style={{ color: statusFilter === s ? colors.card : (colors.secondaryText), fontSize: 13, fontWeight: '600' }}>
                     {s === 'all' ? 'All Status' : s.charAt(0).toUpperCase() + s.slice(1)}
                   </Text>
                 </TouchableOpacity>
@@ -625,11 +625,11 @@ export default function SurpriseCoinDropsPage() {
                   key={r}
                   style={[
                     styles.filterChip,
-                    { backgroundColor: reasonFilter === r ? '#8B5CF6' : (isDark ? '#334155' : '#E2E8F0') },
+                    { backgroundColor: reasonFilter === r ? colors.purple : (colors.border) },
                   ]}
                   onPress={() => setReasonFilter(r)}
                 >
-                  <Text style={{ color: reasonFilter === r ? '#FFF' : (isDark ? '#CBD5E1' : '#475569'), fontSize: 13, fontWeight: '600' }}>
+                  <Text style={{ color: reasonFilter === r ? colors.card : (colors.secondaryText), fontSize: 13, fontWeight: '600' }}>
                     {r === 'all' ? 'All Reasons' : (REASON_LABELS[r] || r)}
                   </Text>
                 </TouchableOpacity>
@@ -637,20 +637,20 @@ export default function SurpriseCoinDropsPage() {
             </ScrollView>
 
             {/* Search */}
-            <View style={[styles.searchBar, { backgroundColor: isDark ? '#1E293B' : '#FFF' }]}>
-              <Ionicons name="search" size={18} color={isDark ? '#64748B' : '#9CA3AF'} />
+            <View style={[styles.searchBar, { backgroundColor: colors.card }]}>
+              <Ionicons name="search" size={18} color={colors.icon} />
               <TextInput
-                style={[styles.searchInput, { color: isDark ? '#F1F5F9' : '#1F2937' }]}
+                style={[styles.searchInput, { color: colors.text }]}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 onSubmitEditing={handleSearch}
                 placeholder="Search by phone number..."
-                placeholderTextColor={isDark ? '#64748B' : '#9CA3AF'}
+                placeholderTextColor={colors.icon}
                 returnKeyType="search"
               />
               {searchQuery.length > 0 && (
                 <TouchableOpacity onPress={() => { setSearchQuery(''); fetchDrops(1); }}>
-                  <Ionicons name="close-circle" size={18} color={isDark ? '#64748B' : '#9CA3AF'} />
+                  <Ionicons name="close-circle" size={18} color={colors.icon} />
                 </TouchableOpacity>
               )}
             </View>
@@ -668,8 +668,8 @@ export default function SurpriseCoinDropsPage() {
             ListEmptyComponent={
               !loading ? (
                 <View style={styles.emptyState}>
-                  <Ionicons name="gift-outline" size={48} color={isDark ? '#475569' : '#D1D5DB'} />
-                  <Text style={[styles.emptyText, { color: isDark ? '#94A3B8' : '#6B7280' }]}>
+                  <Ionicons name="gift-outline" size={48} color={colors.icon} />
+                  <Text style={[styles.emptyText, { color: colors.secondaryText }]}>
                     No surprise coin drops found
                   </Text>
                 </View>
@@ -684,9 +684,9 @@ export default function SurpriseCoinDropsPage() {
                       onPress={() => page > 1 && fetchDrops(page - 1)}
                       disabled={page <= 1}
                     >
-                      <Ionicons name="chevron-back" size={18} color={page <= 1 ? '#94A3B8' : '#3B82F6'} />
+                      <Ionicons name="chevron-back" size={18} color={page <= 1 ? colors.slateMedium : colors.info} />
                     </TouchableOpacity>
-                    <Text style={[styles.pageText, { color: isDark ? '#CBD5E1' : '#6B7280' }]}>
+                    <Text style={[styles.pageText, { color: colors.secondaryText }]}>
                       Page {page} of {totalPages}
                     </Text>
                     <TouchableOpacity
@@ -694,7 +694,7 @@ export default function SurpriseCoinDropsPage() {
                       onPress={() => page < totalPages && fetchDrops(page + 1)}
                       disabled={page >= totalPages}
                     >
-                      <Ionicons name="chevron-forward" size={18} color={page >= totalPages ? '#94A3B8' : '#3B82F6'} />
+                      <Ionicons name="chevron-forward" size={18} color={page >= totalPages ? colors.slateMedium : colors.info} />
                     </TouchableOpacity>
                   </View>
                 ) : null
@@ -721,7 +721,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   headerTitle: { fontSize: 20, fontWeight: '700' },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -732,22 +732,22 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 8,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: Colors.light.slate,
   },
-  headerButtonExpireText: { fontSize: 13, fontWeight: '600', color: '#EF4444' },
-  headerButtonBulkText: { fontSize: 13, fontWeight: '600', color: '#3B82F6' },
+  headerButtonExpireText: { fontSize: 13, fontWeight: '600', color: Colors.light.error },
+  headerButtonBulkText: { fontSize: 13, fontWeight: '600', color: Colors.light.info },
   addButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     justifyContent: 'center',
     alignItems: 'center',
   },
   tabs: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   tab: {
     flex: 1,
@@ -756,10 +756,10 @@ const styles = StyleSheet.create({
   },
   tabActive: {
     borderBottomWidth: 2,
-    borderBottomColor: '#3B82F6',
+    borderBottomColor: Colors.light.info,
   },
-  tabText: { fontSize: 14, fontWeight: '600', color: '#94A3B8' },
-  tabTextActive: { color: '#3B82F6' },
+  tabText: { fontSize: 14, fontWeight: '600', color: Colors.light.icon },
+  tabTextActive: { color: Colors.light.info },
   filtersContainer: { paddingTop: 8 },
   filtersRow: { paddingHorizontal: 12, marginBottom: 6 },
   filterChip: {
@@ -816,7 +816,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: Colors.light.border,
   },
   actionButton: {
     flexDirection: 'row',
@@ -826,8 +826,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 8,
   },
-  deleteButton: { backgroundColor: '#FEE2E2' },
-  deleteButtonText: { fontSize: 13, fontWeight: '600', color: '#EF4444' },
+  deleteButton: { backgroundColor: Colors.light.errorLight },
+  deleteButtonText: { fontSize: 13, fontWeight: '600', color: Colors.light.error },
   emptyState: { alignItems: 'center', paddingVertical: 60, gap: 12 },
   emptyText: { fontSize: 15 },
   pagination: {
@@ -874,7 +874,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: Colors.light.background,
   },
   breakdownLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dot: { width: 10, height: 10, borderRadius: 5 },
@@ -900,7 +900,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   modalTitle: { fontSize: 18, fontWeight: '700' },
   modalBody: { padding: 16, maxHeight: 400 },
@@ -911,18 +911,18 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 14,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: Colors.light.border,
   },
   multilineInput: { minHeight: 70, textAlignVertical: 'top' },
   reasonOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
   reasonChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 },
   submitButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     margin: 16,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
   },
   submitButtonDisabled: { opacity: 0.6 },
-  submitButtonText: { color: '#FFF', fontSize: 16, fontWeight: '700' },
+  submitButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
 });

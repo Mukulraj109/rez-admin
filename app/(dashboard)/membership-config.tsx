@@ -286,8 +286,8 @@ export default function MembershipConfigScreen() {
         <Switch
           value={item.isActive}
           onValueChange={() => handleToggleActive(item)}
-          trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-          thumbColor="#FFFFFF"
+          trackColor={{ false: colors.border, true: colors.success }}
+          thumbColor={colors.card}
         />
       </View>
 
@@ -324,18 +324,18 @@ export default function MembershipConfigScreen() {
 
       {/* Meta badges */}
       <View style={S.badgeRow}>
-        <View style={[S.badge, { backgroundColor: item.isActive ? '#D1FAE5' : '#FEE2E2' }]}>
-          <Text style={[S.badgeText, { color: item.isActive ? '#065F46' : '#991B1B' }]}>
+        <View style={[S.badge, { backgroundColor: item.isActive ? colors.successLight : colors.errorLight }]}>
+          <Text style={[S.badgeText, { color: item.isActive ? colors.successDeep : colors.errorDeep }]}>
             {item.isActive ? 'Active' : 'Inactive'}
           </Text>
         </View>
         {item.trialDays > 0 && (
-          <View style={[S.badge, { backgroundColor: '#DBEAFE' }]}>
-            <Text style={[S.badgeText, { color: '#1E40AF' }]}>{item.trialDays}d trial</Text>
+          <View style={[S.badge, { backgroundColor: colors.infoLighter }]}>
+            <Text style={[S.badgeText, { color: colors.infoDark }]}>{item.trialDays}d trial</Text>
           </View>
         )}
-        <View style={[S.badge, { backgroundColor: '#F3F4F6' }]}>
-          <Text style={[S.badgeText, { color: '#374151' }]}>Order: {item.sortOrder}</Text>
+        <View style={[S.badge, { backgroundColor: colors.backgroundSecondary }]}>
+          <Text style={[S.badgeText, { color: colors.gray700 }]}>Order: {item.sortOrder}</Text>
         </View>
         {item.features?.length > 0 && (
           <View style={[S.badge, { backgroundColor: '#F3E8FF' }]}>
@@ -346,12 +346,12 @@ export default function MembershipConfigScreen() {
 
       <View style={S.cardActions}>
         <TouchableOpacity style={S.actionBtn} onPress={() => handleEdit(item)}>
-          <Ionicons name="create-outline" size={18} color="#3B82F6" />
-          <Text style={[S.actionText, { color: '#3B82F6' }]}>Edit</Text>
+          <Ionicons name="create-outline" size={18} color={colors.info} />
+          <Text style={[S.actionText, { color: colors.info }]}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity style={S.actionBtn} onPress={() => handleDelete(item)}>
-          <Ionicons name="trash-outline" size={18} color="#EF4444" />
-          <Text style={[S.actionText, { color: '#EF4444' }]}>Deactivate</Text>
+          <Ionicons name="trash-outline" size={18} color={colors.error} />
+          <Text style={[S.actionText, { color: colors.error }]}>Deactivate</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -375,7 +375,7 @@ export default function MembershipConfigScreen() {
       <View style={S.subscriberDetails}>
         <View style={S.detailItem}>
           <Text style={S.detailLabel}>Status</Text>
-          <Text style={[S.detailValue, { color: item.status === 'active' ? '#10B981' : '#F59E0B' }]}>
+          <Text style={[S.detailValue, { color: item.status === 'active' ? colors.success : colors.warning }]}>
             {item.status}
           </Text>
         </View>
@@ -394,8 +394,8 @@ export default function MembershipConfigScreen() {
       </View>
       <View style={S.cardActions}>
         <TouchableOpacity style={S.actionBtn} onPress={() => handleOverride(item)}>
-          <Ionicons name="swap-horizontal-outline" size={18} color="#8B5CF6" />
-          <Text style={[S.actionText, { color: '#8B5CF6' }]}>Override Tier</Text>
+          <Ionicons name="swap-horizontal-outline" size={18} color={colors.purple} />
+          <Text style={[S.actionText, { color: colors.purple }]}>Override Tier</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -414,7 +414,7 @@ export default function MembershipConfigScreen() {
             {editingPlan ? 'Edit Tier' : 'Create Tier'}
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
-            {isSaving ? <ActivityIndicator size="small" color="#3B82F6" /> : <Text style={S.saveBtn}>Save</Text>}
+            {isSaving ? <ActivityIndicator size="small" color={colors.info} /> : <Text style={S.saveBtn}>Save</Text>}
           </TouchableOpacity>
         </View>
 
@@ -423,11 +423,11 @@ export default function MembershipConfigScreen() {
           <Text style={S.formSection}>Basic Info</Text>
           <Text style={S.formLabel}>Tier Identifier</Text>
           <TextInput
-            style={[S.formInput, { color: colors.text, borderColor: colors.border, backgroundColor: editingPlan ? '#F3F4F6' : undefined }]}
+            style={[S.formInput, { color: colors.text, borderColor: colors.border, backgroundColor: editingPlan ? colors.backgroundSecondary : undefined }]}
             value={formData.tier}
             onChangeText={v => setFormData(p => ({ ...p, tier: v.toLowerCase().replace(/[^a-z0-9_]/g, '') }))}
             placeholder="e.g. premium, vip"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             editable={!editingPlan}
           />
           <Text style={S.formLabel}>Display Name</Text>
@@ -436,7 +436,7 @@ export default function MembershipConfigScreen() {
             value={formData.name}
             onChangeText={v => setFormData(p => ({ ...p, name: v }))}
             placeholder="Premium Plan"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
           <Text style={S.formLabel}>Description</Text>
           <TextInput
@@ -444,7 +444,7 @@ export default function MembershipConfigScreen() {
             value={formData.description}
             onChangeText={v => setFormData(p => ({ ...p, description: v }))}
             placeholder="Plan description..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
             multiline
             numberOfLines={3}
           />
@@ -459,7 +459,7 @@ export default function MembershipConfigScreen() {
                 value={formData.pricingMonthly}
                 onChangeText={v => setFormData(p => ({ ...p, pricingMonthly: v.replace(/[^0-9.]/g, '') }))}
                 placeholder="99"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 keyboardType="numeric"
               />
             </View>
@@ -470,7 +470,7 @@ export default function MembershipConfigScreen() {
                 value={formData.pricingYearly}
                 onChangeText={v => setFormData(p => ({ ...p, pricingYearly: v.replace(/[^0-9.]/g, '') }))}
                 placeholder="999"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 keyboardType="numeric"
               />
             </View>
@@ -481,7 +481,7 @@ export default function MembershipConfigScreen() {
                 value={formData.pricingYearlyDiscount}
                 onChangeText={v => setFormData(p => ({ ...p, pricingYearlyDiscount: v.replace(/[^0-9]/g, '') }))}
                 placeholder="17"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 keyboardType="numeric"
               />
             </View>
@@ -498,14 +498,14 @@ export default function MembershipConfigScreen() {
                   value={String(formData.benefits[key] || 0)}
                   onChangeText={v => updateBenefit(key, Number(v.replace(/[^0-9.]/g, '')) || 0)}
                   keyboardType="numeric"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={colors.muted}
                 />
               ) : (
                 <Switch
                   value={!!formData.benefits[key]}
                   onValueChange={v => updateBenefit(key, v)}
-                  trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-                  thumbColor="#FFFFFF"
+                  trackColor={{ false: colors.border, true: colors.success }}
+                  thumbColor={colors.card}
                 />
               )}
             </View>
@@ -515,10 +515,10 @@ export default function MembershipConfigScreen() {
           <Text style={S.formSection}>Features ({formData.features.length})</Text>
           {formData.features.map((f, i) => (
             <View key={i} style={S.featEditRow}>
-              <Ionicons name="checkmark-circle" size={18} color="#10B981" />
+              <Ionicons name="checkmark-circle" size={18} color={colors.success} />
               <Text style={[S.featEditTitle, { color: colors.text, flex: 1 }]}>{f}</Text>
               <TouchableOpacity onPress={() => removeFeature(i)}>
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                <Ionicons name="trash-outline" size={18} color={colors.error} />
               </TouchableOpacity>
             </View>
           ))}
@@ -528,11 +528,11 @@ export default function MembershipConfigScreen() {
               value={newFeature}
               onChangeText={setNewFeature}
               placeholder="Type a feature and press Add"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.muted}
               onSubmitEditing={addFeature}
             />
             <TouchableOpacity style={S.addFeatBtn} onPress={addFeature}>
-              <Ionicons name="add" size={16} color="#FFF" />
+              <Ionicons name="add" size={16} color={colors.card} />
               <Text style={S.addFeatBtnText}>Add</Text>
             </TouchableOpacity>
           </View>
@@ -547,7 +547,7 @@ export default function MembershipConfigScreen() {
                 value={formData.trialDays}
                 onChangeText={v => setFormData(p => ({ ...p, trialDays: v.replace(/[^0-9]/g, '') }))}
                 placeholder="0"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 keyboardType="numeric"
               />
             </View>
@@ -558,7 +558,7 @@ export default function MembershipConfigScreen() {
                 value={formData.sortOrder}
                 onChangeText={v => setFormData(p => ({ ...p, sortOrder: v.replace(/[^0-9]/g, '') }))}
                 placeholder="0"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
                 keyboardType="numeric"
               />
             </View>
@@ -568,8 +568,8 @@ export default function MembershipConfigScreen() {
             <Switch
               value={formData.isActive}
               onValueChange={v => setFormData(p => ({ ...p, isActive: v }))}
-              trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-              thumbColor="#FFF"
+              trackColor={{ false: colors.border, true: colors.success }}
+              thumbColor={colors.card}
             />
           </View>
         </ScrollView>
@@ -586,7 +586,7 @@ export default function MembershipConfigScreen() {
         <Text style={[S.headerTitle, { color: colors.text }]}>Subscription Management</Text>
         {activeTab === 'plans' && (
           <TouchableOpacity style={S.createBtn} onPress={handleCreate}>
-            <Ionicons name="add" size={20} color="#FFF" />
+            <Ionicons name="add" size={20} color={colors.card} />
             <Text style={S.createBtnText}>Create</Text>
           </TouchableOpacity>
         )}
@@ -598,14 +598,14 @@ export default function MembershipConfigScreen() {
           style={[S.tab, activeTab === 'plans' && S.tabActive]}
           onPress={() => setActiveTab('plans')}
         >
-          <Ionicons name="pricetag-outline" size={18} color={activeTab === 'plans' ? '#3B82F6' : '#9CA3AF'} />
+          <Ionicons name="pricetag-outline" size={18} color={activeTab === 'plans' ? colors.info : colors.muted} />
           <Text style={[S.tabText, activeTab === 'plans' && S.tabTextActive]}>Plans</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[S.tab, activeTab === 'subscribers' && S.tabActive]}
           onPress={() => setActiveTab('subscribers')}
         >
-          <Ionicons name="people-outline" size={18} color={activeTab === 'subscribers' ? '#3B82F6' : '#9CA3AF'} />
+          <Ionicons name="people-outline" size={18} color={activeTab === 'subscribers' ? colors.info : colors.muted} />
           <Text style={[S.tabText, activeTab === 'subscribers' && S.tabTextActive]}>Subscribers</Text>
           {subscribersData?.total ? (
             <View style={S.countBadge}>
@@ -641,10 +641,10 @@ export default function MembershipConfigScreen() {
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             ListEmptyComponent={
               loading ? (
-                <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+                <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
               ) : (
                 <View style={S.emptyContainer}>
-                  <Ionicons name="card-outline" size={48} color="#D1D5DB" />
+                  <Ionicons name="card-outline" size={48} color={colors.gray300} />
                   <Text style={S.emptyText}>No subscription tiers found</Text>
                   <Text style={S.emptySubText}>Create your first tier to get started</Text>
                 </View>
@@ -707,10 +707,10 @@ export default function MembershipConfigScreen() {
             }
             ListEmptyComponent={
               subscribersLoading ? (
-                <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+                <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
               ) : (
                 <View style={S.emptyContainer}>
-                  <Ionicons name="people-outline" size={48} color="#D1D5DB" />
+                  <Ionicons name="people-outline" size={48} color={colors.gray300} />
                   <Text style={S.emptyText}>No subscribers found</Text>
                 </View>
               )
@@ -750,10 +750,10 @@ export default function MembershipConfigScreen() {
 // Helper
 function tierBadgeColor(tier: string): string {
   switch (tier) {
-    case 'vip': return '#F59E0B';
-    case 'premium': return '#8B5CF6';
-    case 'free': return '#6B7280';
-    default: return '#3B82F6';
+    case 'vip': return Colors.light.warning;
+    case 'premium': return Colors.light.purple;
+    case 'free': return Colors.light.mutedDark;
+    default: return Colors.light.info;
   }
 }
 
@@ -761,47 +761,47 @@ const S = StyleSheet.create({
   container: { flex: 1 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1 },
   headerTitle: { fontSize: 22, fontWeight: '700' },
-  createBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#3B82F6', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4 },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  createBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.info, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
 
   // Tab bar
-  tabBar: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  tabBar: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   tab: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12 },
-  tabActive: { borderBottomWidth: 2, borderBottomColor: '#3B82F6' },
-  tabText: { fontSize: 14, color: '#9CA3AF', fontWeight: '500' },
-  tabTextActive: { color: '#3B82F6', fontWeight: '600' },
-  countBadge: { backgroundColor: '#3B82F6', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 10, minWidth: 20, alignItems: 'center' },
-  countBadgeText: { color: '#FFF', fontSize: 10, fontWeight: '700' },
+  tabActive: { borderBottomWidth: 2, borderBottomColor: Colors.light.info },
+  tabText: { fontSize: 14, color: Colors.light.muted, fontWeight: '500' },
+  tabTextActive: { color: Colors.light.info, fontWeight: '600' },
+  countBadge: { backgroundColor: Colors.light.info, paddingHorizontal: 6, paddingVertical: 1, borderRadius: 10, minWidth: 20, alignItems: 'center' },
+  countBadgeText: { color: Colors.light.card, fontSize: 10, fontWeight: '700' },
 
   // Filters
-  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   filterChips: { flexDirection: 'row' },
-  filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: '#F3F4F6', marginRight: 8 },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  filterChipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  filterChipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: Colors.light.backgroundSecondary, marginRight: 8 },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  filterChipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  filterChipTextActive: { color: Colors.light.card, fontWeight: '600' },
 
   // Card
-  card: { borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#E5E7EB' },
+  card: { borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: Colors.light.gray200 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cardTitle: { fontSize: 16, fontWeight: '600' },
-  cardSubtitle: { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
-  descText: { fontSize: 12, color: '#6B7280', marginTop: 4, lineHeight: 18 },
+  cardSubtitle: { fontSize: 12, color: Colors.light.muted, marginTop: 2 },
+  descText: { fontSize: 12, color: Colors.light.mutedDark, marginTop: 4, lineHeight: 18 },
 
   // Tier badge
   tierBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  tierBadgeText: { color: '#FFF', fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+  tierBadgeText: { color: Colors.light.card, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
 
   // Pricing row
   pricingRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
-  priceBox: { flex: 1, backgroundColor: '#F9FAFB', borderRadius: 8, padding: 8, alignItems: 'center' },
-  priceLabel: { fontSize: 10, color: '#9CA3AF', fontWeight: '500' },
-  priceValue: { fontSize: 16, fontWeight: '700', color: '#111827', marginTop: 2 },
+  priceBox: { flex: 1, backgroundColor: Colors.light.backgroundTertiary, borderRadius: 8, padding: 8, alignItems: 'center' },
+  priceLabel: { fontSize: 10, color: Colors.light.muted, fontWeight: '500' },
+  priceValue: { fontSize: 16, fontWeight: '700', color: Colors.light.gray900, marginTop: 2 },
 
   // Benefits
   benefitsSummary: { marginBottom: 10 },
-  benefitsSummaryTitle: { fontSize: 12, fontWeight: '600', color: '#6B7280', marginBottom: 6 },
+  benefitsSummaryTitle: { fontSize: 12, fontWeight: '600', color: Colors.light.mutedDark, marginBottom: 6 },
   benefitChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
   benefitChip: { backgroundColor: '#EDE9FE', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   benefitChipText: { fontSize: 10, color: '#6B21A8', fontWeight: '500' },
@@ -812,7 +812,7 @@ const S = StyleSheet.create({
   badgeText: { fontSize: 11, fontWeight: '500' },
 
   // Actions
-  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10 },
+  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 6 },
   actionText: { fontSize: 12, fontWeight: '500' },
 
@@ -820,44 +820,44 @@ const S = StyleSheet.create({
   subscriberHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   subscriberDetails: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 10 },
   detailItem: { minWidth: '40%' },
-  detailLabel: { fontSize: 11, color: '#9CA3AF' },
-  detailValue: { fontSize: 13, fontWeight: '600', color: '#374151' },
+  detailLabel: { fontSize: 11, color: Colors.light.muted },
+  detailValue: { fontSize: 13, fontWeight: '600', color: Colors.light.gray700 },
 
   // Distribution
-  distributionBar: { flexDirection: 'row', justifyContent: 'center', gap: 16, paddingVertical: 10, backgroundColor: '#F9FAFB' },
+  distributionBar: { flexDirection: 'row', justifyContent: 'center', gap: 16, paddingVertical: 10, backgroundColor: Colors.light.backgroundTertiary },
   distributionItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   distributionDot: { width: 8, height: 8, borderRadius: 4 },
-  distributionText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
+  distributionText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
 
   // Pagination
   pagination: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, paddingVertical: 16 },
-  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: '#3B82F6' },
-  pageBtnDisabled: { backgroundColor: '#D1D5DB' },
-  pageBtnText: { color: '#FFF', fontSize: 13, fontWeight: '600' },
-  pageInfo: { fontSize: 13, color: '#6B7280' },
+  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: Colors.light.info },
+  pageBtnDisabled: { backgroundColor: Colors.light.gray300 },
+  pageBtnText: { color: Colors.light.card, fontSize: 13, fontWeight: '600' },
+  pageInfo: { fontSize: 13, color: Colors.light.mutedDark },
 
   // Modal / Form
   modalContainer: { flex: 1 },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formSection: { fontSize: 15, fontWeight: '700', color: '#1a3a52', marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', paddingBottom: 6 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
+  formSection: { fontSize: 15, fontWeight: '700', color: Colors.light.navy, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.backgroundSecondary, paddingBottom: 6 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
   formInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14 },
   formTextArea: { minHeight: 70, textAlignVertical: 'top' },
   rowFields: { flexDirection: 'row', gap: 12 },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   numericInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14, width: 80, textAlign: 'center' },
   benefitFormRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
-  featEditRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  featEditRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: Colors.light.backgroundSecondary },
   featEditTitle: { fontSize: 13, fontWeight: '500' },
   addFeatBox: { marginTop: 10, flexDirection: 'row', gap: 8, alignItems: 'center' },
-  addFeatBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#10B981', paddingHorizontal: 12, paddingVertical: 10, borderRadius: 8, gap: 4 },
-  addFeatBtnText: { color: '#FFF', fontWeight: '600', fontSize: 13 },
+  addFeatBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.success, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 8, gap: 4 },
+  addFeatBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 13 },
 
   // Empty
   emptyContainer: { paddingVertical: 60, alignItems: 'center' },
-  emptyText: { fontSize: 16, color: '#9CA3AF', marginTop: 12, fontWeight: '500' },
-  emptySubText: { fontSize: 13, color: '#D1D5DB', marginTop: 4 },
+  emptyText: { fontSize: 16, color: Colors.light.muted, marginTop: 12, fontWeight: '500' },
+  emptySubText: { fontSize: 13, color: Colors.light.gray300, marginTop: 4 },
 });

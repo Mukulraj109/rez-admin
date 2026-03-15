@@ -26,11 +26,11 @@ type CardTypeFilter = 'all' | 'credit' | 'debit' | 'wallet' | 'upi';
 const CARD_TYPES: CardTypeFilter[] = ['all', 'credit', 'debit', 'wallet', 'upi'];
 
 const CARD_TYPE_COLORS: Record<string, string> = {
-  credit: '#8B5CF6',
-  debit: '#3B82F6',
-  wallet: '#F59E0B',
-  upi: '#10B981',
-  all: '#6B7280',
+  credit: Colors.light.purple,
+  debit: Colors.light.info,
+  wallet: Colors.light.warning,
+  upi: Colors.light.success,
+  all: Colors.light.mutedDark,
 };
 
 const CARD_TYPE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -278,7 +278,7 @@ export default function BankOffersScreen() {
       value={String(formData[key])}
       onChangeText={(v) => setFormData((p) => ({ ...p, [key]: v }))}
       placeholder={placeholder}
-      placeholderTextColor="#9CA3AF"
+      placeholderTextColor={colors.muted}
       multiline={opts?.multiline}
       keyboardType={opts?.numeric ? 'numeric' : 'default'}
     />
@@ -290,22 +290,22 @@ export default function BankOffersScreen() {
   const renderStatsRow = () => (
     <View style={styles.statsRow}>
       <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={[styles.statIcon, { backgroundColor: '#EFF6FF' }]}>
-          <Ionicons name="layers-outline" size={18} color="#3B82F6" />
+        <View style={[styles.statIcon, { backgroundColor: colors.infoLight }]}>
+          <Ionicons name="layers-outline" size={18} color={colors.info} />
         </View>
         <Text style={[styles.statValue, { color: colors.text }]}>{totalCount}</Text>
         <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Total</Text>
       </View>
       <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[styles.statIcon, { backgroundColor: '#ECFDF5' }]}>
-          <Ionicons name="checkmark-circle-outline" size={18} color="#10B981" />
+          <Ionicons name="checkmark-circle-outline" size={18} color={colors.success} />
         </View>
         <Text style={[styles.statValue, { color: colors.text }]}>{activeCount}</Text>
         <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Active</Text>
       </View>
       <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={[styles.statIcon, { backgroundColor: '#FEF2F2' }]}>
-          <Ionicons name="close-circle-outline" size={18} color="#EF4444" />
+        <View style={[styles.statIcon, { backgroundColor: colors.errorLight }]}>
+          <Ionicons name="close-circle-outline" size={18} color={colors.error} />
         </View>
         <Text style={[styles.statValue, { color: colors.text }]}>{inactiveCount}</Text>
         <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Inactive</Text>
@@ -377,7 +377,7 @@ export default function BankOffersScreen() {
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder="Search by bank name or offer title..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.muted}
           returnKeyType="search"
         />
         {searchQuery.length > 0 && (
@@ -393,7 +393,7 @@ export default function BankOffersScreen() {
   // Render: Offer Card
   // ==========================================
   const renderOfferCard = (offer: BankOffer) => {
-    const typeColor = CARD_TYPE_COLORS[offer.cardType] || '#6B7280';
+    const typeColor = CARD_TYPE_COLORS[offer.cardType] || colors.mutedDark;
     const usagePercent =
       offer.totalUsageLimit && offer.totalUsageLimit > 0
         ? Math.round((offer.usageCount / offer.totalUsageLimit) * 100)
@@ -449,8 +449,8 @@ export default function BankOffersScreen() {
               </Text>
             </View>
             {offer.promoCode ? (
-              <View style={[styles.promoBadge, { backgroundColor: '#FEF3C7' }]}>
-                <Ionicons name="ticket-outline" size={12} color="#D97706" />
+              <View style={[styles.promoBadge, { backgroundColor: colors.warningLight }]}>
+                <Ionicons name="ticket-outline" size={12} color={colors.warningDark} />
                 <Text style={styles.promoText}>{offer.promoCode}</Text>
               </View>
             ) : null}
@@ -480,7 +480,7 @@ export default function BankOffersScreen() {
                       styles.usageBarFill,
                       {
                         width: `${Math.min(usagePercent, 100)}%`,
-                        backgroundColor: usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#10B981',
+                        backgroundColor: usagePercent >= 90 ? colors.error : usagePercent >= 70 ? colors.warning : colors.success,
                       },
                     ]}
                   />
@@ -493,24 +493,24 @@ export default function BankOffersScreen() {
         {/* Card Footer: toggle + actions */}
         <View style={[styles.offerCardFooter, { borderTopColor: colors.border }]}>
           <View style={styles.toggleContainer}>
-            <Text style={[styles.toggleLabel, { color: offer.isActive ? '#10B981' : '#EF4444' }]}>
+            <Text style={[styles.toggleLabel, { color: offer.isActive ? colors.success : colors.error }]}>
               {offer.isActive ? 'Active' : 'Inactive'}
             </Text>
             <Switch
               value={offer.isActive}
               onValueChange={() => handleToggle(offer)}
-              trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-              thumbColor="#FFFFFF"
+              trackColor={{ false: colors.border, true: colors.success }}
+              thumbColor={colors.card}
             />
           </View>
           <View style={styles.actionButtons}>
             <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(offer)}>
-              <Ionicons name="create-outline" size={18} color="#3B82F6" />
-              <Text style={[styles.actionBtnText, { color: '#3B82F6' }]}>Edit</Text>
+              <Ionicons name="create-outline" size={18} color={colors.info} />
+              <Text style={[styles.actionBtnText, { color: colors.info }]}>Edit</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(offer)}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
-              <Text style={[styles.actionBtnText, { color: '#EF4444' }]}>Delete</Text>
+              <Ionicons name="trash-outline" size={18} color={colors.error} />
+              <Text style={[styles.actionBtnText, { color: colors.error }]}>Delete</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -534,7 +534,7 @@ export default function BankOffersScreen() {
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
             {isSaving ? (
-              <ActivityIndicator size="small" color="#3B82F6" />
+              <ActivityIndicator size="small" color={colors.info} />
             ) : (
               <Text style={styles.saveBtn}>Save</Text>
             )}
@@ -662,8 +662,8 @@ export default function BankOffersScreen() {
             <Switch
               value={formData.isActive}
               onValueChange={(v) => setFormData((p) => ({ ...p, isActive: v }))}
-              trackColor={{ false: '#E2E8F0', true: '#3B82F6' }}
-              thumbColor="#FFFFFF"
+              trackColor={{ false: colors.border, true: colors.info }}
+              thumbColor={colors.card}
             />
           </View>
         </ScrollView>
@@ -685,7 +685,7 @@ export default function BankOffersScreen() {
           </Text>
         </View>
         <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
         </TouchableOpacity>
       </View>
 
@@ -704,12 +704,12 @@ export default function BankOffersScreen() {
         <View style={styles.contentContainer}>
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#3B82F6" />
+              <ActivityIndicator size="large" color={colors.info} />
               <Text style={[styles.loadingText, { color: colors.secondaryText }]}>Loading offers...</Text>
             </View>
           ) : offers.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Ionicons name="card-outline" size={56} color="#D1D5DB" />
+              <Ionicons name="card-outline" size={56} color={colors.gray300} />
               <Text style={[styles.emptyTitle, { color: colors.text }]}>No Bank Offers Found</Text>
               <Text style={[styles.emptySubtitle, { color: colors.secondaryText }]}>
                 {searchQuery
@@ -718,7 +718,7 @@ export default function BankOffersScreen() {
               </Text>
               {!searchQuery && (
                 <TouchableOpacity style={styles.emptyCreateBtn} onPress={handleCreate}>
-                  <Ionicons name="add" size={18} color="#FFFFFF" />
+                  <Ionicons name="add" size={18} color={colors.card} />
                   <Text style={styles.emptyCreateBtnText}>Create Offer</Text>
                 </TouchableOpacity>
               )}
@@ -764,7 +764,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 12,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -817,18 +817,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 7,
     borderRadius: 20,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   filterTabActive: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
   },
   filterTabText: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
   },
   filterTabTextActive: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
   },
   cardTypeFilterRow: {
@@ -897,7 +897,7 @@ const styles = StyleSheet.create({
   emptyCreateBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
@@ -905,7 +905,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   emptyCreateBtnText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -955,12 +955,12 @@ const styles = StyleSheet.create({
   discountBadgeText: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#059669',
+    color: Colors.light.successDark,
   },
   discountBadgeSub: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#059669',
+    color: Colors.light.successDark,
     letterSpacing: 1,
   },
 
@@ -1016,7 +1016,7 @@ const styles = StyleSheet.create({
   promoText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#D97706',
+    color: Colors.light.warningDark,
     letterSpacing: 0.5,
   },
   dateRow: {
@@ -1044,7 +1044,7 @@ const styles = StyleSheet.create({
   usageBarBg: {
     height: 5,
     borderRadius: 3,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.light.gray200,
     overflow: 'hidden',
   },
   usageBarFill: {
@@ -1105,7 +1105,7 @@ const styles = StyleSheet.create({
   saveBtn: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3B82F6',
+    color: Colors.light.info,
   },
   formScroll: {
     paddingHorizontal: 20,

@@ -34,11 +34,11 @@ const TABS: { value: TabFilter; label: string; icon: string }[] = [
 ];
 
 const STATUS_COLORS: Record<string, string> = {
-  active: '#059669',
-  pending_verification: '#F59E0B',
-  suspended: '#EF4444',
-  expired: '#6B7280',
-  revoked: '#DC2626',
+  active: Colors.light.successDark,
+  pending_verification: Colors.light.warning,
+  suspended: Colors.light.error,
+  expired: Colors.light.mutedDark,
+  revoked: Colors.light.errorDark,
 };
 
 export default function SpecialProgramsScreen() {
@@ -214,19 +214,19 @@ export default function SpecialProgramsScreen() {
         {/* Stats Cards */}
         <View style={styles.statsGrid}>
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.statValue, { color: '#059669' }]}>{stats.totalActiveMembers}</Text>
+            <Text style={[styles.statValue, { color: colors.successDark }]}>{stats.totalActiveMembers}</Text>
             <Text style={[styles.statLabel, { color: colors.icon }]}>Active Members</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.statValue, { color: '#F59E0B' }]}>{stats.totalPendingVerifications}</Text>
+            <Text style={[styles.statValue, { color: colors.warning }]}>{stats.totalPendingVerifications}</Text>
             <Text style={[styles.statLabel, { color: colors.icon }]}>Pending</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.statValue, { color: '#3B82F6' }]}>{stats.totalMonthlyEarnings.toLocaleString()}</Text>
+            <Text style={[styles.statValue, { color: colors.info }]}>{stats.totalMonthlyEarnings.toLocaleString()}</Text>
             <Text style={[styles.statLabel, { color: colors.icon }]}>Monthly Earnings</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.statValue, { color: '#8B5CF6' }]}>{stats.totalMultiplierBonus.toLocaleString()}</Text>
+            <Text style={[styles.statValue, { color: colors.purple }]}>{stats.totalMultiplierBonus.toLocaleString()}</Text>
             <Text style={[styles.statLabel, { color: colors.icon }]}>Bonus Given</Text>
           </View>
         </View>
@@ -247,10 +247,10 @@ export default function SpecialProgramsScreen() {
                 </View>
                 <View style={styles.programActions}>
                   <TouchableOpacity
-                    style={[styles.statusBadge, { backgroundColor: program.isActive ? '#ECFDF5' : '#FEF2F2' }]}
+                    style={[styles.statusBadge, { backgroundColor: program.isActive ? '#ECFDF5' : colors.errorLight }]}
                     onPress={() => handleToggleProgram(program.slug)}
                   >
-                    <Text style={{ color: program.isActive ? '#059669' : '#DC2626', fontSize: 12, fontWeight: '600' }}>
+                    <Text style={{ color: program.isActive ? colors.successDark : colors.errorDark, fontSize: 12, fontWeight: '600' }}>
                       {program.isActive ? 'Active' : 'Inactive'}
                     </Text>
                   </TouchableOpacity>
@@ -305,8 +305,8 @@ export default function SpecialProgramsScreen() {
             {typeof item.user !== 'string' ? item.user.phoneNumber || item.user.email || '' : ''}
           </Text>
         </View>
-        <View style={[styles.memberStatusBadge, { backgroundColor: (STATUS_COLORS[item.status] || '#6B7280') + '20' }]}>
-          <Text style={{ color: STATUS_COLORS[item.status] || '#6B7280', fontSize: 11, fontWeight: '600' }}>
+        <View style={[styles.memberStatusBadge, { backgroundColor: (STATUS_COLORS[item.status] || colors.mutedDark) + '20' }]}>
+          <Text style={{ color: STATUS_COLORS[item.status] || colors.mutedDark, fontSize: 11, fontWeight: '600' }}>
             {item.status.replace('_', ' ')}
           </Text>
         </View>
@@ -483,11 +483,11 @@ export default function SpecialProgramsScreen() {
 
           {selectedMember?.status !== 'active' && (
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: '#059669' }]}
+              style={[styles.actionButton, { backgroundColor: colors.successDark }]}
               onPress={() => handleMemberAction(selectedMember?.status === 'pending_verification' ? 'activate' : 'reactivate')}
               disabled={!!processingId}
             >
-              {processingId === selectedMember?._id ? <ActivityIndicator color="#fff" size="small" /> :
+              {processingId === selectedMember?._id ? <ActivityIndicator color={colors.card} size="small" /> :
                 <Text style={styles.actionButtonText}>
                   {selectedMember?.status === 'pending_verification' ? 'Approve & Activate' : 'Reactivate'}
                 </Text>
@@ -497,11 +497,11 @@ export default function SpecialProgramsScreen() {
 
           {selectedMember?.status === 'active' && (
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: '#F59E0B' }]}
+              style={[styles.actionButton, { backgroundColor: colors.warning }]}
               onPress={() => handleMemberAction('suspend')}
               disabled={!!processingId}
             >
-              {processingId === selectedMember?._id ? <ActivityIndicator color="#fff" size="small" /> :
+              {processingId === selectedMember?._id ? <ActivityIndicator color={colors.card} size="small" /> :
                 <Text style={styles.actionButtonText}>Suspend</Text>
               }
             </TouchableOpacity>
@@ -509,11 +509,11 @@ export default function SpecialProgramsScreen() {
 
           {selectedMember?.status !== 'revoked' && (
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: '#DC2626' }]}
+              style={[styles.actionButton, { backgroundColor: colors.errorDark }]}
               onPress={() => handleMemberAction('revoke')}
               disabled={!!processingId}
             >
-              {processingId === selectedMember?._id ? <ActivityIndicator color="#fff" size="small" /> :
+              {processingId === selectedMember?._id ? <ActivityIndicator color={colors.card} size="small" /> :
                 <Text style={styles.actionButtonText}>Revoke</Text>
               }
             </TouchableOpacity>
@@ -725,7 +725,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   filterChipText: {
     fontSize: 12,
@@ -792,7 +792,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.gray200,
   },
   modalTitle: {
     fontSize: 16,
@@ -855,7 +855,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontSize: 14,
     fontWeight: '600',
   },

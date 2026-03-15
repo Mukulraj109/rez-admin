@@ -381,26 +381,26 @@ export default function OffersScreen() {
               {item.store.name}
             </Text>
             <View style={styles.badgeRow}>
-              <View style={[styles.badge, { backgroundColor: '#10B981' }]}>
+              <View style={[styles.badge, { backgroundColor: colors.success }]}>
                 <Text style={styles.badgeText}>{item.cashbackPercentage}%</Text>
               </View>
               {item.exclusiveZone && (
-                <View style={[styles.badge, { backgroundColor: '#8B5CF6' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.purple }]}>
                   <Text style={styles.badgeText}>{item.exclusiveZone}</Text>
                 </View>
               )}
               {isExpired && (
-                <View style={[styles.badge, { backgroundColor: '#EF4444' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.error }]}>
                   <Text style={styles.badgeText}>Expired</Text>
                 </View>
               )}
               {item.adminApproved === false && (
-                <View style={[styles.badge, { backgroundColor: '#F59E0B' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.warning }]}>
                   <Text style={styles.badgeText}>Pending</Text>
                 </View>
               )}
               {item.adminApproved === true && (
-                <View style={[styles.badge, { backgroundColor: '#059669' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.successDark }]}>
                   <Text style={styles.badgeText}>Approved</Text>
                 </View>
               )}
@@ -409,34 +409,34 @@ export default function OffersScreen() {
           <Switch
             value={item.validity.isActive}
             onValueChange={() => toggleOffer(item)}
-            trackColor={{ false: '#D1D5DB', true: '#10B981' }}
-            thumbColor="#fff"
+            trackColor={{ false: colors.border, true: colors.success }}
+            thumbColor={colors.card}
             style={styles.switch}
           />
         </View>
-        <View style={[styles.offerActions, { borderTopColor: isDark ? '#374151' : '#E5E7EB' }]}>
+        <View style={[styles.offerActions, { borderTopColor: colors.border }]}>
           {item.adminApproved !== true && (
             <>
               <TouchableOpacity style={styles.actionButton} onPress={() => approveOffer(item)}>
-                <Ionicons name="checkmark-circle-outline" size={16} color="#10B981" />
-                <Text style={[styles.actionText, { color: '#10B981' }]}>Approve</Text>
+                <Ionicons name="checkmark-circle-outline" size={16} color={colors.success} />
+                <Text style={[styles.actionText, { color: colors.success }]}>Approve</Text>
               </TouchableOpacity>
-              <View style={[styles.actionDivider, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]} />
+              <View style={[styles.actionDivider, { backgroundColor: colors.border }]} />
               <TouchableOpacity style={styles.actionButton} onPress={() => rejectOffer(item)}>
-                <Ionicons name="close-circle-outline" size={16} color="#F59E0B" />
-                <Text style={[styles.actionText, { color: '#F59E0B' }]}>Reject</Text>
+                <Ionicons name="close-circle-outline" size={16} color={colors.warning} />
+                <Text style={[styles.actionText, { color: colors.warning }]}>Reject</Text>
               </TouchableOpacity>
-              <View style={[styles.actionDivider, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]} />
+              <View style={[styles.actionDivider, { backgroundColor: colors.border }]} />
             </>
           )}
           <TouchableOpacity style={styles.actionButton} onPress={() => openEditModal(item)}>
-            <Ionicons name="pencil-outline" size={16} color="#3B82F6" />
-            <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+            <Ionicons name="pencil-outline" size={16} color={colors.info} />
+            <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
           </TouchableOpacity>
-          <View style={[styles.actionDivider, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]} />
+          <View style={[styles.actionDivider, { backgroundColor: colors.border }]} />
           <TouchableOpacity style={styles.actionButton} onPress={() => deleteOffer(item)}>
-            <Ionicons name="trash-outline" size={16} color="#EF4444" />
-            <Text style={[styles.actionText, { color: '#EF4444' }]}>Delete</Text>
+            <Ionicons name="trash-outline" size={16} color={colors.error} />
+            <Text style={[styles.actionText, { color: colors.error }]}>Delete</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -484,13 +484,13 @@ export default function OffersScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#111827' : '#F3F4F6' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.contentWrapper}>
         {/* Header */}
         <View style={[styles.header, { backgroundColor: colors.card }]}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>Offers</Text>
           <TouchableOpacity style={styles.addButton} onPress={openCreateModal}>
-            <Ionicons name="add" size={20} color="#fff" />
+            <Ionicons name="add" size={20} color={colors.card} />
             <Text style={styles.addButtonText}>Add Offer</Text>
           </TouchableOpacity>
         </View>
@@ -499,26 +499,26 @@ export default function OffersScreen() {
         {stats && (
           <View style={styles.statsRow}>
             <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <Text style={[styles.statNumber, { color: '#111827' }]}>{stats.total}</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>{stats.total}</Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total</Text>
             </View>
             <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <Text style={[styles.statNumber, { color: '#10B981' }]}>{stats.active}</Text>
+              <Text style={[styles.statNumber, { color: colors.success }]}>{stats.active}</Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Active</Text>
             </View>
             <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <Text style={[styles.statNumber, { color: '#F59E0B' }]}>{stats.inactive}</Text>
+              <Text style={[styles.statNumber, { color: colors.warning }]}>{stats.inactive}</Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Inactive</Text>
             </View>
             <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <Text style={[styles.statNumber, { color: '#EF4444' }]}>{stats.expired}</Text>
+              <Text style={[styles.statNumber, { color: colors.error }]}>{stats.expired}</Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Expired</Text>
             </View>
           </View>
         )}
 
         {/* Search */}
-        <View style={[styles.searchBox, { backgroundColor: colors.card, borderWidth: 1, borderColor: isDark ? '#374151' : '#E5E7EB' }]}>
+        <View style={[styles.searchBox, { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }]}>
           <Ionicons name="search" size={20} color={colors.textSecondary} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
@@ -545,9 +545,9 @@ export default function OffersScreen() {
             style={[
               styles.filterChip,
               {
-                backgroundColor: showPendingOnly ? '#F59E0B' : colors.card,
+                backgroundColor: showPendingOnly ? colors.warning : colors.card,
                 borderWidth: 1,
-                borderColor: showPendingOnly ? '#F59E0B' : (isDark ? '#374151' : '#E5E7EB'),
+                borderColor: showPendingOnly ? colors.warning : colors.border,
               },
             ]}
             onPress={() => setShowPendingOnly(!showPendingOnly)}
@@ -555,11 +555,11 @@ export default function OffersScreen() {
             <Ionicons
               name="time"
               size={14}
-              color={showPendingOnly ? '#fff' : colors.textSecondary}
+              color={showPendingOnly ? colors.card : colors.textSecondary}
             />
             <Text style={[
               styles.filterChipText,
-              { color: showPendingOnly ? '#fff' : colors.text },
+              { color: showPendingOnly ? colors.card : colors.text },
             ]}>
               Pending Approval
             </Text>
@@ -572,9 +572,9 @@ export default function OffersScreen() {
                 style={[
                   styles.filterChip,
                   {
-                    backgroundColor: isSelected ? '#10B981' : colors.card,
+                    backgroundColor: isSelected ? colors.success : colors.card,
                     borderWidth: 1,
-                    borderColor: isSelected ? '#10B981' : (isDark ? '#374151' : '#E5E7EB'),
+                    borderColor: isSelected ? colors.success : colors.border,
                   },
                 ]}
                 onPress={() => setFilterZone(zone.value)}
@@ -582,11 +582,11 @@ export default function OffersScreen() {
                 <Ionicons
                   name={zone.icon as any}
                   size={14}
-                  color={isSelected ? '#fff' : colors.textSecondary}
+                  color={isSelected ? colors.card : colors.textSecondary}
                 />
                 <Text style={[
                   styles.filterChipText,
-                  { color: isSelected ? '#fff' : colors.text },
+                  { color: isSelected ? colors.card : colors.text },
                 ]}>
                   {zone.label}
                 </Text>
@@ -628,7 +628,7 @@ export default function OffersScreen() {
 
       {/* Fixed Pagination Bar */}
       {totalPages > 0 && offers.length > 0 && (
-        <View style={[styles.paginationBar, { backgroundColor: colors.card, borderTopColor: isDark ? '#374151' : '#E5E7EB' }]}>
+        <View style={[styles.paginationBar, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
           <TouchableOpacity
             style={[
               styles.paginationButton,
@@ -637,8 +637,8 @@ export default function OffersScreen() {
             onPress={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1 || isLoading}
           >
-            <Ionicons name="chevron-back" size={18} color={currentPage === 1 ? '#9CA3AF' : colors.primary} />
-            <Text style={[styles.paginationButtonText, { color: currentPage === 1 ? '#9CA3AF' : colors.primary }]}>
+            <Ionicons name="chevron-back" size={18} color={currentPage === 1 ? colors.icon : colors.primary} />
+            <Text style={[styles.paginationButtonText, { color: currentPage === 1 ? colors.muted : colors.primary }]}>
               Prev
             </Text>
           </TouchableOpacity>
@@ -660,10 +660,10 @@ export default function OffersScreen() {
             onPress={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages || isLoading}
           >
-            <Text style={[styles.paginationButtonText, { color: currentPage === totalPages ? '#9CA3AF' : colors.primary }]}>
+            <Text style={[styles.paginationButtonText, { color: currentPage === totalPages ? colors.muted : colors.primary }]}>
               Next
             </Text>
-            <Ionicons name="chevron-forward" size={18} color={currentPage === totalPages ? '#9CA3AF' : colors.primary} />
+            <Ionicons name="chevron-forward" size={18} color={currentPage === totalPages ? colors.icon : colors.primary} />
           </TouchableOpacity>
         </View>
       )}
@@ -673,7 +673,7 @@ export default function OffersScreen() {
       <Modal visible={showModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <View style={[styles.modalHeader, { borderBottomColor: isDark ? '#374151' : '#E5E7EB' }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {editingOffer ? 'Edit Offer' : 'Create Offer'}
               </Text>
@@ -685,7 +685,7 @@ export default function OffersScreen() {
             <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
               <Text style={[styles.inputLabel, { color: colors.text }]}>Title *</Text>
               <TextInput
-                style={[styles.textInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', color: colors.text, borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                style={[styles.textInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                 value={formData.title}
                 onChangeText={text => setFormData(p => ({ ...p, title: text }))}
                 placeholder="Enter offer title"
@@ -694,7 +694,7 @@ export default function OffersScreen() {
 
               <Text style={[styles.inputLabel, { color: colors.text }]}>Image URL *</Text>
               <TextInput
-                style={[styles.textInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', color: colors.text, borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                style={[styles.textInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                 value={formData.image}
                 onChangeText={text => setFormData(p => ({ ...p, image: text }))}
                 placeholder="https://example.com/image.jpg"
@@ -703,7 +703,7 @@ export default function OffersScreen() {
 
               <Text style={[styles.inputLabel, { color: colors.text }]}>Store *</Text>
               <TouchableOpacity
-                style={[styles.selectInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                style={[styles.selectInput, { backgroundColor: colors.background, borderColor: colors.border }]}
                 onPress={() => setShowStoreSelector(true)}
               >
                 <Text style={[styles.selectText, { color: formData.storeId ? colors.text : colors.textSecondary }]}>
@@ -716,7 +716,7 @@ export default function OffersScreen() {
                 <View style={styles.halfInput}>
                   <Text style={[styles.inputLabel, { color: colors.text }]}>Category</Text>
                   <TouchableOpacity
-                    style={[styles.selectInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                    style={[styles.selectInput, { backgroundColor: colors.background, borderColor: colors.border }]}
                     onPress={() => setShowCategorySelector(true)}
                   >
                     <Text style={[styles.selectText, { color: colors.text }]}>{getCategoryLabel()}</Text>
@@ -726,7 +726,7 @@ export default function OffersScreen() {
                 <View style={styles.halfInput}>
                   <Text style={[styles.inputLabel, { color: colors.text }]}>Type</Text>
                   <TouchableOpacity
-                    style={[styles.selectInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                    style={[styles.selectInput, { backgroundColor: colors.background, borderColor: colors.border }]}
                     onPress={() => setShowTypeSelector(true)}
                   >
                     <Text style={[styles.selectText, { color: colors.text }]}>{getTypeLabel()}</Text>
@@ -737,7 +737,7 @@ export default function OffersScreen() {
 
               <Text style={[styles.inputLabel, { color: colors.text }]}>Discount/Cashback %</Text>
               <TextInput
-                style={[styles.textInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', color: colors.text, borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                style={[styles.textInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                 value={String(formData.cashbackPercentage || '')}
                 onChangeText={text => setFormData(p => ({ ...p, cashbackPercentage: Number(text) || 0 }))}
                 placeholder="10"
@@ -747,7 +747,7 @@ export default function OffersScreen() {
 
               <Text style={[styles.inputLabel, { color: colors.text }]}>Exclusive Zone</Text>
               <TouchableOpacity
-                style={[styles.selectInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                style={[styles.selectInput, { backgroundColor: colors.background, borderColor: colors.border }]}
                 onPress={() => setShowZoneSelector(true)}
               >
                 <Text style={[styles.selectText, { color: colors.text }]}>{getZoneLabel()}</Text>
@@ -758,7 +758,7 @@ export default function OffersScreen() {
                 <>
                   <Text style={[styles.inputLabel, { color: colors.text }]}>Eligibility Requirement</Text>
                   <TextInput
-                    style={[styles.textInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', color: colors.text, borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                    style={[styles.textInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                     value={formData.eligibilityRequirement}
                     onChangeText={text => setFormData(p => ({ ...p, eligibilityRequirement: text }))}
                     placeholder="e.g., Must be a verified student"
@@ -769,7 +769,7 @@ export default function OffersScreen() {
 
               <Text style={[styles.inputLabel, { color: colors.text }]}>Subtitle</Text>
               <TextInput
-                style={[styles.textInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', color: colors.text, borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                style={[styles.textInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                 value={formData.subtitle}
                 onChangeText={text => setFormData(p => ({ ...p, subtitle: text }))}
                 placeholder="Optional short description"
@@ -778,7 +778,7 @@ export default function OffersScreen() {
 
               <Text style={[styles.inputLabel, { color: colors.text }]}>Tags (comma separated)</Text>
               <TextInput
-                style={[styles.textInput, { backgroundColor: isDark ? '#1F2937' : '#F9FAFB', color: colors.text, borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                style={[styles.textInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
                 value={tagsInput}
                 onChangeText={setTagsInput}
                 placeholder="food, discount, student"
@@ -791,7 +791,7 @@ export default function OffersScreen() {
                   <Switch
                     value={formData.validity?.isActive}
                     onValueChange={v => setFormData(p => ({ ...p, validity: { ...p.validity!, isActive: v } }))}
-                    trackColor={{ false: '#D1D5DB', true: '#10B981' }}
+                    trackColor={{ false: colors.border, true: colors.success }}
                   />
                 </View>
                 <View style={styles.toggleRow}>
@@ -799,7 +799,7 @@ export default function OffersScreen() {
                   <Switch
                     value={formData.isFreeDelivery}
                     onValueChange={v => setFormData(p => ({ ...p, isFreeDelivery: v }))}
-                    trackColor={{ false: '#D1D5DB', true: '#10B981' }}
+                    trackColor={{ false: colors.border, true: colors.success }}
                   />
                 </View>
                 <View style={styles.toggleRow}>
@@ -807,7 +807,7 @@ export default function OffersScreen() {
                   <Switch
                     value={formData.metadata?.isNew}
                     onValueChange={v => setFormData(p => ({ ...p, metadata: { ...p.metadata!, isNew: v } }))}
-                    trackColor={{ false: '#D1D5DB', true: '#10B981' }}
+                    trackColor={{ false: colors.border, true: colors.success }}
                   />
                 </View>
                 <View style={styles.toggleRow}>
@@ -815,7 +815,7 @@ export default function OffersScreen() {
                   <Switch
                     value={formData.metadata?.isTrending}
                     onValueChange={v => setFormData(p => ({ ...p, metadata: { ...p.metadata!, isTrending: v } }))}
-                    trackColor={{ false: '#D1D5DB', true: '#10B981' }}
+                    trackColor={{ false: colors.border, true: colors.success }}
                   />
                 </View>
               </View>
@@ -823,9 +823,9 @@ export default function OffersScreen() {
               <View style={{ height: 24 }} />
             </ScrollView>
 
-            <View style={[styles.modalFooter, { borderTopColor: isDark ? '#374151' : '#E5E7EB' }]}>
+            <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
               <TouchableOpacity
-                style={[styles.cancelButton, { borderColor: isDark ? '#374151' : '#E5E7EB' }]}
+                style={[styles.cancelButton, { borderColor: colors.border }]}
                 onPress={() => setShowModal(false)}
               >
                 <Text style={[styles.cancelButtonText, { color: colors.text }]}>Cancel</Text>
@@ -836,7 +836,7 @@ export default function OffersScreen() {
                 disabled={isSaving}
               >
                 {isSaving ? (
-                  <ActivityIndicator size="small" color="#fff" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
                   <Text style={styles.saveButtonText}>{editingOffer ? 'Update' : 'Create'}</Text>
                 )}
@@ -887,19 +887,19 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#10B981',
+    backgroundColor: Colors.light.success,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 10,
     gap: 8,
-    shadowColor: '#10B981',
+    shadowColor: Colors.light.success,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
   },
   addButtonText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 15,
   },
@@ -916,7 +916,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -999,7 +999,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
@@ -1017,7 +1017,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 12,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.light.border,
   },
   offerDetails: {
     flex: 1,
@@ -1042,7 +1042,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   badgeText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 11,
     fontWeight: '600',
     textTransform: 'capitalize',
@@ -1088,13 +1088,13 @@ const styles = StyleSheet.create({
   },
   emptyButton: {
     marginTop: 20,
-    backgroundColor: '#10B981',
+    backgroundColor: Colors.light.success,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 10,
   },
   emptyButtonText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontWeight: '600',
   },
   // Pagination
@@ -1230,10 +1230,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
     borderRadius: 10,
-    backgroundColor: '#10B981',
+    backgroundColor: Colors.light.success,
   },
   saveButtonText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 15,
     fontWeight: '600',
   },

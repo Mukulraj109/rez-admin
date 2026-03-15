@@ -24,10 +24,10 @@ import { showAlert, showConfirm } from '../../utils/alert';
 type StatusFilter = 'all' | 'active' | 'scheduled' | 'ended' | 'sold_out';
 
 const STATUS_COLORS: Record<string, string> = {
-  active: '#10B981',
-  scheduled: '#3B82F6',
-  ended: '#EF4444',
-  sold_out: '#6B7280',
+  active: Colors.light.success,
+  scheduled: Colors.light.info,
+  ended: Colors.light.error,
+  sold_out: Colors.light.mutedDark,
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -331,7 +331,7 @@ export default function FlashSalesScreen() {
   );
 
   const renderStatusBadge = (status: string) => {
-    const color = STATUS_COLORS[status] || '#6B7280';
+    const color = STATUS_COLORS[status] || colors.mutedDark;
     const label = STATUS_LABELS[status] || status;
     return (
       <View style={[styles.statusBadge, { backgroundColor: color + '20' }]}>
@@ -387,7 +387,7 @@ export default function FlashSalesScreen() {
             </Text>
           )}
           {sale.flashSalePrice != null && (
-            <Text style={[styles.flashPrice, { color: '#10B981' }]}>
+            <Text style={[styles.flashPrice, { color: colors.success }]}>
               Sale: {sale.flashSalePrice.toFixed(2)}
             </Text>
           )}
@@ -435,8 +435,8 @@ export default function FlashSalesScreen() {
           <Switch
             value={sale.enabled}
             onValueChange={() => handleToggle(sale)}
-            trackColor={{ false: '#ccc', true: '#4CAF50' }}
-            thumbColor="#fff"
+            trackColor={{ false: colors.gray300, true: colors.success }}
+            thumbColor={colors.card}
             style={styles.toggleSwitch}
           />
         </View>
@@ -445,7 +445,7 @@ export default function FlashSalesScreen() {
             <Ionicons name="create-outline" size={20} color={colors.info} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(sale)}>
-            <Ionicons name="trash-outline" size={20} color="#EF4444" />
+            <Ionicons name="trash-outline" size={20} color={colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -509,7 +509,7 @@ export default function FlashSalesScreen() {
           style={[styles.createBtn, { backgroundColor: colors.tint }]}
           onPress={handleCreate}
         >
-          <Ionicons name="add" size={24} color="#fff" />
+          <Ionicons name="add" size={24} color={colors.card} />
         </TouchableOpacity>
       </View>
 
@@ -523,10 +523,10 @@ export default function FlashSalesScreen() {
         {/* Stats Row */}
         <View style={styles.statsContainer}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statsScrollContent}>
-            {renderStatCard('Total', totalCount, 'flash-outline', '#3B82F6')}
-            {renderStatCard('Active', activeCount, 'checkmark-circle-outline', '#10B981')}
-            {renderStatCard('Scheduled', scheduledCount, 'calendar-outline', '#F59E0B')}
-            {renderStatCard('Ended', endedCount, 'close-circle-outline', '#EF4444')}
+            {renderStatCard('Total', totalCount, 'flash-outline', colors.info)}
+            {renderStatCard('Active', activeCount, 'checkmark-circle-outline', colors.success)}
+            {renderStatCard('Scheduled', scheduledCount, 'calendar-outline', colors.warning)}
+            {renderStatCard('Ended', endedCount, 'close-circle-outline', colors.error)}
           </ScrollView>
         </View>
 
@@ -551,7 +551,7 @@ export default function FlashSalesScreen() {
                 <Text
                   style={[
                     styles.filterTabText,
-                    { color: isActive ? '#fff' : colors.secondaryText },
+                    { color: isActive ? colors.card : colors.secondaryText },
                   ]}
                 >
                   {tab.label}
@@ -702,8 +702,8 @@ export default function FlashSalesScreen() {
                 <Switch
                   value={formEnabled}
                   onValueChange={setFormEnabled}
-                  trackColor={{ false: '#ccc', true: '#4CAF50' }}
-                  thumbColor="#fff"
+                  trackColor={{ false: colors.gray300, true: colors.success }}
+                  thumbColor={colors.card}
                 />
               </View>
             </ScrollView>
@@ -722,7 +722,7 @@ export default function FlashSalesScreen() {
                 disabled={saving}
               >
                 {saving ? (
-                  <ActivityIndicator size="small" color="#fff" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
                   <Text style={styles.saveBtnText}>{editingSale ? 'Update' : 'Create'}</Text>
                 )}
@@ -874,7 +874,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   emptyBtnText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -922,13 +922,13 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   discountBadge: {
-    backgroundColor: '#EF4444',
+    backgroundColor: Colors.light.error,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   discountBadgeText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 11,
     fontWeight: '700',
   },
@@ -1089,7 +1089,7 @@ const styles = StyleSheet.create({
   },
   cancelBtn: {
     marginRight: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   cancelBtnText: {
     fontWeight: '600',
@@ -1100,7 +1100,7 @@ const styles = StyleSheet.create({
   },
   saveBtnText: {
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.light.card,
   },
 
   // Form

@@ -13,7 +13,7 @@ export default function DashboardLayout() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#DC2626" />
+        <ActivityIndicator size="large" color={colors.errorDark} />
       </View>
     );
   }

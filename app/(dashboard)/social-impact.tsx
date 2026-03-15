@@ -88,7 +88,7 @@ function getEventTypeLabel(eventType: string): string {
 }
 
 function getParticipantStatusColor(status: string): string {
-  return PARTICIPANT_STATUSES.find(s => s.value === status)?.color || '#6B7280';
+  return PARTICIPANT_STATUSES.find(s => s.value === status)?.color || Colors.light.mutedDark;
 }
 
 function getParticipantStatusLabel(status: string): string {
@@ -544,9 +544,9 @@ export default function SocialImpactScreen() {
     <View style={styles.statsRow}>
       {[
         { label: 'Total Events', value: stats.total, color: colors.text, icon: 'calendar' as const },
-        { label: 'Active', value: stats.active, color: '#10B981', icon: 'radio-button-on' as const },
-        { label: 'Participants', value: stats.totalParticipants, color: '#3B82F6', icon: 'people' as const },
-        { label: 'Total Coins', value: stats.totalCoins, color: '#F59E0B', icon: 'logo-bitcoin' as const },
+        { label: 'Active', value: stats.active, color: colors.success, icon: 'radio-button-on' as const },
+        { label: 'Participants', value: stats.totalParticipants, color: colors.info, icon: 'people' as const },
+        { label: 'Total Coins', value: stats.totalCoins, color: colors.warning, icon: 'logo-bitcoin' as const },
       ].map((item, index) => (
         <View key={index} style={[styles.statItem, { backgroundColor: colors.card }]}>
           <Ionicons name={item.icon} size={16} color={item.color} style={{ marginBottom: 4 }} />
@@ -564,7 +564,7 @@ export default function SocialImpactScreen() {
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-        {[{ value: 'all', label: 'All', color: colors.tint }, { value: 'pending_approval', label: 'Pending Approval', color: '#F59E0B' }, ...EVENT_STATUSES].map(status => {
+        {[{ value: 'all', label: 'All', color: colors.tint }, { value: 'pending_approval', label: 'Pending Approval', color: colors.warning }, ...EVENT_STATUSES].map(status => {
           const isActive = filterStatus === status.value;
           const chipColor = status.color;
           return (
@@ -604,7 +604,7 @@ export default function SocialImpactScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={18} color="#FFF" />
+        <Ionicons name="add" size={18} color={colors.card} />
         <Text style={styles.createBtnText}>Create Event</Text>
       </TouchableOpacity>
     </View>
@@ -660,7 +660,7 @@ export default function SocialImpactScreen() {
         {/* Pending Approval Banner */}
         {isPending && (
           <View style={styles.approvalBanner}>
-            <Ionicons name="time-outline" size={14} color="#F59E0B" />
+            <Ionicons name="time-outline" size={14} color={colors.warning} />
             <Text style={styles.approvalBannerText}>Pending Admin Approval</Text>
             {(item as any).merchant?.businessName && (
               <Text style={styles.approvalMerchantText}>by {(item as any).merchant.businessName}</Text>
@@ -668,9 +668,9 @@ export default function SocialImpactScreen() {
           </View>
         )}
         {isRejected && (
-          <View style={[styles.approvalBanner, { backgroundColor: '#FEE2E2' }]}>
-            <Ionicons name="close-circle-outline" size={14} color="#EF4444" />
-            <Text style={[styles.approvalBannerText, { color: '#EF4444' }]}>Rejected</Text>
+          <View style={[styles.approvalBanner, { backgroundColor: colors.errorLight }]}>
+            <Ionicons name="close-circle-outline" size={14} color={colors.error} />
+            <Text style={[styles.approvalBannerText, { color: colors.error }]}>Rejected</Text>
           </View>
         )}
 
@@ -707,8 +707,8 @@ export default function SocialImpactScreen() {
           ) : null}
           {item.sponsor?.name ? (
             <View style={styles.metaChip}>
-              <Ionicons name="ribbon-outline" size={13} color="#8B5CF6" />
-              <Text style={[styles.metaText, { color: '#8B5CF6' }]} numberOfLines={1}>
+              <Ionicons name="ribbon-outline" size={13} color={colors.purple} />
+              <Text style={[styles.metaText, { color: colors.purple }]} numberOfLines={1}>
                 {item.sponsor.name}
               </Text>
             </View>
@@ -759,7 +759,7 @@ export default function SocialImpactScreen() {
                 styles.progressBarFill,
                 {
                   width: `${progressPercent}%`,
-                  backgroundColor: progressPercent >= 90 ? '#EF4444' : progressPercent >= 70 ? '#F59E0B' : '#10B981',
+                  backgroundColor: progressPercent >= 90 ? colors.error : progressPercent >= 70 ? colors.warning : colors.success,
                 },
               ]}
             />
@@ -770,30 +770,30 @@ export default function SocialImpactScreen() {
         <View style={styles.metaRow}>
           {(item.rewards?.rezCoins ?? 0) > 0 && (
             <View style={styles.metaChip}>
-              <Ionicons name="logo-bitcoin" size={13} color="#F59E0B" />
-              <Text style={[styles.metaText, { color: '#F59E0B', fontWeight: '700' }]}>
+              <Ionicons name="logo-bitcoin" size={13} color={colors.warning} />
+              <Text style={[styles.metaText, { color: colors.warning, fontWeight: '700' }]}>
                 {item.rewards!.rezCoins} {BRAND.COIN_SHORT}
               </Text>
             </View>
           )}
           {(item.rewards?.brandCoins ?? 0) > 0 && (
             <View style={styles.metaChip}>
-              <Ionicons name="diamond-outline" size={13} color="#8B5CF6" />
-              <Text style={[styles.metaText, { color: '#8B5CF6', fontWeight: '700' }]}>
+              <Ionicons name="diamond-outline" size={13} color={colors.purple} />
+              <Text style={[styles.metaText, { color: colors.purple, fontWeight: '700' }]}>
                 {item.rewards!.brandCoins} Brand
               </Text>
             </View>
           )}
           {item.featured && (
-            <View style={[styles.featuredBadge, { backgroundColor: '#F59E0B15' }]}>
-              <Ionicons name="star" size={11} color="#F59E0B" />
-              <Text style={[styles.featuredBadgeText, { color: '#F59E0B' }]}>Featured</Text>
+            <View style={[styles.featuredBadge, { backgroundColor: `${colors.warning}15` }]}>
+              <Ionicons name="star" size={11} color={colors.warning} />
+              <Text style={[styles.featuredBadgeText, { color: colors.warning }]}>Featured</Text>
             </View>
           )}
           {item.isCsrActivity && (
-            <View style={[styles.csrBadge, { backgroundColor: '#10B98115' }]}>
-              <Ionicons name="heart" size={11} color="#10B981" />
-              <Text style={[styles.csrBadgeText, { color: '#10B981' }]}>CSR</Text>
+            <View style={[styles.csrBadge, { backgroundColor: `${colors.success}15` }]}>
+              <Ionicons name="heart" size={11} color={colors.success} />
+              <Text style={[styles.csrBadgeText, { color: colors.success }]}>CSR</Text>
             </View>
           )}
         </View>
@@ -803,25 +803,25 @@ export default function SocialImpactScreen() {
           {isPending ? (
             <>
               <TouchableOpacity
-                style={[styles.actionBtn, { backgroundColor: '#10B98115' }]}
+                style={[styles.actionBtn, { backgroundColor: `${colors.success}15` }]}
                 onPress={() => handleApproveEvent(item)}
               >
-                <Ionicons name="checkmark-circle" size={15} color="#10B981" />
-                <Text style={[styles.actionBtnText, { color: '#10B981' }]}>Approve</Text>
+                <Ionicons name="checkmark-circle" size={15} color={colors.success} />
+                <Text style={[styles.actionBtnText, { color: colors.success }]}>Approve</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.actionBtn, { backgroundColor: '#EF444415' }]}
+                style={[styles.actionBtn, { backgroundColor: `${colors.error}15` }]}
                 onPress={() => handleRejectEvent(item)}
               >
-                <Ionicons name="close-circle" size={15} color="#EF4444" />
-                <Text style={[styles.actionBtnText, { color: '#EF4444' }]}>Reject</Text>
+                <Ionicons name="close-circle" size={15} color={colors.error} />
+                <Text style={[styles.actionBtnText, { color: colors.error }]}>Reject</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.actionBtn, { backgroundColor: '#3B82F610' }]}
+                style={[styles.actionBtn, { backgroundColor: `${colors.info}10` }]}
                 onPress={() => handleEdit(item)}
               >
-                <Ionicons name="pencil" size={15} color="#3B82F6" />
-                <Text style={[styles.actionBtnText, { color: '#3B82F6' }]}>Edit</Text>
+                <Ionicons name="pencil" size={15} color={colors.info} />
+                <Text style={[styles.actionBtnText, { color: colors.info }]}>Edit</Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -834,11 +834,11 @@ export default function SocialImpactScreen() {
                 <Text style={[styles.actionBtnText, { color: colors.tint }]}>Participants</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.actionBtn, { backgroundColor: '#3B82F610' }]}
+                style={[styles.actionBtn, { backgroundColor: `${colors.info}10` }]}
                 onPress={() => handleEdit(item)}
               >
-                <Ionicons name="pencil" size={15} color="#3B82F6" />
-                <Text style={[styles.actionBtnText, { color: '#3B82F6' }]}>Edit</Text>
+                <Ionicons name="pencil" size={15} color={colors.info} />
+                <Text style={[styles.actionBtnText, { color: colors.info }]}>Edit</Text>
               </TouchableOpacity>
             </>
           )}
@@ -920,7 +920,7 @@ export default function SocialImpactScreen() {
               style={[styles.modalSaveBtn, { backgroundColor: colors.tint }]}
             >
               {isSaving ? (
-                <ActivityIndicator size="small" color="#FFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <Text style={styles.modalSaveBtnText}>Save</Text>
               )}
@@ -1070,7 +1070,7 @@ export default function SocialImpactScreen() {
             {/* Rewards Section */}
             <View style={[styles.formSection, { borderColor: colors.border }]}>
               <View style={styles.formSectionTitleRow}>
-                <Ionicons name="gift" size={18} color="#F59E0B" />
+                <Ionicons name="gift" size={18} color={colors.warning} />
                 <Text style={[styles.formSectionTitle, { color: colors.text }]}>Rewards</Text>
               </View>
               <View style={styles.formRow}>
@@ -1115,7 +1115,7 @@ export default function SocialImpactScreen() {
             {/* Impact Section */}
             <View style={[styles.formSection, { borderColor: colors.border }]}>
               <View style={styles.formSectionTitleRow}>
-                <Ionicons name="trending-up" size={18} color="#10B981" />
+                <Ionicons name="trending-up" size={18} color={colors.success} />
                 <Text style={[styles.formSectionTitle, { color: colors.text }]}>Impact</Text>
               </View>
               <View style={styles.formGroup}>
@@ -1281,15 +1281,15 @@ export default function SocialImpactScreen() {
           {eligibleCount > 0 && (
             <View style={styles.bulkActionRow}>
               <TouchableOpacity
-                style={[styles.bulkCompleteBtn, { backgroundColor: '#10B981' }]}
+                style={[styles.bulkCompleteBtn, { backgroundColor: colors.success }]}
                 onPress={handleBulkComplete}
                 disabled={actionLoading === 'bulk'}
               >
                 {actionLoading === 'bulk' ? (
-                  <ActivityIndicator size="small" color="#FFF" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
                   <>
-                    <Ionicons name="checkmark-done" size={16} color="#FFF" />
+                    <Ionicons name="checkmark-done" size={16} color={colors.card} />
                     <Text style={styles.bulkCompleteBtnText}>
                       Complete All ({eligibleCount})
                     </Text>
@@ -1364,12 +1364,12 @@ export default function SocialImpactScreen() {
                           Registered: {formatDate(item.registeredAt)}
                         </Text>
                         {item.checkedInAt && (
-                          <Text style={[styles.participantDate, { color: '#F59E0B' }]}>
+                          <Text style={[styles.participantDate, { color: colors.warning }]}>
                             Checked in: {formatDate(item.checkedInAt)}
                           </Text>
                         )}
                         {item.completedAt && (
-                          <Text style={[styles.participantDate, { color: '#10B981' }]}>
+                          <Text style={[styles.participantDate, { color: colors.success }]}>
                             Completed: {formatDate(item.completedAt)}
                           </Text>
                         )}
@@ -1388,28 +1388,28 @@ export default function SocialImpactScreen() {
                         {canCheckIn && (
                           <>
                             <TouchableOpacity
-                              style={[styles.participantActionBtn, { backgroundColor: '#F59E0B15' }]}
+                              style={[styles.participantActionBtn, { backgroundColor: `${colors.warning}15` }]}
                               onPress={() => handleCheckIn(item)}
                               disabled={isLoading}
                             >
                               {isLoading ? (
-                                <ActivityIndicator size="small" color="#F59E0B" />
+                                <ActivityIndicator size="small" color={colors.warning} />
                               ) : (
                                 <>
-                                  <Ionicons name="log-in-outline" size={14} color="#F59E0B" />
-                                  <Text style={[styles.participantActionText, { color: '#F59E0B' }]}>
+                                  <Ionicons name="log-in-outline" size={14} color={colors.warning} />
+                                  <Text style={[styles.participantActionText, { color: colors.warning }]}>
                                     Check In
                                   </Text>
                                 </>
                               )}
                             </TouchableOpacity>
                             <TouchableOpacity
-                              style={[styles.participantActionBtn, { backgroundColor: '#8B5CF615' }]}
+                              style={[styles.participantActionBtn, { backgroundColor: `${colors.purple}15` }]}
                               onPress={() => handleGenerateOTP(item)}
                               disabled={isLoading}
                             >
-                              <Ionicons name="key-outline" size={14} color="#8B5CF6" />
-                              <Text style={[styles.participantActionText, { color: '#8B5CF6' }]}>
+                              <Ionicons name="key-outline" size={14} color={colors.purple} />
+                              <Text style={[styles.participantActionText, { color: colors.purple }]}>
                                 OTP
                               </Text>
                             </TouchableOpacity>
@@ -1417,16 +1417,16 @@ export default function SocialImpactScreen() {
                         )}
                         {canComplete && (
                           <TouchableOpacity
-                            style={[styles.participantActionBtn, { backgroundColor: '#10B98115' }]}
+                            style={[styles.participantActionBtn, { backgroundColor: `${colors.success}15` }]}
                             onPress={() => handleComplete(item)}
                             disabled={isLoading}
                           >
                             {isLoading ? (
-                              <ActivityIndicator size="small" color="#10B981" />
+                              <ActivityIndicator size="small" color={colors.success} />
                             ) : (
                               <>
-                                <Ionicons name="checkmark-circle-outline" size={14} color="#10B981" />
-                                <Text style={[styles.participantActionText, { color: '#10B981' }]}>
+                                <Ionicons name="checkmark-circle-outline" size={14} color={colors.success} />
+                                <Text style={[styles.participantActionText, { color: colors.success }]}>
                                   Complete
                                 </Text>
                               </>
@@ -1466,14 +1466,14 @@ export default function SocialImpactScreen() {
           {otpDisplay && (
             <View style={styles.otpBanner}>
               <View style={styles.otpBannerContent}>
-                <Ionicons name="key" size={20} color="#8B5CF6" />
+                <Ionicons name="key" size={20} color={colors.purple} />
                 <View style={{ flex: 1, marginLeft: 10 }}>
                   <Text style={styles.otpBannerLabel}>OTP for {otpDisplay.name}</Text>
                   <Text style={styles.otpBannerCode}>{otpDisplay.code}</Text>
                   <Text style={styles.otpBannerExpiry}>Expires in 30 minutes</Text>
                 </View>
                 <TouchableOpacity onPress={() => setOtpDisplay(null)}>
-                  <Ionicons name="close-circle" size={24} color="#9CA3AF" />
+                  <Ionicons name="close-circle" size={24} color={colors.muted} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -1652,7 +1652,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   createBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1674,13 +1674,13 @@ const styles = StyleSheet.create({
   },
   pendingCard: {
     borderWidth: 1.5,
-    borderColor: '#F59E0B',
+    borderColor: Colors.light.warning,
     borderStyle: 'dashed',
   },
   approvalBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.light.warningLight,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
@@ -1690,11 +1690,11 @@ const styles = StyleSheet.create({
   approvalBannerText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#D97706',
+    color: Colors.light.warningDark,
   },
   approvalMerchantText: {
     fontSize: 11,
-    color: '#92400E',
+    color: Colors.light.warningDeep,
     marginLeft: 'auto',
   },
   cardHeader: {
@@ -1874,7 +1874,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1995,7 +1995,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   bulkCompleteBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -2085,18 +2085,18 @@ const styles = StyleSheet.create({
   },
   otpBannerLabel: {
     fontSize: 12,
-    color: '#6B7280',
+    color: Colors.light.mutedDark,
     marginBottom: 2,
   },
   otpBannerCode: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#7C3AED',
+    color: Colors.light.purpleDark,
     letterSpacing: 6,
   },
   otpBannerExpiry: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: Colors.light.muted,
     marginTop: 2,
   },
 });

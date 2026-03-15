@@ -26,8 +26,8 @@ export default function SpecialProfilesScreen() {
   const [formName, setFormName] = useState('');
   const [formSlug, setFormSlug] = useState('');
   const [formIcon, setFormIcon] = useState('shield');
-  const [formIconColor, setFormIconColor] = useState('#059669');
-  const [formBgColor, setFormBgColor] = useState('#D1FAE5');
+  const [formIconColor, setFormIconColor] = useState(colors.successDark);
+  const [formBgColor, setFormBgColor] = useState(colors.successLight);
   const [formDescription, setFormDescription] = useState('');
   const [formVerificationRequired, setFormVerificationRequired] = useState('');
   const [formVerificationTime, setFormVerificationTime] = useState('24-48 hours');
@@ -49,8 +49,8 @@ export default function SpecialProfilesScreen() {
   useEffect(() => { fetchProfiles(); }, [fetchProfiles]);
 
   const resetForm = () => {
-    setFormName(''); setFormSlug(''); setFormIcon('shield'); setFormIconColor('#059669');
-    setFormBgColor('#D1FAE5'); setFormDescription(''); setFormVerificationRequired('');
+    setFormName(''); setFormSlug(''); setFormIcon('shield'); setFormIconColor(colors.successDark);
+    setFormBgColor(colors.successLight); setFormDescription(''); setFormVerificationRequired('');
     setFormVerificationTime('24-48 hours'); setFormDiscountRange(''); setFormPriority('0');
     setFormIsActive(true); setEditingProfile(null);
   };
@@ -110,14 +110,14 @@ export default function SpecialProfilesScreen() {
           <Text style={[styles.subtitle, { color: colors.icon }]}>Manage special access profiles</Text>
         </View>
         <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.tint }]} onPress={openCreate}>
-          <Ionicons name="add" size={20} color="#FFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.addBtnText}>Add Profile</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.statsRow}>
-        {[{ label: 'Total', value: stats.total, color: '#3B82F6' }, { label: 'Active', value: stats.active, color: '#10B981' }, { label: 'Inactive', value: stats.inactive, color: '#EF4444' }].map((s) => (
-          <View key={s.label} style={[styles.statCard, { backgroundColor: isDark ? '#1F2937' : '#FFF', borderColor: isDark ? '#374151' : '#E5E7EB' }]}>
+        {[{ label: 'Total', value: stats.total, color: colors.info }, { label: 'Active', value: stats.active, color: colors.success }, { label: 'Inactive', value: stats.inactive, color: colors.error }].map((s) => (
+          <View key={s.label} style={[styles.statCard, { backgroundColor: isDark ? colors.gray800 : colors.card, borderColor: isDark ? colors.gray700 : colors.gray200 }]}>
             <Text style={[styles.statValue, { color: s.color }]}>{s.value}</Text>
             <Text style={[styles.statLabel, { color: colors.icon }]}>{s.label}</Text>
           </View>
@@ -127,18 +127,18 @@ export default function SpecialProfilesScreen() {
       <View style={styles.filtersRow}>
         {(['all', 'active', 'inactive'] as const).map((f) => (
           <TouchableOpacity key={f} style={[styles.filterChip, filter === f && { backgroundColor: colors.tint }]} onPress={() => setFilter(f)}>
-            <Text style={[styles.filterText, filter === f && { color: '#FFF' }]}>{f.charAt(0).toUpperCase() + f.slice(1)}</Text>
+            <Text style={[styles.filterText, filter === f && { color: colors.card }]}>{f.charAt(0).toUpperCase() + f.slice(1)}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <View style={[styles.searchBar, { backgroundColor: isDark ? '#1F2937' : '#F3F4F6', borderColor: isDark ? '#374151' : '#E5E7EB' }]}>
+      <View style={[styles.searchBar, { backgroundColor: isDark ? colors.gray800 : colors.backgroundSecondary, borderColor: isDark ? colors.gray700 : colors.gray200 }]}>
         <Ionicons name="search" size={18} color={colors.icon} />
         <TextInput style={[styles.searchInput, { color: colors.text }]} placeholder="Search profiles..." placeholderTextColor={colors.icon} value={search} onChangeText={setSearch} />
       </View>
 
       {profiles.map((p) => (
-        <View key={p._id} style={[styles.card, { backgroundColor: isDark ? '#1F2937' : '#FFF', borderColor: isDark ? '#374151' : '#E5E7EB' }]}>
+        <View key={p._id} style={[styles.card, { backgroundColor: isDark ? colors.gray800 : colors.card, borderColor: isDark ? colors.gray700 : colors.gray200 }]}>
           <View style={styles.cardHeader}>
             <View style={[styles.iconBadge, { backgroundColor: p.backgroundColor }]}>
               <Ionicons name={(p.icon || 'shield') as any} size={20} color={p.iconColor} />
@@ -152,12 +152,12 @@ export default function SpecialProfilesScreen() {
           {p.description && <Text style={[styles.cardDesc, { color: colors.icon }]} numberOfLines={2}>{p.description}</Text>}
           <View style={styles.tagRow}>
             <Text style={[styles.cardMeta, { color: colors.icon }]}>{p.offersCount} offers</Text>
-            {p.discountRange && <View style={[styles.badge, { backgroundColor: '#10B98120' }]}><Text style={[styles.badgeText, { color: '#10B981' }]}>{p.discountRange}</Text></View>}
-            <View style={[styles.badge, { backgroundColor: '#F59E0B20' }]}><Text style={[styles.badgeText, { color: '#F59E0B' }]}>{p.verificationTime}</Text></View>
+            {p.discountRange && <View style={[styles.badge, { backgroundColor: `${colors.success}20` }]}><Text style={[styles.badgeText, { color: colors.success }]}>{p.discountRange}</Text></View>}
+            <View style={[styles.badge, { backgroundColor: `${colors.warning}20` }]}><Text style={[styles.badgeText, { color: colors.warning }]}>{p.verificationTime}</Text></View>
           </View>
           <View style={styles.cardActions}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => openEdit(p)}><Ionicons name="pencil" size={16} color="#3B82F6" /></TouchableOpacity>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(p)}><Ionicons name="trash" size={16} color="#EF4444" /></TouchableOpacity>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => openEdit(p)}><Ionicons name="pencil" size={16} color={colors.info} /></TouchableOpacity>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(p)}><Ionicons name="trash" size={16} color={colors.error} /></TouchableOpacity>
           </View>
         </View>
       ))}
@@ -166,7 +166,7 @@ export default function SpecialProfilesScreen() {
 
       <Modal visible={showModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: isDark ? '#1F2937' : '#FFF' }]}>
+          <View style={[styles.modalContent, { backgroundColor: isDark ? colors.gray800 : colors.card }]}>
             <ScrollView>
               <Text style={[styles.modalTitle, { color: colors.text }]}>{editingProfile ? 'Edit Profile' : 'Create Profile'}</Text>
               {[
@@ -184,7 +184,7 @@ export default function SpecialProfilesScreen() {
                 <View key={field.label} style={styles.formField}>
                   <Text style={[styles.formLabel, { color: colors.text }]}>{field.label}</Text>
                   <TextInput
-                    style={[styles.formInput, { color: colors.text, backgroundColor: isDark ? '#374151' : '#F3F4F6', borderColor: isDark ? '#4B5563' : '#D1D5DB' }]}
+                    style={[styles.formInput, { color: colors.text, backgroundColor: isDark ? colors.gray700 : colors.backgroundSecondary, borderColor: isDark ? colors.gray600 : colors.gray300 }]}
                     value={field.value} onChangeText={field.setter} placeholderTextColor={colors.icon} keyboardType={field.keyboard}
                   />
                 </View>
@@ -194,9 +194,9 @@ export default function SpecialProfilesScreen() {
                 <Switch value={formIsActive} onValueChange={setFormIsActive} />
               </View>
               <View style={styles.modalActions}>
-                <TouchableOpacity style={[styles.modalBtn, { backgroundColor: '#6B7280' }]} onPress={() => { setShowModal(false); resetForm(); }}><Text style={styles.modalBtnText}>Cancel</Text></TouchableOpacity>
+                <TouchableOpacity style={[styles.modalBtn, { backgroundColor: colors.mutedDark }]} onPress={() => { setShowModal(false); resetForm(); }}><Text style={styles.modalBtnText}>Cancel</Text></TouchableOpacity>
                 <TouchableOpacity style={[styles.modalBtn, { backgroundColor: colors.tint }]} onPress={handleSave} disabled={saving}>
-                  {saving ? <ActivityIndicator color="#FFF" size="small" /> : <Text style={styles.modalBtnText}>{editingProfile ? 'Update' : 'Create'}</Text>}
+                  {saving ? <ActivityIndicator color={colors.card} size="small" /> : <Text style={styles.modalBtnText}>{editingProfile ? 'Update' : 'Create'}</Text>}
                 </TouchableOpacity>
               </View>
             </ScrollView>
@@ -214,14 +214,14 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: '700' },
   subtitle: { fontSize: 14, marginTop: 2 },
   addBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4 },
-  addBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  addBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
   statsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 12 },
   statCard: { flex: 1, padding: 12, borderRadius: 10, borderWidth: 1, alignItems: 'center' },
   statValue: { fontSize: 22, fontWeight: '700' },
   statLabel: { fontSize: 12, marginTop: 2 },
   filtersRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 12 },
-  filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: '#E5E7EB' },
-  filterText: { fontSize: 13, fontWeight: '500', color: '#6B7280' },
+  filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: Colors.light.gray200 },
+  filterText: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark },
   searchBar: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, padding: 10, borderRadius: 10, borderWidth: 1, marginBottom: 12, gap: 8 },
   searchInput: { flex: 1, fontSize: 14 },
   card: { marginHorizontal: 16, marginBottom: 12, borderRadius: 12, borderWidth: 1, padding: 14 },
@@ -245,5 +245,5 @@ const styles = StyleSheet.create({
   formInput: { borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 14 },
   modalActions: { flexDirection: 'row', gap: 10, marginTop: 16 },
   modalBtn: { flex: 1, paddingVertical: 12, borderRadius: 8, alignItems: 'center' },
-  modalBtnText: { color: '#FFF', fontWeight: '600', fontSize: 15 },
+  modalBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 15 },
 });

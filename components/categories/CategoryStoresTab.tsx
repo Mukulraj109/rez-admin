@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { storesService, AdminStore, Pagination } from '../../services/api/stores';
 import { showAlert, showConfirm } from '../../utils/alert';
 import StoreRow from './StoreRow';
+import { Colors } from '../../constants/Colors';
 
 interface CategoryStoresTabProps {
   categories: Array<{ _id: string; name: string; slug: string }>;
@@ -263,7 +264,7 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
             style={[
               styles.chipText,
               { color: colors.icon },
-              selectedCategory === 'all' && { color: '#FFF' },
+              selectedCategory === 'all' && { color: colors.card },
             ]}
           >
             All
@@ -283,7 +284,7 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
               style={[
                 styles.chipText,
                 { color: colors.icon },
-                selectedCategory === cat._id && { color: '#FFF' },
+                selectedCategory === cat._id && { color: colors.card },
               ]}
               numberOfLines={1}
             >
@@ -313,10 +314,10 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
       {/* Stats Bar */}
       <View style={styles.statsRow}>
         {[
-          { label: 'Total', value: stats.total, color: '#3B82F6' },
-          { label: 'Active (page)', value: stats.pageActive, color: '#10B981' },
-          { label: 'Suspended (page)', value: stats.pageSuspended, color: '#EF4444' },
-          { label: 'Featured (page)', value: stats.pageFeatured, color: '#F59E0B' },
+          { label: 'Total', value: stats.total, color: Colors.light.info },
+          { label: 'Active (page)', value: stats.pageActive, color: Colors.light.success },
+          { label: 'Suspended (page)', value: stats.pageSuspended, color: Colors.light.error },
+          { label: 'Featured (page)', value: stats.pageFeatured, color: Colors.light.warning },
         ].map((stat, i) => (
           <View key={i} style={[styles.statCard, { backgroundColor: colors.card }]}>
             <View style={[styles.statDot, { backgroundColor: stat.color }]} />
@@ -374,10 +375,10 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
               disabled={isBulkProcessing || !bulkCategoryId}
             >
               {isBulkProcessing ? (
-                <ActivityIndicator size="small" color="#FFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <>
-                  <Ionicons name="checkmark-circle-outline" size={16} color="#FFF" />
+                  <Ionicons name="checkmark-circle-outline" size={16} color={colors.card} />
                   <Text style={styles.applyBtnText}>Apply</Text>
                 </>
               )}
@@ -439,7 +440,7 @@ const CategoryStoresTab = React.memo(({ categories, colors }: CategoryStoresTabP
                       { borderColor: isActive ? colors.tint : colors.border },
                       isActive && { backgroundColor: colors.tint, borderColor: colors.tint },
                     ]}>
-                      {isActive && <Ionicons name="checkmark" size={12} color="#FFF" />}
+                      {isActive && <Ionicons name="checkmark" size={12} color={colors.card} />}
                     </View>
                     <Text
                       style={[
@@ -672,7 +673,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   applyBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontSize: 13,
     fontWeight: '700',
   },

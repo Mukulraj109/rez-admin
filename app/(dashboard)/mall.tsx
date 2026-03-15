@@ -16,12 +16,11 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
-import { mallService, MallBrand, MallCategory, MallOffer, MallStats, AllianceStore, ManagedMallStore, MallBanner, MallCollection } from '../../services/api/mall';
+import { mallService, MallCategory, MallOffer, MallStats, AllianceStore, ManagedMallStore, MallBanner, MallCollection } from '../../services/api/mall';
 import { showAlert, showConfirm } from '../../utils/alert';
+import { MallDashboard, MallBrandsList } from '../../components/mall';
 
 type TabType = 'dashboard' | 'stores' | 'brands' | 'categories' | 'offers' | 'banners' | 'collections' | 'alliance';
-type BrandFilter = 'all' | 'active' | 'inactive' | 'featured' | 'luxury';
-
 export default function MallScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -31,14 +30,6 @@ export default function MallScreen() {
   // Dashboard state
   const [stats, setStats] = useState<MallStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
-
-  // Brands state
-  const [brands, setBrands] = useState<MallBrand[]>([]);
-  const [brandFilter, setBrandFilter] = useState<BrandFilter>('all');
-  const [brandSearch, setBrandSearch] = useState('');
-  const [brandsLoading, setBrandsLoading] = useState(false);
-  const [brandsRefreshing, setBrandsRefreshing] = useState(false);
-  const [processingBrand, setProcessingBrand] = useState<string | null>(null);
 
   // Categories state
   const [categories, setCategories] = useState<MallCategory[]>([]);
@@ -74,36 +65,14 @@ export default function MallScreen() {
   const [processingCollection, setProcessingCollection] = useState<string | null>(null);
 
   // Modals
-  const [showBrandModal, setShowBrandModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [showBannerModal, setShowBannerModal] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
-  const [editingBrand, setEditingBrand] = useState<MallBrand | null>(null);
   const [editingCategory, setEditingCategory] = useState<MallCategory | null>(null);
   const [editingOffer, setEditingOffer] = useState<MallOffer | null>(null);
   const [editingBanner, setEditingBanner] = useState<MallBanner | null>(null);
   const [editingCollection, setEditingCollection] = useState<MallCollection | null>(null);
-
-  // Brand form
-  const [brandForm, setBrandForm] = useState({
-    name: '',
-    slug: '',
-    description: '',
-    logo: '',
-    externalUrl: '',
-    tier: 'standard' as string,
-    mallCategory: '',
-    cashbackPercentage: '',
-    cashbackMaxAmount: '',
-    cashbackMinPurchase: '',
-    isActive: true,
-    isFeatured: false,
-    isLuxury: false,
-    isNewArrival: false,
-    badges: '',
-    tags: '',
-  });
 
   // Category form
   const [categoryForm, setCategoryForm] = useState({
@@ -112,7 +81,7 @@ export default function MallScreen() {
     description: '',
     icon: '',
     image: '',
-    color: '#1a3a52',
+    color: colors.navy,
     backgroundColor: '',
     maxCashback: '',
     sortOrder: '',
@@ -145,8 +114,8 @@ export default function MallScreen() {
     title: '',
     subtitle: '',
     image: '',
-    backgroundColor: '#00C06A',
-    textColor: '#FFFFFF',
+    backgroundColor: colors.emerald,
+    textColor: colors.card,
     ctaText: 'Shop Now',
     ctaAction: 'navigate' as string,
     ctaUrl: '',
@@ -179,14 +148,13 @@ export default function MallScreen() {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'brands') loadBrands();
-    else if (activeTab === 'categories') loadCategories();
+    if (activeTab === 'categories') loadCategories();
     else if (activeTab === 'offers') loadOffers();
     else if (activeTab === 'alliance') loadAllianceStores();
     else if (activeTab === 'stores') loadManagedStores();
     else if (activeTab === 'banners') loadBanners();
     else if (activeTab === 'collections') loadCollections();
-  }, [activeTab, brandFilter, managedStoresFilter]);
+  }, [activeTab, managedStoresFilter]);
 
   // ==================== LOADERS ====================
 
@@ -199,33 +167,6 @@ export default function MallScreen() {
       console.error('Failed to load mall stats:', error);
     } finally {
       setStatsLoading(false);
-    }
-  };
-
-  const loadBrands = async () => {
-    try {
-      setBrandsLoading(true);
-      const params: any = { limit: 50 };
-      if (brandFilter === 'active') params.isActive = true;
-      if (brandFilter === 'inactive') params.isActive = false;
-      if (brandSearch) params.search = brandSearch;
-      if (brandFilter === 'featured' || brandFilter === 'luxury') {
-        params.tier = brandFilter === 'luxury' ? 'luxury' : undefined;
-      }
-      const result = await mallService.getBrands(params);
-      let filtered = result.brands;
-      if (brandFilter === 'featured') {
-        filtered = filtered.filter(b => b.isFeatured);
-      } else if (brandFilter === 'luxury') {
-        filtered = filtered.filter(b => b.isLuxury || b.tier === 'luxury');
-      }
-      setBrands(filtered);
-    } catch (error: any) {
-      console.error('Failed to load brands:', error);
-      showAlert('Error', 'Failed to load brands');
-    } finally {
-      setBrandsLoading(false);
-      setBrandsRefreshing(false);
     }
   };
 
@@ -303,8 +244,8 @@ export default function MallScreen() {
         title: banner.title,
         subtitle: banner.subtitle || '',
         image: banner.image || '',
-        backgroundColor: banner.backgroundColor || '#00C06A',
-        textColor: banner.textColor || '#FFFFFF',
+        backgroundColor: banner.backgroundColor || colors.emerald,
+        textColor: banner.textColor || colors.card,
         ctaText: banner.ctaText || 'Shop Now',
         ctaAction: banner.ctaAction || 'navigate',
         ctaUrl: banner.ctaUrl || '',
@@ -323,8 +264,8 @@ export default function MallScreen() {
       const today = new Date().toISOString().split('T')[0];
       const sixMonths = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       setBannerForm({
-        title: '', subtitle: '', image: '', backgroundColor: '#00C06A',
-        textColor: '#FFFFFF', ctaText: 'Shop Now', ctaAction: 'navigate',
+        title: '', subtitle: '', image: '', backgroundColor: colors.emerald,
+        textColor: colors.card, ctaText: 'Shop Now', ctaAction: 'navigate',
         ctaUrl: '', ctaBrand: '', ctaCategory: '', ctaCollection: '',
         position: 'hero', priority: '0',
         validFrom: today, validUntil: sixMonths, isActive: true, badge: '',
@@ -589,129 +530,6 @@ export default function MallScreen() {
     }
   };
 
-  // ==================== BRAND CRUD ====================
-
-  const openBrandForm = (brand?: MallBrand) => {
-    if (brand) {
-      setEditingBrand(brand);
-      setBrandForm({
-        name: brand.name,
-        slug: brand.slug,
-        description: brand.description || '',
-        logo: brand.logo || '',
-        externalUrl: brand.externalUrl || '',
-        tier: brand.tier,
-        mallCategory: brand.mallCategory?._id || '',
-        cashbackPercentage: brand.cashback?.percentage?.toString() || '0',
-        cashbackMaxAmount: brand.cashback?.maxAmount?.toString() || '',
-        cashbackMinPurchase: brand.cashback?.minPurchase?.toString() || '',
-        isActive: brand.isActive,
-        isFeatured: brand.isFeatured,
-        isLuxury: brand.isLuxury,
-        isNewArrival: brand.isNewArrival || false,
-        badges: brand.badges?.join(', ') || '',
-        tags: brand.tags?.join(', ') || '',
-      });
-    } else {
-      setEditingBrand(null);
-      setBrandForm({
-        name: '', slug: '', description: '', logo: '', externalUrl: '',
-        tier: 'standard', mallCategory: '', cashbackPercentage: '0',
-        cashbackMaxAmount: '', cashbackMinPurchase: '',
-        isActive: true, isFeatured: false, isLuxury: false,
-        isNewArrival: false, badges: '', tags: '',
-      });
-    }
-    setShowBrandModal(true);
-  };
-
-  const saveBrand = async () => {
-    if (!brandForm.name.trim()) {
-      showAlert('Error', 'Brand name is required');
-      return;
-    }
-    try {
-      const cashback: any = { percentage: parseFloat(brandForm.cashbackPercentage) || 0 };
-      if (brandForm.cashbackMaxAmount) cashback.maxAmount = parseFloat(brandForm.cashbackMaxAmount);
-      if (brandForm.cashbackMinPurchase) cashback.minPurchase = parseFloat(brandForm.cashbackMinPurchase);
-
-      const data: any = {
-        name: brandForm.name.trim(),
-        slug: brandForm.slug.trim() || brandForm.name.toLowerCase().replace(/\s+/g, '-'),
-        description: brandForm.description.trim(),
-        logo: brandForm.logo.trim(),
-        externalUrl: brandForm.externalUrl.trim(),
-        tier: brandForm.tier,
-        mallCategory: brandForm.mallCategory || undefined,
-        cashback,
-        isActive: brandForm.isActive,
-        isFeatured: brandForm.isFeatured,
-        isLuxury: brandForm.isLuxury,
-        isNewArrival: brandForm.isNewArrival,
-        badges: brandForm.badges.split(',').map(b => b.trim()).filter(Boolean),
-        tags: brandForm.tags.split(',').map(t => t.trim()).filter(Boolean),
-      };
-
-      if (editingBrand) {
-        await mallService.updateBrand(editingBrand._id, data);
-        showAlert('Success', 'Brand updated successfully');
-      } else {
-        await mallService.createBrand(data);
-        showAlert('Success', 'Brand created successfully');
-      }
-      setShowBrandModal(false);
-      loadBrands();
-      loadStats();
-    } catch (error: any) {
-      showAlert('Error', error.message || 'Failed to save brand');
-    }
-  };
-
-  const deleteBrand = (brand: MallBrand) => {
-    showConfirm(
-      'Delete Brand',
-      `Are you sure you want to delete "${brand.name}"?`,
-      async () => {
-        try {
-          setProcessingBrand(brand._id);
-          await mallService.deleteBrand(brand._id);
-          showAlert('Success', 'Brand deleted');
-          loadBrands();
-          loadStats();
-        } catch (error: any) {
-          showAlert('Error', error.message || 'Failed to delete brand');
-        } finally {
-          setProcessingBrand(null);
-        }
-      },
-      'Delete'
-    );
-  };
-
-  const toggleBrandActive = async (brand: MallBrand) => {
-    try {
-      setProcessingBrand(brand._id);
-      await mallService.updateBrand(brand._id, { isActive: !brand.isActive } as any);
-      loadBrands();
-    } catch (error: any) {
-      showAlert('Error', 'Failed to update brand');
-    } finally {
-      setProcessingBrand(null);
-    }
-  };
-
-  const toggleBrandFeatured = async (brand: MallBrand) => {
-    try {
-      setProcessingBrand(brand._id);
-      await mallService.updateBrand(brand._id, { isFeatured: !brand.isFeatured } as any);
-      loadBrands();
-    } catch (error: any) {
-      showAlert('Error', 'Failed to update brand');
-    } finally {
-      setProcessingBrand(null);
-    }
-  };
-
   // ==================== CATEGORY CRUD ====================
 
   const openCategoryForm = (category?: MallCategory) => {
@@ -723,7 +541,7 @@ export default function MallScreen() {
         description: (category as any).description || '',
         icon: category.icon || '',
         image: (category as any).image || '',
-        color: category.color || '#1a3a52',
+        color: category.color || colors.navy,
         backgroundColor: (category as any).backgroundColor || '',
         maxCashback: category.maxCashback?.toString() || '0',
         sortOrder: category.sortOrder?.toString() || '0',
@@ -734,7 +552,7 @@ export default function MallScreen() {
       setEditingCategory(null);
       setCategoryForm({
         name: '', slug: '', description: '', icon: '', image: '',
-        color: '#1a3a52', backgroundColor: '',
+        color: colors.navy, backgroundColor: '',
         maxCashback: '0', sortOrder: '0', isActive: true, isFeatured: false,
       });
     }
@@ -939,12 +757,12 @@ export default function MallScreen() {
           <Ionicons
             name={tab.icon}
             size={18}
-            color={activeTab === tab.key ? '#FFF' : colors.icon}
+            color={activeTab === tab.key ? colors.card : colors.icon}
           />
           <Text
             style={[
               styles.tabText,
-              { color: activeTab === tab.key ? '#FFF' : colors.icon },
+              { color: activeTab === tab.key ? colors.card : colors.icon },
             ]}
           >
             {tab.label}
@@ -952,254 +770,6 @@ export default function MallScreen() {
         </TouchableOpacity>
       ))}
     </ScrollView>
-  );
-
-  // Dashboard Tab
-  const renderDashboard = () => {
-    if (statsLoading) {
-      return (
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={colors.tint} />
-          <Text style={[styles.loadingText, { color: colors.icon }]}>Loading stats...</Text>
-        </View>
-      );
-    }
-
-    const statCards = [
-      { label: 'Mall Stores', value: stats?.totalMallStores || 0, icon: 'business' as const, color: '#1a3a52' },
-      { label: 'Total Brands', value: stats?.totalBrands || 0, icon: 'storefront' as const, color: '#3B82F6' },
-      { label: 'Active Brands', value: stats?.activeBrands || 0, icon: 'checkmark-circle' as const, color: '#10B981' },
-      { label: 'Categories', value: stats?.totalCategories || 0, icon: 'apps' as const, color: '#8B5CF6' },
-      { label: 'Active Offers', value: `${stats?.activeOffers || 0}/${stats?.totalOffers || 0}`, icon: 'pricetag' as const, color: '#F59E0B' },
-      { label: 'Banners', value: `${stats?.activeBanners || 0}/${stats?.totalBanners || 0}`, icon: 'image' as const, color: '#EC4899' },
-      { label: 'Collections', value: `${stats?.activeCollections || 0}/${stats?.totalCollections || 0}`, icon: 'albums' as const, color: '#06B6D4' },
-      { label: 'Active Categories', value: stats?.activeCategories || 0, icon: 'checkmark' as const, color: '#14B8A6' },
-    ];
-
-    return (
-      <ScrollView
-        style={styles.dashboardContainer}
-        refreshControl={
-          <RefreshControl refreshing={false} onRefresh={loadStats} tintColor={colors.tint} />
-        }
-      >
-        <Text style={[styles.sectionHeader, { color: colors.text }]}>Mall Overview</Text>
-        <View style={styles.statsGrid}>
-          {statCards.map((card, i) => (
-            <View key={i} style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <View style={[styles.statIconBg, { backgroundColor: `${card.color}15` }]}>
-                <Ionicons name={card.icon} size={22} color={card.color} />
-              </View>
-              <Text style={[styles.statValue, { color: colors.text }]}>{card.value}</Text>
-              <Text style={[styles.statLabel, { color: colors.icon }]}>{card.label}</Text>
-            </View>
-          ))}
-        </View>
-
-        <Text style={[styles.sectionHeader, { color: colors.text, marginTop: 24 }]}>Quick Actions</Text>
-        <View style={styles.quickActions}>
-          <TouchableOpacity
-            style={[styles.quickActionBtn, { backgroundColor: '#3B82F620' }]}
-            onPress={() => { setActiveTab('brands'); setTimeout(() => openBrandForm(), 100); }}
-          >
-            <Ionicons name="add-circle" size={20} color="#3B82F6" />
-            <Text style={[styles.quickActionText, { color: '#3B82F6' }]}>Add Brand</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.quickActionBtn, { backgroundColor: '#8B5CF620' }]}
-            onPress={() => { setActiveTab('categories'); setTimeout(() => openCategoryForm(), 100); }}
-          >
-            <Ionicons name="add-circle" size={20} color="#8B5CF6" />
-            <Text style={[styles.quickActionText, { color: '#8B5CF6' }]}>Add Category</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.quickActionBtn, { backgroundColor: '#F59E0B20' }]}
-            onPress={() => { setActiveTab('offers'); setTimeout(() => openOfferForm(), 100); }}
-          >
-            <Ionicons name="add-circle" size={20} color="#F59E0B" />
-            <Text style={[styles.quickActionText, { color: '#F59E0B' }]}>Add Offer</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.quickActions}>
-          <TouchableOpacity
-            style={[styles.quickActionBtn, { backgroundColor: '#EC489920' }]}
-            onPress={() => { setActiveTab('banners'); setTimeout(() => openBannerForm(), 100); }}
-          >
-            <Ionicons name="add-circle" size={20} color="#EC4899" />
-            <Text style={[styles.quickActionText, { color: '#EC4899' }]}>Add Banner</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.quickActionBtn, { backgroundColor: '#06B6D420' }]}
-            onPress={() => { setActiveTab('collections'); setTimeout(() => openCollectionForm(), 100); }}
-          >
-            <Ionicons name="add-circle" size={20} color="#06B6D4" />
-            <Text style={[styles.quickActionText, { color: '#06B6D4' }]}>Add Collection</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    );
-  };
-
-  // Brands Tab
-  const renderBrandItem = ({ item }: { item: MallBrand }) => {
-    const isProcessing = processingBrand === item._id;
-    return (
-      <View style={[styles.listItem, { backgroundColor: colors.card }]}>
-        <View style={styles.listItemRow}>
-          {item.logo ? (
-            <Image source={{ uri: item.logo }} style={styles.listItemImage} />
-          ) : (
-            <View style={[styles.listItemImageFallback, { backgroundColor: '#1a3a52' }]}>
-              <Text style={styles.listItemInitials}>
-                {item.name.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          )}
-          <View style={styles.listItemInfo}>
-            <View style={styles.listItemNameRow}>
-              <Text style={[styles.listItemName, { color: colors.text }]} numberOfLines={1}>
-                {item.name}
-              </Text>
-              {item.isFeatured && (
-                <View style={[styles.smallBadge, { backgroundColor: '#F59E0B20' }]}>
-                  <Text style={[styles.smallBadgeText, { color: '#F59E0B' }]}>Featured</Text>
-                </View>
-              )}
-            </View>
-            <Text style={[styles.listItemSub, { color: colors.icon }]}>
-              {item.tier} | {item.cashback?.percentage || 0}% cashback | {item.ratings?.average?.toFixed(1) || '0'} rating
-            </Text>
-            <View style={styles.listItemTags}>
-              <View style={[styles.statusDot, { backgroundColor: item.isActive ? '#10B981' : '#EF4444' }]} />
-              <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
-                {item.isActive ? 'Active' : 'Inactive'}
-              </Text>
-              {item.badges?.map((badge, i) => (
-                <View key={i} style={[styles.tagBadge, { backgroundColor: `${colors.tint}15` }]}>
-                  <Text style={[styles.tagText, { color: colors.tint }]}>{badge}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
-        <View style={styles.listItemActions}>
-          {isProcessing ? (
-            <ActivityIndicator size="small" color={colors.tint} />
-          ) : (
-            <>
-              <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => toggleBrandFeatured(item)}
-              >
-                <Ionicons
-                  name={item.isFeatured ? 'star' : 'star-outline'}
-                  size={18}
-                  color="#F59E0B"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => toggleBrandActive(item)}
-              >
-                <Ionicons
-                  name={item.isActive ? 'eye' : 'eye-off'}
-                  size={18}
-                  color={item.isActive ? '#10B981' : '#EF4444'}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => openBrandForm(item)}
-              >
-                <Ionicons name="create-outline" size={18} color={colors.tint} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => deleteBrand(item)}
-              >
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-      </View>
-    );
-  };
-
-  const renderBrands = () => (
-    <View style={{ flex: 1 }}>
-      {/* Search + Filter */}
-      <View style={styles.searchRow}>
-        <View style={[styles.searchInput, { backgroundColor: colors.card }]}>
-          <Ionicons name="search" size={18} color={colors.icon} />
-          <TextInput
-            style={[styles.searchText, { color: colors.text }]}
-            placeholder="Search brands..."
-            placeholderTextColor={colors.icon}
-            value={brandSearch}
-            onChangeText={setBrandSearch}
-            onSubmitEditing={loadBrands}
-          />
-        </View>
-        <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: colors.tint }]}
-          onPress={() => openBrandForm()}
-        >
-          <Ionicons name="add" size={22} color="#FFF" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Filter Chips */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
-        {(['all', 'active', 'inactive', 'featured', 'luxury'] as BrandFilter[]).map((filter) => (
-          <TouchableOpacity
-            key={filter}
-            style={[
-              styles.filterChip,
-              brandFilter === filter
-                ? { backgroundColor: colors.tint }
-                : { backgroundColor: colors.card },
-            ]}
-            onPress={() => setBrandFilter(filter)}
-          >
-            <Text
-              style={[
-                styles.filterChipText,
-                { color: brandFilter === filter ? '#FFF' : colors.icon },
-              ]}
-            >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      <FlatList
-        data={brands}
-        renderItem={renderBrandItem}
-        keyExtractor={(item) => item._id}
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={brandsRefreshing}
-            onRefresh={() => { setBrandsRefreshing(true); loadBrands(); }}
-            tintColor={colors.tint}
-          />
-        }
-        ListEmptyComponent={
-          brandsLoading ? (
-            <View style={styles.centerContainer}>
-              <ActivityIndicator size="large" color={colors.tint} />
-            </View>
-          ) : (
-            <View style={styles.centerContainer}>
-              <Ionicons name="storefront-outline" size={48} color={colors.icon} />
-              <Text style={[styles.emptyText, { color: colors.icon }]}>No brands found</Text>
-            </View>
-          )
-        }
-      />
-    </View>
   );
 
   // Categories Tab
@@ -1217,7 +787,7 @@ export default function MallScreen() {
               {item.slug} | Order: {item.sortOrder} | Max: {item.maxCashback}%
             </Text>
             <View style={styles.listItemTags}>
-              <View style={[styles.statusDot, { backgroundColor: item.isActive ? '#10B981' : '#EF4444' }]} />
+              <View style={[styles.statusDot, { backgroundColor: item.isActive ? colors.success : colors.error }]} />
               <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
                 {item.isActive ? 'Active' : 'Inactive'}
               </Text>
@@ -1244,7 +814,7 @@ export default function MallScreen() {
                 style={styles.actionBtn}
                 onPress={() => deleteCategory(item)}
               >
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                <Ionicons name="trash-outline" size={18} color={colors.error} />
               </TouchableOpacity>
             </>
           )}
@@ -1263,7 +833,7 @@ export default function MallScreen() {
           style={[styles.addButton, { backgroundColor: colors.tint }]}
           onPress={() => openCategoryForm()}
         >
-          <Ionicons name="add" size={22} color="#FFF" />
+          <Ionicons name="add" size={22} color={colors.card} />
         </TouchableOpacity>
       </View>
       <FlatList
@@ -1300,8 +870,8 @@ export default function MallScreen() {
           {item.image ? (
             <Image source={{ uri: item.image }} style={styles.listItemImage} />
           ) : (
-            <View style={[styles.listItemImageFallback, { backgroundColor: '#F59E0B' }]}>
-              <Ionicons name="pricetag" size={20} color="#FFF" />
+            <View style={[styles.listItemImageFallback, { backgroundColor: colors.warning }]}>
+              <Ionicons name="pricetag" size={20} color={colors.card} />
             </View>
           )}
           <View style={styles.listItemInfo}>
@@ -1313,19 +883,19 @@ export default function MallScreen() {
             </Text>
             <View style={styles.listItemTags}>
               <View style={[styles.statusDot, {
-                backgroundColor: isExpired ? '#9CA3AF' : item.isActive ? '#10B981' : '#EF4444'
+                backgroundColor: isExpired ? colors.icon : item.isActive ? colors.success : colors.error
               }]} />
               <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
                 {isExpired ? 'Expired' : item.isActive ? 'Active' : 'Inactive'}
               </Text>
               {item.badge && (
-                <View style={[styles.tagBadge, { backgroundColor: '#F59E0B20' }]}>
-                  <Text style={[styles.tagText, { color: '#F59E0B' }]}>{item.badge}</Text>
+                <View style={[styles.tagBadge, { backgroundColor: `${colors.warning}20` }]}>
+                  <Text style={[styles.tagText, { color: colors.warning }]}>{item.badge}</Text>
                 </View>
               )}
               {item.isMallExclusive && (
-                <View style={[styles.tagBadge, { backgroundColor: '#8B5CF620' }]}>
-                  <Text style={[styles.tagText, { color: '#8B5CF6' }]}>Exclusive</Text>
+                <View style={[styles.tagBadge, { backgroundColor: `${colors.purple}20` }]}>
+                  <Text style={[styles.tagText, { color: colors.purple }]}>Exclusive</Text>
                 </View>
               )}
             </View>
@@ -1343,7 +913,7 @@ export default function MallScreen() {
                 <Ionicons
                   name={item.isActive ? 'eye' : 'eye-off'}
                   size={18}
-                  color={item.isActive ? '#10B981' : '#EF4444'}
+                  color={item.isActive ? colors.success : colors.error}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -1356,7 +926,7 @@ export default function MallScreen() {
                 style={styles.actionBtn}
                 onPress={() => deleteOffer(item)}
               >
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                <Ionicons name="trash-outline" size={18} color={colors.error} />
               </TouchableOpacity>
             </>
           )}
@@ -1375,7 +945,7 @@ export default function MallScreen() {
           style={[styles.addButton, { backgroundColor: colors.tint }]}
           onPress={() => openOfferForm()}
         >
-          <Ionicons name="add" size={22} color="#FFF" />
+          <Ionicons name="add" size={22} color={colors.card} />
         </TouchableOpacity>
       </View>
       <FlatList
@@ -1415,7 +985,7 @@ export default function MallScreen() {
           {item.logo ? (
             <Image source={{ uri: item.logo }} style={styles.listItemImage} />
           ) : (
-            <View style={[styles.listItemImageFallback, { backgroundColor: '#1a3a52' }]}>
+            <View style={[styles.listItemImageFallback, { backgroundColor: colors.navy }]}>
               <Text style={styles.listItemInitials}>
                 {item.name.charAt(0).toUpperCase()}
               </Text>
@@ -1427,8 +997,8 @@ export default function MallScreen() {
                 {item.name}
               </Text>
               {item.isVerified && (
-                <View style={[styles.smallBadge, { backgroundColor: '#10B98120' }]}>
-                  <Text style={[styles.smallBadgeText, { color: '#10B981' }]}>Verified</Text>
+                <View style={[styles.smallBadge, { backgroundColor: `${colors.success}20` }]}>
+                  <Text style={[styles.smallBadgeText, { color: colors.success }]}>Verified</Text>
                 </View>
               )}
             </View>
@@ -1436,18 +1006,18 @@ export default function MallScreen() {
               {item.category?.name || 'Uncategorized'} | {item.ratings?.average?.toFixed(1) || '0'} rating | {cashback}% cashback
             </Text>
             <View style={styles.listItemTags}>
-              <View style={[styles.statusDot, { backgroundColor: isMall ? '#10B981' : '#9CA3AF' }]} />
+              <View style={[styles.statusDot, { backgroundColor: isMall ? colors.success : colors.icon }]} />
               <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
                 {isMall ? 'In Mall' : 'Not in Mall'}
               </Text>
               {item.isFeatured && (
-                <View style={[styles.tagBadge, { backgroundColor: '#F59E0B20' }]}>
-                  <Text style={[styles.tagText, { color: '#F59E0B' }]}>Featured</Text>
+                <View style={[styles.tagBadge, { backgroundColor: `${colors.warning}20` }]}>
+                  <Text style={[styles.tagText, { color: colors.warning }]}>Featured</Text>
                 </View>
               )}
               {isPremium && (
-                <View style={[styles.tagBadge, { backgroundColor: '#8B5CF620' }]}>
-                  <Text style={[styles.tagText, { color: '#8B5CF6' }]}>Premium</Text>
+                <View style={[styles.tagBadge, { backgroundColor: `${colors.purple}20` }]}>
+                  <Text style={[styles.tagText, { color: colors.purple }]}>Premium</Text>
                 </View>
               )}
             </View>
@@ -1465,7 +1035,7 @@ export default function MallScreen() {
                 <Ionicons
                   name={item.isFeatured ? 'star' : 'star-outline'}
                   size={18}
-                  color={item.isFeatured ? '#F59E0B' : '#9CA3AF'}
+                  color={item.isFeatured ? colors.warning : colors.icon}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -1475,14 +1045,14 @@ export default function MallScreen() {
                 <Ionicons
                   name={isPremium ? 'diamond' : 'diamond-outline'}
                   size={18}
-                  color={isPremium ? '#8B5CF6' : '#9CA3AF'}
+                  color={isPremium ? colors.purple : colors.muted}
                 />
               </TouchableOpacity>
               <Switch
                 value={isMall}
                 onValueChange={() => toggleStoreMall(item)}
-                trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-                thumbColor="#FFF"
+                trackColor={{ false: colors.border, true: colors.success }}
+                thumbColor={colors.card}
               />
             </>
           )}
@@ -1509,7 +1079,7 @@ export default function MallScreen() {
           style={[styles.addButton, { backgroundColor: colors.tint }]}
           onPress={() => loadManagedStores(managedStoresSearch)}
         >
-          <Ionicons name="search" size={22} color="#FFF" />
+          <Ionicons name="search" size={22} color={colors.card} />
         </TouchableOpacity>
       </View>
 
@@ -1529,7 +1099,7 @@ export default function MallScreen() {
             <Text
               style={[
                 styles.filterChipText,
-                { color: managedStoresFilter === filter ? '#FFF' : colors.icon },
+                { color: managedStoresFilter === filter ? colors.card : colors.icon },
               ]}
             >
               {filter === 'all' ? 'All Stores' : filter === 'mall' ? 'In Mall' : 'Not in Mall'}
@@ -1581,8 +1151,8 @@ export default function MallScreen() {
           {item.image ? (
             <Image source={{ uri: item.image }} style={[styles.listItemImage, { width: 60, height: 36, borderRadius: 6 }]} />
           ) : (
-            <View style={[styles.listItemImageFallback, { backgroundColor: item.backgroundColor || '#EC4899', width: 60, height: 36, borderRadius: 6 }]}>
-              <Ionicons name="image" size={18} color="#FFF" />
+            <View style={[styles.listItemImageFallback, { backgroundColor: item.backgroundColor || colors.pink, width: 60, height: 36, borderRadius: 6 }]}>
+              <Ionicons name="image" size={18} color={colors.card} />
             </View>
           )}
           <View style={styles.listItemInfo}>
@@ -1594,19 +1164,19 @@ export default function MallScreen() {
             </Text>
             <View style={styles.listItemTags}>
               <View style={[styles.statusDot, {
-                backgroundColor: isExpired ? '#9CA3AF' : item.isActive ? '#10B981' : '#EF4444'
+                backgroundColor: isExpired ? colors.icon : item.isActive ? colors.success : colors.error
               }]} />
               <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
                 {isExpired ? 'Expired' : item.isActive ? 'Active' : 'Inactive'}
               </Text>
               {!isExpired && daysLeft <= 30 && (
-                <View style={[styles.tagBadge, { backgroundColor: '#F59E0B20' }]}>
-                  <Text style={[styles.tagText, { color: '#F59E0B' }]}>{daysLeft}d left</Text>
+                <View style={[styles.tagBadge, { backgroundColor: `${colors.warning}20` }]}>
+                  <Text style={[styles.tagText, { color: colors.warning }]}>{daysLeft}d left</Text>
                 </View>
               )}
               {isExpired && (
-                <View style={[styles.tagBadge, { backgroundColor: '#EF444420' }]}>
-                  <Text style={[styles.tagText, { color: '#EF4444' }]}>Expired</Text>
+                <View style={[styles.tagBadge, { backgroundColor: `${colors.error}20` }]}>
+                  <Text style={[styles.tagText, { color: colors.error }]}>Expired</Text>
                 </View>
               )}
               {item.badge && (
@@ -1629,7 +1199,7 @@ export default function MallScreen() {
                 <Ionicons
                   name={item.isActive ? 'eye' : 'eye-off'}
                   size={18}
-                  color={item.isActive ? '#10B981' : '#EF4444'}
+                  color={item.isActive ? colors.success : colors.error}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -1642,7 +1212,7 @@ export default function MallScreen() {
                 style={styles.actionBtn}
                 onPress={() => deleteBanner(item)}
               >
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                <Ionicons name="trash-outline" size={18} color={colors.error} />
               </TouchableOpacity>
             </>
           )}
@@ -1665,7 +1235,7 @@ export default function MallScreen() {
             style={[styles.addButton, { backgroundColor: colors.tint }]}
             onPress={() => openBannerForm()}
           >
-            <Ionicons name="add" size={22} color="#FFF" />
+            <Ionicons name="add" size={22} color={colors.card} />
           </TouchableOpacity>
         </View>
         <FlatList
@@ -1705,8 +1275,8 @@ export default function MallScreen() {
           {item.image ? (
             <Image source={{ uri: item.image }} style={styles.listItemImage} />
           ) : (
-            <View style={[styles.listItemImageFallback, { backgroundColor: '#06B6D4' }]}>
-              <Ionicons name="albums" size={20} color="#FFF" />
+            <View style={[styles.listItemImageFallback, { backgroundColor: colors.cyan }]}>
+              <Ionicons name="albums" size={20} color={colors.card} />
             </View>
           )}
           <View style={styles.listItemInfo}>
@@ -1717,12 +1287,12 @@ export default function MallScreen() {
               {item.slug} | {item.type} | Order: {item.sortOrder}
             </Text>
             <View style={styles.listItemTags}>
-              <View style={[styles.statusDot, { backgroundColor: item.isActive ? '#10B981' : '#EF4444' }]} />
+              <View style={[styles.statusDot, { backgroundColor: item.isActive ? colors.success : colors.error }]} />
               <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
                 {item.isActive ? 'Active' : 'Inactive'}
               </Text>
-              <View style={[styles.tagBadge, { backgroundColor: '#06B6D420' }]}>
-                <Text style={[styles.tagText, { color: '#06B6D4' }]}>{item.type}</Text>
+              <View style={[styles.tagBadge, { backgroundColor: `${colors.cyan}20` }]}>
+                <Text style={[styles.tagText, { color: colors.cyan }]}>{item.type}</Text>
               </View>
               {item.brandCount > 0 && (
                 <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
@@ -1744,7 +1314,7 @@ export default function MallScreen() {
                 <Ionicons
                   name={item.isActive ? 'eye' : 'eye-off'}
                   size={18}
-                  color={item.isActive ? '#10B981' : '#EF4444'}
+                  color={item.isActive ? colors.success : colors.error}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -1757,7 +1327,7 @@ export default function MallScreen() {
                 style={styles.actionBtn}
                 onPress={() => deleteCollection(item)}
               >
-                <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                <Ionicons name="trash-outline" size={18} color={colors.error} />
               </TouchableOpacity>
             </>
           )}
@@ -1776,7 +1346,7 @@ export default function MallScreen() {
           style={[styles.addButton, { backgroundColor: colors.tint }]}
           onPress={() => openCollectionForm()}
         >
-          <Ionicons name="add" size={22} color="#FFF" />
+          <Ionicons name="add" size={22} color={colors.card} />
         </TouchableOpacity>
       </View>
       <FlatList
@@ -1816,7 +1386,7 @@ export default function MallScreen() {
           {item.logo ? (
             <Image source={{ uri: item.logo }} style={styles.listItemImage} />
           ) : (
-            <View style={[styles.listItemImageFallback, { backgroundColor: '#1a3a52' }]}>
+            <View style={[styles.listItemImageFallback, { backgroundColor: colors.navy }]}>
               <Text style={styles.listItemInitials}>
                 {item.name.charAt(0).toUpperCase()}
               </Text>
@@ -1828,8 +1398,8 @@ export default function MallScreen() {
                 {item.name}
               </Text>
               {item.isVerified && (
-                <View style={[styles.smallBadge, { backgroundColor: '#10B98120' }]}>
-                  <Text style={[styles.smallBadgeText, { color: '#10B981' }]}>Verified</Text>
+                <View style={[styles.smallBadge, { backgroundColor: `${colors.success}20` }]}>
+                  <Text style={[styles.smallBadgeText, { color: colors.success }]}>Verified</Text>
                 </View>
               )}
             </View>
@@ -1837,7 +1407,7 @@ export default function MallScreen() {
               {item.category?.name || 'Uncategorized'} | {item.ratings?.average?.toFixed(1) || '0'} rating
             </Text>
             <View style={styles.listItemTags}>
-              <View style={[styles.statusDot, { backgroundColor: isAlliance ? '#10B981' : '#9CA3AF' }]} />
+              <View style={[styles.statusDot, { backgroundColor: isAlliance ? colors.success : colors.icon }]} />
               <Text style={[styles.listItemSubSmall, { color: colors.icon }]}>
                 {isAlliance ? 'Alliance' : 'Not Alliance'}
               </Text>
@@ -1856,8 +1426,8 @@ export default function MallScreen() {
             <Switch
               value={isAlliance}
               onValueChange={() => toggleAlliance(item)}
-              trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-              thumbColor="#FFF"
+              trackColor={{ false: colors.border, true: colors.success }}
+              thumbColor={colors.card}
             />
           )}
         </View>
@@ -1883,7 +1453,7 @@ export default function MallScreen() {
           style={[styles.addButton, { backgroundColor: colors.tint }]}
           onPress={() => loadAllianceStores(allianceSearch)}
         >
-          <Ionicons name="search" size={22} color="#FFF" />
+          <Ionicons name="search" size={22} color={colors.card} />
         </TouchableOpacity>
       </View>
       <Text style={[styles.sectionCount, { color: colors.icon, paddingHorizontal: 16, paddingBottom: 8 }]}>
@@ -1945,100 +1515,10 @@ export default function MallScreen() {
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: '#E2E8F0', true: colors.tint }}
-        thumbColor="#FFF"
+        trackColor={{ false: colors.border, true: colors.tint }}
+        thumbColor={colors.card}
       />
     </View>
-  );
-
-  const renderBrandModal = () => (
-    <Modal visible={showBrandModal} animationType="slide" presentationStyle="pageSheet">
-      <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
-        <View style={[styles.modalHeader, { backgroundColor: colors.card }]}>
-          <TouchableOpacity onPress={() => setShowBrandModal(false)}>
-            <Text style={[styles.modalCancel, { color: colors.tint }]}>Cancel</Text>
-          </TouchableOpacity>
-          <Text style={[styles.modalTitle, { color: colors.text }]}>
-            {editingBrand ? 'Edit Brand' : 'New Brand'}
-          </Text>
-          <TouchableOpacity onPress={saveBrand}>
-            <Text style={[styles.modalSave, { color: colors.tint }]}>Save</Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView contentContainerStyle={styles.modalContent}>
-          {renderFormField('Name *', brandForm.name, (v) => setBrandForm(p => ({ ...p, name: v })))}
-          {renderFormField('Slug', brandForm.slug, (v) => setBrandForm(p => ({ ...p, slug: v })), { placeholder: 'auto-generated from name' })}
-          {renderFormField('Description', brandForm.description, (v) => setBrandForm(p => ({ ...p, description: v })), { multiline: true })}
-          {renderFormField('Logo URL', brandForm.logo, (v) => setBrandForm(p => ({ ...p, logo: v })))}
-          {renderFormField('External URL', brandForm.externalUrl, (v) => setBrandForm(p => ({ ...p, externalUrl: v })))}
-
-          <View style={styles.formField}>
-            <Text style={[styles.formLabel, { color: colors.text }]}>Tier</Text>
-            <View style={styles.tierRow}>
-              {['standard', 'premium', 'exclusive', 'luxury'].map((t) => (
-                <TouchableOpacity
-                  key={t}
-                  style={[
-                    styles.tierBtn,
-                    brandForm.tier === t
-                      ? { backgroundColor: colors.tint }
-                      : { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border },
-                  ]}
-                  onPress={() => setBrandForm(p => ({ ...p, tier: t }))}
-                >
-                  <Text style={{ color: brandForm.tier === t ? '#FFF' : colors.icon, fontSize: 12, fontWeight: '600' }}>
-                    {t.charAt(0).toUpperCase() + t.slice(1)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          {renderFormField('Category ID', brandForm.mallCategory, (v) => setBrandForm(p => ({ ...p, mallCategory: v })), { placeholder: 'MallCategory ObjectId' })}
-
-          <Text style={[styles.formLabel, { color: colors.text, marginTop: 8, marginBottom: 12, fontSize: 15, fontWeight: '700' }]}>Cashback Settings</Text>
-          {renderFormField('Cashback %', brandForm.cashbackPercentage, (v) => setBrandForm(p => ({ ...p, cashbackPercentage: v })))}
-          {renderFormField('Max Cashback Amount', brandForm.cashbackMaxAmount, (v) => setBrandForm(p => ({ ...p, cashbackMaxAmount: v })), { placeholder: 'e.g. 500' })}
-          {renderFormField('Min Purchase', brandForm.cashbackMinPurchase, (v) => setBrandForm(p => ({ ...p, cashbackMinPurchase: v })), { placeholder: 'e.g. 100' })}
-
-          {renderFormField('Tags (comma separated)', brandForm.tags, (v) => setBrandForm(p => ({ ...p, tags: v })), { placeholder: 'fashion, electronics, food' })}
-
-          <View style={styles.formField}>
-            <Text style={[styles.formLabel, { color: colors.text }]}>Badges</Text>
-            <View style={styles.tierRow}>
-              {['exclusive', 'premium', 'new', 'trending', 'top-rated', 'verified'].map((b) => {
-                const selected = brandForm.badges.split(',').map(s => s.trim()).includes(b);
-                return (
-                  <TouchableOpacity
-                    key={b}
-                    style={[
-                      styles.tierBtn,
-                      selected
-                        ? { backgroundColor: colors.tint }
-                        : { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border },
-                    ]}
-                    onPress={() => {
-                      const current = brandForm.badges.split(',').map(s => s.trim()).filter(Boolean);
-                      const updated = selected ? current.filter(x => x !== b) : [...current, b];
-                      setBrandForm(p => ({ ...p, badges: updated.join(', ') }));
-                    }}
-                  >
-                    <Text style={{ color: selected ? '#FFF' : colors.icon, fontSize: 10, fontWeight: '600' }}>
-                      {b}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-
-          {renderSwitchField('Active', brandForm.isActive, (v) => setBrandForm(p => ({ ...p, isActive: v })))}
-          {renderSwitchField('Featured', brandForm.isFeatured, (v) => setBrandForm(p => ({ ...p, isFeatured: v })))}
-          {renderSwitchField('Luxury', brandForm.isLuxury, (v) => setBrandForm(p => ({ ...p, isLuxury: v })))}
-          {renderSwitchField('New Arrival', brandForm.isNewArrival, (v) => setBrandForm(p => ({ ...p, isNewArrival: v })))}
-        </ScrollView>
-      </View>
-    </Modal>
   );
 
   const renderCategoryModal = () => (
@@ -2061,7 +1541,7 @@ export default function MallScreen() {
           {renderFormField('Description', categoryForm.description, (v) => setCategoryForm(p => ({ ...p, description: v })), { multiline: true })}
           {renderFormField('Icon (emoji)', categoryForm.icon, (v) => setCategoryForm(p => ({ ...p, icon: v })))}
           {renderFormField('Image URL', categoryForm.image, (v) => setCategoryForm(p => ({ ...p, image: v })), { placeholder: 'Category image URL' })}
-          {renderFormField('Color', categoryForm.color, (v) => setCategoryForm(p => ({ ...p, color: v })), { placeholder: '#1a3a52' })}
+          {renderFormField('Color', categoryForm.color, (v) => setCategoryForm(p => ({ ...p, color: v })), { placeholder: colors.navy })}
           {renderFormField('Background Color', categoryForm.backgroundColor, (v) => setCategoryForm(p => ({ ...p, backgroundColor: v })), { placeholder: 'Optional background color' })}
           {renderFormField('Max Cashback %', categoryForm.maxCashback, (v) => setCategoryForm(p => ({ ...p, maxCashback: v })))}
           {renderFormField('Sort Order', categoryForm.sortOrder, (v) => setCategoryForm(p => ({ ...p, sortOrder: v })))}
@@ -2110,7 +1590,7 @@ export default function MallScreen() {
                   ]}
                   onPress={() => setOfferForm(p => ({ ...p, offerType: t }))}
                 >
-                  <Text style={{ color: offerForm.offerType === t ? '#FFF' : colors.icon, fontSize: 12, fontWeight: '600' }}>
+                  <Text style={{ color: offerForm.offerType === t ? colors.card : colors.icon, fontSize: 12, fontWeight: '600' }}>
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </Text>
                 </TouchableOpacity>
@@ -2134,7 +1614,7 @@ export default function MallScreen() {
                   ]}
                   onPress={() => setOfferForm(p => ({ ...p, valueType: t }))}
                 >
-                  <Text style={{ color: offerForm.valueType === t ? '#FFF' : colors.icon, fontSize: 12, fontWeight: '600' }}>
+                  <Text style={{ color: offerForm.valueType === t ? colors.card : colors.icon, fontSize: 12, fontWeight: '600' }}>
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </Text>
                 </TouchableOpacity>
@@ -2162,7 +1642,7 @@ export default function MallScreen() {
                   ]}
                   onPress={() => setOfferForm(p => ({ ...p, badge: t }))}
                 >
-                  <Text style={{ color: offerForm.badge === t ? '#FFF' : colors.icon, fontSize: 10, fontWeight: '600' }}>
+                  <Text style={{ color: offerForm.badge === t ? colors.card : colors.icon, fontSize: 10, fontWeight: '600' }}>
                     {t || 'None'}
                   </Text>
                 </TouchableOpacity>
@@ -2195,8 +1675,8 @@ export default function MallScreen() {
           {renderFormField('Title *', bannerForm.title, (v) => setBannerForm(p => ({ ...p, title: v })))}
           {renderFormField('Subtitle', bannerForm.subtitle, (v) => setBannerForm(p => ({ ...p, subtitle: v })))}
           {renderFormField('Image URL *', bannerForm.image, (v) => setBannerForm(p => ({ ...p, image: v })))}
-          {renderFormField('Background Color', bannerForm.backgroundColor, (v) => setBannerForm(p => ({ ...p, backgroundColor: v })), { placeholder: '#00C06A' })}
-          {renderFormField('Text Color', bannerForm.textColor, (v) => setBannerForm(p => ({ ...p, textColor: v })), { placeholder: '#FFFFFF' })}
+          {renderFormField('Background Color', bannerForm.backgroundColor, (v) => setBannerForm(p => ({ ...p, backgroundColor: v })), { placeholder: colors.emerald })}
+          {renderFormField('Text Color', bannerForm.textColor, (v) => setBannerForm(p => ({ ...p, textColor: v })), { placeholder: colors.card })}
           {renderFormField('CTA Text', bannerForm.ctaText, (v) => setBannerForm(p => ({ ...p, ctaText: v })), { placeholder: 'Shop Now' })}
 
           <View style={styles.formField}>
@@ -2213,7 +1693,7 @@ export default function MallScreen() {
                   ]}
                   onPress={() => setBannerForm(p => ({ ...p, ctaAction: t }))}
                 >
-                  <Text style={{ color: bannerForm.ctaAction === t ? '#FFF' : colors.icon, fontSize: 10, fontWeight: '600' }}>
+                  <Text style={{ color: bannerForm.ctaAction === t ? colors.card : colors.icon, fontSize: 10, fontWeight: '600' }}>
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </Text>
                 </TouchableOpacity>
@@ -2244,7 +1724,7 @@ export default function MallScreen() {
                   ]}
                   onPress={() => setBannerForm(p => ({ ...p, position: t }))}
                 >
-                  <Text style={{ color: bannerForm.position === t ? '#FFF' : colors.icon, fontSize: 12, fontWeight: '600' }}>
+                  <Text style={{ color: bannerForm.position === t ? colors.card : colors.icon, fontSize: 12, fontWeight: '600' }}>
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </Text>
                 </TouchableOpacity>
@@ -2296,7 +1776,7 @@ export default function MallScreen() {
                   ]}
                   onPress={() => setCollectionForm(p => ({ ...p, type: t }))}
                 >
-                  <Text style={{ color: collectionForm.type === t ? '#FFF' : colors.icon, fontSize: 11, fontWeight: '600' }}>
+                  <Text style={{ color: collectionForm.type === t ? colors.card : colors.icon, fontSize: 11, fontWeight: '600' }}>
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </Text>
                 </TouchableOpacity>
@@ -2333,9 +1813,9 @@ export default function MallScreen() {
 
       {/* Content */}
       <View style={{ flex: 1 }}>
-        {activeTab === 'dashboard' && renderDashboard()}
+        {activeTab === 'dashboard' && <MallDashboard colors={colors} onNavigate={(tab) => setActiveTab(tab as TabType)} />}
         {activeTab === 'stores' && renderManagedStores()}
-        {activeTab === 'brands' && renderBrands()}
+        {activeTab === 'brands' && <MallBrandsList colors={colors} />}
         {activeTab === 'categories' && renderCategories()}
         {activeTab === 'offers' && renderOffers()}
         {activeTab === 'banners' && renderBanners()}
@@ -2344,7 +1824,6 @@ export default function MallScreen() {
       </View>
 
       {/* Modals */}
-      {renderBrandModal()}
       {renderCategoryModal()}
       {renderOfferModal()}
       {renderBannerModal()}
@@ -2362,7 +1841,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   headerRow: {
     flexDirection: 'row',
@@ -2536,7 +2015,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 10,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.background,
   },
   listItemImageFallback: {
     width: 44,
@@ -2548,7 +2027,7 @@ const styles = StyleSheet.create({
   listItemInitials: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFF',
+    color: Colors.light.card,
   },
   listItemInfo: {
     flex: 1,
@@ -2636,7 +2115,7 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   modalTitle: {
     fontSize: 17,

@@ -57,9 +57,9 @@ const CHANNEL_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   sms: 'chatbubble-outline',
 };
 const CHANNEL_COLORS: Record<string, string> = {
-  push: '#8B5CF6',
-  email: '#3B82F6',
-  sms: '#10B981',
+  push: Colors.light.purple,
+  email: Colors.light.info,
+  sms: Colors.light.success,
 };
 const TARGET_TYPES: Array<'all' | 'segment' | 'user'> = ['all', 'segment', 'user'];
 const TARGET_LABELS: Record<string, string> = { all: 'All Users', segment: 'Segment', user: 'Single User' };
@@ -283,7 +283,7 @@ export default function NotificationManagementScreen() {
   // ============================================
 
   const renderTemplate = ({ item }: { item: NotificationTemplate }) => {
-    const chColor = CHANNEL_COLORS[item.channel] || '#6B7280';
+    const chColor = CHANNEL_COLORS[item.channel] || colors.mutedDark;
     const chIcon = CHANNEL_ICONS[item.channel] || 'notifications-outline';
     return (
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -300,7 +300,7 @@ export default function NotificationManagementScreen() {
               </Text>
             </View>
           </View>
-          <Text style={[styles.bodyPreview, { color: colors.secondaryText || '#6B7280' }]} numberOfLines={2}>
+          <Text style={[styles.bodyPreview, { color: colors.secondaryText || colors.mutedDark }]} numberOfLines={2}>
             {item.body}
           </Text>
           {item.variables && item.variables.length > 0 && (
@@ -322,25 +322,25 @@ export default function NotificationManagementScreen() {
               </View>
             ) : null}
             <View style={[styles.statusBadge, item.isActive ? styles.activeBg : styles.inactiveBg]}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: item.isActive ? '#059669' : '#6B7280' }}>
+              <Text style={{ fontSize: 11, fontWeight: '600', color: item.isActive ? colors.successDark : colors.mutedDark }}>
                 {item.isActive ? 'Active' : 'Inactive'}
               </Text>
             </View>
           </View>
           <View style={styles.cardActions}>
             <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(item)}>
-              <Ionicons name="create-outline" size={18} color="#3B82F6" />
-              <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+              <Ionicons name="create-outline" size={18} color={colors.info} />
+              <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
             </TouchableOpacity>
             {item.isActive && (
               <TouchableOpacity style={styles.actionBtn} onPress={() => handleOpenSend(item)}>
-                <Ionicons name="send-outline" size={16} color="#8B5CF6" />
-                <Text style={[styles.actionText, { color: '#8B5CF6' }]}>Send</Text>
+                <Ionicons name="send-outline" size={16} color={colors.purple} />
+                <Text style={[styles.actionText, { color: colors.purple }]}>Send</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item)}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
-              <Text style={[styles.actionText, { color: '#EF4444' }]}>Delete</Text>
+              <Ionicons name="trash-outline" size={18} color={colors.error} />
+              <Text style={[styles.actionText, { color: colors.error }]}>Delete</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -354,7 +354,7 @@ export default function NotificationManagementScreen() {
       style={[styles.formInput, opts?.multi && styles.multiline, { color: colors.text, borderColor: colors.border }]}
       value={String(formData[key])}
       onChangeText={(v) => setFormData(p => ({ ...p, [key]: v }))}
-      placeholder={ph} placeholderTextColor="#9CA3AF"
+      placeholder={ph} placeholderTextColor={colors.muted}
       multiline={opts?.multi}
     />
   );
@@ -369,7 +369,7 @@ export default function NotificationManagementScreen() {
     if (statsLoading) {
       return (
         <View style={[styles.statsPanel, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <ActivityIndicator size="small" color="#3B82F6" />
+          <ActivityIndicator size="small" color={colors.info} />
         </View>
       );
     }
@@ -384,11 +384,11 @@ export default function NotificationManagementScreen() {
             <Text style={styles.statLabel}>Total</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: '#10B981' }]}>{stats.byStatus.active}</Text>
+            <Text style={[styles.statValue, { color: colors.success }]}>{stats.byStatus.active}</Text>
             <Text style={styles.statLabel}>Active</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: '#6B7280' }]}>{stats.byStatus.inactive}</Text>
+            <Text style={[styles.statValue, { color: colors.mutedDark }]}>{stats.byStatus.inactive}</Text>
             <Text style={styles.statLabel}>Inactive</Text>
           </View>
         </View>
@@ -422,7 +422,7 @@ export default function NotificationManagementScreen() {
             {editingTemplate ? 'Edit Template' : 'New Template'}
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
-            {isSaving ? <ActivityIndicator size="small" color="#3B82F6" /> : <Text style={styles.saveBtn}>Save</Text>}
+            {isSaving ? <ActivityIndicator size="small" color={colors.info} /> : <Text style={styles.saveBtn}>Save</Text>}
           </TouchableOpacity>
         </View>
         <ScrollView style={styles.formScroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -441,7 +441,7 @@ export default function NotificationManagementScreen() {
                 <Ionicons
                   name={CHANNEL_ICONS[ch]}
                   size={14}
-                  color={formData.channel === ch ? '#FFF' : '#6B7280'}
+                  color={formData.channel === ch ? colors.card : colors.mutedDark}
                   style={{ marginRight: 4 }}
                 />
                 <Text style={[styles.chipText, formData.channel === ch && styles.chipTextActive]}>
@@ -460,7 +460,7 @@ export default function NotificationManagementScreen() {
           <View style={styles.switchRow}>
             <Text style={styles.formLabel}>Active</Text>
             <Switch value={formData.isActive} onValueChange={(v) => setFormData(p => ({ ...p, isActive: v }))}
-              trackColor={{ false: '#E2E8F0', true: '#3B82F6' }} thumbColor="#FFFFFF" />
+              trackColor={{ false: colors.border, true: colors.info }} thumbColor={colors.card} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -481,8 +481,8 @@ export default function NotificationManagementScreen() {
           <Text style={[styles.modalTitle, { color: colors.text }]}>Send Notification</Text>
           <TouchableOpacity onPress={handleSend} disabled={isSending}>
             {isSending
-              ? <ActivityIndicator size="small" color="#8B5CF6" />
-              : <Text style={[styles.saveBtn, { color: '#8B5CF6' }]}>Send</Text>}
+              ? <ActivityIndicator size="small" color={colors.purple} />
+              : <Text style={[styles.saveBtn, { color: colors.purple }]}>Send</Text>}
           </TouchableOpacity>
         </View>
         <ScrollView style={styles.formScroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -494,7 +494,7 @@ export default function NotificationManagementScreen() {
                 {templates.find(t => t._id === sendTemplateId)?.title || 'Selected'}
               </Text>
               <TouchableOpacity onPress={() => setSendTemplateId('')}>
-                <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+                <Ionicons name="close-circle" size={20} color={colors.muted} />
               </TouchableOpacity>
             </View>
           ) : (
@@ -541,7 +541,7 @@ export default function NotificationManagementScreen() {
                 value={sendUserId}
                 onChangeText={setSendUserId}
                 placeholder="MongoDB ObjectId of the user"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </>
           )}
@@ -555,7 +555,7 @@ export default function NotificationManagementScreen() {
                 value={sendSegment}
                 onChangeText={setSendSegment}
                 placeholder="e.g. premium_users, new_users"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.muted}
               />
             </>
           )}
@@ -563,7 +563,7 @@ export default function NotificationManagementScreen() {
           {/* Schedule - now only for this iteration */}
           <Text style={[styles.formLabel, { marginTop: 16 }]}>Schedule</Text>
           <View style={[styles.scheduleBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Ionicons name="time-outline" size={18} color="#3B82F6" />
+            <Ionicons name="time-outline" size={18} color={colors.info} />
             <Text style={[styles.scheduleText, { color: colors.text }]}>Send immediately</Text>
           </View>
         </ScrollView>
@@ -582,14 +582,14 @@ export default function NotificationManagementScreen() {
         <Text style={[styles.headerTitle, { color: colors.text }]}>Notifications</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.statsBtn} onPress={handleToggleStats}>
-            <Ionicons name="stats-chart-outline" size={18} color="#3B82F6" />
+            <Ionicons name="stats-chart-outline" size={18} color={colors.info} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.sendBtnHeader} onPress={() => handleOpenSend()}>
-            <Ionicons name="send-outline" size={16} color="#FFFFFF" />
+            <Ionicons name="send-outline" size={16} color={colors.card} />
             <Text style={styles.sendBtnHeaderText}>Send</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
-            <Ionicons name="add" size={20} color="#FFFFFF" />
+            <Ionicons name="add" size={20} color={colors.card} />
             <Text style={styles.createBtnText}>New Template</Text>
           </TouchableOpacity>
         </View>
@@ -613,7 +613,7 @@ export default function NotificationManagementScreen() {
               <Ionicons
                 name={CHANNEL_ICONS[ch]}
                 size={14}
-                color={channelFilter === ch ? '#FFF' : '#6B7280'}
+                color={channelFilter === ch ? colors.card : colors.mutedDark}
                 style={{ marginRight: 4 }}
               />
               <Text style={[styles.chipText, channelFilter === ch && styles.chipTextActive]}>
@@ -632,9 +632,9 @@ export default function NotificationManagementScreen() {
         contentContainerStyle={{ padding: 16 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={loading
-          ? <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+          ? <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           : <View style={styles.emptyBox}>
-              <Ionicons name="notifications-off-outline" size={48} color="#D1D5DB" />
+              <Ionicons name="notifications-off-outline" size={48} color={colors.gray300} />
               <Text style={styles.emptyText}>No notification templates found</Text>
             </View>}
       />
@@ -659,30 +659,30 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 22, fontWeight: '700' },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   statsBtn: {
-    padding: 8, borderRadius: 8, backgroundColor: '#EFF6FF',
+    padding: 8, borderRadius: 8, backgroundColor: Colors.light.infoLight,
   },
   sendBtnHeader: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#8B5CF6',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.purple,
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 4,
   },
-  sendBtnHeaderText: { color: '#FFF', fontWeight: '600', fontSize: 13 },
+  sendBtnHeaderText: { color: Colors.light.card, fontWeight: '600', fontSize: 13 },
   createBtn: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#3B82F6',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.info,
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4,
   },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
   filtersBar: {
-    paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
+    paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200,
   },
   filterRow: { flexDirection: 'row' },
   filterChip: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16,
-    backgroundColor: '#F3F4F6', marginRight: 8,
+    backgroundColor: Colors.light.backgroundSecondary, marginRight: 8,
   },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  chipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  chipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  chipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  chipTextActive: { color: Colors.light.card, fontWeight: '600' },
 
   // Stats panel
   statsPanel: {
@@ -693,8 +693,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-around', marginBottom: 14,
   },
   statItem: { alignItems: 'center' },
-  statValue: { fontSize: 24, fontWeight: '700', color: '#1E293B' },
-  statLabel: { fontSize: 12, color: '#6B7280', marginTop: 2 },
+  statValue: { fontSize: 24, fontWeight: '700', color: Colors.light.slateDark },
+  statLabel: { fontSize: 12, color: Colors.light.mutedDark, marginTop: 2 },
   channelStatsRow: {
     flexDirection: 'row', justifyContent: 'space-around', gap: 10,
   },
@@ -703,7 +703,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, borderWidth: 1.5,
   },
   channelStatCount: { fontSize: 18, fontWeight: '700', marginTop: 4 },
-  channelStatLabel: { fontSize: 11, color: '#6B7280', marginTop: 2 },
+  channelStatLabel: { fontSize: 11, color: Colors.light.mutedDark, marginTop: 2 },
 
   // Template cards
   card: {
@@ -725,19 +725,19 @@ const styles = StyleSheet.create({
   bodyPreview: { fontSize: 13, lineHeight: 18, marginBottom: 8 },
   varsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 },
   varPill: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
-  varText: { fontSize: 11, fontWeight: '600', color: '#374151' },
-  moreText: { fontSize: 11, color: '#9CA3AF', alignSelf: 'center' },
+  varText: { fontSize: 11, fontWeight: '600', color: Colors.light.gray700 },
+  moreText: { fontSize: 11, color: Colors.light.muted, alignSelf: 'center' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   categoryBadge: {
-    backgroundColor: '#EFF6FF', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8,
+    backgroundColor: Colors.light.infoLight, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8,
   },
-  categoryText: { fontSize: 11, fontWeight: '600', color: '#3B82F6' },
+  categoryText: { fontSize: 11, fontWeight: '600', color: Colors.light.info },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  activeBg: { backgroundColor: '#D1FAE5' },
-  inactiveBg: { backgroundColor: '#F3F4F6' },
+  activeBg: { backgroundColor: Colors.light.successLight },
+  inactiveBg: { backgroundColor: Colors.light.backgroundSecondary },
   cardActions: {
     flexDirection: 'row', gap: 12,
-    borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10,
+    borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10,
   },
   actionBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
@@ -750,12 +750,12 @@ const styles = StyleSheet.create({
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
+    borderBottomWidth: 1, borderBottomColor: Colors.light.gray200,
   },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
   formInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14 },
   multiline: { minHeight: 80, textAlignVertical: 'top' },
   switchRow: {
@@ -778,8 +778,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   templateOptionText: { fontSize: 14, flex: 1 },
-  templateOptionChannel: { fontSize: 11, color: '#9CA3AF', fontWeight: '500' },
-  emptyPickerText: { padding: 16, fontSize: 13, color: '#9CA3AF', textAlign: 'center' },
+  templateOptionChannel: { fontSize: 11, color: Colors.light.muted, fontWeight: '500' },
+  emptyPickerText: { padding: 16, fontSize: 13, color: Colors.light.muted, textAlign: 'center' },
   scheduleBox: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 12,
@@ -788,5 +788,5 @@ const styles = StyleSheet.create({
 
   // Empty state
   emptyBox: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
 });

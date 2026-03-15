@@ -21,26 +21,26 @@ import { format } from 'date-fns';
 import { showAlert, showConfirm } from '../../utils/alert';
 
 const TYPE_COLORS: Record<string, string> = {
-  daily: '#3B82F6',
-  weekly: '#8B5CF6',
-  monthly: '#F59E0B',
-  special: '#EF4444',
+  daily: Colors.light.info,
+  weekly: Colors.light.purple,
+  monthly: Colors.light.warning,
+  special: Colors.light.error,
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  easy: '#10B981',
-  medium: '#F59E0B',
-  hard: '#EF4444',
+  easy: Colors.light.success,
+  medium: Colors.light.warning,
+  hard: Colors.light.error,
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  draft: '#94A3B8',
-  scheduled: '#3B82F6',
-  active: '#10B981',
-  paused: '#F59E0B',
-  completed: '#6366F1',
-  expired: '#EF4444',
-  disabled: '#6B7280',
+  draft: Colors.light.slateMedium,
+  scheduled: Colors.light.info,
+  active: Colors.light.success,
+  paused: Colors.light.warning,
+  completed: Colors.light.indigo,
+  expired: Colors.light.error,
+  disabled: Colors.light.mutedDark,
 };
 
 const STATUS_ICONS: Record<string, string> = {
@@ -60,9 +60,9 @@ const VISIBILITY_LABELS: Record<string, string> = {
 };
 
 const VISIBILITY_COLORS: Record<string, string> = {
-  play_and_earn: '#8B5CF6',
-  missions: '#3B82F6',
-  both: '#10B981',
+  play_and_earn: Colors.light.purple,
+  missions: Colors.light.info,
+  both: Colors.light.success,
 };
 
 const CHALLENGE_STATUSES: ChallengeStatus[] = ['draft', 'scheduled', 'active', 'paused', 'completed', 'expired', 'disabled'];
@@ -578,10 +578,10 @@ export default function ChallengesScreen() {
     <View style={styles.statsRow}>
       {[
         { label: 'Total', value: stats?.total ?? 0, color: colors.text },
-        { label: 'Active', value: stats?.active ?? 0, color: '#10B981' },
-        { label: 'Participants', value: analytics?.totalParticipants ?? 0, color: '#8B5CF6' },
-        { label: 'Completion', value: `${analytics?.avgCompletionRate ?? stats?.avgCompletionRate ?? 0}%`, color: '#3B82F6' },
-        { label: 'Coin Liability', value: analytics?.totalCoinLiability ?? 0, color: '#F59E0B' },
+        { label: 'Active', value: stats?.active ?? 0, color: colors.success },
+        { label: 'Participants', value: analytics?.totalParticipants ?? 0, color: colors.purple },
+        { label: 'Completion', value: `${analytics?.avgCompletionRate ?? stats?.avgCompletionRate ?? 0}%`, color: colors.info },
+        { label: 'Coin Liability', value: analytics?.totalCoinLiability ?? 0, color: colors.warning },
       ].map((item, index) => (
         <View key={index} style={[styles.statItem, { backgroundColor: colors.card }]}>
           <Text style={[styles.statValue, { color: item.color }]}>{item.value}</Text>
@@ -604,11 +604,11 @@ export default function ChallengesScreen() {
       claim: 'Claimed',
     };
     const stepColors: Record<string, string> = {
-      impression: '#94A3B8',
-      join: '#3B82F6',
-      progress_update: '#8B5CF6',
-      completion: '#F59E0B',
-      claim: '#10B981',
+      impression: colors.slateMedium,
+      join: colors.info,
+      progress_update: colors.purple,
+      completion: colors.warning,
+      claim: colors.success,
     };
 
     const maxUsers = Math.max(...steps.map(s => funnel[s]?.uniqueUsers ?? 0), 1);
@@ -638,7 +638,7 @@ export default function ChallengesScreen() {
                 <View
                   style={[
                     styles.funnelBar,
-                    { width: `${barWidth}%`, backgroundColor: stepColors[step] || '#6B7280' },
+                    { width: `${barWidth}%`, backgroundColor: stepColors[step] || colors.mutedDark },
                   ]}
                 />
               </View>
@@ -749,21 +749,21 @@ export default function ChallengesScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={18} color="#FFF" />
+        <Ionicons name="add" size={18} color={colors.card} />
         <Text style={styles.createBtnText}>Create Challenge</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.templateBtn, { backgroundColor: '#8B5CF6' }]}
+        style={[styles.templateBtn, { backgroundColor: colors.purple }]}
         onPress={handleOpenTemplates}
       >
-        <Ionicons name="copy" size={18} color="#FFF" />
+        <Ionicons name="copy" size={18} color={colors.card} />
         <Text style={styles.createBtnText}>From Template</Text>
       </TouchableOpacity>
     </View>
   );
 
   const renderStatusBadge = (status: string) => {
-    const color = STATUS_COLORS[status] || '#6B7280';
+    const color = STATUS_COLORS[status] || colors.mutedDark;
     const icon = STATUS_ICONS[status] || 'help-circle-outline';
     return (
       <View style={[styles.statusChip, { backgroundColor: `${color}15` }]}>
@@ -776,7 +776,7 @@ export default function ChallengesScreen() {
   };
 
   const renderVisibilityBadge = (visibility: string) => {
-    const color = VISIBILITY_COLORS[visibility] || '#6B7280';
+    const color = VISIBILITY_COLORS[visibility] || colors.mutedDark;
     const label = VISIBILITY_LABELS[visibility] || visibility;
     return (
       <View style={[styles.typeBadge, { backgroundColor: `${color}15` }]}>
@@ -788,7 +788,7 @@ export default function ChallengesScreen() {
   };
 
   const renderTypeBadge = (type: string) => {
-    const color = TYPE_COLORS[type] || '#6B7280';
+    const color = TYPE_COLORS[type] || colors.mutedDark;
     return (
       <View style={[styles.typeBadge, { backgroundColor: `${color}15` }]}>
         <Text style={[styles.typeBadgeText, { color }]}>
@@ -799,7 +799,7 @@ export default function ChallengesScreen() {
   };
 
   const renderDifficultyBadge = (difficulty: string) => {
-    const color = DIFFICULTY_COLORS[difficulty] || '#6B7280';
+    const color = DIFFICULTY_COLORS[difficulty] || colors.mutedDark;
     return (
       <View style={[styles.difficultyBadge, { backgroundColor: `${color}15` }]}>
         <Text style={[styles.difficultyBadgeText, { color }]}>
@@ -818,7 +818,7 @@ export default function ChallengesScreen() {
     const completionRate = item.participantCount > 0
       ? ((item.completionCount / item.participantCount) * 100).toFixed(1)
       : '0';
-    const statusColor = STATUS_COLORS[status] || '#6B7280';
+    const statusColor = STATUS_COLORS[status] || colors.mutedDark;
 
     return (
       <View style={[styles.card, { backgroundColor: colors.card, borderLeftWidth: 3, borderLeftColor: statusColor }]}>
@@ -844,15 +844,15 @@ export default function ChallengesScreen() {
           {renderDifficultyBadge(item.difficulty)}
           {renderVisibilityBadge(item.visibility || 'both')}
           {item.featured && (
-            <View style={[styles.featuredBadge, { backgroundColor: '#F59E0B15' }]}>
-              <Ionicons name="star" size={11} color="#F59E0B" />
-              <Text style={[styles.featuredBadgeText, { color: '#F59E0B' }]}>Featured</Text>
+            <View style={[styles.featuredBadge, { backgroundColor: `${colors.warning}15` }]}>
+              <Ionicons name="star" size={11} color={colors.warning} />
+              <Text style={[styles.featuredBadgeText, { color: colors.warning }]}>Featured</Text>
             </View>
           )}
           {(item.priority || 0) > 0 && (
-            <View style={[styles.featuredBadge, { backgroundColor: '#6366F115' }]}>
-              <Ionicons name="arrow-up" size={11} color="#6366F1" />
-              <Text style={[styles.featuredBadgeText, { color: '#6366F1' }]}>P{item.priority}</Text>
+            <View style={[styles.featuredBadge, { backgroundColor: `${colors.indigo}15` }]}>
+              <Ionicons name="arrow-up" size={11} color={colors.indigo} />
+              <Text style={[styles.featuredBadgeText, { color: colors.indigo }]}>P{item.priority}</Text>
             </View>
           )}
         </View>
@@ -866,8 +866,8 @@ export default function ChallengesScreen() {
             </Text>
           </View>
           <View style={styles.metaChip}>
-            <Ionicons name="logo-bitcoin" size={13} color="#F59E0B" />
-            <Text style={[styles.metaText, { color: '#F59E0B', fontWeight: '700' }]}>
+            <Ionicons name="logo-bitcoin" size={13} color={colors.warning} />
+            <Text style={[styles.metaText, { color: colors.warning, fontWeight: '700' }]}>
               {item.rewards.coins} coins
             </Text>
           </View>
@@ -908,47 +908,47 @@ export default function ChallengesScreen() {
         <View style={styles.statusActionsRow}>
           {status === 'draft' && (
             <TouchableOpacity
-              style={[styles.statusActionBtn, { backgroundColor: '#10B98115' }]}
+              style={[styles.statusActionBtn, { backgroundColor: `${colors.success}15` }]}
               onPress={() => handleChangeStatus(item, 'active')}
             >
-              <Ionicons name="play" size={13} color="#10B981" />
-              <Text style={[styles.statusActionText, { color: '#10B981' }]}>Activate</Text>
+              <Ionicons name="play" size={13} color={colors.success} />
+              <Text style={[styles.statusActionText, { color: colors.success }]}>Activate</Text>
             </TouchableOpacity>
           )}
           {status === 'active' && (
             <TouchableOpacity
-              style={[styles.statusActionBtn, { backgroundColor: '#F59E0B15' }]}
+              style={[styles.statusActionBtn, { backgroundColor: `${colors.warning}15` }]}
               onPress={() => handleChangeStatus(item, 'paused')}
             >
-              <Ionicons name="pause" size={13} color="#F59E0B" />
-              <Text style={[styles.statusActionText, { color: '#F59E0B' }]}>Pause</Text>
+              <Ionicons name="pause" size={13} color={colors.warning} />
+              <Text style={[styles.statusActionText, { color: colors.warning }]}>Pause</Text>
             </TouchableOpacity>
           )}
           {status === 'paused' && (
             <TouchableOpacity
-              style={[styles.statusActionBtn, { backgroundColor: '#10B98115' }]}
+              style={[styles.statusActionBtn, { backgroundColor: `${colors.success}15` }]}
               onPress={() => handleChangeStatus(item, 'active')}
             >
-              <Ionicons name="play" size={13} color="#10B981" />
-              <Text style={[styles.statusActionText, { color: '#10B981' }]}>Resume</Text>
+              <Ionicons name="play" size={13} color={colors.success} />
+              <Text style={[styles.statusActionText, { color: colors.success }]}>Resume</Text>
             </TouchableOpacity>
           )}
           {(status === 'active' || status === 'paused') && (
             <TouchableOpacity
-              style={[styles.statusActionBtn, { backgroundColor: '#6B728015' }]}
+              style={[styles.statusActionBtn, { backgroundColor: `${colors.mutedDark}15` }]}
               onPress={() => handleChangeStatus(item, 'disabled')}
             >
-              <Ionicons name="ban-outline" size={13} color="#6B7280" />
-              <Text style={[styles.statusActionText, { color: '#6B7280' }]}>Disable</Text>
+              <Ionicons name="ban-outline" size={13} color={colors.mutedDark} />
+              <Text style={[styles.statusActionText, { color: colors.mutedDark }]}>Disable</Text>
             </TouchableOpacity>
           )}
           {(status === 'disabled' || status === 'expired') && (
             <TouchableOpacity
-              style={[styles.statusActionBtn, { backgroundColor: '#3B82F615' }]}
+              style={[styles.statusActionBtn, { backgroundColor: `${colors.info}15` }]}
               onPress={() => handleClone(item)}
             >
-              <Ionicons name="copy-outline" size={13} color="#3B82F6" />
-              <Text style={[styles.statusActionText, { color: '#3B82F6' }]}>Clone</Text>
+              <Ionicons name="copy-outline" size={13} color={colors.info} />
+              <Text style={[styles.statusActionText, { color: colors.info }]}>Clone</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -956,35 +956,35 @@ export default function ChallengesScreen() {
         {/* Action Row */}
         <View style={styles.actionRow}>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
             onPress={() => handleEdit(item)}
           >
-            <Ionicons name="pencil" size={16} color="#3B82F6" />
+            <Ionicons name="pencil" size={16} color={colors.info} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#8B5CF610' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.purple}10` }]}
             onPress={() => handleClone(item)}
           >
-            <Ionicons name="copy" size={16} color="#8B5CF6" />
+            <Ionicons name="copy" size={16} color={colors.purple} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.actionIconBtn,
-              { backgroundColor: item.featured ? '#F59E0B15' : `${colors.border}50` },
+              { backgroundColor: item.featured ? `${colors.warning}15` : `${colors.border}50` },
             ]}
             onPress={() => handleToggleFeatured(item)}
           >
             <Ionicons
               name={item.featured ? 'star' : 'star-outline'}
               size={16}
-              color={item.featured ? '#F59E0B' : colors.icon}
+              color={item.featured ? colors.warning : colors.icon}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.error}10` }]}
             onPress={() => handleDelete(item)}
           >
-            <Ionicons name="trash" size={16} color="#EF4444" />
+            <Ionicons name="trash" size={16} color={colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -1062,7 +1062,7 @@ export default function ChallengesScreen() {
               style={[styles.modalSaveBtn, { backgroundColor: colors.tint }]}
             >
               {isSaving ? (
-                <ActivityIndicator size="small" color="#FFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <Text style={styles.modalSaveBtnText}>Save</Text>
               )}
@@ -1307,8 +1307,8 @@ export default function ChallengesScreen() {
             keyExtractor={(_, index) => `template-${index}`}
             contentContainerStyle={styles.listContent}
             renderItem={({ item, index }) => {
-              const typeColor = TYPE_COLORS[item.type] || '#6B7280';
-              const diffColor = DIFFICULTY_COLORS[item.difficulty] || '#6B7280';
+              const typeColor = TYPE_COLORS[item.type] || colors.mutedDark;
+              const diffColor = DIFFICULTY_COLORS[item.difficulty] || colors.mutedDark;
               return (
                 <TouchableOpacity
                   style={[styles.templateCard, { backgroundColor: colors.card }]}
@@ -1342,8 +1342,8 @@ export default function ChallengesScreen() {
                       </Text>
                     </View>
                     <View style={styles.metaChip}>
-                      <Ionicons name="logo-bitcoin" size={12} color="#F59E0B" />
-                      <Text style={[styles.metaText, { color: '#F59E0B', fontWeight: '700' }]}>
+                      <Ionicons name="logo-bitcoin" size={12} color={colors.warning} />
+                      <Text style={[styles.metaText, { color: colors.warning, fontWeight: '700' }]}>
                         {item.rewards.coins}
                       </Text>
                     </View>
@@ -1548,7 +1548,7 @@ const styles = StyleSheet.create({
   filterDivider: {
     width: 1,
     height: 20,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.light.gray200,
     marginHorizontal: 4,
   },
 
@@ -1578,7 +1578,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   createBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1805,7 +1805,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },

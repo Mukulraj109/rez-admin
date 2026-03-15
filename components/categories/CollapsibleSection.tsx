@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, LayoutAnimation, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../../constants/Colors';
 
 interface CollapsibleSectionProps {
   title: string;
@@ -22,7 +23,7 @@ const CollapsibleSection = React.memo(({
       <TouchableOpacity
         style={[
           styles.header,
-          { backgroundColor: colors.card },
+          { backgroundColor: Colors.light.card },
           isExpanded && styles.headerExpanded,
         ]}
         onPress={() => {
@@ -34,12 +35,12 @@ const CollapsibleSection = React.memo(({
           <View style={[styles.iconBg, { backgroundColor: `${iconColor}15` }]}>
             <Ionicons name={iconName} size={18} color={iconColor} />
           </View>
-          <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+          <Text style={[styles.title, { color: Colors.light.text }]}>{title}</Text>
         </View>
-        <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={20} color={colors.icon} />
+        <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={20} color={Colors.light.icon} />
       </TouchableOpacity>
       {isExpanded && (
-        <View style={[styles.body, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
+        <View style={[styles.body, { backgroundColor: Colors.light.card, borderTopColor: Colors.light.border }]}>
           {children}
         </View>
       )}

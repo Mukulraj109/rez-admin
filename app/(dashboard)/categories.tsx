@@ -36,7 +36,7 @@ type TabType = 'list' | 'builder' | 'stores';
 
 const DEFAULT_PAGE_CONFIG: PageConfig = {
   isMainCategory: true,
-  theme: { primaryColor: '#1a3a52', gradientColors: ['#1a3a52', '#2d5a7b', '#3d7aab'], icon: 'grid' },
+  theme: { primaryColor: Colors.light.navy, gradientColors: [Colors.light.navy, '#2d5a7b', '#3d7aab'], icon: 'grid' },
   banner: { title: '', subtitle: '', discount: '', tag: '', image: '', ctaText: '', ctaRoute: '' },
   tabs: [],
   quickActions: [],
@@ -378,8 +378,8 @@ export default function CategoriesScreen() {
             style={[styles.tab, activeTab === tab.key && { backgroundColor: colors.tint }]}
             onPress={() => switchTab(tab.key)}
           >
-            <Ionicons name={tab.icon} size={18} color={activeTab === tab.key ? '#FFF' : colors.icon} />
-            <Text style={[styles.tabText, { color: activeTab === tab.key ? '#FFF' : colors.icon }]}>
+            <Ionicons name={tab.icon} size={18} color={activeTab === tab.key ? colors.card : colors.icon} />
+            <Text style={[styles.tabText, { color: activeTab === tab.key ? colors.card : colors.icon }]}>
               {tab.label}
             </Text>
             {tab.key === 'builder' && isDirty && (
@@ -453,7 +453,7 @@ export default function CategoriesScreen() {
                           style={[styles.typeChip, createForm.type === t && { backgroundColor: colors.tint }]}
                           onPress={() => setCreateForm(prev => ({ ...prev, type: t }))}
                         >
-                          <Text style={[styles.typeChipText, { color: createForm.type === t ? '#FFF' : colors.icon }]}>
+                          <Text style={[styles.typeChipText, { color: createForm.type === t ? colors.card : colors.icon }]}>
                             {t.replace('_', ' ')}
                           </Text>
                         </TouchableOpacity>
@@ -475,13 +475,13 @@ export default function CategoriesScreen() {
                     disabled={creating}
                   >
                     {creating ? (
-                      <ActivityIndicator size="small" color="#FFF" />
+                      <ActivityIndicator size="small" color={colors.card} />
                     ) : (
                       <Text style={styles.reorderBtnText}>Create</Text>
                     )}
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.reorderBtn, { backgroundColor: '#6B7280', flex: 1, alignItems: 'center' }]}
+                    style={[styles.reorderBtn, { backgroundColor: colors.mutedDark, flex: 1, alignItems: 'center' }]}
                     onPress={() => { setShowCreateModal(false); setCreateForm({ name: '', type: 'going_out', icon: '', description: '' }); }}
                   >
                     <Text style={styles.reorderBtnText}>Cancel</Text>
@@ -518,12 +518,12 @@ export default function CategoriesScreen() {
                     disabled={processingId === 'reorder'}
                   >
                     {processingId === 'reorder' ? (
-                      <ActivityIndicator size="small" color="#FFF" />
+                      <ActivityIndicator size="small" color={colors.card} />
                     ) : (
                       <Text style={styles.reorderBtnText}>Save Order</Text>
                     )}
                   </TouchableOpacity>
-                  <TouchableOpacity style={[styles.reorderBtn, { backgroundColor: '#6B7280' }]} onPress={cancelReorder}>
+                  <TouchableOpacity style={[styles.reorderBtn, { backgroundColor: colors.mutedDark }]} onPress={cancelReorder}>
                     <Text style={styles.reorderBtnText}>Cancel</Text>
                   </TouchableOpacity>
                 </View>
@@ -606,7 +606,7 @@ export default function CategoriesScreen() {
             <>
               <BuilderCategoryInfo category={selectedCategory} colors={colors} />
 
-              <CollapsibleSection title="Theme" sectionKey="theme" iconName="color-palette" iconColor="#8B5CF6" expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
+              <CollapsibleSection title="Theme" sectionKey="theme" iconName="color-palette" iconColor={colors.purple} expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
                 <ThemeEditor pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
@@ -614,15 +614,15 @@ export default function CategoriesScreen() {
                 <BannerEditor pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
-              <CollapsibleSection title={`Tabs (${pageConfig.tabs.length})`} sectionKey="tabs" iconName="tab-portrait" iconColor="#3B82F6" expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
+              <CollapsibleSection title={`Tabs (${pageConfig.tabs.length})`} sectionKey="tabs" iconName="tab-portrait" iconColor={colors.info} expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
                 <TabsManager pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
-              <CollapsibleSection title={`Quick Actions (${pageConfig.quickActions.length})`} sectionKey="quickActions" iconName="flash" iconColor="#F59E0B" expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
+              <CollapsibleSection title={`Quick Actions (${pageConfig.quickActions.length})`} sectionKey="quickActions" iconName="flash" iconColor={colors.warning} expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
                 <QuickActionsManager pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
-              <CollapsibleSection title={`Sections (${pageConfig.sections.length})`} sectionKey="sections" iconName="layers" iconColor="#10B981" expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
+              <CollapsibleSection title={`Sections (${pageConfig.sections.length})`} sectionKey="sections" iconName="layers" iconColor={colors.success} expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
                 <SectionsManager pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
@@ -634,11 +634,11 @@ export default function CategoriesScreen() {
                 <DietaryOptionsManager pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
-              <CollapsibleSection title={`Curated Collections (${pageConfig.curatedCollections?.length || 0})`} sectionKey="curatedCollections" iconName="sparkles" iconColor="#8B5CF6" expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
+              <CollapsibleSection title={`Curated Collections (${pageConfig.curatedCollections?.length || 0})`} sectionKey="curatedCollections" iconName="sparkles" iconColor={colors.purple} expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
                 <CuratedCollectionsManager pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
-              <CollapsibleSection title="Search Placeholders" sectionKey="searchPlaceholders" iconName="search" iconColor="#F59E0B" expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
+              <CollapsibleSection title="Search Placeholders" sectionKey="searchPlaceholders" iconName="search" iconColor={colors.warning} expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
                 <SearchPlaceholdersEditor pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
@@ -646,7 +646,7 @@ export default function CategoriesScreen() {
                 <ValuePropManager pageConfig={pageConfig} setPageConfig={setPageConfig} colors={colors} />
               </CollapsibleSection>
 
-              <CollapsibleSection title="Subcategories" sectionKey="subcategories" iconName="git-branch" iconColor="#6366F1" expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
+              <CollapsibleSection title="Subcategories" sectionKey="subcategories" iconName="git-branch" iconColor={colors.indigo} expandedSection={expandedSection} setExpandedSection={setExpandedSection} colors={colors}>
                 <SubcategoryManager categoryId={selectedCategoryId!} colors={colors} />
               </CollapsibleSection>
 
@@ -692,5 +692,5 @@ const styles = StyleSheet.create({
   createInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14 },
   typeChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, marginRight: 4 },
   typeChipText: { fontSize: 12, fontWeight: '600' },
-  reorderBtnText: { color: '#FFF', fontSize: 13, fontWeight: '600' },
+  reorderBtnText: { color: Colors.light.card, fontSize: 13, fontWeight: '600' },
 });

@@ -4,12 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { PageConfig } from '../../services/api/categories';
 import FormField from './FormField';
 import ColorInput from './ColorInput';
+import { Colors } from '../../constants/Colors';
 import { showConfirm } from '../../utils/alert';
 
 interface DietaryOptionsManagerProps {
   pageConfig: PageConfig;
   setPageConfig: React.Dispatch<React.SetStateAction<PageConfig>>;
-  colors: { text: string; icon: string; border: string; tint: string; card: string; success: string };
+  colors: typeof Colors.light;
 }
 
 const DietaryOptionsManager = React.memo(({ pageConfig, setPageConfig, colors }: DietaryOptionsManagerProps) => {
@@ -19,7 +20,7 @@ const DietaryOptionsManager = React.memo(({ pageConfig, setPageConfig, colors }:
     setPageConfig((prev) => ({
       ...prev,
       dietaryOptions: [...(prev.dietaryOptions || []), {
-        id: `diet-${Date.now()}`, label: '', icon: '', color: '#22C55E', tags: [],
+        id: `diet-${Date.now()}`, label: '', icon: '', color: Colors.light.green, tags: [],
       }],
     }));
   };
@@ -55,7 +56,7 @@ const DietaryOptionsManager = React.memo(({ pageConfig, setPageConfig, colors }:
           <View style={styles.cardHeader}>
             <Text style={[styles.cardIndex, { color: colors.icon }]}>#{index + 1}</Text>
             <TouchableOpacity onPress={() => removeOption(index)}>
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
+              <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
             </TouchableOpacity>
           </View>
 

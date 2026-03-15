@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants/Colors';
 
 interface ChipSelectorProps {
   options: string[];
@@ -24,7 +25,7 @@ const ChipSelector = React.memo(({ options, selected, onSelect, colors }: ChipSe
         <Text
           style={[
             styles.chipText,
-            { color: selected === option ? '#FFF' : colors.text },
+            { color: selected === option ? colors.card : colors.text },
           ]}
         >
           {option}

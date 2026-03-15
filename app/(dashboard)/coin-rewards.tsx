@@ -203,7 +203,7 @@ export default function CoinRewardsScreen() {
           <Text
             style={[
               styles.tabText,
-              { color: activeTab === tab ? '#FFFFFF' : colors.icon },
+              { color: activeTab === tab ? colors.card : colors.icon },
             ]}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -251,7 +251,7 @@ export default function CoinRewardsScreen() {
             </Text>
           </View>
           <View style={styles.coinBadge}>
-            <Ionicons name="sparkles" size={14} color="#F59E0B" />
+            <Ionicons name="sparkles" size={14} color={colors.warning} />
             <Text style={styles.coinAmount}>{item.amount}</Text>
           </View>
         </View>
@@ -263,10 +263,10 @@ export default function CoinRewardsScreen() {
               if (typeof window !== 'undefined') window.open(item.postUrl, '_blank');
             }}
           >
-            <Text style={[styles.detailText, { color: '#3B82F6' }]} numberOfLines={1}>
+            <Text style={[styles.detailText, { color: colors.info }]} numberOfLines={1}>
               {item.postUrl}
             </Text>
-            <Ionicons name="open-outline" size={14} color="#3B82F6" />
+            <Ionicons name="open-outline" size={14} color={colors.info} />
           </TouchableOpacity>
         ) : (
           <View style={styles.rewardDetails}>
@@ -287,10 +287,10 @@ export default function CoinRewardsScreen() {
               disabled={processingReward === item._id}
             >
               {processingReward === item._id ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <>
-                  <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+                  <Ionicons name="checkmark" size={18} color={colors.card} />
                   <Text style={styles.actionButtonText}>Approve</Text>
                 </>
               )}
@@ -303,15 +303,15 @@ export default function CoinRewardsScreen() {
               }}
               disabled={processingReward === item._id}
             >
-              <Ionicons name="close" size={18} color="#FFFFFF" />
+              <Ionicons name="close" size={18} color={colors.card} />
               <Text style={styles.actionButtonText}>Reject</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {item.status === 'rejected' && item.rejectionReason && (
-          <View style={[styles.rejectionReason, { backgroundColor: '#FEE2E2' }]}>
-            <Text style={{ color: '#DC2626', fontSize: 12 }}>
+          <View style={[styles.rejectionReason, { backgroundColor: colors.errorLight }]}>
+            <Text style={{ color: colors.errorDark, fontSize: 12 }}>
               Reason: {item.rejectionReason}
             </Text>
           </View>
@@ -408,7 +408,7 @@ export default function CoinRewardsScreen() {
                 style={[styles.modalButton, { backgroundColor: colors.error }]}
                 onPress={() => processingReward && handleReject(processingReward)}
               >
-                <Text style={[styles.modalButtonText, { color: '#FFFFFF' }]}>Reject</Text>
+                <Text style={[styles.modalButtonText, { color: colors.card }]}>Reject</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
-    backgroundColor: '#E2E8F0',
+    backgroundColor: Colors.light.border,
   },
   tabText: {
     fontSize: 14,
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   bulkButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 13,
   },
@@ -523,7 +523,7 @@ const styles = StyleSheet.create({
   coinBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: Colors.light.warningLight,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 16,
@@ -532,13 +532,13 @@ const styles = StyleSheet.create({
   coinAmount: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#D97706',
+    color: Colors.light.warningDark,
   },
   rewardDetails: {
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
+    borderTopColor: Colors.light.border,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -563,13 +563,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   approveButton: {
-    backgroundColor: '#10B981',
+    backgroundColor: Colors.light.success,
   },
   rejectButton: {
-    backgroundColor: '#EF4444',
+    backgroundColor: Colors.light.error,
   },
   actionButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },

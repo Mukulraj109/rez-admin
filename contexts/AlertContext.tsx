@@ -75,7 +75,7 @@ const ICON_CONFIG: Record<AlertType, { name: keyof typeof Ionicons.glyphMap; col
   success: { name: 'checkmark-circle', color: '#10B981', bgColor: '#D1FAE5' },
   error: { name: 'close-circle', color: '#EF4444', bgColor: '#FEE2E2' },
   warning: { name: 'warning', color: '#F59E0B', bgColor: '#FEF3C7' },
-  info: { name: 'information-circle', color: '#3B82F6', bgColor: '#DBEAFE' },
+  info: { name: 'information-circle', color: Colors.light.info, bgColor: Colors.light.infoLighter },
   confirm: { name: 'help-circle', color: '#8B5CF6', bgColor: '#EDE9FE' },
 };
 

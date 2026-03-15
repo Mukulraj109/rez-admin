@@ -71,9 +71,9 @@ const DEFAULT_FORM_DATA: Partial<ExperienceRequest> = {
   iconType: 'emoji',
   type: 'custom',
   badge: '',
-  badgeBg: '#22C55E',
-  badgeColor: '#FFFFFF',
-  backgroundColor: '#FEF3C7',
+  badgeBg: Colors.light.green,
+  badgeColor: Colors.light.card,
+  backgroundColor: Colors.light.warningLight,
   benefits: [],
   filterCriteria: DEFAULT_FILTER_CRITERIA,
   regions: [], // Empty = available in all regions
@@ -84,13 +84,13 @@ const DEFAULT_FORM_DATA: Partial<ExperienceRequest> = {
 
 // Store filter toggle options
 const FILTER_TOGGLES = [
-  { key: 'isFastDelivery', label: 'Fast Delivery', icon: 'flash', color: '#F59E0B' },
-  { key: 'isPremium', label: 'Premium', icon: 'diamond', color: '#8B5CF6' },
-  { key: 'isOrganic', label: 'Organic', icon: 'leaf', color: '#22C55E' },
-  { key: 'isPartner', label: 'Partner', icon: 'handshake', color: '#3B82F6' },
-  { key: 'isMall', label: 'Mall', icon: 'business', color: '#EC4899' },
-  { key: 'isBudgetFriendly', label: 'Budget', icon: 'pricetag', color: '#10B981' },
-  { key: 'isVerified', label: 'Verified', icon: 'checkmark-circle', color: '#6366F1' },
+  { key: 'isFastDelivery', label: 'Fast Delivery', icon: 'flash', color: Colors.light.warning },
+  { key: 'isPremium', label: 'Premium', icon: 'diamond', color: Colors.light.purple },
+  { key: 'isOrganic', label: 'Organic', icon: 'leaf', color: Colors.light.green },
+  { key: 'isPartner', label: 'Partner', icon: 'handshake', color: Colors.light.info },
+  { key: 'isMall', label: 'Mall', icon: 'business', color: Colors.light.pink },
+  { key: 'isBudgetFriendly', label: 'Budget', icon: 'pricetag', color: Colors.light.success },
+  { key: 'isVerified', label: 'Verified', icon: 'checkmark-circle', color: Colors.light.indigo },
 ];
 
 export default function ExperiencesScreen() {
@@ -247,9 +247,9 @@ export default function ExperiencesScreen() {
       iconType: exp.iconType,
       type: exp.type,
       badge: exp.badge || '',
-      badgeBg: exp.badgeBg || '#22C55E',
-      badgeColor: exp.badgeColor || '#FFFFFF',
-      backgroundColor: exp.backgroundColor || '#FEF3C7',
+      badgeBg: exp.badgeBg || Colors.light.green,
+      badgeColor: exp.badgeColor || colors.card,
+      backgroundColor: exp.backgroundColor || colors.warningLight,
       benefits: exp.benefits || [],
       filterCriteria: {
         tags: filterCriteria.tags || [],
@@ -555,7 +555,7 @@ export default function ExperiencesScreen() {
   const renderExperienceCard = ({ item }: { item: StoreExperience }) => (
     <View style={[styles.expCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={styles.expCardHeader}>
-        <View style={[styles.expIconBox, { backgroundColor: item.backgroundColor || '#FEF3C7' }]}>
+        <View style={[styles.expIconBox, { backgroundColor: item.backgroundColor || colors.warningLight }]}>
           <Text style={styles.expIcon}>{item.icon}</Text>
         </View>
         <View style={styles.expInfo}>
@@ -570,9 +570,9 @@ export default function ExperiencesScreen() {
               <Text style={[styles.typeBadgeText, { color: colors.tint }]}>{item.type}</Text>
             </View>
             {item.isFeatured && (
-              <View style={[styles.featuredBadge, { backgroundColor: '#F59E0B20' }]}>
-                <Ionicons name="star" size={10} color="#F59E0B" />
-                <Text style={[styles.featuredBadgeText, { color: '#F59E0B' }]}>Featured</Text>
+              <View style={[styles.featuredBadge, { backgroundColor: `${colors.warning}20` }]}>
+                <Ionicons name="star" size={10} color={colors.warning} />
+                <Text style={[styles.featuredBadgeText, { color: colors.warning }]}>Featured</Text>
               </View>
             )}
           </View>
@@ -594,20 +594,20 @@ export default function ExperiencesScreen() {
           <Text style={[styles.actionBtnText, { color: colors.tint }]}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: '#F59E0B10' }]}
+          style={[styles.actionBtn, { backgroundColor: `${colors.warning}10` }]}
           onPress={() => handleToggleFeatured(item)}
         >
-          <Ionicons name={item.isFeatured ? 'star' : 'star-outline'} size={16} color="#F59E0B" />
-          <Text style={[styles.actionBtnText, { color: '#F59E0B' }]}>
+          <Ionicons name={item.isFeatured ? 'star' : 'star-outline'} size={16} color={colors.warning} />
+          <Text style={[styles.actionBtnText, { color: colors.warning }]}>
             {item.isFeatured ? 'Unfeature' : 'Feature'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: '#EF444410' }]}
+          style={[styles.actionBtn, { backgroundColor: `${colors.error}10` }]}
           onPress={() => handleDelete(item)}
         >
-          <Ionicons name="trash" size={16} color="#EF4444" />
-          <Text style={[styles.actionBtnText, { color: '#EF4444' }]}>Delete</Text>
+          <Ionicons name="trash" size={16} color={colors.error} />
+          <Text style={[styles.actionBtnText, { color: colors.error }]}>Delete</Text>
         </TouchableOpacity>
       </View>
 
@@ -647,7 +647,7 @@ export default function ExperiencesScreen() {
             style={[styles.addBtn, { backgroundColor: colors.tint }]}
             onPress={openCreateModal}
           >
-            <Ionicons name="add" size={20} color="#FFF" />
+            <Ionicons name="add" size={20} color={colors.card} />
             <Text style={styles.addBtnText}>Add New</Text>
           </TouchableOpacity>
         </View>
@@ -656,10 +656,10 @@ export default function ExperiencesScreen() {
       {/* Stats */}
       {stats && (
         <View style={styles.statsContainer}>
-          {renderStatCard('Total', stats.total, 'albums', '#6366F1')}
-          {renderStatCard('Active', stats.active, 'checkmark-circle', '#22C55E')}
-          {renderStatCard('Featured', stats.featured, 'star', '#F59E0B')}
-          {renderStatCard('Inactive', stats.inactive, 'pause-circle', '#EF4444')}
+          {renderStatCard('Total', stats.total, 'albums', colors.indigo)}
+          {renderStatCard('Active', stats.active, 'checkmark-circle', colors.green)}
+          {renderStatCard('Featured', stats.featured, 'star', colors.warning)}
+          {renderStatCard('Inactive', stats.inactive, 'pause-circle', colors.error)}
         </View>
       )}
 
@@ -696,12 +696,12 @@ export default function ExperiencesScreen() {
               <Ionicons
                 name={tab.icon as any}
                 size={16}
-                color={activeTab === tab.key ? '#FFF' : colors.icon}
+                color={activeTab === tab.key ? colors.card : colors.icon}
               />
               <Text
                 style={[
                   styles.tabText,
-                  { color: activeTab === tab.key ? '#FFF' : colors.text },
+                  { color: activeTab === tab.key ? colors.card : colors.text },
                 ]}
               >
                 {tab.label}
@@ -764,7 +764,7 @@ export default function ExperiencesScreen() {
               <Text style={[styles.formLabel, { color: colors.text }]}>Icon</Text>
               <View style={styles.iconSelector}>
                 <TouchableOpacity
-                  style={[styles.iconPreview, { backgroundColor: formData.backgroundColor || '#FEF3C7' }]}
+                  style={[styles.iconPreview, { backgroundColor: formData.backgroundColor || colors.warningLight }]}
                   onPress={() => setShowEmojiPicker(!showEmojiPicker)}
                 >
                   <Text style={styles.iconPreviewText}>{formData.icon || '🛍️'}</Text>
@@ -865,7 +865,7 @@ export default function ExperiencesScreen() {
                     <Text
                       style={[
                         styles.typeBtnText,
-                        { color: formData.type === type.value ? '#FFF' : colors.text },
+                        { color: formData.type === type.value ? colors.card : colors.text },
                       ]}
                     >
                       {type.label}
@@ -972,7 +972,7 @@ export default function ExperiencesScreen() {
                   onSubmitEditing={addBenefit}
                 />
                 <TouchableOpacity style={[styles.addBenefitBtn, { backgroundColor: colors.tint }]} onPress={addBenefit}>
-                  <Ionicons name="add" size={20} color="#FFF" />
+                  <Ionicons name="add" size={20} color={colors.card} />
                 </TouchableOpacity>
               </View>
               {formData.benefits && formData.benefits.length > 0 && (
@@ -1077,7 +1077,7 @@ export default function ExperiencesScreen() {
                           <Text
                             style={[
                               styles.ratingBtnText,
-                              { color: formData.filterCriteria?.minRating === rating ? '#FFF' : colors.text },
+                              { color: formData.filterCriteria?.minRating === rating ? colors.card : colors.text },
                             ]}
                           >
                             {rating === 0 ? 'Any' : `${rating}+`}
@@ -1101,7 +1101,7 @@ export default function ExperiencesScreen() {
                         autoCapitalize="none"
                       />
                       <TouchableOpacity style={[styles.addBenefitBtn, { backgroundColor: colors.tint }]} onPress={addFilterTag}>
-                        <Ionicons name="add" size={20} color="#FFF" />
+                        <Ionicons name="add" size={20} color={colors.card} />
                       </TouchableOpacity>
                     </View>
                     {/* Common tags suggestions */}
@@ -1251,7 +1251,7 @@ export default function ExperiencesScreen() {
                     </Text>
                   </View>
                   <View style={styles.filterHeaderRight}>
-                    <Text style={[styles.filterPreviewCount, { color: '#22C55E' }]}>
+                    <Text style={[styles.filterPreviewCount, { color: colors.green }]}>
                       {assignedStores.length} assigned
                     </Text>
                     <Ionicons
@@ -1294,7 +1294,7 @@ export default function ExperiencesScreen() {
                                   <Text style={[styles.suggestedStoreName, { color: colors.text }]} numberOfLines={1}>
                                     {store.name}
                                   </Text>
-                                  <View style={[styles.quickAddBtn, { backgroundColor: '#22C55E20' }]}>
+                                  <View style={[styles.quickAddBtn, { backgroundColor: `${colors.green}20` }]}>
                                     <Ionicons name="add" size={14} color="#22C55E" />
                                   </View>
                                 </TouchableOpacity>
@@ -1361,7 +1361,7 @@ export default function ExperiencesScreen() {
                                   {store.city} • {store.category || 'N/A'} {store.rating ? `• ${store.rating.toFixed(1)} ⭐` : ''}
                                 </Text>
                               </View>
-                              <View style={[styles.addStoreBtn, { backgroundColor: '#22C55E20' }]}>
+                              <View style={[styles.addStoreBtn, { backgroundColor: `${colors.green}20` }]}>
                                 <Ionicons name="add" size={18} color="#22C55E" />
                               </View>
                             </TouchableOpacity>
@@ -1393,7 +1393,7 @@ export default function ExperiencesScreen() {
                               key={store._id}
                               style={[styles.assignedStoreItem, { backgroundColor: colors.card, borderColor: colors.border }]}
                             >
-                              <View style={[styles.assignedStoreLogo, { backgroundColor: '#22C55E15' }]}>
+                              <View style={[styles.assignedStoreLogo, { backgroundColor: `${colors.green}15` }]}>
                                 <Ionicons name="storefront" size={16} color="#22C55E" />
                               </View>
                               <View style={styles.assignedStoreInfo}>
@@ -1405,10 +1405,10 @@ export default function ExperiencesScreen() {
                                 </Text>
                               </View>
                               <TouchableOpacity
-                                style={[styles.removeStoreBtn, { backgroundColor: '#EF444415' }]}
+                                style={[styles.removeStoreBtn, { backgroundColor: `${colors.error}15` }]}
                                 onPress={() => handleRemoveStore(store)}
                               >
-                                <Ionicons name="close" size={16} color="#EF4444" />
+                                <Ionicons name="close" size={16} color={colors.error} />
                               </TouchableOpacity>
                             </View>
                           ))}
@@ -1452,8 +1452,8 @@ export default function ExperiencesScreen() {
                 <Switch
                   value={formData.isFeatured}
                   onValueChange={(val) => setFormData(prev => ({ ...prev, isFeatured: val }))}
-                  trackColor={{ false: colors.border, true: '#F59E0B50' }}
-                  thumbColor={formData.isFeatured ? '#F59E0B' : colors.icon}
+                  trackColor={{ false: colors.border, true: `${colors.warning}50` }}
+                  thumbColor={formData.isFeatured ? colors.warning : colors.icon}
                 />
               </View>
             </View>
@@ -1504,7 +1504,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   addBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1679,7 +1679,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   emptyBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
   },
   modalContainer: {
@@ -1808,7 +1808,7 @@ const styles = StyleSheet.create({
   },
   colorBtnSelected: {
     borderWidth: 2,
-    borderColor: '#0F172A',
+    borderColor: Colors.dark.background,
   },
   benefitsInput: {
     flexDirection: 'row',
@@ -1963,7 +1963,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   previewTitle: {
     fontSize: 13,

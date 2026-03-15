@@ -21,12 +21,12 @@ import { showAlert, showConfirm } from '../../utils/alert';
 type GameType = 'spin_wheel' | 'memory_match' | 'coin_hunt' | 'guess_price' | 'quiz' | 'scratch_card';
 
 const GAME_TYPE_DISPLAY: Record<GameType, { label: string; emoji: string; color: string }> = {
-  spin_wheel: { label: 'Spin Wheel', emoji: '\uD83C\uDFB0', color: '#EF4444' },
-  memory_match: { label: 'Memory Match', emoji: '\uD83E\uDDE0', color: '#8B5CF6' },
-  coin_hunt: { label: 'Coin Hunt', emoji: '\uD83E\uDE99', color: '#F59E0B' },
-  guess_price: { label: 'Guess the Price', emoji: '\uD83D\uDCB0', color: '#10B981' },
-  quiz: { label: 'Quiz', emoji: '\uD83D\uDCDD', color: '#3B82F6' },
-  scratch_card: { label: 'Scratch Card', emoji: '\uD83C\uDFAB', color: '#EC4899' },
+  spin_wheel: { label: 'Spin Wheel', emoji: '\uD83C\uDFB0', color: Colors.light.error },
+  memory_match: { label: 'Memory Match', emoji: '\uD83E\uDDE0', color: Colors.light.purple },
+  coin_hunt: { label: 'Coin Hunt', emoji: '\uD83E\uDE99', color: Colors.light.warning },
+  guess_price: { label: 'Guess the Price', emoji: '\uD83D\uDCB0', color: Colors.light.success },
+  quiz: { label: 'Quiz', emoji: '\uD83D\uDCDD', color: Colors.light.info },
+  scratch_card: { label: 'Scratch Card', emoji: '\uD83C\uDFAB', color: Colors.light.pink },
 };
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -469,15 +469,15 @@ export default function GameConfigScreen() {
         </Text>
       </View>
       <TouchableOpacity
-        style={[styles.seedBtn, { backgroundColor: '#F59E0B' }]}
+        style={[styles.seedBtn, { backgroundColor: colors.warning }]}
         onPress={handleSeed}
         disabled={seeding}
       >
         {seeding ? (
-          <ActivityIndicator size="small" color="#FFF" />
+          <ActivityIndicator size="small" color={colors.card} />
         ) : (
           <>
-            <Ionicons name="flash" size={16} color="#FFF" />
+            <Ionicons name="flash" size={16} color={colors.card} />
             <Text style={styles.seedBtnText}>Seed Defaults</Text>
           </>
         )}
@@ -498,8 +498,8 @@ export default function GameConfigScreen() {
       <View style={styles.statsRow}>
         {[
           { label: 'Total', value: total, color: colors.text },
-          { label: 'Enabled', value: enabled, color: '#10B981' },
-          { label: 'Featured', value: featured, color: '#F59E0B' },
+          { label: 'Enabled', value: enabled, color: colors.success },
+          { label: 'Featured', value: featured, color: colors.warning },
         ].map((item, index) => (
           <View key={index} style={[styles.statItem, { backgroundColor: colors.card }]}>
             <Text style={[styles.statValue, { color: item.color }]}>{item.value}</Text>
@@ -515,7 +515,7 @@ export default function GameConfigScreen() {
   // ==========================================
 
   const renderGameCard = (config: GameConfigItem) => {
-    const gameInfo = GAME_TYPE_DISPLAY[config.gameType] || { label: config.gameType, emoji: '\uD83C\uDFAE', color: '#6B7280' };
+    const gameInfo = GAME_TYPE_DISPLAY[config.gameType] || { label: config.gameType, emoji: '\uD83C\uDFAE', color: colors.mutedDark };
 
     return (
       <View
@@ -523,7 +523,7 @@ export default function GameConfigScreen() {
         style={[
           styles.card,
           { backgroundColor: colors.card },
-          { borderLeftWidth: 4, borderLeftColor: config.isEnabled ? '#10B981' : '#94A3B8' },
+          { borderLeftWidth: 4, borderLeftColor: config.isEnabled ? colors.success : colors.slateMedium },
         ]}
       >
         {/* Card Header */}
@@ -547,7 +547,7 @@ export default function GameConfigScreen() {
             <Ionicons
               name={config.featured ? 'star' : 'star-outline'}
               size={22}
-              color={config.featured ? '#F59E0B' : colors.icon}
+              color={config.featured ? colors.warning : colors.icon}
             />
           </TouchableOpacity>
         </View>
@@ -573,15 +573,15 @@ export default function GameConfigScreen() {
               </Text>
             </View>
           )}
-          <View style={[styles.infoChip, { backgroundColor: '#10B98115' }]}>
-            <Ionicons name="cash" size={12} color="#10B981" />
-            <Text style={[styles.infoChipText, { color: '#10B981' }]}>
+          <View style={[styles.infoChip, { backgroundColor: `${colors.success}15` }]}>
+            <Ionicons name="cash" size={12} color={colors.success} />
+            <Text style={[styles.infoChipText, { color: colors.success }]}>
               {config.rewards.minCoins}-{config.rewards.maxCoins} coins
             </Text>
           </View>
           {config.rewards.bonusMultiplier > 1 && (
-            <View style={[styles.infoChip, { backgroundColor: '#F59E0B15' }]}>
-              <Text style={[styles.infoChipText, { color: '#F59E0B', fontWeight: '700' }]}>
+            <View style={[styles.infoChip, { backgroundColor: `${colors.warning}15` }]}>
+              <Text style={[styles.infoChipText, { color: colors.warning, fontWeight: '700' }]}>
                 {config.rewards.bonusMultiplier}x bonus
               </Text>
             </View>
@@ -597,23 +597,23 @@ export default function GameConfigScreen() {
             <Switch
               value={config.isEnabled}
               onValueChange={() => handleToggle(config)}
-              trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-              thumbColor="#FFFFFF"
+              trackColor={{ false: colors.border, true: colors.success }}
+              thumbColor={colors.card}
             />
           </View>
 
           <View style={styles.actionBtns}>
             <TouchableOpacity
-              style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+              style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
               onPress={() => handleEdit(config)}
             >
-              <Ionicons name="pencil" size={16} color="#3B82F6" />
+              <Ionicons name="pencil" size={16} color={colors.info} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
+              style={[styles.actionIconBtn, { backgroundColor: `${colors.error}10` }]}
               onPress={() => handleDelete(config)}
             >
-              <Ionicons name="trash" size={16} color="#EF4444" />
+              <Ionicons name="trash" size={16} color={colors.error} />
             </TouchableOpacity>
           </View>
         </View>
@@ -651,9 +651,9 @@ export default function GameConfigScreen() {
                 <Ionicons
                   name={tab.icon as any}
                   size={14}
-                  color={isActive ? '#FFF' : colors.icon}
+                  color={isActive ? colors.card : colors.icon}
                 />
-                <Text style={[styles.formTabLabel, { color: isActive ? '#FFF' : colors.icon }]}>
+                <Text style={[styles.formTabLabel, { color: isActive ? colors.card : colors.icon }]}>
                   {tab.label}
                 </Text>
               </TouchableOpacity>
@@ -811,8 +811,8 @@ export default function GameConfigScreen() {
       </View>
 
       {/* Preview */}
-      <View style={[styles.rewardPreview, { backgroundColor: '#10B98115' }]}>
-        <Ionicons name="cash" size={20} color="#10B981" />
+      <View style={[styles.rewardPreview, { backgroundColor: `${colors.success}15` }]}>
+        <Ionicons name="cash" size={20} color={colors.success} />
         <Text style={styles.rewardPreviewText}>
           Reward range: {form.rewards.minCoins} - {form.rewards.maxCoins} coins
           {form.rewards.bonusMultiplier > 1 ? ` (${form.rewards.bonusMultiplier}x multiplier)` : ''}
@@ -888,9 +888,9 @@ export default function GameConfigScreen() {
 
   const renderDifficultyForm = () => (
     <View>
-      {renderDifficultyLevel('easy', '#10B981')}
-      {renderDifficultyLevel('medium', '#F59E0B')}
-      {renderDifficultyLevel('hard', '#EF4444')}
+      {renderDifficultyLevel('easy', colors.success)}
+      {renderDifficultyLevel('medium', colors.warning)}
+      {renderDifficultyLevel('hard', colors.error)}
     </View>
   );
 
@@ -927,7 +927,7 @@ export default function GameConfigScreen() {
                   });
                 }}
               >
-                <Text style={[styles.dayChipText, { color: isSelected ? '#FFF' : colors.icon }]}>
+                <Text style={[styles.dayChipText, { color: isSelected ? colors.card : colors.icon }]}>
                   {day}
                 </Text>
               </TouchableOpacity>
@@ -1021,7 +1021,7 @@ export default function GameConfigScreen() {
             style={[styles.modalSaveBtn, { backgroundColor: colors.tint }]}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Save</Text>
             )}
@@ -1059,7 +1059,7 @@ export default function GameConfigScreen() {
             style={[styles.modalSaveBtn, { backgroundColor: colors.tint }]}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Create</Text>
             )}
@@ -1237,7 +1237,7 @@ export default function GameConfigScreen() {
             style={[styles.seedBtn, { backgroundColor: colors.tint }]}
             onPress={loadAnalytics}
           >
-            <Ionicons name="refresh" size={16} color="#FFF" />
+            <Ionicons name="refresh" size={16} color={colors.card} />
             <Text style={styles.seedBtnText}>Load Analytics</Text>
           </TouchableOpacity>
         </View>
@@ -1258,7 +1258,7 @@ export default function GameConfigScreen() {
               }]}
               onPress={() => { setAnalyticsDays(d); setAnalyticsData(null); }}
             >
-              <Text style={[styles.statValue, { color: analyticsDays === d ? '#FFF' : colors.text, fontSize: 16 }]}>
+              <Text style={[styles.statValue, { color: analyticsDays === d ? colors.card : colors.text, fontSize: 16 }]}>
                 {d}d
               </Text>
             </TouchableOpacity>
@@ -1268,7 +1268,7 @@ export default function GameConfigScreen() {
         {/* Per-game stats */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Game Performance</Text>
         {(stats || []).map((stat: any) => {
-          const info = GAME_TYPE_DISPLAY[stat._id as GameType] || { label: stat._id, emoji: '🎮', color: '#6B7280' };
+          const info = GAME_TYPE_DISPLAY[stat._id as GameType] || { label: stat._id, emoji: '🎮', color: colors.mutedDark };
           return (
             <View key={stat._id} style={[styles.card, { backgroundColor: colors.card, borderLeftWidth: 4, borderLeftColor: info.color }]}>
               <View style={styles.cardHeader}>
@@ -1279,8 +1279,8 @@ export default function GameConfigScreen() {
                 <View style={[styles.infoChip, { backgroundColor: colors.background }]}>
                   <Text style={[styles.infoChipText, { color: colors.text }]}>{stat.totalPlayed} played</Text>
                 </View>
-                <View style={[styles.infoChip, { backgroundColor: '#10B98115' }]}>
-                  <Text style={[styles.infoChipText, { color: '#10B981' }]}>{stat.totalCoins} coins</Text>
+                <View style={[styles.infoChip, { backgroundColor: `${colors.success}15` }]}>
+                  <Text style={[styles.infoChipText, { color: colors.success }]}>{stat.totalCoins} coins</Text>
                 </View>
                 <View style={[styles.infoChip, { backgroundColor: colors.background }]}>
                   <Text style={[styles.infoChipText, { color: colors.text }]}>{stat.uniquePlayers} players</Text>
@@ -1299,7 +1299,7 @@ export default function GameConfigScreen() {
           <View key={i} style={[styles.card, { backgroundColor: colors.card, paddingVertical: 10, paddingHorizontal: 14 }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <Text style={[{ fontSize: 16, fontWeight: '700', color: i < 3 ? '#F59E0B' : colors.icon, width: 24 }]}>
+                <Text style={[{ fontSize: 16, fontWeight: '700', color: i < 3 ? colors.warning : colors.icon, width: 24 }]}>
                   #{i + 1}
                 </Text>
                 <View>
@@ -1309,7 +1309,7 @@ export default function GameConfigScreen() {
                   <Text style={[{ fontSize: 11, color: colors.icon }]}>{p.gamesPlayed} games</Text>
                 </View>
               </View>
-              <Text style={[{ fontSize: 16, fontWeight: '700', color: '#10B981' }]}>{p.totalCoins} coins</Text>
+              <Text style={[{ fontSize: 16, fontWeight: '700', color: colors.success }]}>{p.totalCoins} coins</Text>
             </View>
           </View>
         ))}
@@ -1341,10 +1341,10 @@ export default function GameConfigScreen() {
             disabled={userLoading}
           >
             {userLoading ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="search" size={16} color="#FFF" />
+                <Ionicons name="search" size={16} color={colors.card} />
                 <Text style={styles.seedBtnText}>Search</Text>
               </>
             )}
@@ -1367,25 +1367,25 @@ export default function GameConfigScreen() {
               </View>
               {userData.user.gameBanned ? (
                 <TouchableOpacity
-                  style={[styles.seedBtn, { backgroundColor: '#10B981' }]}
+                  style={[styles.seedBtn, { backgroundColor: colors.success }]}
                   onPress={handleUnbanUser}
                 >
-                  <Ionicons name="lock-open" size={14} color="#FFF" />
+                  <Ionicons name="lock-open" size={14} color={colors.card} />
                   <Text style={styles.seedBtnText}>Unban</Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
-                  style={[styles.seedBtn, { backgroundColor: '#EF4444' }]}
+                  style={[styles.seedBtn, { backgroundColor: colors.error }]}
                   onPress={handleBanUser}
                 >
-                  <Ionicons name="ban" size={14} color="#FFF" />
+                  <Ionicons name="ban" size={14} color={colors.card} />
                   <Text style={styles.seedBtnText}>Ban</Text>
                 </TouchableOpacity>
               )}
             </View>
             {userData.user.gameBanned && (
-              <View style={[{ backgroundColor: '#FEF2F2', padding: 10, borderRadius: 8, marginTop: 10 }]}>
-                <Text style={[{ color: '#EF4444', fontWeight: '600', fontSize: 13 }]}>
+              <View style={[{ backgroundColor: colors.errorLight, padding: 10, borderRadius: 8, marginTop: 10 }]}>
+                <Text style={[{ color: colors.error, fontWeight: '600', fontSize: 13 }]}>
                   Banned: {userData.user.gameBanReason || 'No reason given'}
                 </Text>
               </View>
@@ -1414,17 +1414,17 @@ export default function GameConfigScreen() {
             </View>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <TouchableOpacity
-                style={[styles.seedBtn, { backgroundColor: '#10B981', flex: 1, justifyContent: 'center' }]}
+                style={[styles.seedBtn, { backgroundColor: colors.success, flex: 1, justifyContent: 'center' }]}
                 onPress={handleCreditCoins}
               >
-                <Ionicons name="add-circle" size={14} color="#FFF" />
+                <Ionicons name="add-circle" size={14} color={colors.card} />
                 <Text style={styles.seedBtnText}>Credit</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.seedBtn, { backgroundColor: '#EF4444', flex: 1, justifyContent: 'center' }]}
+                style={[styles.seedBtn, { backgroundColor: colors.error, flex: 1, justifyContent: 'center' }]}
                 onPress={handleRevokeCoins}
               >
-                <Ionicons name="remove-circle" size={14} color="#FFF" />
+                <Ionicons name="remove-circle" size={14} color={colors.card} />
                 <Text style={styles.seedBtnText}>Revoke</Text>
               </TouchableOpacity>
             </View>
@@ -1435,7 +1435,7 @@ export default function GameConfigScreen() {
             Recent Games ({userData.total || 0})
           </Text>
           {(userData.sessions || []).slice(0, 20).map((s: any, i: number) => {
-            const info = GAME_TYPE_DISPLAY[s.gameType as GameType] || { label: s.gameType, emoji: '🎮', color: '#6B7280' };
+            const info = GAME_TYPE_DISPLAY[s.gameType as GameType] || { label: s.gameType, emoji: '🎮', color: colors.mutedDark };
             return (
               <View key={i} style={[styles.card, { backgroundColor: colors.card, paddingVertical: 10, paddingHorizontal: 14 }]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1449,7 +1449,7 @@ export default function GameConfigScreen() {
                     </View>
                   </View>
                   {s.result?.prize?.type === 'coins' && (
-                    <Text style={[{ fontSize: 14, fontWeight: '700', color: '#10B981' }]}>
+                    <Text style={[{ fontSize: 14, fontWeight: '700', color: colors.success }]}>
                       +{s.result.prize.value}
                     </Text>
                   )}
@@ -1570,7 +1570,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   seedBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 13,
   },
@@ -1759,7 +1759,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1895,7 +1895,7 @@ const styles = StyleSheet.create({
   rewardPreviewText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#10B981',
+    color: Colors.light.success,
   },
 
   // Game Type Grid (Create modal)

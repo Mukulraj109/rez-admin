@@ -161,7 +161,7 @@ export default function AdminUsersScreen() {
     <View style={[styles.adminCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={styles.adminCardHeader}>
         <View style={styles.adminInfo}>
-          <View style={[styles.adminAvatar, { backgroundColor: item.isActive ? '#1a3a52' : '#9CA3AF' }]}>
+          <View style={[styles.adminAvatar, { backgroundColor: item.isActive ? colors.navy : colors.icon }]}>
             <Text style={styles.adminAvatarText}>
               {item.firstName?.charAt(0)?.toUpperCase() || 'A'}{item.lastName?.charAt(0)?.toUpperCase() || ''}
             </Text>
@@ -174,9 +174,9 @@ export default function AdminUsersScreen() {
             ) : null}
           </View>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: item.isActive ? '#10B98115' : '#EF444415' }]}>
-          <View style={[styles.statusDot, { backgroundColor: item.isActive ? '#10B981' : '#EF4444' }]} />
-          <Text style={[styles.statusText, { color: item.isActive ? '#10B981' : '#EF4444' }]}>
+        <View style={[styles.statusBadge, { backgroundColor: item.isActive ? colors.success + '15' : colors.error + '15' }]}>
+          <View style={[styles.statusDot, { backgroundColor: item.isActive ? colors.success : colors.error }]} />
+          <Text style={[styles.statusText, { color: item.isActive ? colors.success : colors.error }]}>
             {item.isActive ? 'Active' : 'Inactive'}
           </Text>
         </View>
@@ -205,25 +205,25 @@ export default function AdminUsersScreen() {
 
       <View style={styles.adminActions}>
         <TouchableOpacity
-          style={[styles.actionBtn, { backgroundColor: '#3B82F610', borderColor: '#3B82F630' }]}
+          style={[styles.actionBtn, { backgroundColor: colors.info + '10', borderColor: colors.info + '30' }]}
           onPress={() => openEditModal(item)}
         >
-          <Ionicons name="create-outline" size={16} color="#3B82F6" />
-          <Text style={[styles.actionBtnText, { color: '#3B82F6' }]}>Edit</Text>
+          <Ionicons name="create-outline" size={16} color={colors.info} />
+          <Text style={[styles.actionBtnText, { color: colors.info }]}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
             styles.actionBtn,
-            { backgroundColor: item.isActive ? '#EF444410' : '#10B98110', borderColor: item.isActive ? '#EF444430' : '#10B98130' },
+            { backgroundColor: item.isActive ? colors.error + '10' : colors.success + '10', borderColor: item.isActive ? colors.error + '30' : colors.success + '30' },
           ]}
           onPress={() => handleToggleActive(item)}
         >
           <Ionicons
             name={item.isActive ? 'close-circle-outline' : 'checkmark-circle-outline'}
             size={16}
-            color={item.isActive ? '#EF4444' : '#10B981'}
+            color={item.isActive ? colors.error : colors.success}
           />
-          <Text style={[styles.actionBtnText, { color: item.isActive ? '#EF4444' : '#10B981' }]}>
+          <Text style={[styles.actionBtnText, { color: item.isActive ? colors.error : colors.success }]}>
             {item.isActive ? 'Deactivate' : 'Activate'}
           </Text>
         </TouchableOpacity>
@@ -247,7 +247,7 @@ export default function AdminUsersScreen() {
             {/* First Name */}
             <Text style={[styles.inputLabel, { color: colors.text }]}>First Name *</Text>
             <TextInput
-              style={[styles.input, { color: colors.text, borderColor: createErrors.firstName ? '#EF4444' : colors.border, backgroundColor: colors.background }]}
+              style={[styles.input, { color: colors.text, borderColor: createErrors.firstName ? colors.error : colors.border, backgroundColor: colors.background }]}
               placeholder="First name"
               placeholderTextColor={colors.icon}
               value={createForm.firstName}
@@ -258,7 +258,7 @@ export default function AdminUsersScreen() {
             {/* Last Name */}
             <Text style={[styles.inputLabel, { color: colors.text }]}>Last Name *</Text>
             <TextInput
-              style={[styles.input, { color: colors.text, borderColor: createErrors.lastName ? '#EF4444' : colors.border, backgroundColor: colors.background }]}
+              style={[styles.input, { color: colors.text, borderColor: createErrors.lastName ? colors.error : colors.border, backgroundColor: colors.background }]}
               placeholder="Last name"
               placeholderTextColor={colors.icon}
               value={createForm.lastName}
@@ -269,7 +269,7 @@ export default function AdminUsersScreen() {
             {/* Email */}
             <Text style={[styles.inputLabel, { color: colors.text }]}>Email *</Text>
             <TextInput
-              style={[styles.input, { color: colors.text, borderColor: createErrors.email ? '#EF4444' : colors.border, backgroundColor: colors.background }]}
+              style={[styles.input, { color: colors.text, borderColor: createErrors.email ? colors.error : colors.border, backgroundColor: colors.background }]}
               placeholder="admin@example.com"
               placeholderTextColor={colors.icon}
               value={createForm.email}
@@ -282,7 +282,7 @@ export default function AdminUsersScreen() {
             {/* Password */}
             <Text style={[styles.inputLabel, { color: colors.text }]}>Password *</Text>
             <TextInput
-              style={[styles.input, { color: colors.text, borderColor: createErrors.password ? '#EF4444' : colors.border, backgroundColor: colors.background }]}
+              style={[styles.input, { color: colors.text, borderColor: createErrors.password ? colors.error : colors.border, backgroundColor: colors.background }]}
               placeholder="Min 8 characters"
               placeholderTextColor={colors.icon}
               value={createForm.password}
@@ -311,14 +311,14 @@ export default function AdminUsersScreen() {
               <Text style={[styles.modalBtnText, { color: colors.text }]}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: '#1a3a52' }]}
+              style={[styles.modalBtn, { backgroundColor: colors.navy }]}
               onPress={handleCreate}
               disabled={creating}
             >
               {creating ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
-                <Text style={[styles.modalBtnText, { color: '#FFFFFF' }]}>Create Admin</Text>
+                <Text style={[styles.modalBtnText, { color: colors.card }]}>Create Admin</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -382,14 +382,14 @@ export default function AdminUsersScreen() {
                 <Text style={[styles.modalBtnText, { color: colors.text }]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalBtn, { backgroundColor: '#1a3a52' }]}
+                style={[styles.modalBtn, { backgroundColor: colors.navy }]}
                 onPress={handleEdit}
                 disabled={editing}
               >
                 {editing ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <ActivityIndicator size="small" color={colors.card} />
                 ) : (
-                  <Text style={[styles.modalBtnText, { color: '#FFFFFF' }]}>Save Changes</Text>
+                  <Text style={[styles.modalBtnText, { color: colors.card }]}>Save Changes</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -419,24 +419,24 @@ export default function AdminUsersScreen() {
             setShowCreateModal(true);
           }}
         >
-          <Ionicons name="add" size={18} color="#FFFFFF" />
+          <Ionicons name="add" size={18} color={colors.card} />
           <Text style={styles.addBtnText}>Add Admin</Text>
         </TouchableOpacity>
       </View>
 
       {/* Summary */}
       <View style={styles.summaryRow}>
-        <View style={[styles.summaryCard, { backgroundColor: '#1a3a5210', borderColor: '#1a3a5230' }]}>
-          <Text style={[styles.summaryValue, { color: '#1a3a52' }]}>{admins.length}</Text>
-          <Text style={[styles.summaryLabel, { color: '#1a3a52' }]}>Total</Text>
+        <View style={[styles.summaryCard, { backgroundColor: `${colors.navy}10`, borderColor: `${colors.navy}30` }]}>
+          <Text style={[styles.summaryValue, { color: colors.navy }]}>{admins.length}</Text>
+          <Text style={[styles.summaryLabel, { color: colors.navy }]}>Total</Text>
         </View>
-        <View style={[styles.summaryCard, { backgroundColor: '#10B98110', borderColor: '#10B98130' }]}>
-          <Text style={[styles.summaryValue, { color: '#10B981' }]}>{admins.filter(a => a.isActive).length}</Text>
-          <Text style={[styles.summaryLabel, { color: '#10B981' }]}>Active</Text>
+        <View style={[styles.summaryCard, { backgroundColor: colors.success + '10', borderColor: colors.success + '30' }]}>
+          <Text style={[styles.summaryValue, { color: colors.success }]}>{admins.filter(a => a.isActive).length}</Text>
+          <Text style={[styles.summaryLabel, { color: colors.success }]}>Active</Text>
         </View>
-        <View style={[styles.summaryCard, { backgroundColor: '#EF444410', borderColor: '#EF444430' }]}>
-          <Text style={[styles.summaryValue, { color: '#EF4444' }]}>{admins.filter(a => !a.isActive).length}</Text>
-          <Text style={[styles.summaryLabel, { color: '#EF4444' }]}>Inactive</Text>
+        <View style={[styles.summaryCard, { backgroundColor: colors.error + '10', borderColor: colors.error + '30' }]}>
+          <Text style={[styles.summaryValue, { color: colors.error }]}>{admins.filter(a => !a.isActive).length}</Text>
+          <Text style={[styles.summaryLabel, { color: colors.error }]}>Inactive</Text>
         </View>
       </View>
 
@@ -473,9 +473,9 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 20, fontWeight: '700' },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: '#1a3a52', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8,
+    backgroundColor: Colors.light.navy, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8,
   },
-  addBtnText: { color: '#FFFFFF', fontWeight: '600', fontSize: 13 },
+  addBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 13 },
 
   // Summary
   summaryRow: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   adminAvatar: {
     width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center',
   },
-  adminAvatarText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  adminAvatarText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
   adminName: { fontSize: 15, fontWeight: '700' },
   adminEmail: { fontSize: 13, marginTop: 2 },
   adminPhone: { fontSize: 12, marginTop: 1 },
@@ -527,13 +527,13 @@ const styles = StyleSheet.create({
   modalContent: { borderRadius: 16, maxHeight: '80%' },
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0',
+    paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: Colors.light.border,
   },
   modalTitle: { fontSize: 18, fontWeight: '700' },
   modalBody: { paddingHorizontal: 20, paddingVertical: 12 },
   modalFooter: {
     flexDirection: 'row', gap: 12, paddingHorizontal: 20, paddingVertical: 16,
-    borderTopWidth: 1, borderTopColor: '#E2E8F0',
+    borderTopWidth: 1, borderTopColor: Colors.light.border,
   },
   modalBtn: {
     flex: 1, paddingVertical: 12, borderRadius: 8, alignItems: 'center',
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10,
     fontSize: 14, minHeight: 44,
   },
-  errorText: { color: '#EF4444', fontSize: 11, marginTop: 4 },
+  errorText: { color: Colors.light.error, fontSize: 11, marginTop: 4 },
 
   // Empty
   emptyContainer: { padding: 40, alignItems: 'center' },

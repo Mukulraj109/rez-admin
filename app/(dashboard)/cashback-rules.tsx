@@ -43,9 +43,9 @@ interface CashbackCampaign {
 type SectionKey = 'global' | 'categories' | 'campaigns';
 
 const SECTIONS: { key: SectionKey; title: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
-  { key: 'global', title: 'Global Cashback Settings', icon: 'cash', color: '#10B981' },
-  { key: 'categories', title: 'Category Multipliers', icon: 'grid', color: '#F59E0B' },
-  { key: 'campaigns', title: 'Active Cashback Campaigns', icon: 'megaphone', color: '#8B5CF6' },
+  { key: 'global', title: 'Global Cashback Settings', icon: 'cash', color: Colors.light.success },
+  { key: 'categories', title: 'Category Multipliers', icon: 'grid', color: Colors.light.warning },
+  { key: 'campaigns', title: 'Active Cashback Campaigns', icon: 'megaphone', color: Colors.light.purple },
 ];
 
 // --- Default data ---
@@ -265,10 +265,10 @@ export default function CashbackRulesScreen() {
             disabled={!dirty || saving}
           >
             {saving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <>
-                <Ionicons name="save" size={16} color="#FFF" />
+                <Ionicons name="save" size={16} color={colors.card} />
                 <Text style={styles.saveButtonText}>Save</Text>
               </>
             )}
@@ -393,12 +393,12 @@ export default function CashbackRulesScreen() {
 
         {/* Bottom Save */}
         <TouchableOpacity
-          style={[styles.bottomSave, !dirty && { backgroundColor: '#9CA3AF' }]}
+          style={[styles.bottomSave, !dirty && { backgroundColor: colors.muted }]}
           onPress={handleSave}
           disabled={!dirty || saving}
         >
           {saving ? (
-            <ActivityIndicator size="small" color="#FFF" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <Text style={styles.bottomSaveText}>{dirty ? 'Save All Changes' : 'No Changes'}</Text>
           )}
@@ -422,10 +422,10 @@ const styles = StyleSheet.create({
   iconBtn: { padding: 8 },
   saveButton: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: '#1a3a52',
+    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: Colors.light.navy,
   },
-  saveButtonDisabled: { backgroundColor: '#9CA3AF' },
-  saveButtonText: { fontWeight: '600', color: '#FFF', fontSize: 14 },
+  saveButtonDisabled: { backgroundColor: Colors.light.muted },
+  saveButtonText: { fontWeight: '600', color: Colors.light.card, fontSize: 14 },
   scrollContent: { padding: 16, paddingBottom: 60 },
   card: { borderRadius: 12, marginBottom: 12, borderWidth: 1, overflow: 'hidden' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 8 },
@@ -464,6 +464,6 @@ const styles = StyleSheet.create({
   campaignDetails: { marginTop: 8, gap: 4 },
   campaignDetail: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   campaignDetailText: { fontSize: 12 },
-  bottomSave: { backgroundColor: '#1a3a52', borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
-  bottomSaveText: { color: '#FFF', fontSize: 16, fontWeight: '700' },
+  bottomSave: { backgroundColor: Colors.light.navy, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
+  bottomSaveText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
 });

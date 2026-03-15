@@ -360,19 +360,19 @@ export default function ExploreScreen() {
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Videos</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.background }]}>
-          <Text style={[styles.statValue, { color: '#10B981' }]}>
+          <Text style={[styles.statValue, { color: colors.success }]}>
             {videoStats?.published || 0}
           </Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Published</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.background }]}>
-          <Text style={[styles.statValue, { color: '#F59E0B' }]}>
+          <Text style={[styles.statValue, { color: colors.warning }]}>
             {videoStats?.featured || 0}
           </Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Featured</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.background }]}>
-          <Text style={[styles.statValue, { color: '#EF4444' }]}>
+          <Text style={[styles.statValue, { color: colors.error }]}>
             {videoStats?.trending || 0}
           </Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Trending</Text>
@@ -380,13 +380,13 @@ export default function ExploreScreen() {
       </View>
       <View style={styles.statsRow}>
         <View style={[styles.statCard, { backgroundColor: colors.background }]}>
-          <Text style={[styles.statValue, { color: '#8B5CF6' }]}>
+          <Text style={[styles.statValue, { color: colors.purple }]}>
             {formatNumber(videoStats?.totalViews || 0)}
           </Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Views</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.background }]}>
-          <Text style={[styles.statValue, { color: '#3B82F6' }]}>
+          <Text style={[styles.statValue, { color: colors.info }]}>
             {videoStats?.pending || 0}
           </Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Pending</Text>
@@ -437,7 +437,7 @@ export default function ExploreScreen() {
             <Text
               style={[
                 styles.filterChipText,
-                { color: videoFilter === filter.key ? '#FFF' : colors.textSecondary },
+                { color: videoFilter === filter.key ? colors.card : colors.textSecondary },
               ]}
             >
               {filter.label}
@@ -473,32 +473,32 @@ export default function ExploreScreen() {
             )}
             <View style={styles.videoBadges}>
               {item.isPublished && (
-                <View style={[styles.badge, { backgroundColor: '#10B981' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.success }]}>
                   <Text style={styles.badgeText}>Published</Text>
                 </View>
               )}
               {item.isFeatured && (
-                <View style={[styles.badge, { backgroundColor: '#F59E0B' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.warning }]}>
                   <Text style={styles.badgeText}>Featured</Text>
                 </View>
               )}
               {item.isTrending && (
-                <View style={[styles.badge, { backgroundColor: '#EF4444' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.error }]}>
                   <Text style={styles.badgeText}>Trending</Text>
                 </View>
               )}
               {item.moderationStatus === 'pending' && (
-                <View style={[styles.badge, { backgroundColor: '#F59E0B' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.warning }]}>
                   <Text style={styles.badgeText}>Pending</Text>
                 </View>
               )}
               {item.moderationStatus === 'rejected' && (
-                <View style={[styles.badge, { backgroundColor: '#EF4444' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.error }]}>
                   <Text style={styles.badgeText}>Rejected</Text>
                 </View>
               )}
               {item.moderationStatus === 'flagged' && (
-                <View style={[styles.badge, { backgroundColor: '#8B5CF6' }]}>
+                <View style={[styles.badge, { backgroundColor: colors.purple }]}>
                   <Text style={styles.badgeText}>Flagged</Text>
                 </View>
               )}
@@ -534,38 +534,38 @@ export default function ExploreScreen() {
         ) : (
           <View style={styles.videoActions}>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: item.isPublished ? '#FEE2E2' : '#D1FAE5' }]}
+              style={[styles.actionBtn, { backgroundColor: item.isPublished ? colors.errorLight : colors.successLight }]}
               onPress={() => handleTogglePublish(item)}
             >
               <Ionicons
                 name={item.isPublished ? 'eye-off' : 'eye'}
                 size={16}
-                color={item.isPublished ? '#EF4444' : '#10B981'}
+                color={item.isPublished ? colors.error : colors.success}
               />
-              <Text style={{ color: item.isPublished ? '#EF4444' : '#10B981', fontSize: 12, marginLeft: 4 }}>
+              <Text style={{ color: item.isPublished ? colors.error : colors.success, fontSize: 12, marginLeft: 4 }}>
                 {item.isPublished ? 'Unpublish' : 'Publish'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: item.isFeatured ? '#FEF3C7' : colors.border }]}
+              style={[styles.actionBtn, { backgroundColor: item.isFeatured ? colors.warningLight : colors.border }]}
               onPress={() => handleToggleFeatured(item)}
             >
               <Ionicons
                 name={item.isFeatured ? 'star' : 'star-outline'}
                 size={16}
-                color={item.isFeatured ? '#F59E0B' : colors.textSecondary}
+                color={item.isFeatured ? colors.warning : colors.textSecondary}
               />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: item.isTrending ? '#FEE2E2' : colors.border }]}
+              style={[styles.actionBtn, { backgroundColor: item.isTrending ? colors.errorLight : colors.border }]}
               onPress={() => handleToggleTrending(item)}
             >
               <Ionicons
                 name="flame"
                 size={16}
-                color={item.isTrending ? '#EF4444' : colors.textSecondary}
+                color={item.isTrending ? colors.error : colors.textSecondary}
               />
             </TouchableOpacity>
 
@@ -580,28 +580,28 @@ export default function ExploreScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: '#FEE2E2' }]}
+              style={[styles.actionBtn, { backgroundColor: colors.errorLight }]}
               onPress={() => handleDeleteVideo(item)}
             >
-              <Ionicons name="trash" size={16} color="#EF4444" />
+              <Ionicons name="trash" size={16} color={colors.error} />
             </TouchableOpacity>
 
             {/* Moderation: Approve/Reject for pending videos */}
             {item.moderationStatus === 'pending' && (
               <>
                 <TouchableOpacity
-                  style={[styles.actionBtn, { backgroundColor: '#D1FAE5' }]}
+                  style={[styles.actionBtn, { backgroundColor: colors.successLight }]}
                   onPress={() => handleModerateVideo(item, 'approved')}
                 >
-                  <Ionicons name="checkmark-circle" size={16} color="#10B981" />
-                  <Text style={{ color: '#10B981', fontSize: 12, marginLeft: 4 }}>Approve</Text>
+                  <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+                  <Text style={{ color: colors.success, fontSize: 12, marginLeft: 4 }}>Approve</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.actionBtn, { backgroundColor: '#FEE2E2' }]}
+                  style={[styles.actionBtn, { backgroundColor: colors.errorLight }]}
                   onPress={() => handleModerateVideo(item, 'rejected')}
                 >
-                  <Ionicons name="close-circle" size={16} color="#EF4444" />
-                  <Text style={{ color: '#EF4444', fontSize: 12, marginLeft: 4 }}>Reject</Text>
+                  <Ionicons name="close-circle" size={16} color={colors.error} />
+                  <Text style={{ color: colors.error, fontSize: 12, marginLeft: 4 }}>Reject</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -625,13 +625,13 @@ export default function ExploreScreen() {
                 key={star}
                 name={star <= item.rating ? 'star' : 'star-outline'}
                 size={16}
-                color={star <= item.rating ? '#F59E0B' : '#D1D5DB'}
+                color={star <= item.rating ? colors.warning : colors.border}
               />
             ))}
             <Text style={[styles.reviewRatingText, { color: colors.text }]}>{item.rating}</Text>
           </View>
           {item.isFeaturedOnExplore && (
-            <View style={[styles.badge, { backgroundColor: '#F59E0B' }]}>
+            <View style={[styles.badge, { backgroundColor: colors.warning }]}>
               <Text style={styles.badgeText}>Featured</Text>
             </View>
           )}
@@ -658,8 +658,8 @@ export default function ExploreScreen() {
           )}
           {item.verified && (
             <View style={styles.reviewMetaItem}>
-              <Ionicons name="checkmark-circle" size={12} color="#10B981" />
-              <Text style={[styles.reviewMetaText, { color: '#10B981' }]}>Verified</Text>
+              <Ionicons name="checkmark-circle" size={12} color={colors.success} />
+              <Text style={[styles.reviewMetaText, { color: colors.success }]}>Verified</Text>
             </View>
           )}
         </View>
@@ -679,15 +679,15 @@ export default function ExploreScreen() {
         ) : (
           <View style={styles.videoActions}>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: item.isFeaturedOnExplore ? '#FEF3C7' : '#D1FAE5' }]}
+              style={[styles.actionBtn, { backgroundColor: item.isFeaturedOnExplore ? colors.warningLight : colors.successLight }]}
               onPress={() => handleToggleReviewFeatured(item)}
             >
               <Ionicons
                 name={item.isFeaturedOnExplore ? 'star' : 'star-outline'}
                 size={16}
-                color={item.isFeaturedOnExplore ? '#F59E0B' : '#10B981'}
+                color={item.isFeaturedOnExplore ? colors.warning : colors.success}
               />
-              <Text style={{ color: item.isFeaturedOnExplore ? '#F59E0B' : '#10B981', fontSize: 12, marginLeft: 4 }}>
+              <Text style={{ color: item.isFeaturedOnExplore ? colors.warning : colors.success, fontSize: 12, marginLeft: 4 }}>
                 {item.isFeaturedOnExplore ? 'Unfeature' : 'Feature'}
               </Text>
             </TouchableOpacity>
@@ -725,7 +725,7 @@ export default function ExploreScreen() {
               <Text
                 style={[
                   styles.filterChipText,
-                  { color: reviewFilter === filter.key ? '#FFF' : colors.textSecondary },
+                  { color: reviewFilter === filter.key ? colors.card : colors.textSecondary },
                 ]}
               >
                 {filter.label}
@@ -844,7 +844,7 @@ export default function ExploreScreen() {
                 <Ionicons
                   name={newVideo.isFeatured ? 'checkbox' : 'square-outline'}
                   size={24}
-                  color={newVideo.isFeatured ? '#F59E0B' : colors.textSecondary}
+                  color={newVideo.isFeatured ? colors.warning : colors.textSecondary}
                 />
                 <Text style={[styles.checkboxLabel, { color: colors.text }]}>Mark as Featured</Text>
               </TouchableOpacity>
@@ -858,7 +858,7 @@ export default function ExploreScreen() {
                 <Ionicons
                   name={newVideo.isTrending ? 'checkbox' : 'square-outline'}
                   size={24}
-                  color={newVideo.isTrending ? '#EF4444' : colors.textSecondary}
+                  color={newVideo.isTrending ? colors.error : colors.textSecondary}
                 />
                 <Text style={[styles.checkboxLabel, { color: colors.text }]}>Mark as Trending</Text>
               </TouchableOpacity>
@@ -876,7 +876,7 @@ export default function ExploreScreen() {
               style={[styles.modalBtn, { backgroundColor: colors.tint }]}
               onPress={handleCreateVideo}
             >
-              <Text style={{ color: '#FFF', fontWeight: '600' }}>Create Video</Text>
+              <Text style={{ color: colors.card, fontWeight: '600' }}>Create Video</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -916,17 +916,17 @@ export default function ExploreScreen() {
                 <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Status:</Text>
                 <View style={styles.detailBadges}>
                   {selectedVideo.isPublished && (
-                    <View style={[styles.badge, { backgroundColor: '#10B981' }]}>
+                    <View style={[styles.badge, { backgroundColor: colors.success }]}>
                       <Text style={styles.badgeText}>Published</Text>
                     </View>
                   )}
                   {selectedVideo.isFeatured && (
-                    <View style={[styles.badge, { backgroundColor: '#F59E0B' }]}>
+                    <View style={[styles.badge, { backgroundColor: colors.warning }]}>
                       <Text style={styles.badgeText}>Featured</Text>
                     </View>
                   )}
                   {selectedVideo.isTrending && (
-                    <View style={[styles.badge, { backgroundColor: '#EF4444' }]}>
+                    <View style={[styles.badge, { backgroundColor: colors.error }]}>
                       <Text style={styles.badgeText}>Trending</Text>
                     </View>
                   )}
@@ -1001,7 +1001,7 @@ export default function ExploreScreen() {
           style={[styles.addBtn, { backgroundColor: colors.tint }]}
           onPress={() => setShowAddModal(true)}
         >
-          <Ionicons name="add" size={20} color="#FFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.addBtnText}>Add Video</Text>
         </TouchableOpacity>
       </View>
@@ -1129,7 +1129,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   addBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1235,7 +1235,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   badgeText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontSize: 10,
     fontWeight: '600',
   },
@@ -1295,7 +1295,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   emptyBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
   },
   modalOverlay: {

@@ -3,11 +3,12 @@ import { View } from 'react-native';
 import { PageConfig } from '../../services/api/categories';
 import ColorInput from './ColorInput';
 import IconInput from './IconInput';
+import { Colors } from '@/constants/Colors';
 
 interface ThemeEditorProps {
   pageConfig: PageConfig;
   setPageConfig: React.Dispatch<React.SetStateAction<PageConfig>>;
-  colors: { text: string; icon: string; border: string; card: string };
+  colors: typeof Colors.light;
 }
 
 const ThemeEditor = React.memo(({ pageConfig, setPageConfig, colors }: ThemeEditorProps) => {
@@ -29,14 +30,14 @@ const ThemeEditor = React.memo(({ pageConfig, setPageConfig, colors }: ThemeEdit
         label="Primary Color"
         value={theme.primaryColor}
         onChange={(v) => updateTheme('primaryColor', v)}
-        placeholder="#1a3a52"
+        placeholder={colors.navy}
         colors={colors}
       />
       <ColorInput
         label="Gradient Color 1"
         value={theme.gradientColors?.[0] || ''}
         onChange={(v) => updateGradient(0, v)}
-        placeholder="#1a3a52"
+        placeholder={colors.navy}
         colors={colors}
       />
       <ColorInput

@@ -36,7 +36,7 @@ export default function LoyaltyMilestonesScreen() {
   const [formRewardCoins, setFormRewardCoins] = useState('');
   const [formRewardDiscount, setFormRewardDiscount] = useState('');
   const [formIcon, setFormIcon] = useState('trophy');
-  const [formColor, setFormColor] = useState('#F59E0B');
+  const [formColor, setFormColor] = useState(colors.warning);
   const [formTier, setFormTier] = useState('');
   const [formOrder, setFormOrder] = useState('0');
   const [formIsActive, setFormIsActive] = useState(true);
@@ -57,7 +57,7 @@ export default function LoyaltyMilestonesScreen() {
   const resetForm = () => {
     setFormTitle(''); setFormDescription(''); setFormTargetType('orders'); setFormTargetValue('');
     setFormReward(''); setFormRewardType('coins'); setFormRewardCoins(''); setFormRewardDiscount('');
-    setFormIcon('trophy'); setFormColor('#F59E0B'); setFormTier(''); setFormOrder('0');
+    setFormIcon('trophy'); setFormColor(colors.warning); setFormTier(''); setFormOrder('0');
     setFormIsActive(true); setEditingMilestone(null);
   };
 
@@ -106,8 +106,8 @@ export default function LoyaltyMilestonesScreen() {
   };
 
   const getTierColor = (tier?: string) => {
-    const map: Record<string, string> = { bronze: '#CD7F32', silver: '#C0C0C0', gold: '#FFD700', platinum: '#E5E4E2' };
-    return map[tier || ''] || '#6B7280';
+    const map: Record<string, string> = { bronze: colors.bronze, silver: '#C0C0C0', gold: colors.goldBright, platinum: '#E5E4E2' };
+    return map[tier || ''] || colors.mutedDark;
   };
 
   const stats = {
@@ -125,14 +125,14 @@ export default function LoyaltyMilestonesScreen() {
           <Text style={[styles.subtitle, { color: colors.icon }]}>Manage loyalty program milestones</Text>
         </View>
         <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.tint }]} onPress={openCreate}>
-          <Ionicons name="add" size={20} color="#FFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.addBtnText}>Add Milestone</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.statsRow}>
-        {[{ label: 'Total', value: stats.total, color: '#3B82F6' }, { label: 'Active', value: stats.active, color: '#10B981' }, { label: 'Inactive', value: stats.inactive, color: '#EF4444' }].map((s) => (
-          <View key={s.label} style={[styles.statCard, { backgroundColor: isDark ? '#1F2937' : '#FFF', borderColor: isDark ? '#374151' : '#E5E7EB' }]}>
+        {[{ label: 'Total', value: stats.total, color: colors.info }, { label: 'Active', value: stats.active, color: colors.success }, { label: 'Inactive', value: stats.inactive, color: colors.error }].map((s) => (
+          <View key={s.label} style={[styles.statCard, { backgroundColor: isDark ? colors.gray800 : colors.card, borderColor: isDark ? colors.gray700 : colors.gray200 }]}>
             <Text style={[styles.statValue, { color: s.color }]}>{s.value}</Text>
             <Text style={[styles.statLabel, { color: colors.icon }]}>{s.label}</Text>
           </View>
@@ -142,18 +142,18 @@ export default function LoyaltyMilestonesScreen() {
       <View style={styles.filtersRow}>
         {(['all', 'active', 'inactive'] as const).map((f) => (
           <TouchableOpacity key={f} style={[styles.filterChip, filter === f && { backgroundColor: colors.tint }]} onPress={() => setFilter(f)}>
-            <Text style={[styles.filterText, filter === f && { color: '#FFF' }]}>{f.charAt(0).toUpperCase() + f.slice(1)}</Text>
+            <Text style={[styles.filterText, filter === f && { color: colors.card }]}>{f.charAt(0).toUpperCase() + f.slice(1)}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <View style={[styles.searchBar, { backgroundColor: isDark ? '#1F2937' : '#F3F4F6', borderColor: isDark ? '#374151' : '#E5E7EB' }]}>
+      <View style={[styles.searchBar, { backgroundColor: isDark ? colors.gray800 : colors.backgroundSecondary, borderColor: isDark ? colors.gray700 : colors.gray200 }]}>
         <Ionicons name="search" size={18} color={colors.icon} />
         <TextInput style={[styles.searchInput, { color: colors.text }]} placeholder="Search milestones..." placeholderTextColor={colors.icon} value={search} onChangeText={setSearch} />
       </View>
 
       {milestones.map((m) => (
-        <View key={m._id} style={[styles.card, { backgroundColor: isDark ? '#1F2937' : '#FFF', borderColor: isDark ? '#374151' : '#E5E7EB' }]}>
+        <View key={m._id} style={[styles.card, { backgroundColor: isDark ? colors.gray800 : colors.card, borderColor: isDark ? colors.gray700 : colors.gray200 }]}>
           <View style={styles.cardHeader}>
             <View style={[styles.iconBadge, { backgroundColor: m.color + '30' }]}>
               <Ionicons name={(m.icon || 'trophy') as any} size={20} color={m.color} />
@@ -165,14 +165,14 @@ export default function LoyaltyMilestonesScreen() {
             <Switch value={m.isActive} onValueChange={() => handleToggle(m)} />
           </View>
           <View style={styles.tagRow}>
-            <View style={[styles.badge, { backgroundColor: '#3B82F620' }]}><Text style={[styles.badgeText, { color: '#3B82F6' }]}>{m.targetType}: {m.targetValue}</Text></View>
-            <View style={[styles.badge, { backgroundColor: '#10B98120' }]}><Text style={[styles.badgeText, { color: '#10B981' }]}>{m.rewardType}: {m.reward}</Text></View>
+            <View style={[styles.badge, { backgroundColor: `${colors.info}20` }]}><Text style={[styles.badgeText, { color: colors.info }]}>{m.targetType}: {m.targetValue}</Text></View>
+            <View style={[styles.badge, { backgroundColor: `${colors.success}20` }]}><Text style={[styles.badgeText, { color: colors.success }]}>{m.rewardType}: {m.reward}</Text></View>
             {m.tier && <View style={[styles.badge, { backgroundColor: getTierColor(m.tier) + '30' }]}><Text style={[styles.badgeText, { color: getTierColor(m.tier) }]}>{m.tier}</Text></View>}
             <Text style={[styles.cardMeta, { color: colors.icon }]}>Order: {m.order}</Text>
           </View>
           <View style={styles.cardActions}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => openEdit(m)}><Ionicons name="pencil" size={16} color="#3B82F6" /></TouchableOpacity>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(m)}><Ionicons name="trash" size={16} color="#EF4444" /></TouchableOpacity>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => openEdit(m)}><Ionicons name="pencil" size={16} color={colors.info} /></TouchableOpacity>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(m)}><Ionicons name="trash" size={16} color={colors.error} /></TouchableOpacity>
           </View>
         </View>
       ))}
@@ -181,7 +181,7 @@ export default function LoyaltyMilestonesScreen() {
 
       <Modal visible={showModal} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: isDark ? '#1F2937' : '#FFF' }]}>
+          <View style={[styles.modalContent, { backgroundColor: isDark ? colors.gray800 : colors.card }]}>
             <ScrollView>
               <Text style={[styles.modalTitle, { color: colors.text }]}>{editingMilestone ? 'Edit Milestone' : 'Create Milestone'}</Text>
               {[
@@ -198,7 +198,7 @@ export default function LoyaltyMilestonesScreen() {
                 <View key={field.label} style={styles.formField}>
                   <Text style={[styles.formLabel, { color: colors.text }]}>{field.label}</Text>
                   <TextInput
-                    style={[styles.formInput, { color: colors.text, backgroundColor: isDark ? '#374151' : '#F3F4F6', borderColor: isDark ? '#4B5563' : '#D1D5DB' }]}
+                    style={[styles.formInput, { color: colors.text, backgroundColor: isDark ? colors.gray700 : colors.backgroundSecondary, borderColor: isDark ? colors.gray600 : colors.gray300 }]}
                     value={field.value} onChangeText={field.setter} placeholderTextColor={colors.icon} keyboardType={field.keyboard}
                   />
                 </View>
@@ -208,7 +208,7 @@ export default function LoyaltyMilestonesScreen() {
                 <View style={styles.typeRow}>
                   {TARGET_TYPES.map((t) => (
                     <TouchableOpacity key={t} style={[styles.typeChip, formTargetType === t && { backgroundColor: colors.tint }]} onPress={() => setFormTargetType(t)}>
-                      <Text style={[styles.typeChipText, formTargetType === t && { color: '#FFF' }]}>{t}</Text>
+                      <Text style={[styles.typeChipText, formTargetType === t && { color: colors.card }]}>{t}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -218,7 +218,7 @@ export default function LoyaltyMilestonesScreen() {
                 <View style={styles.typeRow}>
                   {REWARD_TYPES.map((t) => (
                     <TouchableOpacity key={t} style={[styles.typeChip, formRewardType === t && { backgroundColor: colors.tint }]} onPress={() => setFormRewardType(t)}>
-                      <Text style={[styles.typeChipText, formRewardType === t && { color: '#FFF' }]}>{t}</Text>
+                      <Text style={[styles.typeChipText, formRewardType === t && { color: colors.card }]}>{t}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -228,7 +228,7 @@ export default function LoyaltyMilestonesScreen() {
                 <View style={styles.typeRow}>
                   {['', ...TIERS].map((t) => (
                     <TouchableOpacity key={t} style={[styles.typeChip, formTier === t && { backgroundColor: colors.tint }]} onPress={() => setFormTier(t)}>
-                      <Text style={[styles.typeChipText, formTier === t && { color: '#FFF' }]}>{t || 'None'}</Text>
+                      <Text style={[styles.typeChipText, formTier === t && { color: colors.card }]}>{t || 'None'}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -238,9 +238,9 @@ export default function LoyaltyMilestonesScreen() {
                 <Switch value={formIsActive} onValueChange={setFormIsActive} />
               </View>
               <View style={styles.modalActions}>
-                <TouchableOpacity style={[styles.modalBtn, { backgroundColor: '#6B7280' }]} onPress={() => { setShowModal(false); resetForm(); }}><Text style={styles.modalBtnText}>Cancel</Text></TouchableOpacity>
+                <TouchableOpacity style={[styles.modalBtn, { backgroundColor: colors.mutedDark }]} onPress={() => { setShowModal(false); resetForm(); }}><Text style={styles.modalBtnText}>Cancel</Text></TouchableOpacity>
                 <TouchableOpacity style={[styles.modalBtn, { backgroundColor: colors.tint }]} onPress={handleSave} disabled={saving}>
-                  {saving ? <ActivityIndicator color="#FFF" size="small" /> : <Text style={styles.modalBtnText}>{editingMilestone ? 'Update' : 'Create'}</Text>}
+                  {saving ? <ActivityIndicator color={colors.card} size="small" /> : <Text style={styles.modalBtnText}>{editingMilestone ? 'Update' : 'Create'}</Text>}
                 </TouchableOpacity>
               </View>
             </ScrollView>
@@ -258,14 +258,14 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: '700' },
   subtitle: { fontSize: 14, marginTop: 2 },
   addBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, gap: 4 },
-  addBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  addBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
   statsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 12 },
   statCard: { flex: 1, padding: 12, borderRadius: 10, borderWidth: 1, alignItems: 'center' },
   statValue: { fontSize: 22, fontWeight: '700' },
   statLabel: { fontSize: 12, marginTop: 2 },
   filtersRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 12 },
-  filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: '#E5E7EB' },
-  filterText: { fontSize: 13, fontWeight: '500', color: '#6B7280' },
+  filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: Colors.light.gray200 },
+  filterText: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark },
   searchBar: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, padding: 10, borderRadius: 10, borderWidth: 1, marginBottom: 12, gap: 8 },
   searchInput: { flex: 1, fontSize: 14 },
   card: { marginHorizontal: 16, marginBottom: 12, borderRadius: 12, borderWidth: 1, padding: 14 },
@@ -287,9 +287,9 @@ const styles = StyleSheet.create({
   formLabel: { fontSize: 13, fontWeight: '500', marginBottom: 6 },
   formInput: { borderWidth: 1, borderRadius: 8, padding: 10, fontSize: 14 },
   typeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  typeChip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, backgroundColor: '#E5E7EB' },
-  typeChipText: { fontSize: 12, fontWeight: '500', color: '#6B7280' },
+  typeChip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12, backgroundColor: Colors.light.gray200 },
+  typeChipText: { fontSize: 12, fontWeight: '500', color: Colors.light.mutedDark },
   modalActions: { flexDirection: 'row', gap: 10, marginTop: 16 },
   modalBtn: { flex: 1, paddingVertical: 12, borderRadius: 8, alignItems: 'center' },
-  modalBtnText: { color: '#FFF', fontWeight: '600', fontSize: 15 },
+  modalBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 15 },
 });

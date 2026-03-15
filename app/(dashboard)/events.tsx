@@ -54,10 +54,10 @@ const FILTER_CHIPS: { key: FilterType; label: string; icon: string }[] = [
 ];
 
 const STATUS_OPTIONS: { value: EventStatus; label: string; color: string }[] = [
-  { value: 'draft', label: 'Draft', color: '#6B7280' },
-  { value: 'published', label: 'Published', color: '#10B981' },
-  { value: 'cancelled', label: 'Cancelled', color: '#EF4444' },
-  { value: 'completed', label: 'Completed', color: '#3B82F6' },
+  { value: 'draft', label: 'Draft', color: Colors.light.mutedDark },
+  { value: 'published', label: 'Published', color: Colors.light.success },
+  { value: 'cancelled', label: 'Cancelled', color: Colors.light.error },
+  { value: 'completed', label: 'Completed', color: Colors.light.info },
 ];
 
 const DEFAULT_FORM_DATA: Partial<EventRequest> = {
@@ -371,10 +371,10 @@ export default function EventsScreen() {
 
   const getStatusBadge = (status: EventStatus) => {
     const map: Record<EventStatus, { text: string; color: string; icon: string }> = {
-      draft: { text: 'Draft', color: '#6B7280', icon: 'document-text' },
-      published: { text: 'Published', color: '#10B981', icon: 'checkmark-circle' },
-      cancelled: { text: 'Cancelled', color: '#EF4444', icon: 'close-circle' },
-      completed: { text: 'Completed', color: '#3B82F6', icon: 'flag' },
+      draft: { text: 'Draft', color: colors.mutedDark, icon: 'document-text' },
+      published: { text: 'Published', color: colors.success, icon: 'checkmark-circle' },
+      cancelled: { text: 'Cancelled', color: colors.error, icon: 'close-circle' },
+      completed: { text: 'Completed', color: colors.info, icon: 'flag' },
     };
     return map[status] || map.draft;
   };
@@ -438,7 +438,7 @@ export default function EventsScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={20} color="#FFF" />
+        <Ionicons name="add" size={20} color={colors.card} />
         <Text style={styles.createBtnText}>Create Event</Text>
       </TouchableOpacity>
     </View>
@@ -448,9 +448,9 @@ export default function EventsScreen() {
     <View style={styles.statsRow}>
       {[
         { label: 'Total', value: stats?.total || 0, color: colors.text, icon: 'calendar' },
-        { label: 'Active', value: stats?.active || 0, color: '#10B981', icon: 'checkmark-circle' },
-        { label: 'Featured', value: stats?.featured || 0, color: '#F59E0B', icon: 'star' },
-        { label: 'Bookings', value: stats?.totalBookings || 0, color: '#3B82F6', icon: 'ticket' },
+        { label: 'Active', value: stats?.active || 0, color: colors.success, icon: 'checkmark-circle' },
+        { label: 'Featured', value: stats?.featured || 0, color: colors.warning, icon: 'star' },
+        { label: 'Bookings', value: stats?.totalBookings || 0, color: colors.info, icon: 'ticket' },
       ].map((item, index) => (
         <View key={index} style={[styles.statItem, { backgroundColor: colors.card }]}>
           <Ionicons name={item.icon as any} size={20} color={item.color} style={{ marginBottom: 4 }} />
@@ -485,9 +485,9 @@ export default function EventsScreen() {
               <Ionicons
                 name={tab.icon as any}
                 size={16}
-                color={isActive ? '#FFF' : colors.icon}
+                color={isActive ? colors.card : colors.icon}
               />
-              <Text style={[styles.tabLabel, { color: isActive ? '#FFF' : colors.icon }]}>
+              <Text style={[styles.tabLabel, { color: isActive ? colors.card : colors.icon }]}>
                 {tab.label}
               </Text>
             </TouchableOpacity>
@@ -569,9 +569,9 @@ export default function EventsScreen() {
               <Text style={[styles.statusLabel, { color: statusBadge.color }]}>{statusBadge.text}</Text>
             </View>
             {itemIsFeatured && (
-              <View style={[styles.featuredChip, { backgroundColor: '#F59E0B15' }]}>
-                <Ionicons name="star" size={12} color="#F59E0B" />
-                <Text style={[styles.featuredLabel, { color: '#F59E0B' }]}>Featured</Text>
+              <View style={[styles.featuredChip, { backgroundColor: `${colors.warning}15` }]}>
+                <Ionicons name="star" size={12} color={colors.warning} />
+                <Text style={[styles.featuredLabel, { color: colors.warning }]}>Featured</Text>
               </View>
             )}
           </View>
@@ -619,51 +619,51 @@ export default function EventsScreen() {
         {/* Action Row */}
         <View style={styles.actionRow}>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
             onPress={() => handleEdit(item)}
           >
-            <Ionicons name="pencil" size={16} color="#3B82F6" />
+            <Ionicons name="pencil" size={16} color={colors.info} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#F59E0B10' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.warning}10` }]}
             onPress={() => handleToggleFeatured(item)}
           >
             <Ionicons
               name={itemIsFeatured ? 'star' : 'star-outline'}
               size={16}
-              color="#F59E0B"
+              color={colors.warning}
             />
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.actionIconBtn,
-              { backgroundColor: item.status === 'published' ? '#10B98115' : '#6B728015' },
+              { backgroundColor: item.status === 'published' ? `${colors.success}15` : `${colors.mutedDark}15` },
             ]}
             onPress={() => handleToggleStatus(item)}
           >
             <Ionicons
               name={item.status === 'published' ? 'eye-off' : 'eye'}
               size={16}
-              color={item.status === 'published' ? '#10B981' : '#6B7280'}
+              color={item.status === 'published' ? colors.success : colors.mutedDark}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#8B5CF610' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.purple}10` }]}
             onPress={() => handleViewBookings(item._id)}
           >
-            <Ionicons name="ticket" size={16} color="#8B5CF6" />
+            <Ionicons name="ticket" size={16} color={colors.purple} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#06B6D410' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.cyan}10` }]}
             onPress={() => handleViewAnalytics(item._id)}
           >
             <Ionicons name="analytics" size={16} color="#06B6D4" />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.error}10` }]}
             onPress={() => handleDelete(item)}
           >
-            <Ionicons name="trash" size={16} color="#EF4444" />
+            <Ionicons name="trash" size={16} color={colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -682,7 +682,7 @@ export default function EventsScreen() {
           style={[styles.emptyBtn, { backgroundColor: colors.tint }]}
           onPress={handleCreateNew}
         >
-          <Ionicons name="add" size={18} color="#FFF" />
+          <Ionicons name="add" size={18} color={colors.card} />
           <Text style={styles.emptyBtnText}>Create Event</Text>
         </TouchableOpacity>
       )}
@@ -709,7 +709,7 @@ export default function EventsScreen() {
             disabled={isSaving}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Save</Text>
             )}
@@ -772,7 +772,7 @@ export default function EventsScreen() {
                 ]}
                 onPress={() => setFormData(p => ({ ...p, categoryId: '' }))}
               >
-                <Text style={[styles.chipOptionText, { color: !formData.categoryId ? '#FFF' : colors.text }]}>
+                <Text style={[styles.chipOptionText, { color: !formData.categoryId ? colors.card : colors.text }]}>
                   None
                 </Text>
               </TouchableOpacity>
@@ -789,7 +789,7 @@ export default function EventsScreen() {
                   <Text
                     style={[
                       styles.chipOptionText,
-                      { color: formData.categoryId === cat._id ? '#FFF' : colors.text },
+                      { color: formData.categoryId === cat._id ? colors.card : colors.text },
                     ]}
                   >
                     {cat.icon ? `${cat.icon} ` : ''}{cat.name}
@@ -1093,7 +1093,7 @@ export default function EventsScreen() {
                     style={styles.removeImageBtn}
                     onPress={() => setFormData(p => ({ ...p, image: '' }))}
                   >
-                    <Ionicons name="close-circle" size={24} color="#EF4444" />
+                    <Ionicons name="close-circle" size={24} color={colors.error} />
                   </TouchableOpacity>
                 </View>
               ) : null}
@@ -1139,7 +1139,7 @@ export default function EventsScreen() {
                     <Text
                       style={[
                         styles.chipOptionText,
-                        { color: formData.status === opt.value ? '#FFF' : colors.text },
+                        { color: formData.status === opt.value ? colors.card : colors.text },
                       ]}
                     >
                       {opt.label}
@@ -1217,12 +1217,12 @@ export default function EventsScreen() {
             contentContainerStyle={{ padding: 16 }}
             renderItem={({ item: booking }) => {
               const statusColors: Record<string, string> = {
-                confirmed: '#10B981',
-                cancelled: '#EF4444',
-                pending: '#F59E0B',
-                checked_in: '#3B82F6',
+                confirmed: colors.success,
+                cancelled: colors.error,
+                pending: colors.warning,
+                checked_in: colors.info,
               };
-              const statusColor = statusColors[booking.status] || '#6B7280';
+              const statusColor = statusColors[booking.status] || colors.mutedDark;
 
               return (
                 <View style={[styles.bookingCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -1302,13 +1302,13 @@ export default function EventsScreen() {
             {/* Analytics Stats Grid */}
             <View style={styles.analyticsGrid}>
               {[
-                { label: 'Total Bookings', value: analytics.totalBookings, icon: 'ticket', color: '#3B82F6' },
-                { label: 'Total Revenue', value: `$${analytics.totalRevenue?.toFixed(2) || '0.00'}`, icon: 'cash', color: '#10B981' },
-                { label: 'Check-ins', value: analytics.totalCheckins, icon: 'checkmark-circle', color: '#8B5CF6' },
-                { label: 'Total Views', value: analytics.totalViews, icon: 'eye', color: '#F59E0B' },
-                { label: 'Favorites', value: analytics.totalFavorites, icon: 'heart', color: '#EF4444' },
-                { label: 'Check-in Rate', value: `${(analytics.checkinRate * 100).toFixed(1)}%`, icon: 'trending-up', color: '#06B6D4' },
-                { label: 'Avg Tickets', value: analytics.averageTicketsPerBooking?.toFixed(1) || '0', icon: 'people', color: '#EC4899' },
+                { label: 'Total Bookings', value: analytics.totalBookings, icon: 'ticket', color: colors.info },
+                { label: 'Total Revenue', value: `$${analytics.totalRevenue?.toFixed(2) || '0.00'}`, icon: 'cash', color: colors.success },
+                { label: 'Check-ins', value: analytics.totalCheckins, icon: 'checkmark-circle', color: colors.purple },
+                { label: 'Total Views', value: analytics.totalViews, icon: 'eye', color: colors.warning },
+                { label: 'Favorites', value: analytics.totalFavorites, icon: 'heart', color: colors.error },
+                { label: 'Check-in Rate', value: `${(analytics.checkinRate * 100).toFixed(1)}%`, icon: 'trending-up', color: colors.cyan },
+                { label: 'Avg Tickets', value: analytics.averageTicketsPerBooking?.toFixed(1) || '0', icon: 'people', color: colors.pink },
               ].map((item, index) => (
                 <View key={index} style={[styles.analyticsCard, { backgroundColor: colors.card }]}>
                   <Ionicons name={item.icon as any} size={24} color={item.color} />
@@ -1442,7 +1442,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   createBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1678,7 +1678,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   emptyBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
   },
 
@@ -1721,7 +1721,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1817,7 +1817,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.light.card,
     borderRadius: 12,
   },
 
@@ -1921,7 +1921,7 @@ const styles = StyleSheet.create({
   dayBarContainer: {
     flex: 1,
     height: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
     borderRadius: 4,
     overflow: 'hidden',
   },

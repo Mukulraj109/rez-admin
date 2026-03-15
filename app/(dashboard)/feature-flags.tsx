@@ -349,9 +349,9 @@ export default function FeatureFlagsScreen() {
             <Ionicons
               name={tab.icon as any}
               size={16}
-              color={isActive ? '#FFF' : colors.icon}
+              color={isActive ? colors.card : colors.icon}
             />
-            <Text style={[styles.tabLabel, { color: isActive ? '#FFF' : colors.icon }]}>
+            <Text style={[styles.tabLabel, { color: isActive ? colors.card : colors.icon }]}>
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -369,15 +369,15 @@ export default function FeatureFlagsScreen() {
       {/* Actions Row */}
       <View style={styles.flagsActionsRow}>
         <TouchableOpacity
-          style={[styles.seedBtn, { backgroundColor: '#F59E0B' }]}
+          style={[styles.seedBtn, { backgroundColor: colors.warning }]}
           onPress={handleSeedFlags}
           disabled={seeding}
         >
           {seeding ? (
-            <ActivityIndicator size="small" color="#FFF" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <>
-              <Ionicons name="flash" size={14} color="#FFF" />
+              <Ionicons name="flash" size={14} color={colors.card} />
               <Text style={styles.seedBtnText}>Seed Defaults</Text>
             </>
           )}
@@ -390,7 +390,7 @@ export default function FeatureFlagsScreen() {
             setShowCreateModal(true);
           }}
         >
-          <Ionicons name="add-circle" size={14} color="#FFF" />
+          <Ionicons name="add-circle" size={14} color={colors.card} />
           <Text style={styles.seedBtnText}>New Flag</Text>
         </TouchableOpacity>
       </View>
@@ -414,7 +414,7 @@ export default function FeatureFlagsScreen() {
                   ]}
                   onPress={() => setGroupFilter(group)}
                 >
-                  <Text style={[styles.filterChipText, { color: isActive ? '#FFF' : colors.icon }]}>
+                  <Text style={[styles.filterChipText, { color: isActive ? colors.card : colors.icon }]}>
                     {group}
                   </Text>
                 </TouchableOpacity>
@@ -428,8 +428,8 @@ export default function FeatureFlagsScreen() {
       <View style={styles.statsRow}>
         {[
           { label: 'Total', value: flags.length, color: colors.text },
-          { label: 'Enabled', value: flags.filter(f => f.enabled).length, color: '#10B981' },
-          { label: 'Disabled', value: flags.filter(f => !f.enabled).length, color: '#EF4444' },
+          { label: 'Enabled', value: flags.filter(f => f.enabled).length, color: colors.success },
+          { label: 'Disabled', value: flags.filter(f => !f.enabled).length, color: colors.error },
         ].map((item, index) => (
           <View key={index} style={[styles.statItem, { backgroundColor: colors.card }]}>
             <Text style={[styles.statValue, { color: item.color }]}>{item.value}</Text>
@@ -454,7 +454,7 @@ export default function FeatureFlagsScreen() {
             style={[
               styles.flagCard,
               { backgroundColor: colors.card },
-              { borderLeftWidth: 4, borderLeftColor: flag.enabled ? '#10B981' : '#94A3B8' },
+              { borderLeftWidth: 4, borderLeftColor: flag.enabled ? colors.success : colors.slateMedium },
             ]}
           >
             <View style={styles.flagCardContent}>
@@ -462,8 +462,8 @@ export default function FeatureFlagsScreen() {
                 <Text style={[styles.flagLabel, { color: colors.text }]}>{flag.label}</Text>
                 <Text style={[styles.flagKey, { color: colors.icon }]}>{flag.key}</Text>
                 <View style={styles.flagMeta}>
-                  <View style={[styles.flagMetaChip, { backgroundColor: '#8B5CF615' }]}>
-                    <Text style={[styles.flagMetaText, { color: '#8B5CF6' }]}>{flag.group}</Text>
+                  <View style={[styles.flagMetaChip, { backgroundColor: `${colors.purple}15` }]}>
+                    <Text style={[styles.flagMetaText, { color: colors.purple }]}>{flag.group}</Text>
                   </View>
                   <View style={[styles.flagMetaChip, { backgroundColor: colors.background }]}>
                     <Text style={[styles.flagMetaText, { color: colors.icon }]}>Order: {flag.sortOrder}</Text>
@@ -475,26 +475,26 @@ export default function FeatureFlagsScreen() {
                 <Switch
                   value={flag.enabled}
                   onValueChange={() => handleToggleFlag(flag)}
-                  trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-                  thumbColor="#FFFFFF"
+                  trackColor={{ false: colors.border, true: colors.success }}
+                  thumbColor={colors.card}
                 />
               </View>
             </View>
 
             <View style={[styles.flagActionsBottom, { borderTopColor: colors.border }]}>
               <TouchableOpacity
-                style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+                style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
                 onPress={() => handleEditFlag(flag)}
               >
-                <Ionicons name="pencil" size={14} color="#3B82F6" />
-                <Text style={[styles.actionBtnText, { color: '#3B82F6' }]}>Edit</Text>
+                <Ionicons name="pencil" size={14} color={colors.info} />
+                <Text style={[styles.actionBtnText, { color: colors.info }]}>Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
+                style={[styles.actionIconBtn, { backgroundColor: `${colors.error}10` }]}
                 onPress={() => handleDeleteFlag(flag)}
               >
-                <Ionicons name="trash" size={14} color="#EF4444" />
-                <Text style={[styles.actionBtnText, { color: '#EF4444' }]}>Delete</Text>
+                <Ionicons name="trash" size={14} color={colors.error} />
+                <Text style={[styles.actionBtnText, { color: colors.error }]}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -557,7 +557,7 @@ export default function FeatureFlagsScreen() {
               onUpdate(updated);
             }}
           >
-            <Ionicons name="close-circle" size={22} color="#EF4444" />
+            <Ionicons name="close-circle" size={22} color={colors.error} />
           </TouchableOpacity>
         </View>
       ))}
@@ -576,15 +576,15 @@ export default function FeatureFlagsScreen() {
       {/* Actions Row */}
       <View style={styles.flagsActionsRow}>
         <TouchableOpacity
-          style={[styles.seedBtn, { backgroundColor: '#F59E0B' }]}
+          style={[styles.seedBtn, { backgroundColor: colors.warning }]}
           onPress={handleSeedEarning}
           disabled={seeding}
         >
           {seeding ? (
-            <ActivityIndicator size="small" color="#FFF" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <>
-              <Ionicons name="flash" size={14} color="#FFF" />
+              <Ionicons name="flash" size={14} color={colors.card} />
               <Text style={styles.seedBtnText}>Seed Defaults</Text>
             </>
           )}
@@ -593,16 +593,16 @@ export default function FeatureFlagsScreen() {
         <TouchableOpacity
           style={[
             styles.createBtn,
-            { backgroundColor: earningDirty ? colors.tint : '#94A3B8' },
+            { backgroundColor: earningDirty ? colors.tint : colors.slateMedium },
           ]}
           onPress={handleSaveEarning}
           disabled={!earningDirty || savingEarning}
         >
           {savingEarning ? (
-            <ActivityIndicator size="small" color="#FFF" />
+            <ActivityIndicator size="small" color={colors.card} />
           ) : (
             <>
-              <Ionicons name="checkmark-circle" size={14} color="#FFF" />
+              <Ionicons name="checkmark-circle" size={14} color={colors.card} />
               <Text style={styles.seedBtnText}>Save Changes</Text>
             </>
           )}
@@ -610,9 +610,9 @@ export default function FeatureFlagsScreen() {
       </View>
 
       {earningDirty && (
-        <View style={[styles.dirtyBanner, { backgroundColor: '#F59E0B15' }]}>
-          <Ionicons name="warning" size={16} color="#F59E0B" />
-          <Text style={[styles.dirtyBannerText, { color: '#F59E0B' }]}>
+        <View style={[styles.dirtyBanner, { backgroundColor: `${colors.warning}15` }]}>
+          <Ionicons name="warning" size={16} color={colors.warning} />
+          <Text style={[styles.dirtyBannerText, { color: colors.warning }]}>
             You have unsaved changes
           </Text>
         </View>
@@ -626,7 +626,7 @@ export default function FeatureFlagsScreen() {
           streaks: { ...prev.streaks, login: { milestones } },
         })),
         'Login Streak Milestones',
-        '#3B82F6'
+        colors.info
       )}
 
       {/* Order Streak Milestones */}
@@ -637,7 +637,7 @@ export default function FeatureFlagsScreen() {
           streaks: { ...prev.streaks, order: { milestones } },
         })),
         'Order Streak Milestones',
-        '#10B981'
+        colors.success
       )}
 
       {/* Review Streak Milestones */}
@@ -648,7 +648,7 @@ export default function FeatureFlagsScreen() {
           streaks: { ...prev.streaks, review: { milestones } },
         })),
         'Review Streak Milestones',
-        '#8B5CF6'
+        colors.purple
       )}
 
       {/* Referral Settings */}
@@ -770,7 +770,7 @@ export default function FeatureFlagsScreen() {
       {/* Daily Check-in */}
       <View style={[styles.configSection, { backgroundColor: colors.card }]}>
         <View style={styles.configSectionHeader}>
-          <Ionicons name="calendar" size={18} color="#F59E0B" />
+          <Ionicons name="calendar" size={18} color={colors.warning} />
           <Text style={[styles.configSectionTitle, { color: colors.text }]}>Daily Check-in</Text>
         </View>
 
@@ -838,7 +838,7 @@ export default function FeatureFlagsScreen() {
                 }));
               }}
             >
-              <Ionicons name="close-circle" size={22} color="#EF4444" />
+              <Ionicons name="close-circle" size={22} color={colors.error} />
             </TouchableOpacity>
           </View>
         ))}
@@ -935,7 +935,7 @@ export default function FeatureFlagsScreen() {
             style={[styles.modalSaveBtn, { backgroundColor: colors.tint }]}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Save</Text>
             )}
@@ -987,8 +987,8 @@ export default function FeatureFlagsScreen() {
               <Switch
                 value={flagForm.enabled}
                 onValueChange={val => setFlagForm(p => ({ ...p, enabled: val }))}
-                trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: colors.border, true: colors.success }}
+                thumbColor={colors.card}
               />
             </View>
           </View>
@@ -1017,7 +1017,7 @@ export default function FeatureFlagsScreen() {
             style={[styles.modalSaveBtn, { backgroundColor: colors.tint }]}
           >
             {isSaving ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.card} />
             ) : (
               <Text style={styles.modalSaveBtnText}>Create</Text>
             )}
@@ -1076,8 +1076,8 @@ export default function FeatureFlagsScreen() {
               <Switch
                 value={flagForm.enabled}
                 onValueChange={val => setFlagForm(p => ({ ...p, enabled: val }))}
-                trackColor={{ false: '#E2E8F0', true: '#10B981' }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: colors.border, true: colors.success }}
+                thumbColor={colors.card}
               />
             </View>
           </View>
@@ -1193,7 +1193,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   seedBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 13,
   },
@@ -1454,7 +1454,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },

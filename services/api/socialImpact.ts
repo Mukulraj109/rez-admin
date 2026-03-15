@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import { Colors } from '../../constants/Colors';
 
 // ==================== TYPES ====================
 
@@ -103,18 +104,18 @@ export const EVENT_TYPES = [
 ];
 
 export const EVENT_STATUSES = [
-  { value: 'upcoming', label: 'Upcoming', color: '#3B82F6' },
-  { value: 'ongoing', label: 'Ongoing', color: '#10B981' },
-  { value: 'completed', label: 'Completed', color: '#6B7280' },
-  { value: 'cancelled', label: 'Cancelled', color: '#EF4444' },
+  { value: 'upcoming', label: 'Upcoming', color: Colors.light.info },
+  { value: 'ongoing', label: 'Ongoing', color: Colors.light.success },
+  { value: 'completed', label: 'Completed', color: Colors.light.secondaryText },
+  { value: 'cancelled', label: 'Cancelled', color: Colors.light.error },
 ];
 
 export const PARTICIPANT_STATUSES = [
-  { value: 'registered', label: 'Registered', color: '#3B82F6' },
-  { value: 'checked_in', label: 'Checked In', color: '#F59E0B' },
-  { value: 'completed', label: 'Completed', color: '#10B981' },
-  { value: 'cancelled', label: 'Cancelled', color: '#6B7280' },
-  { value: 'no_show', label: 'No Show', color: '#EF4444' },
+  { value: 'registered', label: 'Registered', color: Colors.light.info },
+  { value: 'checked_in', label: 'Checked In', color: Colors.light.warning },
+  { value: 'completed', label: 'Completed', color: Colors.light.success },
+  { value: 'cancelled', label: 'Cancelled', color: Colors.light.secondaryText },
+  { value: 'no_show', label: 'No Show', color: Colors.light.error },
 ];
 
 export const INDUSTRIES = [
@@ -127,7 +128,7 @@ export function getEventTypeEmoji(eventType: string): string {
 }
 
 export function getStatusColor(status: string): string {
-  return EVENT_STATUSES.find(s => s.value === status)?.color || '#6B7280';
+  return EVENT_STATUSES.find(s => s.value === status)?.color || Colors.light.secondaryText;
 }
 
 // ==================== API SERVICE ====================

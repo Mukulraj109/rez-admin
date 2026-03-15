@@ -193,8 +193,8 @@ export default function ValueCardsScreen() {
         <Switch
           value={item.isActive}
           onValueChange={() => handleToggleActive(item)}
-          trackColor={{ false: '#E2E8F0', true: '#3B82F6' }}
-          thumbColor="#FFFFFF"
+          trackColor={{ false: colors.border, true: colors.info }}
+          thumbColor={colors.card}
         />
       </View>
 
@@ -202,15 +202,15 @@ export default function ValueCardsScreen() {
       <View style={styles.cardInfoRow}>
         {item.deepLinkPath ? (
           <View style={styles.infoChip}>
-            <Ionicons name="link-outline" size={10} color="#374151" />
+            <Ionicons name="link-outline" size={10} color={colors.gray700} />
             <Text style={[styles.infoChipText, { marginLeft: 3 }]} numberOfLines={1}>{item.deepLinkPath}</Text>
           </View>
         ) : null}
         <View style={styles.infoChip}>
           <Text style={styles.infoChipText}>Order: {item.sortOrder}</Text>
         </View>
-        <View style={[styles.infoChip, { backgroundColor: item.isActive ? '#D1FAE5' : '#FEE2E2' }]}>
-          <Text style={[styles.infoChipText, { color: item.isActive ? '#065F46' : '#991B1B' }]}>
+        <View style={[styles.infoChip, { backgroundColor: item.isActive ? colors.successLight : colors.errorLight }]}>
+          <Text style={[styles.infoChipText, { color: item.isActive ? colors.successDeep : colors.errorDeep }]}>
             {item.isActive ? 'Active' : 'Inactive'}
           </Text>
         </View>
@@ -219,13 +219,13 @@ export default function ValueCardsScreen() {
       {/* Actions */}
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(item)}>
-          <Ionicons name="create-outline" size={18} color="#3B82F6" />
-          <Text style={[styles.actionText, { color: '#3B82F6' }]}>Edit</Text>
+          <Ionicons name="create-outline" size={18} color={colors.info} />
+          <Text style={[styles.actionText, { color: colors.info }]}>Edit</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item)}>
-          <Ionicons name="trash-outline" size={18} color="#EF4444" />
-          <Text style={[styles.actionText, { color: '#EF4444' }]}>Delete</Text>
+          <Ionicons name="trash-outline" size={18} color={colors.error} />
+          <Text style={[styles.actionText, { color: colors.error }]}>Delete</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -247,7 +247,7 @@ export default function ValueCardsScreen() {
           </Text>
           <TouchableOpacity onPress={handleSave} disabled={isSaving}>
             {isSaving ? (
-              <ActivityIndicator size="small" color="#3B82F6" />
+              <ActivityIndicator size="small" color={colors.info} />
             ) : (
               <Text style={styles.saveBtn}>Save</Text>
             )}
@@ -264,7 +264,7 @@ export default function ValueCardsScreen() {
             value={formData.title}
             onChangeText={(v) => setFormData(prev => ({ ...prev, title: v }))}
             placeholder="Save on Groceries"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Subtitle</Text>
@@ -273,7 +273,7 @@ export default function ValueCardsScreen() {
             value={formData.subtitle}
             onChangeText={(v) => setFormData(prev => ({ ...prev, subtitle: v }))}
             placeholder="Up to 30% cashback on daily essentials"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <Text style={styles.formLabel}>Emoji</Text>
@@ -282,7 +282,7 @@ export default function ValueCardsScreen() {
             value={formData.emoji}
             onChangeText={(v) => setFormData(prev => ({ ...prev, emoji: v }))}
             placeholder="e.g. a single emoji like a cart or bag"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
           {formData.emoji ? (
             <Text style={styles.emojiPreview}>{formData.emoji}</Text>
@@ -297,7 +297,7 @@ export default function ValueCardsScreen() {
             value={formData.deepLinkPath}
             onChangeText={(v) => setFormData(prev => ({ ...prev, deepLinkPath: v }))}
             placeholder="/explore/category/grocery"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           {/* Settings */}
@@ -310,7 +310,7 @@ export default function ValueCardsScreen() {
             onChangeText={(v) => setFormData(prev => ({ ...prev, sortOrder: Number(v) || 0 }))}
             keyboardType="numeric"
             placeholder="0"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.muted}
           />
 
           <View style={styles.switchRow}>
@@ -350,7 +350,7 @@ export default function ValueCardsScreen() {
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Value Cards</Text>
         <TouchableOpacity style={styles.createBtn} onPress={handleCreate}>
-          <Ionicons name="add" size={20} color="#FFFFFF" />
+          <Ionicons name="add" size={20} color={colors.card} />
           <Text style={styles.createBtnText}>Create</Text>
         </TouchableOpacity>
       </View>
@@ -363,7 +363,7 @@ export default function ValueCardsScreen() {
           onChangeText={setSearchQuery}
           onSubmitEditing={() => loadCards(1)}
           placeholder="Search value cards..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.muted}
           returnKeyType="search"
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChips}>
@@ -390,10 +390,10 @@ export default function ValueCardsScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         ListEmptyComponent={
           loading ? (
-            <ActivityIndicator size="large" color="#3B82F6" style={{ paddingVertical: 40 }} />
+            <ActivityIndicator size="large" color={colors.info} style={{ paddingVertical: 40 }} />
           ) : (
             <View style={styles.emptyContainer}>
-              <Ionicons name="card-outline" size={48} color="#D1D5DB" />
+              <Ionicons name="card-outline" size={48} color={colors.gray300} />
               <Text style={styles.emptyText}>No value cards found</Text>
             </View>
           )
@@ -445,16 +445,16 @@ const styles = StyleSheet.create({
   createBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.info,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
     gap: 4,
   },
-  createBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  createBtnText: { color: Colors.light.card, fontWeight: '600', fontSize: 14 },
 
   // Filters
-  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  filtersBar: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.gray200 },
   searchInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -468,12 +468,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.light.backgroundSecondary,
     marginRight: 8,
   },
-  filterChipActive: { backgroundColor: '#3B82F6' },
-  filterChipText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
-  filterChipTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChipActive: { backgroundColor: Colors.light.info },
+  filterChipText: { fontSize: 12, color: Colors.light.mutedDark, fontWeight: '500' },
+  filterChipTextActive: { color: Colors.light.card, fontWeight: '600' },
 
   // Card
   card: {
@@ -481,17 +481,17 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.gray200,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', flex: 1, gap: 10 },
   cardEmoji: { fontSize: 28 },
   cardTitle: { fontSize: 15, fontWeight: '600' },
-  cardSubtitle: { fontSize: 12, color: '#6B7280', marginTop: 1 },
+  cardSubtitle: { fontSize: 12, color: Colors.light.mutedDark, marginTop: 1 },
   cardInfoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 },
-  infoChip: { backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, flexDirection: 'row', alignItems: 'center' },
-  infoChipText: { fontSize: 11, fontWeight: '500', color: '#374151' },
-  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 10 },
+  infoChip: { backgroundColor: Colors.light.backgroundSecondary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, flexDirection: 'row', alignItems: 'center' },
+  infoChipText: { fontSize: 11, fontWeight: '500', color: Colors.light.gray700 },
+  cardActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, borderTopWidth: 1, borderTopColor: Colors.light.backgroundSecondary, paddingTop: 10 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 4, paddingHorizontal: 6 },
   actionText: { fontSize: 12, fontWeight: '500' },
 
@@ -504,13 +504,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.light.gray200,
   },
   modalTitle: { fontSize: 17, fontWeight: '600' },
-  saveBtn: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  saveBtn: { fontSize: 16, fontWeight: '600', color: Colors.light.info },
   formScroll: { paddingHorizontal: 20 },
-  formSectionTitle: { fontSize: 15, fontWeight: '700', color: '#1a3a52', marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', paddingBottom: 6 },
-  formLabel: { fontSize: 13, fontWeight: '500', color: '#6B7280', marginTop: 10, marginBottom: 4 },
+  formSectionTitle: { fontSize: 15, fontWeight: '700', color: Colors.light.navy, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: Colors.light.backgroundSecondary, paddingBottom: 6 },
+  formLabel: { fontSize: 13, fontWeight: '500', color: Colors.light.mutedDark, marginTop: 10, marginBottom: 4 },
   formInput: {
     borderWidth: 1,
     borderRadius: 8,
@@ -531,15 +531,15 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#F9FAFB',
+    borderColor: Colors.light.gray200,
+    backgroundColor: Colors.light.backgroundTertiary,
   },
   previewEmoji: { fontSize: 32 },
-  previewTitle: { fontSize: 16, fontWeight: '700', color: '#1a3a52' },
-  previewSubtitle: { fontSize: 13, color: '#4B5563', marginTop: 2 },
+  previewTitle: { fontSize: 16, fontWeight: '700', color: Colors.light.navy },
+  previewSubtitle: { fontSize: 13, color: Colors.light.gray600, marginTop: 2 },
   previewLabel: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: Colors.light.muted,
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: 8,
@@ -547,10 +547,10 @@ const styles = StyleSheet.create({
 
   // Empty & Pagination
   emptyContainer: { paddingVertical: 40, alignItems: 'center' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', marginTop: 10 },
+  emptyText: { fontSize: 14, color: Colors.light.muted, marginTop: 10 },
   pagination: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16 },
-  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#3B82F6', borderRadius: 8 },
+  pageBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: Colors.light.info, borderRadius: 8 },
   pageBtnDisabled: { opacity: 0.4 },
-  pageBtnText: { color: '#FFF', fontWeight: '500', fontSize: 13 },
-  pageInfo: { fontSize: 13, color: '#6B7280' },
+  pageBtnText: { color: Colors.light.card, fontWeight: '500', fontSize: 13 },
+  pageInfo: { fontSize: 13, color: Colors.light.mutedDark },
 });

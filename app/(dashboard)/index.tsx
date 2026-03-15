@@ -31,29 +31,29 @@ function StatCard({ title, value, subtitle, icon, iconColor, trend, onPress }: S
 
   return (
     <TouchableOpacity
-      style={[styles.statCard, { backgroundColor: colors.card }]}
+      style={[styles.statCard, { backgroundColor: Colors.light.card }]}
       onPress={onPress}
       disabled={!onPress}
     >
       <View style={[styles.iconContainer, { backgroundColor: `${iconColor}20` }]}>
         <Ionicons name={icon} size={24} color={iconColor} />
       </View>
-      <Text style={[styles.statValue, { color: colors.text }]}>{value}</Text>
-      <Text style={[styles.statTitle, { color: colors.icon }]}>{title}</Text>
+      <Text style={[styles.statValue, { color: Colors.light.text }]}>{value}</Text>
+      <Text style={[styles.statTitle, { color: Colors.light.icon }]}>{title}</Text>
       {subtitle && (
-        <Text style={[styles.statSubtitle, { color: colors.icon }]}>{subtitle}</Text>
+        <Text style={[styles.statSubtitle, { color: Colors.light.icon }]}>{subtitle}</Text>
       )}
       {trend && (
         <View style={styles.trendContainer}>
           <Ionicons
             name={trend.positive ? 'trending-up' : 'trending-down'}
             size={14}
-            color={trend.positive ? colors.success : colors.error}
+            color={trend.positive ? Colors.light.success : Colors.light.error}
           />
           <Text
             style={[
               styles.trendText,
-              { color: trend.positive ? colors.success : colors.error },
+              { color: trend.positive ? Colors.light.success : Colors.light.error },
             ]}
           >
             {trend.value}%
@@ -145,7 +145,7 @@ export default function DashboardScreen() {
           style={styles.notificationButton}
           onPress={() => router.push('/notifications')}
         >
-          <Ionicons name="notifications-outline" size={24} color="#FFFFFF" />
+          <Ionicons name="notifications-outline" size={24} color={colors.card} />
         </TouchableOpacity>
       </View>
 
@@ -158,7 +158,7 @@ export default function DashboardScreen() {
             value={stats?.revenue?.thisMonth ? formatCurrency(stats.revenue.thisMonth) : '0'}
             subtitle="This Month"
             icon="wallet"
-            iconColor="#10B981"
+            iconColor={colors.success}
             onPress={() => router.push('/transactions')}
           />
           <StatCard
@@ -166,21 +166,21 @@ export default function DashboardScreen() {
             value={stats?.revenue?.totalPlatformFees ? formatCurrency(stats.revenue.totalPlatformFees) : '0'}
             subtitle="15% of sales"
             icon="cash"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
           />
           <StatCard
             title="Orders Today"
             value={stats?.orders?.today || 0}
             subtitle={`${stats?.orders?.thisWeek || 0} this week`}
             icon="receipt"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             onPress={() => router.push('/(dashboard)/orders')}
           />
           <StatCard
             title="Pending Orders"
             value={stats?.orders?.pendingCount || 0}
             icon="hourglass"
-            iconColor="#EF4444"
+            iconColor={colors.error}
             onPress={() => router.push('/(dashboard)/orders')}
           />
         </View>
@@ -194,27 +194,27 @@ export default function DashboardScreen() {
             title="Total Merchants"
             value={stats?.merchants?.total || 0}
             icon="storefront"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
             onPress={() => router.push('/(dashboard)/merchants')}
           />
           <StatCard
             title="Pending Approval"
             value={stats?.merchants?.pending || 0}
             icon="time"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
             onPress={() => router.push('/(dashboard)/merchants')}
           />
           <StatCard
             title="Active"
             value={stats?.merchants?.active || 0}
             icon="checkmark-circle"
-            iconColor="#10B981"
+            iconColor={colors.success}
           />
           <StatCard
             title="New This Month"
             value={stats?.merchants?.newThisMonth || 0}
             icon="add-circle"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
           />
         </View>
       </View>
@@ -233,19 +233,19 @@ export default function DashboardScreen() {
             title="Active Users"
             value={formatNumber(stats?.users?.active || 0)}
             icon="person-circle"
-            iconColor="#10B981"
+            iconColor={colors.success}
           />
           <StatCard
             title="New Today"
             value={stats?.users?.newToday || 0}
             icon="person-add"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
           />
           <StatCard
             title="New This Month"
             value={formatNumber(stats?.users?.newThisMonth || 0)}
             icon="trending-up"
-            iconColor="#8B5CF6"
+            iconColor={colors.purple}
           />
         </View>
       </View>
@@ -258,26 +258,26 @@ export default function DashboardScreen() {
             title="Total Awarded"
             value={formatNumber(stats?.coins?.totalAwarded || 0)}
             icon="sparkles"
-            iconColor="#F59E0B"
+            iconColor={colors.warning}
           />
           <StatCard
             title="Pending Approval"
             value={stats?.coins?.pendingApproval || 0}
             icon="hourglass"
-            iconColor="#EF4444"
+            iconColor={colors.error}
             onPress={() => router.push('/(dashboard)/coin-rewards')}
           />
           <StatCard
             title="Awarded Today"
             value={formatNumber(stats?.coins?.awardedToday || 0)}
             icon="today"
-            iconColor="#10B981"
+            iconColor={colors.success}
           />
           <StatCard
             title="This Month"
             value={formatNumber(stats?.coins?.awardedThisMonth || 0)}
             icon="calendar"
-            iconColor="#3B82F6"
+            iconColor={colors.info}
           />
         </View>
       </View>
@@ -290,8 +290,8 @@ export default function DashboardScreen() {
             style={styles.actionItem}
             onPress={() => router.push('/(dashboard)/coin-rewards')}
           >
-            <View style={[styles.actionIcon, { backgroundColor: '#FEE2E2' }]}>
-              <Ionicons name="gift" size={20} color="#DC2626" />
+            <View style={[styles.actionIcon, { backgroundColor: colors.errorLight }]}>
+              <Ionicons name="gift" size={20} color={colors.errorDark} />
             </View>
             <Text style={[styles.actionText, { color: colors.text }]}>Review Coin Rewards</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.icon} />
@@ -301,8 +301,8 @@ export default function DashboardScreen() {
             style={styles.actionItem}
             onPress={() => router.push('/(dashboard)/merchants')}
           >
-            <View style={[styles.actionIcon, { backgroundColor: '#DBEAFE' }]}>
-              <Ionicons name="storefront" size={20} color="#3B82F6" />
+            <View style={[styles.actionIcon, { backgroundColor: colors.infoLighter }]}>
+              <Ionicons name="storefront" size={20} color={colors.info} />
             </View>
             <Text style={[styles.actionText, { color: colors.text }]}>Approve Merchants</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.icon} />
@@ -312,8 +312,8 @@ export default function DashboardScreen() {
             style={styles.actionItem}
             onPress={() => router.push('/(dashboard)/orders')}
           >
-            <View style={[styles.actionIcon, { backgroundColor: '#D1FAE5' }]}>
-              <Ionicons name="receipt" size={20} color="#10B981" />
+            <View style={[styles.actionIcon, { backgroundColor: colors.successLight }]}>
+              <Ionicons name="receipt" size={20} color={colors.success} />
             </View>
             <Text style={[styles.actionText, { color: colors.text }]}>Manage Orders</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.icon} />
@@ -324,7 +324,7 @@ export default function DashboardScreen() {
             onPress={() => router.push('/(dashboard)/wallet')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#F3E8FF' }]}>
-              <Ionicons name="wallet" size={20} color="#8B5CF6" />
+              <Ionicons name="wallet" size={20} color={colors.purple} />
             </View>
             <Text style={[styles.actionText, { color: colors.text }]}>Platform Wallet</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.icon} />
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   adminName: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.light.card,
   },
   notificationButton: {
     width: 44,
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: Colors.light.border,
   },
   actionIcon: {
     width: 40,

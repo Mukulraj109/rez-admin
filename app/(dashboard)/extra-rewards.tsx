@@ -25,10 +25,10 @@ type TabType = 'campaigns' | 'coinDrops';
 type StatusType = 'running' | 'upcoming' | 'expired' | 'inactive';
 
 const STATUS_COLORS: Record<StatusType, string> = {
-  running: '#10B981',
-  upcoming: '#3B82F6',
-  expired: '#EF4444',
-  inactive: '#94A3B8',
+  running: Colors.light.success,
+  upcoming: Colors.light.info,
+  expired: Colors.light.error,
+  inactive: Colors.light.slateMedium,
 };
 
 const STATUS_ICONS: Record<StatusType, string> = {
@@ -77,7 +77,7 @@ const DEFAULT_CAMPAIGN_FORM: Partial<DoubleCashbackCampaign> = {
   terms: [],
   minOrderValue: undefined,
   maxCashback: undefined,
-  backgroundColor: '#FEF3C7',
+  backgroundColor: Colors.light.warningLight,
   icon: 'flash',
   priority: 0,
   isActive: true,
@@ -509,7 +509,7 @@ export default function ExtraRewardsScreen() {
         style={[styles.createBtn, { backgroundColor: colors.tint }]}
         onPress={handleCreateNew}
       >
-        <Ionicons name="add" size={20} color="#FFF" />
+        <Ionicons name="add" size={20} color={colors.card} />
         <Text style={styles.createBtnText}>Create</Text>
       </TouchableOpacity>
     </View>
@@ -646,29 +646,29 @@ export default function ExtraRewardsScreen() {
         {/* Action Row */}
         <View style={styles.actionRow}>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
             onPress={() => handleEditCampaign(item)}
           >
-            <Ionicons name="pencil" size={16} color="#3B82F6" />
+            <Ionicons name="pencil" size={16} color={colors.info} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.actionIconBtn,
-              { backgroundColor: item.isActive ? '#F59E0B10' : '#10B98110' },
+              { backgroundColor: item.isActive ? `${colors.warning}10` : `${colors.success}10` },
             ]}
             onPress={() => handleToggleCampaign(item)}
           >
             <Ionicons
               name={item.isActive ? 'pause' : 'play'}
               size={16}
-              color={item.isActive ? '#F59E0B' : '#10B981'}
+              color={item.isActive ? colors.warning : colors.success}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.error}10` }]}
             onPress={() => handleDeleteCampaign(item)}
           >
-            <Ionicons name="trash" size={16} color="#EF4444" />
+            <Ionicons name="trash" size={16} color={colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -752,29 +752,29 @@ export default function ExtraRewardsScreen() {
         {/* Action Row */}
         <View style={styles.actionRow}>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#3B82F610' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.info}10` }]}
             onPress={() => handleEditCoinDrop(item)}
           >
-            <Ionicons name="pencil" size={16} color="#3B82F6" />
+            <Ionicons name="pencil" size={16} color={colors.info} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.actionIconBtn,
-              { backgroundColor: item.isActive ? '#F59E0B10' : '#10B98110' },
+              { backgroundColor: item.isActive ? `${colors.warning}10` : `${colors.success}10` },
             ]}
             onPress={() => handleToggleCoinDrop(item)}
           >
             <Ionicons
               name={item.isActive ? 'pause' : 'play'}
               size={16}
-              color={item.isActive ? '#F59E0B' : '#10B981'}
+              color={item.isActive ? colors.warning : colors.success}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.actionIconBtn, { backgroundColor: '#EF444410' }]}
+            style={[styles.actionIconBtn, { backgroundColor: `${colors.error}10` }]}
             onPress={() => handleDeleteCoinDrop(item)}
           >
-            <Ionicons name="trash" size={16} color="#EF4444" />
+            <Ionicons name="trash" size={16} color={colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -986,9 +986,9 @@ export default function ExtraRewardsScreen() {
           <Text style={[styles.formLabel, { color: colors.text }]}>Background Color</Text>
           <TextInput
             style={[styles.formInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
-            value={campaignForm.backgroundColor || '#FEF3C7'}
+            value={campaignForm.backgroundColor || colors.warningLight}
             onChangeText={text => setCampaignForm(p => ({ ...p, backgroundColor: text }))}
-            placeholder="#FEF3C7"
+            placeholder={colors.warningLight}
             placeholderTextColor={colors.icon}
           />
         </View>
@@ -1141,8 +1141,8 @@ export default function ExtraRewardsScreen() {
 
       {/* Boosted preview */}
       {coinDropForm.multiplier > 0 && coinDropForm.normalCashback > 0 && (
-        <View style={[styles.boostPreview, { backgroundColor: '#FEF3C7' }]}>
-          <Ionicons name="flash" size={16} color="#D97706" />
+        <View style={[styles.boostPreview, { backgroundColor: colors.warningLight }]}>
+          <Ionicons name="flash" size={16} color={colors.warningDark} />
           <Text style={styles.boostPreviewText}>
             Boosted cashback: {coinDropForm.normalCashback * coinDropForm.multiplier}%
           </Text>
@@ -1284,7 +1284,7 @@ export default function ExtraRewardsScreen() {
               style={[styles.modalSaveBtn, { backgroundColor: colors.tint }]}
             >
               {isSaving ? (
-                <ActivityIndicator size="small" color="#FFF" />
+                <ActivityIndicator size="small" color={colors.card} />
               ) : (
                 <Text style={styles.modalSaveBtnText}>Save</Text>
               )}
@@ -1428,7 +1428,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   createBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1523,13 +1523,13 @@ const styles = StyleSheet.create({
 
   // Multiplier Badge
   multiplierBadge: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.light.warning,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 8,
   },
   multiplierText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontSize: 14,
     fontWeight: '800',
   },
@@ -1641,7 +1641,7 @@ const styles = StyleSheet.create({
   cashbackBoosted: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#10B981',
+    color: Colors.light.success,
   },
 
   // Empty State
@@ -1686,7 +1686,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalSaveBtnText: {
-    color: '#FFF',
+    color: Colors.light.card,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -1844,6 +1844,6 @@ const styles = StyleSheet.create({
   boostPreviewText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#D97706',
+    color: Colors.light.warningDark,
   },
 });
