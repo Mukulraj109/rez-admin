@@ -508,6 +508,12 @@ export default function DashboardLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="wallet-adjustment"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

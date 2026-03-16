@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity,
   useColorScheme, ActivityIndicator, TextInput, ScrollView, useWindowDimensions,
-  Image, Linking,
+  Image, Linking, Modal, Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
@@ -106,6 +106,15 @@ export default function SupportTicketsScreen() {
   const [agents, setAgents] = useState<AgentOption[]>([]);
   const [showAssignDropdown, setShowAssignDropdown] = useState(false);
   const [assignLoading, setAssignLoading] = useState(false);
+
+  // Resolve modal
+  const [showResolveModal, setShowResolveModal] = useState(false);
+  const [resolveNote, setResolveNote] = useState('');
+  const [adjustWallet, setAdjustWallet] = useState(false);
+  const [walletAmount, setWalletAmount] = useState('');
+  const [walletType, setWalletType] = useState<'credit' | 'debit'>('credit');
+  const [walletReason, setWalletReason] = useState('');
+  const [resolveLoading, setResolveLoading] = useState(false);
 
   // Typing
   const [userTyping, setUserTyping] = useState(false);
@@ -331,9 +340,21 @@ export default function SupportTicketsScreen() {
 
   const handleStatusUpdate = async (newStatus: string) => {
     if (!selectedTicket) return;
+
+    // Show resolve modal for resolve action
+    if (newStatus === 'resolved') {
+      setResolveNote('');
+      setAdjustWallet(false);
+      setWalletAmount('');
+      setWalletType('credit');
+      setWalletReason('');
+      setShowResolveModal(true);
+      return;
+    }
+
     try {
-      const success = await supportAdminService.updateStatus(selectedTicket._id, newStatus);
-      if (success) {
+      const result = await supportAdminService.updateStatus(selectedTicket._id, newStatus);
+      if (result.success) {
         setSelectedTicket(prev => prev ? { ...prev, status: newStatus } : prev);
         loadTickets(page);
         loadStats();
@@ -342,6 +363,56 @@ export default function SupportTicketsScreen() {
       }
     } catch (error: any) {
       showAlert('Error', error.message || 'Failed to update status.');
+    }
+  };
+
+  const handleResolveConfirm = async () => {
+    if (!selectedTicket) return;
+    if (!resolveNote.trim()) {
+      showAlert('Error', 'Resolution note is required.');
+      return;
+    }
+    if (adjustWallet) {
+      const amt = Number(walletAmount);
+      if (!amt || amt <= 0 || amt > 100000) {
+        showAlert('Error', 'Enter a valid wallet amount (1 - 100,000).');
+        return;
+      }
+      if (!walletReason.trim()) {
+        showAlert('Error', 'Wallet adjustment reason is required.');
+        return;
+      }
+    }
+    setResolveLoading(true);
+    try {
+      const options: any = { resolution: resolveNote.trim() };
+      if (adjustWallet) {
+        options.walletAdjustment = {
+          amount: Number(walletAmount),
+          type: walletType,
+          reason: walletReason.trim(),
+        };
+      }
+      const result = await supportAdminService.updateStatus(selectedTicket._id, 'resolved', options);
+      if (result.success) {
+        setSelectedTicket(prev => prev ? { ...prev, status: 'resolved' } : prev);
+        loadTickets(page);
+        loadStats();
+        setShowResolveModal(false);
+        if (result.walletResult?.success) {
+          showAlert('Resolved', `Ticket resolved. Wallet ${walletType}ed ${walletAmount} NC.`);
+        } else if (result.walletResult && !result.walletResult.success) {
+          showAlert('Partially Done', `Ticket resolved, but wallet adjustment failed: ${result.walletResult.error}`);
+        } else {
+          showAlert('Resolved', 'Ticket resolved successfully.');
+        }
+      } else {
+        showAlert('Error', 'Failed to resolve ticket.');
+      }
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to resolve ticket.');
+    } finally {
+      setResolveLoading(false);
     }
   };
 
@@ -874,9 +945,155 @@ export default function SupportTicketsScreen() {
           </View>
         )}
       </View>
+
+      {/* Resolve Ticket Modal */}
+      <Modal visible={showResolveModal} transparent animationType="fade" onRequestClose={() => setShowResolveModal(false)}>
+        <View style={resolveStyles.backdrop}>
+          <View style={[resolveStyles.modal, { backgroundColor: colors.card }]}>
+            <View style={resolveStyles.modalHeader}>
+              <Text style={[resolveStyles.modalTitle, { color: colors.text }]}>Resolve Ticket</Text>
+              <TouchableOpacity onPress={() => setShowResolveModal(false)}>
+                <Ionicons name="close" size={22} color={colors.icon} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={resolveStyles.modalBody} showsVerticalScrollIndicator={false}>
+              {/* Resolution Note */}
+              <Text style={[resolveStyles.label, { color: colors.text }]}>Resolution Note *</Text>
+              <TextInput
+                style={[resolveStyles.textArea, { color: colors.text, backgroundColor: colors.background, borderColor: colors.border }]}
+                placeholder="Describe how the issue was resolved..."
+                placeholderTextColor={colors.icon}
+                value={resolveNote}
+                onChangeText={setResolveNote}
+                multiline
+                numberOfLines={4}
+                maxLength={2000}
+              />
+
+              {/* Wallet Adjustment Toggle */}
+              <View style={resolveStyles.toggleRow}>
+                <Text style={[resolveStyles.label, { color: colors.text, marginBottom: 0 }]}>Adjust User Wallet</Text>
+                <Switch value={adjustWallet} onValueChange={setAdjustWallet} />
+              </View>
+
+              {adjustWallet && (
+                <View style={[resolveStyles.walletSection, { borderColor: colors.border }]}>
+                  {/* Type */}
+                  <View style={resolveStyles.typeRow}>
+                    <TouchableOpacity
+                      style={[resolveStyles.typeBtn, walletType === 'credit' && { backgroundColor: Colors.light.success + '20', borderColor: Colors.light.success }]}
+                      onPress={() => setWalletType('credit')}
+                    >
+                      <Ionicons name="add-circle" size={16} color={walletType === 'credit' ? Colors.light.success : colors.icon} />
+                      <Text style={[resolveStyles.typeBtnText, walletType === 'credit' && { color: Colors.light.success }]}>Credit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[resolveStyles.typeBtn, walletType === 'debit' && { backgroundColor: Colors.light.error + '20', borderColor: Colors.light.error }]}
+                      onPress={() => setWalletType('debit')}
+                    >
+                      <Ionicons name="remove-circle" size={16} color={walletType === 'debit' ? Colors.light.error : colors.icon} />
+                      <Text style={[resolveStyles.typeBtnText, walletType === 'debit' && { color: Colors.light.error }]}>Debit</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Amount */}
+                  <Text style={[resolveStyles.label, { color: colors.text }]}>Amount (NC)</Text>
+                  <TextInput
+                    style={[resolveStyles.input, { color: colors.text, backgroundColor: colors.background, borderColor: colors.border }]}
+                    placeholder="0"
+                    placeholderTextColor={colors.icon}
+                    value={walletAmount}
+                    onChangeText={setWalletAmount}
+                    keyboardType="numeric"
+                  />
+
+                  {/* Reason */}
+                  <Text style={[resolveStyles.label, { color: colors.text }]}>Reason *</Text>
+                  <TextInput
+                    style={[resolveStyles.input, { color: colors.text, backgroundColor: colors.background, borderColor: colors.border }]}
+                    placeholder="Reason for adjustment"
+                    placeholderTextColor={colors.icon}
+                    value={walletReason}
+                    onChangeText={setWalletReason}
+                    maxLength={200}
+                  />
+                </View>
+              )}
+            </ScrollView>
+
+            {/* Actions */}
+            <View style={resolveStyles.modalFooter}>
+              <TouchableOpacity style={[resolveStyles.cancelBtn, { borderColor: colors.border }]} onPress={() => setShowResolveModal(false)}>
+                <Text style={[resolveStyles.cancelBtnText, { color: colors.secondaryText }]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[resolveStyles.confirmBtn, { backgroundColor: Colors.light.success, opacity: resolveLoading ? 0.6 : 1 }]}
+                onPress={handleResolveConfirm}
+                disabled={resolveLoading}
+              >
+                {resolveLoading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={resolveStyles.confirmBtnText}>Resolve Ticket</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
+
+// Resolve Modal Styles
+const resolveStyles = StyleSheet.create({
+  backdrop: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20,
+  },
+  modal: {
+    width: '100%', maxWidth: 480, borderRadius: 16, maxHeight: '80%',
+  },
+  modalHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#eee',
+  },
+  modalTitle: { fontSize: 18, fontWeight: '700' },
+  modalBody: { padding: 20 },
+  label: { fontSize: 13, fontWeight: '600', marginBottom: 6 },
+  textArea: {
+    borderWidth: 1, borderRadius: 10, padding: 12, fontSize: 14,
+    minHeight: 100, textAlignVertical: 'top', marginBottom: 16,
+  },
+  toggleRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12,
+  },
+  walletSection: {
+    borderWidth: 1, borderRadius: 10, padding: 14, marginBottom: 12,
+  },
+  typeRow: { flexDirection: 'row', gap: 10, marginBottom: 12 },
+  typeBtn: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 6, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#ddd',
+  },
+  typeBtnText: { fontSize: 14, fontWeight: '600', color: '#666' },
+  input: {
+    borderWidth: 1, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10,
+    fontSize: 14, marginBottom: 12,
+  },
+  modalFooter: {
+    flexDirection: 'row', gap: 10, paddingHorizontal: 20, paddingVertical: 16,
+    borderTopWidth: 1, borderTopColor: '#eee',
+  },
+  cancelBtn: {
+    flex: 1, paddingVertical: 12, borderRadius: 10, borderWidth: 1, alignItems: 'center',
+  },
+  cancelBtnText: { fontSize: 14, fontWeight: '600' },
+  confirmBtn: {
+    flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: 'center',
+  },
+  confirmBtnText: { fontSize: 14, fontWeight: '600', color: '#fff' },
+});
 
 // ============================================
 // STYLES

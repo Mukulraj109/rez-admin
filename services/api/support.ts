@@ -107,13 +107,23 @@ class SupportAdminService {
     }
   }
 
-  async updateStatus(id: string, status: string): Promise<boolean> {
+  async updateStatus(
+    id: string,
+    status: string,
+    options?: {
+      resolution?: string;
+      walletAdjustment?: { amount: number; type: 'credit' | 'debit'; reason: string };
+    }
+  ): Promise<{ success: boolean; walletResult?: any }> {
     try {
-      const response = await apiClient.put(`admin/support/tickets/${id}/status`, { status });
-      return response.success;
+      const body: any = { status };
+      if (options?.resolution) body.resolution = options.resolution;
+      if (options?.walletAdjustment) body.walletAdjustment = options.walletAdjustment;
+      const response = await apiClient.put<{ ticket: any; walletResult?: any }>(`admin/support/tickets/${id}/status`, body);
+      return { success: response.success, walletResult: response.data?.walletResult };
     } catch (error) {
       console.error('[Support Admin] Error updating status:', error);
-      return false;
+      return { success: false };
     }
   }
 

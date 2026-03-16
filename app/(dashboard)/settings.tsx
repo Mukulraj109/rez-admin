@@ -655,6 +655,13 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/support-tools')}
           />
           <SettingItem
+            icon="wallet"
+            iconColor="#7C3AED"
+            title="Wallet Adjustment"
+            subtitle="Dispute resolution with maker-checker approvals"
+            onPress={() => router.push('/(dashboard)/wallet-adjustment')}
+          />
+          <SettingItem
             icon="help-buoy"
             iconColor={colors.purple}
             title="FAQ Management"

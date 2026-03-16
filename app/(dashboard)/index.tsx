@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 import { dashboardService, DashboardStats } from '../../services/api/dashboard';
 import { authService } from '../../services/api/auth';
 import { Colors } from '../../constants/Colors';
+import EmergencyActionBar from '../../components/dashboard/EmergencyActionBar';
 
 interface StatCardProps {
   title: string;
@@ -135,6 +136,12 @@ export default function DashboardScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.tint} />
       }
     >
+      {/* Emergency Action Bar */}
+      <EmergencyActionBar
+        onFreezeMerchant={() => router.push('/merchants' as any)}
+        onSystemAlert={() => router.push('/notifications' as any)}
+      />
+
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.tint }]}>
         <View>
