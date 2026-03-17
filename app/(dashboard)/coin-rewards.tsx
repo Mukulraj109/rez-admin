@@ -56,7 +56,7 @@ export default function CoinRewardsScreen() {
       setHasMore(data.pagination.page < data.pagination.totalPages);
       setPage(pageNum);
     } catch (error) {
-      console.error('Failed to load rewards:', error);
+      if (__DEV__) console.error('Failed to load rewards:', error);
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +67,7 @@ export default function CoinRewardsScreen() {
       const data = await coinRewardsService.getStats();
       setStats(data);
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      if (__DEV__) console.error('Failed to load stats:', error);
     }
   };
 

@@ -93,7 +93,7 @@ export default function EventRewardsScreen() {
       setGlobalConfig(globalData);
       setEvents(eventsData.events || []);
     } catch (error: any) {
-      console.error('Failed to load data:', error);
+      if (__DEV__) console.error('Failed to load data:', error);
       showAlert('Error', error.message || 'Failed to load reward configs');
     } finally {
       setIsLoading(false);

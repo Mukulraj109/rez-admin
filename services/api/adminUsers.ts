@@ -37,7 +37,7 @@ class AdminUsersService {
       if (response.success && response.data) return response.data.adminUsers || [];
       return [];
     } catch (error) {
-      console.error('[AdminUsers] Error listing admins:', error);
+      if (__DEV__) console.error('[AdminUsers] Error listing admins:', error);
       return [];
     }
   }
@@ -48,7 +48,7 @@ class AdminUsersService {
       if (response.success && response.data) return response.data.adminUser;
       return null;
     } catch (error) {
-      console.error('[AdminUsers] Error creating admin:', error);
+      if (__DEV__) console.error('[AdminUsers] Error creating admin:', error);
       return null;
     }
   }
@@ -59,7 +59,7 @@ class AdminUsersService {
       if (response.success && response.data) return response.data.adminUser;
       return null;
     } catch (error) {
-      console.error('[AdminUsers] Error updating admin:', error);
+      if (__DEV__) console.error('[AdminUsers] Error updating admin:', error);
       return null;
     }
   }
@@ -69,7 +69,7 @@ class AdminUsersService {
       const response = await apiClient.delete(`admin/admin-users/${id}`);
       return response.success;
     } catch (error) {
-      console.error('[AdminUsers] Error deactivating admin:', error);
+      if (__DEV__) console.error('[AdminUsers] Error deactivating admin:', error);
       return false;
     }
   }

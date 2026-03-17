@@ -149,7 +149,7 @@ export default function SupportTicketsScreen() {
     if (!socketConnected) return;
 
     const handleNewTicket = (data: any) => {
-      console.log('📨 [AdminSupport] New ticket event:', data);
+      if (__DEV__) console.log('📨 [AdminSupport] New ticket event:', data);
       setNewTicketAlert(true);
       loadTickets(1);
       loadStats();
@@ -157,7 +157,7 @@ export default function SupportTicketsScreen() {
     };
 
     const handleMessageReceived = (data: any) => {
-      console.log('📨 [AdminSupport] Message received event:', data?.ticketId, 'selected:', selectedTicket?._id, 'match:', data?.ticketId === selectedTicket?._id);
+      if (__DEV__) console.log('📨 [AdminSupport] Message received event:', data?.ticketId, 'selected:', selectedTicket?._id, 'match:', data?.ticketId === selectedTicket?._id);
       // If this message is for the currently selected ticket, add it
       if (selectedTicket && data.ticketId === selectedTicket._id) {
         setSelectedTicket(prev => {
@@ -258,7 +258,7 @@ export default function SupportTicketsScreen() {
       setTotalPages(data.pages);
       setPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load tickets:', error);
+      if (__DEV__) console.error('Failed to load tickets:', error);
     } finally {
       setIsLoading(false);
       setRefreshing(false);
@@ -275,7 +275,7 @@ export default function SupportTicketsScreen() {
       const data = await supportAdminService.getAgents();
       if (data) setAgents(data);
     } catch (err) {
-      console.error('Failed to load agents:', err);
+      if (__DEV__) console.error('Failed to load agents:', err);
     }
   };
 

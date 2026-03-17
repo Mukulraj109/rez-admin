@@ -79,7 +79,7 @@ export default function EventCategoriesScreen() {
       // Sort by sortOrder
       setCategories(data.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
     } catch (error: any) {
-      console.error('Failed to load categories:', error);
+      if (__DEV__) console.error('Failed to load categories:', error);
       showAlert('Error', error.message || 'Failed to load categories');
     } finally {
       setIsLoading(false);

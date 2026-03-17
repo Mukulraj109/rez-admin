@@ -206,7 +206,7 @@ export default function LeaderboardConfigScreen() {
       const data = await leaderboardConfigService.getStats();
       setStats(data);
     } catch (error: any) {
-      console.error('Stats error:', error);
+      if (__DEV__) console.error('Stats error:', error);
     } finally {
       setStatsLoading(false);
     }

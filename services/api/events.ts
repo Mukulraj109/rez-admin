@@ -261,7 +261,7 @@ class AdminEventsService {
    */
   async getEvents(query: EventsQuery = {}): Promise<EventsListResponse> {
     try {
-      console.log('[Events] Fetching events with query:', query);
+      if (__DEV__) console.log('[Events] Fetching events with query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -280,7 +280,7 @@ class AdminEventsService {
 
       if (response.success && response.data) {
         const raw = response.data;
-        console.log('[Events] Fetched successfully:', raw.events?.length || 0, 'events');
+        if (__DEV__) console.log('[Events] Fetched successfully:', raw.events?.length || 0, 'events');
         // Backend returns { events, total, page, pages, hasMore } — map to EventsListResponse
         return {
           events: raw.events || [],
@@ -297,7 +297,7 @@ class AdminEventsService {
 
       throw new Error(response.message || 'Failed to fetch events');
     } catch (error: any) {
-      console.error('[Events] Get events error:', error.message);
+      if (__DEV__) console.error('[Events] Get events error:', error.message);
       throw new Error(error.message || 'Failed to fetch events');
     }
   }
@@ -307,17 +307,17 @@ class AdminEventsService {
    */
   async getEventById(id: string): Promise<AdminEvent> {
     try {
-      console.log('[Events] Fetching event:', id);
+      if (__DEV__) console.log('[Events] Fetching event:', id);
       const response = await apiClient.get<AdminEvent>(`admin/events/${id}`);
 
       if (response.success && response.data) {
-        console.log('[Events] Event fetched:', response.data.title);
+        if (__DEV__) console.log('[Events] Event fetched:', response.data.title);
         return response.data;
       }
 
       throw new Error(response.message || 'Event not found');
     } catch (error: any) {
-      console.error('[Events] Get event error:', error.message);
+      if (__DEV__) console.error('[Events] Get event error:', error.message);
       throw new Error(error.message || 'Failed to fetch event');
     }
   }
@@ -327,17 +327,17 @@ class AdminEventsService {
    */
   async createEvent(data: EventRequest): Promise<AdminEvent> {
     try {
-      console.log('[Events] Creating event:', data.title);
+      if (__DEV__) console.log('[Events] Creating event:', data.title);
       const response = await apiClient.post<AdminEvent>('admin/events', data);
 
       if (response.success && response.data) {
-        console.log('[Events] Event created:', response.data._id);
+        if (__DEV__) console.log('[Events] Event created:', response.data._id);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create event');
     } catch (error: any) {
-      console.error('[Events] Create event error:', error.message);
+      if (__DEV__) console.error('[Events] Create event error:', error.message);
       throw new Error(error.message || 'Failed to create event');
     }
   }
@@ -347,17 +347,17 @@ class AdminEventsService {
    */
   async updateEvent(id: string, data: Partial<EventRequest>): Promise<AdminEvent> {
     try {
-      console.log('[Events] Updating event:', id);
+      if (__DEV__) console.log('[Events] Updating event:', id);
       const response = await apiClient.put<AdminEvent>(`admin/events/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[Events] Event updated:', response.data.title);
+        if (__DEV__) console.log('[Events] Event updated:', response.data.title);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update event');
     } catch (error: any) {
-      console.error('[Events] Update event error:', error.message);
+      if (__DEV__) console.error('[Events] Update event error:', error.message);
       throw new Error(error.message || 'Failed to update event');
     }
   }
@@ -367,17 +367,17 @@ class AdminEventsService {
    */
   async deleteEvent(id: string): Promise<void> {
     try {
-      console.log('[Events] Deleting event:', id);
+      if (__DEV__) console.log('[Events] Deleting event:', id);
       const response = await apiClient.delete(`admin/events/${id}`);
 
       if (response.success) {
-        console.log('[Events] Event deleted');
+        if (__DEV__) console.log('[Events] Event deleted');
         return;
       }
 
       throw new Error(response.message || 'Failed to delete event');
     } catch (error: any) {
-      console.error('[Events] Delete event error:', error.message);
+      if (__DEV__) console.error('[Events] Delete event error:', error.message);
       throw new Error(error.message || 'Failed to delete event');
     }
   }
@@ -387,17 +387,17 @@ class AdminEventsService {
    */
   async updateEventStatus(id: string, status: EventStatus): Promise<AdminEvent> {
     try {
-      console.log('[Events] Updating event status:', id, '->', status);
+      if (__DEV__) console.log('[Events] Updating event status:', id, '->', status);
       const response = await apiClient.put<AdminEvent>(`admin/events/${id}/status`, { status });
 
       if (response.success && response.data) {
-        console.log('[Events] Event status updated:', response.data.status);
+        if (__DEV__) console.log('[Events] Event status updated:', response.data.status);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update event status');
     } catch (error: any) {
-      console.error('[Events] Update status error:', error.message);
+      if (__DEV__) console.error('[Events] Update status error:', error.message);
       throw new Error(error.message || 'Failed to update event status');
     }
   }
@@ -407,20 +407,20 @@ class AdminEventsService {
    */
   async toggleFeatured(id: string, featured: boolean, priority?: number): Promise<AdminEvent> {
     try {
-      console.log('[Events] Toggling featured:', id, '->', featured);
+      if (__DEV__) console.log('[Events] Toggling featured:', id, '->', featured);
       const body: any = { featured };
       if (priority !== undefined) body.priority = priority;
 
       const response = await apiClient.put<AdminEvent>(`admin/events/${id}/featured`, body);
 
       if (response.success && response.data) {
-        console.log('[Events] Featured toggled:', response.data.isFeatured);
+        if (__DEV__) console.log('[Events] Featured toggled:', response.data.isFeatured);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to toggle featured status');
     } catch (error: any) {
-      console.error('[Events] Toggle featured error:', error.message);
+      if (__DEV__) console.error('[Events] Toggle featured error:', error.message);
       throw new Error(error.message || 'Failed to toggle featured status');
     }
   }
@@ -433,7 +433,7 @@ class AdminEventsService {
     pagination: { page: number; limit: number; total: number; totalPages: number };
   }> {
     try {
-      console.log('[Events] Fetching bookings for event:', id);
+      if (__DEV__) console.log('[Events] Fetching bookings for event:', id);
       const params = new URLSearchParams();
       params.append('page', page.toString());
       params.append('limit', limit.toString());
@@ -443,7 +443,7 @@ class AdminEventsService {
 
       if (response.success && response.data) {
         const raw = response.data;
-        console.log('[Events] Bookings fetched:', raw.bookings?.length || 0);
+        if (__DEV__) console.log('[Events] Bookings fetched:', raw.bookings?.length || 0);
         // Backend returns { bookings, total, page, pages, stats }
         return {
           bookings: raw.bookings || [],
@@ -458,7 +458,7 @@ class AdminEventsService {
 
       throw new Error(response.message || 'Failed to fetch bookings');
     } catch (error: any) {
-      console.error('[Events] Get bookings error:', error.message);
+      if (__DEV__) console.error('[Events] Get bookings error:', error.message);
       throw new Error(error.message || 'Failed to fetch bookings');
     }
   }
@@ -468,7 +468,7 @@ class AdminEventsService {
    */
   async getEventAnalytics(id: string): Promise<EventAnalytics> {
     try {
-      console.log('[Events] Fetching analytics for event:', id);
+      if (__DEV__) console.log('[Events] Fetching analytics for event:', id);
       const response = await apiClient.get<any>(`admin/events/${id}/analytics`);
 
       if (response.success && response.data) {
@@ -497,13 +497,13 @@ class AdminEventsService {
           })),
         };
 
-        console.log('[Events] Analytics fetched and transformed');
+        if (__DEV__) console.log('[Events] Analytics fetched and transformed');
         return analytics;
       }
 
       throw new Error(response.message || 'Failed to fetch analytics');
     } catch (error: any) {
-      console.error('[Events] Get analytics error:', error.message);
+      if (__DEV__) console.error('[Events] Get analytics error:', error.message);
       throw new Error(error.message || 'Failed to fetch analytics');
     }
   }
@@ -517,20 +517,20 @@ class AdminEventsService {
    */
   async getCategories(): Promise<EventCategory[]> {
     try {
-      console.log('[Events] Fetching categories...');
+      if (__DEV__) console.log('[Events] Fetching categories...');
       const response = await apiClient.get<any>('admin/event-categories');
 
       if (response.success && response.data) {
         // Backend returns { categories: [...] } inside data
         const categories = response.data.categories || response.data;
         const arr = Array.isArray(categories) ? categories : [];
-        console.log('[Events] Categories fetched:', arr.length);
+        if (__DEV__) console.log('[Events] Categories fetched:', arr.length);
         return arr;
       }
 
       throw new Error(response.message || 'Failed to fetch categories');
     } catch (error: any) {
-      console.error('[Events] Get categories error:', error.message);
+      if (__DEV__) console.error('[Events] Get categories error:', error.message);
       throw new Error(error.message || 'Failed to fetch categories');
     }
   }
@@ -540,17 +540,17 @@ class AdminEventsService {
    */
   async createCategory(data: EventCategoryRequest): Promise<EventCategory> {
     try {
-      console.log('[Events] Creating category:', data.name);
+      if (__DEV__) console.log('[Events] Creating category:', data.name);
       const response = await apiClient.post<EventCategory>('admin/event-categories', data);
 
       if (response.success && response.data) {
-        console.log('[Events] Category created:', response.data.slug);
+        if (__DEV__) console.log('[Events] Category created:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create category');
     } catch (error: any) {
-      console.error('[Events] Create category error:', error.message);
+      if (__DEV__) console.error('[Events] Create category error:', error.message);
       throw new Error(error.message || 'Failed to create category');
     }
   }
@@ -560,17 +560,17 @@ class AdminEventsService {
    */
   async updateCategory(id: string, data: Partial<EventCategoryRequest>): Promise<EventCategory> {
     try {
-      console.log('[Events] Updating category:', id);
+      if (__DEV__) console.log('[Events] Updating category:', id);
       const response = await apiClient.put<EventCategory>(`admin/event-categories/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[Events] Category updated:', response.data.name);
+        if (__DEV__) console.log('[Events] Category updated:', response.data.name);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update category');
     } catch (error: any) {
-      console.error('[Events] Update category error:', error.message);
+      if (__DEV__) console.error('[Events] Update category error:', error.message);
       throw new Error(error.message || 'Failed to update category');
     }
   }
@@ -580,17 +580,17 @@ class AdminEventsService {
    */
   async deleteCategory(id: string): Promise<void> {
     try {
-      console.log('[Events] Deleting category:', id);
+      if (__DEV__) console.log('[Events] Deleting category:', id);
       const response = await apiClient.delete(`admin/event-categories/${id}`);
 
       if (response.success) {
-        console.log('[Events] Category deleted');
+        if (__DEV__) console.log('[Events] Category deleted');
         return;
       }
 
       throw new Error(response.message || 'Failed to delete category');
     } catch (error: any) {
-      console.error('[Events] Delete category error:', error.message);
+      if (__DEV__) console.error('[Events] Delete category error:', error.message);
       throw new Error(error.message || 'Failed to delete category');
     }
   }
@@ -600,19 +600,19 @@ class AdminEventsService {
    */
   async reorderCategories(orderedIds: string[]): Promise<void> {
     try {
-      console.log('[Events] Reordering categories:', orderedIds.length, 'items');
+      if (__DEV__) console.log('[Events] Reordering categories:', orderedIds.length, 'items');
       // Backend expects { order: [{ id, sortOrder }] }
       const order = orderedIds.map((id, index) => ({ id, sortOrder: index }));
       const response = await apiClient.put('admin/event-categories/reorder', { order });
 
       if (response.success) {
-        console.log('[Events] Categories reordered');
+        if (__DEV__) console.log('[Events] Categories reordered');
         return;
       }
 
       throw new Error(response.message || 'Failed to reorder categories');
     } catch (error: any) {
-      console.error('[Events] Reorder categories error:', error.message);
+      if (__DEV__) console.error('[Events] Reorder categories error:', error.message);
       throw new Error(error.message || 'Failed to reorder categories');
     }
   }
@@ -626,20 +626,20 @@ class AdminEventsService {
    */
   async getRewardConfigs(): Promise<EventRewardConfig[]> {
     try {
-      console.log('[Events] Fetching reward configs...');
+      if (__DEV__) console.log('[Events] Fetching reward configs...');
       const response = await apiClient.get<any>('admin/event-rewards');
 
       if (response.success && response.data) {
         // Backend returns { configs: [...] } inside data
         const configs = response.data.configs || response.data;
         const arr = Array.isArray(configs) ? configs : [];
-        console.log('[Events] Reward configs fetched:', arr.length);
+        if (__DEV__) console.log('[Events] Reward configs fetched:', arr.length);
         return arr;
       }
 
       throw new Error(response.message || 'Failed to fetch reward configs');
     } catch (error: any) {
-      console.error('[Events] Get reward configs error:', error.message);
+      if (__DEV__) console.error('[Events] Get reward configs error:', error.message);
       throw new Error(error.message || 'Failed to fetch reward configs');
     }
   }
@@ -649,20 +649,20 @@ class AdminEventsService {
    */
   async getGlobalRewardConfig(): Promise<EventRewardConfig | null> {
     try {
-      console.log('[Events] Fetching global reward config...');
+      if (__DEV__) console.log('[Events] Fetching global reward config...');
       const response = await apiClient.get<any>('admin/event-rewards/global');
 
       if (response.success && response.data) {
         // Backend returns { config: {...} } inside data
         const config = response.data.config || response.data;
-        console.log('[Events] Global config fetched');
+        if (__DEV__) console.log('[Events] Global config fetched');
         return config;
       }
 
       // No global config exists yet
       return null;
     } catch (error: any) {
-      console.error('[Events] Get global config error:', error.message);
+      if (__DEV__) console.error('[Events] Get global config error:', error.message);
       return null;
     }
   }
@@ -672,17 +672,17 @@ class AdminEventsService {
    */
   async createRewardConfig(data: EventRewardConfigRequest): Promise<EventRewardConfig> {
     try {
-      console.log('[Events] Creating reward config');
+      if (__DEV__) console.log('[Events] Creating reward config');
       const response = await apiClient.post<EventRewardConfig>('admin/event-rewards', data);
 
       if (response.success && response.data) {
-        console.log('[Events] Reward config created:', response.data._id);
+        if (__DEV__) console.log('[Events] Reward config created:', response.data._id);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create reward config');
     } catch (error: any) {
-      console.error('[Events] Create reward config error:', error.message);
+      if (__DEV__) console.error('[Events] Create reward config error:', error.message);
       throw new Error(error.message || 'Failed to create reward config');
     }
   }
@@ -692,17 +692,17 @@ class AdminEventsService {
    */
   async updateRewardConfig(id: string, data: Partial<EventRewardConfigRequest>): Promise<EventRewardConfig> {
     try {
-      console.log('[Events] Updating reward config:', id);
+      if (__DEV__) console.log('[Events] Updating reward config:', id);
       const response = await apiClient.put<EventRewardConfig>(`admin/event-rewards/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[Events] Reward config updated');
+        if (__DEV__) console.log('[Events] Reward config updated');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update reward config');
     } catch (error: any) {
-      console.error('[Events] Update reward config error:', error.message);
+      if (__DEV__) console.error('[Events] Update reward config error:', error.message);
       throw new Error(error.message || 'Failed to update reward config');
     }
   }
@@ -712,17 +712,17 @@ class AdminEventsService {
    */
   async deleteRewardConfig(id: string): Promise<void> {
     try {
-      console.log('[Events] Deleting reward config:', id);
+      if (__DEV__) console.log('[Events] Deleting reward config:', id);
       const response = await apiClient.delete(`admin/event-rewards/${id}`);
 
       if (response.success) {
-        console.log('[Events] Reward config deleted');
+        if (__DEV__) console.log('[Events] Reward config deleted');
         return;
       }
 
       throw new Error(response.message || 'Failed to delete reward config');
     } catch (error: any) {
-      console.error('[Events] Delete reward config error:', error.message);
+      if (__DEV__) console.error('[Events] Delete reward config error:', error.message);
       throw new Error(error.message || 'Failed to delete reward config');
     }
   }

@@ -173,7 +173,7 @@ export default function ExperiencesScreen() {
       const response = await experiencesService.getStats();
       setStats(response);
     } catch (error) {
-      console.log('Stats fetch failed:', error);
+      if (__DEV__) console.log('Stats fetch failed:', error);
     }
   }, []);
 
@@ -186,7 +186,7 @@ export default function ExperiencesScreen() {
       setCategories(categoriesRes);
       setTags(tagsRes);
     } catch (error) {
-      console.log('Categories/Tags fetch failed:', error);
+      if (__DEV__) console.log('Categories/Tags fetch failed:', error);
     }
   }, []);
 
@@ -197,7 +197,7 @@ export default function ExperiencesScreen() {
       setPreviewStores(response.stores);
       setPreviewTotal(response.total);
     } catch (error) {
-      console.log('Preview stores failed:', error);
+      if (__DEV__) console.log('Preview stores failed:', error);
     } finally {
       setIsLoadingPreview(false);
     }
@@ -459,7 +459,7 @@ export default function ExperiencesScreen() {
       const filteredResults = response.stores.filter(s => !assignedIds.includes(s._id));
       setStoreSearchResults(filteredResults);
     } catch (error) {
-      console.log('Store search failed:', error);
+      if (__DEV__) console.log('Store search failed:', error);
       setStoreSearchResults([]);
     } finally {
       setIsSearchingStores(false);
@@ -473,7 +473,7 @@ export default function ExperiencesScreen() {
       const response = await experiencesService.getSuggestedStores();
       setSuggestedStores(response.stores);
     } catch (error) {
-      console.log('Fetch suggested stores failed:', error);
+      if (__DEV__) console.log('Fetch suggested stores failed:', error);
       setSuggestedStores([]);
     } finally {
       setIsLoadingSuggested(false);
@@ -485,7 +485,7 @@ export default function ExperiencesScreen() {
       const response = await experiencesService.getAssignedStores(experienceId);
       setAssignedStores(response.stores);
     } catch (error) {
-      console.log('Fetch assigned stores failed:', error);
+      if (__DEV__) console.log('Fetch assigned stores failed:', error);
       setAssignedStores([]);
     }
   }, []);

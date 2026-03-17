@@ -199,7 +199,7 @@ export default function SocialImpactScreen() {
         showAlert('Error', response.message || 'Failed to load events');
       }
     } catch (error: any) {
-      console.error('Failed to load events:', error);
+      if (__DEV__) console.error('Failed to load events:', error);
       showAlert('Error', error.message || 'Failed to load events');
     } finally {
       setLoading(false);

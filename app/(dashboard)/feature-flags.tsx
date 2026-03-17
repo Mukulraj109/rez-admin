@@ -86,7 +86,7 @@ export default function FeatureFlagsScreen() {
         setFlags([]);
       }
     } catch (error: any) {
-      console.error('Failed to load flags:', error);
+      if (__DEV__) console.error('Failed to load flags:', error);
       showAlert('Error', error.message || 'Failed to load feature flags');
     }
   }, [groupFilter]);
@@ -99,7 +99,7 @@ export default function FeatureFlagsScreen() {
         setEarningDirty(false);
       }
     } catch (error: any) {
-      console.error('Failed to load earning config:', error);
+      if (__DEV__) console.error('Failed to load earning config:', error);
       showAlert('Error', error.message || 'Failed to load earning config');
     }
   }, []);

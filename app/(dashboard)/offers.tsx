@@ -168,7 +168,7 @@ export default function OffersScreen() {
       if (statsData) setStats(statsData);
       if (storesData) setStores(storesData);
     } catch (error: any) {
-      console.error('Fetch error:', error);
+      if (__DEV__) console.error('Fetch error:', error);
       showAlert('Error', error.message || 'Failed to load offers');
     } finally {
       setIsLoading(false);

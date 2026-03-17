@@ -305,7 +305,7 @@ export default function BonusZoneScreen() {
       const data = await bonusZoneService.getDashboard();
       setDashboardStats(data);
     } catch (error: any) {
-      console.error('Dashboard error:', error);
+      if (__DEV__) console.error('Dashboard error:', error);
     } finally {
       setDashboardLoading(false);
     }
@@ -347,7 +347,7 @@ export default function BonusZoneScreen() {
       const alerts = await bonusZoneService.getFraudAlerts(50);
       setFraudAlerts(alerts);
     } catch (error: any) {
-      console.error('Fraud alerts error:', error);
+      if (__DEV__) console.error('Fraud alerts error:', error);
     } finally {
       setFraudAlertsLoading(false);
     }

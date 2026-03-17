@@ -147,7 +147,7 @@ export default function HomepageDealsScreen() {
         isActive: configData.isActive,
       });
     } catch (error: any) {
-      console.error('Fetch error:', error);
+      if (__DEV__) console.error('Fetch error:', error);
       showAlert('Error', error.message || 'Failed to fetch data');
     } finally {
       setIsLoading(false);

@@ -49,17 +49,17 @@ export interface DailyBreakdownResponse {
 class AdminWalletService {
   async getWalletSummary(): Promise<AdminWalletSummary> {
     try {
-      console.log('[AdminWallet] Fetching wallet summary...');
+      if (__DEV__) console.log('[AdminWallet] Fetching wallet summary...');
       const response = await apiClient.get<AdminWalletSummary>('admin/wallet');
 
       if (response.success && response.data) {
-        console.log('[AdminWallet] Summary fetched successfully');
+        if (__DEV__) console.log('[AdminWallet] Summary fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get wallet summary');
     } catch (error: any) {
-      console.error('[AdminWallet] Get summary error:', error.message);
+      if (__DEV__) console.error('[AdminWallet] Get summary error:', error.message);
       throw new Error(error.message || 'Failed to get admin wallet summary');
     }
   }
@@ -83,7 +83,7 @@ class AdminWalletService {
 
       throw new Error(response.message || 'Failed to get transactions');
     } catch (error: any) {
-      console.error('[AdminWallet] Get transactions error:', error.message);
+      if (__DEV__) console.error('[AdminWallet] Get transactions error:', error.message);
       throw new Error(error.message || 'Failed to get transactions');
     }
   }
@@ -100,7 +100,7 @@ class AdminWalletService {
 
       throw new Error(response.message || 'Failed to get daily breakdown');
     } catch (error: any) {
-      console.error('[AdminWallet] Get daily breakdown error:', error.message);
+      if (__DEV__) console.error('[AdminWallet] Get daily breakdown error:', error.message);
       throw new Error(error.message || 'Failed to get daily breakdown');
     }
   }

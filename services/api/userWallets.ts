@@ -78,51 +78,51 @@ class UserWalletsService {
       let url = `admin/user-wallets?page=${page}&limit=${limit}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
 
-      console.log('[UserWallets] Searching users...');
+      if (__DEV__) console.log('[UserWallets] Searching users...');
       const response = await apiClient.get<SearchUsersResponse>(url);
 
       if (response.success && response.data) {
-        console.log('[UserWallets] Users fetched successfully');
+        if (__DEV__) console.log('[UserWallets] Users fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to search users');
     } catch (error: any) {
-      console.error('[UserWallets] Search users error:', error.message);
+      if (__DEV__) console.error('[UserWallets] Search users error:', error.message);
       throw new Error(error.message || 'Failed to search users');
     }
   }
 
   async freezeWallet(userId: string, reason: string): Promise<void> {
     try {
-      console.log('[UserWallets] Freezing wallet for user:', userId);
+      if (__DEV__) console.log('[UserWallets] Freezing wallet for user:', userId);
       const response = await apiClient.post(`admin/user-wallets/${userId}/freeze`, { reason });
 
       if (response.success) {
-        console.log('[UserWallets] Wallet frozen successfully');
+        if (__DEV__) console.log('[UserWallets] Wallet frozen successfully');
         return;
       }
 
       throw new Error(response.message || 'Failed to freeze wallet');
     } catch (error: any) {
-      console.error('[UserWallets] Freeze wallet error:', error.message);
+      if (__DEV__) console.error('[UserWallets] Freeze wallet error:', error.message);
       throw new Error(error.message || 'Failed to freeze wallet');
     }
   }
 
   async unfreezeWallet(userId: string): Promise<void> {
     try {
-      console.log('[UserWallets] Unfreezing wallet for user:', userId);
+      if (__DEV__) console.log('[UserWallets] Unfreezing wallet for user:', userId);
       const response = await apiClient.post(`admin/user-wallets/${userId}/unfreeze`);
 
       if (response.success) {
-        console.log('[UserWallets] Wallet unfrozen successfully');
+        if (__DEV__) console.log('[UserWallets] Wallet unfrozen successfully');
         return;
       }
 
       throw new Error(response.message || 'Failed to unfreeze wallet');
     } catch (error: any) {
-      console.error('[UserWallets] Unfreeze wallet error:', error.message);
+      if (__DEV__) console.error('[UserWallets] Unfreeze wallet error:', error.message);
       throw new Error(error.message || 'Failed to unfreeze wallet');
     }
   }
@@ -132,17 +132,17 @@ class UserWalletsService {
     data: { amount: number; type: 'credit' | 'debit'; reason: string }
   ): Promise<void> {
     try {
-      console.log('[UserWallets] Adjusting balance for user:', userId);
+      if (__DEV__) console.log('[UserWallets] Adjusting balance for user:', userId);
       const response = await apiClient.post(`admin/user-wallets/${userId}/adjust`, data);
 
       if (response.success) {
-        console.log('[UserWallets] Balance adjusted successfully');
+        if (__DEV__) console.log('[UserWallets] Balance adjusted successfully');
         return;
       }
 
       throw new Error(response.message || 'Failed to adjust balance');
     } catch (error: any) {
-      console.error('[UserWallets] Adjust balance error:', error.message);
+      if (__DEV__) console.error('[UserWallets] Adjust balance error:', error.message);
       throw new Error(error.message || 'Failed to adjust balance');
     }
   }
@@ -152,20 +152,20 @@ class UserWalletsService {
     data: { amount: number; originalTransactionId?: string; reason: string }
   ): Promise<{ amount: number; newBalance: any; reversalTransactionId?: string }> {
     try {
-      console.log('[UserWallets] Reversing cashback for user:', userId);
+      if (__DEV__) console.log('[UserWallets] Reversing cashback for user:', userId);
       const response = await apiClient.post<{ amount: number; newBalance: any; reversalTransactionId?: string }>(
         `admin/user-wallets/${userId}/reverse-cashback`,
         data
       );
 
       if (response.success && response.data) {
-        console.log('[UserWallets] Cashback reversed successfully');
+        if (__DEV__) console.log('[UserWallets] Cashback reversed successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to reverse cashback');
     } catch (error: any) {
-      console.error('[UserWallets] Reverse cashback error:', error.message);
+      if (__DEV__) console.error('[UserWallets] Reverse cashback error:', error.message);
       throw new Error(error.message || 'Failed to reverse cashback');
     }
   }
@@ -176,19 +176,19 @@ class UserWalletsService {
     limit: number = 20
   ): Promise<AuditTrailResponse> {
     try {
-      console.log('[UserWallets] Fetching audit trail for user:', userId);
+      if (__DEV__) console.log('[UserWallets] Fetching audit trail for user:', userId);
       const response = await apiClient.get<AuditTrailResponse>(
         `admin/user-wallets/${userId}/audit-trail?page=${page}&limit=${limit}`
       );
 
       if (response.success && response.data) {
-        console.log('[UserWallets] Audit trail fetched successfully');
+        if (__DEV__) console.log('[UserWallets] Audit trail fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get audit trail');
     } catch (error: any) {
-      console.error('[UserWallets] Get audit trail error:', error.message);
+      if (__DEV__) console.error('[UserWallets] Get audit trail error:', error.message);
       throw new Error(error.message || 'Failed to get audit trail');
     }
   }

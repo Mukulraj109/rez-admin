@@ -149,7 +149,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to fetch voucher brands');
     } catch (error: any) {
-      console.error('[CashStoreService] getVoucherBrands error:', error);
+      if (__DEV__) console.error('[CashStoreService] getVoucherBrands error:', error);
       throw error;
     }
   }
@@ -162,7 +162,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to create voucher brand');
     } catch (error: any) {
-      console.error('[CashStoreService] createVoucherBrand error:', error);
+      if (__DEV__) console.error('[CashStoreService] createVoucherBrand error:', error);
       throw error;
     }
   }
@@ -175,7 +175,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to update voucher brand');
     } catch (error: any) {
-      console.error('[CashStoreService] updateVoucherBrand error:', error);
+      if (__DEV__) console.error('[CashStoreService] updateVoucherBrand error:', error);
       throw error;
     }
   }
@@ -187,7 +187,7 @@ class CashStoreService {
         throw new Error(response.message || 'Failed to delete voucher brand');
       }
     } catch (error: any) {
-      console.error('[CashStoreService] deleteVoucherBrand error:', error);
+      if (__DEV__) console.error('[CashStoreService] deleteVoucherBrand error:', error);
       throw error;
     }
   }
@@ -200,7 +200,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to toggle voucher brand');
     } catch (error: any) {
-      console.error('[CashStoreService] toggleVoucherBrand error:', error);
+      if (__DEV__) console.error('[CashStoreService] toggleVoucherBrand error:', error);
       throw error;
     }
   }
@@ -235,7 +235,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to fetch coupons');
     } catch (error: any) {
-      console.error('[CashStoreService] getCoupons error:', error);
+      if (__DEV__) console.error('[CashStoreService] getCoupons error:', error);
       throw error;
     }
   }
@@ -248,7 +248,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to create coupon');
     } catch (error: any) {
-      console.error('[CashStoreService] createCoupon error:', error);
+      if (__DEV__) console.error('[CashStoreService] createCoupon error:', error);
       throw error;
     }
   }
@@ -261,7 +261,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to update coupon');
     } catch (error: any) {
-      console.error('[CashStoreService] updateCoupon error:', error);
+      if (__DEV__) console.error('[CashStoreService] updateCoupon error:', error);
       throw error;
     }
   }
@@ -273,7 +273,7 @@ class CashStoreService {
         throw new Error(response.message || 'Failed to delete coupon');
       }
     } catch (error: any) {
-      console.error('[CashStoreService] deleteCoupon error:', error);
+      if (__DEV__) console.error('[CashStoreService] deleteCoupon error:', error);
       throw error;
     }
   }
@@ -286,7 +286,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to toggle coupon');
     } catch (error: any) {
-      console.error('[CashStoreService] toggleCoupon error:', error);
+      if (__DEV__) console.error('[CashStoreService] toggleCoupon error:', error);
       throw error;
     }
   }
@@ -302,7 +302,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to fetch stores');
     } catch (error: any) {
-      console.error('[CashStoreService] getCouponStores error:', error);
+      if (__DEV__) console.error('[CashStoreService] getCouponStores error:', error);
       throw error;
     }
   }
@@ -333,7 +333,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to fetch double cashback campaigns');
     } catch (error: any) {
-      console.error('[CashStoreService] getDoubleCampaigns error:', error);
+      if (__DEV__) console.error('[CashStoreService] getDoubleCampaigns error:', error);
       throw error;
     }
   }
@@ -346,7 +346,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to create double cashback campaign');
     } catch (error: any) {
-      console.error('[CashStoreService] createDoubleCampaign error:', error);
+      if (__DEV__) console.error('[CashStoreService] createDoubleCampaign error:', error);
       throw error;
     }
   }
@@ -359,7 +359,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to update double cashback campaign');
     } catch (error: any) {
-      console.error('[CashStoreService] updateDoubleCampaign error:', error);
+      if (__DEV__) console.error('[CashStoreService] updateDoubleCampaign error:', error);
       throw error;
     }
   }
@@ -371,7 +371,7 @@ class CashStoreService {
         throw new Error(response.message || 'Failed to delete double cashback campaign');
       }
     } catch (error: any) {
-      console.error('[CashStoreService] deleteDoubleCampaign error:', error);
+      if (__DEV__) console.error('[CashStoreService] deleteDoubleCampaign error:', error);
       throw error;
     }
   }
@@ -384,7 +384,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to toggle double cashback campaign');
     } catch (error: any) {
-      console.error('[CashStoreService] toggleDoubleCampaign error:', error);
+      if (__DEV__) console.error('[CashStoreService] toggleDoubleCampaign error:', error);
       throw error;
     }
   }
@@ -417,7 +417,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to fetch coin drops');
     } catch (error: any) {
-      console.error('[CashStoreService] getCoinDrops error:', error);
+      if (__DEV__) console.error('[CashStoreService] getCoinDrops error:', error);
       throw error;
     }
   }
@@ -434,7 +434,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to fetch coin drop stores');
     } catch (error: any) {
-      console.error('[CashStoreService] getCoinDropStores error:', error);
+      if (__DEV__) console.error('[CashStoreService] getCoinDropStores error:', error);
       throw error;
     }
   }
@@ -447,7 +447,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to create coin drop');
     } catch (error: any) {
-      console.error('[CashStoreService] createCoinDrop error:', error);
+      if (__DEV__) console.error('[CashStoreService] createCoinDrop error:', error);
       throw error;
     }
   }
@@ -460,7 +460,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to update coin drop');
     } catch (error: any) {
-      console.error('[CashStoreService] updateCoinDrop error:', error);
+      if (__DEV__) console.error('[CashStoreService] updateCoinDrop error:', error);
       throw error;
     }
   }
@@ -472,7 +472,7 @@ class CashStoreService {
         throw new Error(response.message || 'Failed to delete coin drop');
       }
     } catch (error: any) {
-      console.error('[CashStoreService] deleteCoinDrop error:', error);
+      if (__DEV__) console.error('[CashStoreService] deleteCoinDrop error:', error);
       throw error;
     }
   }
@@ -485,7 +485,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to toggle coin drop');
     } catch (error: any) {
-      console.error('[CashStoreService] toggleCoinDrop error:', error);
+      if (__DEV__) console.error('[CashStoreService] toggleCoinDrop error:', error);
       throw error;
     }
   }
@@ -500,7 +500,7 @@ class CashStoreService {
       }
       throw new Error(response.message || 'Failed to fetch affiliate analytics');
     } catch (error: any) {
-      console.error('[CashStoreService] getAffiliateAnalytics error:', error);
+      if (__DEV__) console.error('[CashStoreService] getAffiliateAnalytics error:', error);
       throw error;
     }
   }

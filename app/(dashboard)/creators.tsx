@@ -98,7 +98,7 @@ export default function CreatorsScreen() {
         setCreators(Array.isArray(list) ? list : []);
       }
     } catch (err) {
-      console.error('[ADMIN CREATORS] Error:', err);
+      if (__DEV__) console.error('[ADMIN CREATORS] Error:', err);
     } finally {
       setIsLoading(false);
       setRefreshing(false);
@@ -118,7 +118,7 @@ export default function CreatorsScreen() {
         setPicks(Array.isArray(list) ? list : []);
       }
     } catch (err) {
-      console.error('[ADMIN CREATORS] Error fetching picks:', err);
+      if (__DEV__) console.error('[ADMIN CREATORS] Error fetching picks:', err);
     } finally {
       setIsLoading(false);
     }
@@ -134,7 +134,7 @@ export default function CreatorsScreen() {
         setConversions(Array.isArray(list) ? list : []);
       }
     } catch (err) {
-      console.error('[ADMIN CREATORS] Error fetching conversions:', err);
+      if (__DEV__) console.error('[ADMIN CREATORS] Error fetching conversions:', err);
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +147,7 @@ export default function CreatorsScreen() {
       const configData = res?.data?.data || res?.data;
       if (configData) setConfig(configData);
     } catch (err) {
-      console.error('[ADMIN CREATORS] Error fetching config:', err);
+      if (__DEV__) console.error('[ADMIN CREATORS] Error fetching config:', err);
     } finally {
       setIsLoading(false);
     }

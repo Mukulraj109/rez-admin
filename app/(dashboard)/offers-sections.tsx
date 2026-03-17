@@ -70,7 +70,7 @@ export default function OffersSectionsScreen() {
       const data = await offersSectionsService.getSections();
       setSections(data);
     } catch (error: any) {
-      console.error('Failed to fetch sections:', error);
+      if (__DEV__) console.error('Failed to fetch sections:', error);
       showAlert('Error', error.message || 'Failed to load section configs');
     } finally {
       setLoading(false);

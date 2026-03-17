@@ -18,6 +18,7 @@ export interface LoginResponse {
   data?: {
     user: AdminUser;
     token: string;
+    refreshToken?: string;
   };
 }
 
@@ -28,10 +29,10 @@ class AuthService {
    */
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      console.log('🔐 [Admin Auth] Attempting login for:', email);
+      if (__DEV__) console.log('🔐 [Admin Auth] Attempting login for:', email);
 
       // Use the admin auth endpoint - backend validates admin role
-      const response = await apiClient.post<{ user: AdminUser; token: string }>(
+      const response = await apiClient.post<{ user: AdminUser; token: string; refreshToken?: string }>(
         'admin/auth/login',
         { email, password }
       );
@@ -42,7 +43,7 @@ class AuthService {
         const adminRoles = ['support', 'operator', 'admin', 'super_admin'];
 
         if (!user.role || !adminRoles.includes(user.role)) {
-          console.error('❌ [Admin Auth] User does not have admin privileges');
+          if (__DEV__) console.error('❌ [Admin Auth] User does not have admin privileges');
           return {
             success: false,
             message: 'Access denied. Admin privileges required.',
@@ -52,8 +53,11 @@ class AuthService {
         // Store auth data
         await storageService.setAuthToken(response.data.token);
         await storageService.setUserData(response.data.user);
+        if (response.data.refreshToken) {
+          await storageService.setRefreshToken(response.data.refreshToken);
+        }
 
-        console.log('✅ [Admin Auth] Login successful, role:', user.role);
+        if (__DEV__) console.log('✅ [Admin Auth] Login successful, role:', user.role);
         return {
           success: true,
           data: response.data,
@@ -65,7 +69,7 @@ class AuthService {
         message: response.message || 'Login failed',
       };
     } catch (error: any) {
-      console.error('❌ [Admin Auth] Login error:', error.message);
+      if (__DEV__) console.error('❌ [Admin Auth] Login error:', error.message);
       return {
         success: false,
         message: error.message || 'Login failed',
@@ -78,7 +82,7 @@ class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      console.log('🚪 [Admin Auth] Logging out...');
+      if (__DEV__) console.log('🚪 [Admin Auth] Logging out...');
 
       // Call backend logout endpoint (optional)
       try {
@@ -89,9 +93,9 @@ class AuthService {
 
       // Clear local storage
       await storageService.logout();
-      console.log('✅ [Admin Auth] Logout complete');
+      if (__DEV__) console.log('✅ [Admin Auth] Logout complete');
     } catch (error) {
-      console.error('❌ [Admin Auth] Logout error:', error);
+      if (__DEV__) console.error('❌ [Admin Auth] Logout error:', error);
       // Still clear local storage even if API fails
       await storageService.logout();
     }
@@ -105,7 +109,7 @@ class AuthService {
       const userData = await storageService.getUserData();
       return userData;
     } catch (error) {
-      console.error('❌ [Admin Auth] Get current user error:', error);
+      if (__DEV__) console.error('❌ [Admin Auth] Get current user error:', error);
       return null;
     }
   }
@@ -138,7 +142,7 @@ class AuthService {
 
       return null;
     } catch (error) {
-      console.error('❌ [Admin Auth] Refresh profile error:', error);
+      if (__DEV__) console.error('❌ [Admin Auth] Refresh profile error:', error);
       return null;
     }
   }

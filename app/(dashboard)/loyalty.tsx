@@ -102,7 +102,7 @@ export default function LoyaltyScreen() {
       setHasMore(data.pagination.page < data.pagination.totalPages);
       setPage(pageNum);
     } catch (error) {
-      console.error('Failed to load loyalty users:', error);
+      if (__DEV__) console.error('Failed to load loyalty users:', error);
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +113,7 @@ export default function LoyaltyScreen() {
       const data = await loyaltyService.getStats();
       setStats(data);
     } catch (error) {
-      console.error('Failed to load loyalty stats:', error);
+      if (__DEV__) console.error('Failed to load loyalty stats:', error);
     }
   };
 

@@ -117,7 +117,7 @@ class SpecialProgramsService {
       }
       throw new Error(response.message || 'Failed to get programs');
     } catch (error: any) {
-      console.error('[SpecialPrograms] Get programs error:', error.message);
+      if (__DEV__) console.error('[SpecialPrograms] Get programs error:', error.message);
       throw new Error(error.message || 'Failed to get programs');
     }
   }
@@ -133,7 +133,7 @@ class SpecialProgramsService {
       }
       throw new Error(response.message || 'Failed to get stats');
     } catch (error: any) {
-      console.error('[SpecialPrograms] Get stats error:', error.message);
+      if (__DEV__) console.error('[SpecialPrograms] Get stats error:', error.message);
       throw new Error(error.message || 'Failed to get stats');
     }
   }
@@ -149,7 +149,7 @@ class SpecialProgramsService {
       }
       throw new Error(response.message || 'Failed to get program');
     } catch (error: any) {
-      console.error('[SpecialPrograms] Get program error:', error.message);
+      if (__DEV__) console.error('[SpecialPrograms] Get program error:', error.message);
       throw new Error(error.message || 'Failed to get program');
     }
   }
@@ -165,7 +165,7 @@ class SpecialProgramsService {
       }
       throw new Error(response.message || 'Failed to update program');
     } catch (error: any) {
-      console.error('[SpecialPrograms] Update program error:', error.message);
+      if (__DEV__) console.error('[SpecialPrograms] Update program error:', error.message);
       throw new Error(error.message || 'Failed to update program');
     }
   }
@@ -181,7 +181,7 @@ class SpecialProgramsService {
       }
       throw new Error(response.message || 'Failed to toggle program');
     } catch (error: any) {
-      console.error('[SpecialPrograms] Toggle program error:', error.message);
+      if (__DEV__) console.error('[SpecialPrograms] Toggle program error:', error.message);
       throw new Error(error.message || 'Failed to toggle program');
     }
   }
@@ -218,7 +218,7 @@ class SpecialProgramsService {
       }
       throw new Error(response.message || 'Failed to get members');
     } catch (error: any) {
-      console.error('[SpecialPrograms] Get members error:', error.message);
+      if (__DEV__) console.error('[SpecialPrograms] Get members error:', error.message);
       throw new Error(error.message || 'Failed to get members');
     }
   }
@@ -245,7 +245,7 @@ class SpecialProgramsService {
       }
       throw new Error(response.message || 'Failed to update member status');
     } catch (error: any) {
-      console.error('[SpecialPrograms] Update member error:', error.message);
+      if (__DEV__) console.error('[SpecialPrograms] Update member error:', error.message);
       throw new Error(error.message || 'Failed to update member status');
     }
   }

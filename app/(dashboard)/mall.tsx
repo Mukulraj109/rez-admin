@@ -164,7 +164,7 @@ export default function MallScreen() {
       const data = await mallService.getStats();
       setStats(data);
     } catch (error: any) {
-      console.error('Failed to load mall stats:', error);
+      if (__DEV__) console.error('Failed to load mall stats:', error);
     } finally {
       setStatsLoading(false);
     }
@@ -176,7 +176,7 @@ export default function MallScreen() {
       const data = await mallService.getCategories();
       setCategories(data);
     } catch (error: any) {
-      console.error('Failed to load categories:', error);
+      if (__DEV__) console.error('Failed to load categories:', error);
       showAlert('Error', 'Failed to load categories');
     } finally {
       setCategoriesLoading(false);
@@ -189,7 +189,7 @@ export default function MallScreen() {
       const result = await mallService.getOffers({ limit: 50 });
       setOffers(result.offers);
     } catch (error: any) {
-      console.error('Failed to load offers:', error);
+      if (__DEV__) console.error('Failed to load offers:', error);
       showAlert('Error', 'Failed to load offers');
     } finally {
       setOffersLoading(false);
@@ -202,7 +202,7 @@ export default function MallScreen() {
       const data = await mallService.getAllianceStores(search || allianceSearch || undefined);
       setAllianceStores(data);
     } catch (error: any) {
-      console.error('Failed to load alliance stores:', error);
+      if (__DEV__) console.error('Failed to load alliance stores:', error);
       showAlert('Error', 'Failed to load alliance stores');
     } finally {
       setAllianceLoading(false);
@@ -230,7 +230,7 @@ export default function MallScreen() {
       const data = await mallService.getBanners();
       setBanners(data);
     } catch (error: any) {
-      console.error('Failed to load banners:', error);
+      if (__DEV__) console.error('Failed to load banners:', error);
       showAlert('Error', 'Failed to load banners');
     } finally {
       setBannersLoading(false);
@@ -360,7 +360,7 @@ export default function MallScreen() {
       const data = await mallService.getCollections();
       setCollections(data);
     } catch (error: any) {
-      console.error('Failed to load collections:', error);
+      if (__DEV__) console.error('Failed to load collections:', error);
       showAlert('Error', 'Failed to load collections');
     } finally {
       setCollectionsLoading(false);
@@ -473,7 +473,7 @@ export default function MallScreen() {
       });
       setManagedStores(data);
     } catch (error: any) {
-      console.error('Failed to load managed stores:', error);
+      if (__DEV__) console.error('Failed to load managed stores:', error);
       showAlert('Error', 'Failed to load stores');
     } finally {
       setManagedStoresLoading(false);

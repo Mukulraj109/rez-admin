@@ -48,7 +48,7 @@ class FAQAdminService {
       if (response.success && response.data) return response.data;
       return { faqs: [], total: 0, page: 1, pages: 0 };
     } catch (error) {
-      console.error('[FAQ Admin] Error listing FAQs:', error);
+      if (__DEV__) console.error('[FAQ Admin] Error listing FAQs:', error);
       return { faqs: [], total: 0, page: 1, pages: 0 };
     }
   }
@@ -68,7 +68,7 @@ class FAQAdminService {
       if (response.success && response.data) return response.data.faq;
       return null;
     } catch (error) {
-      console.error('[FAQ Admin] Error creating FAQ:', error);
+      if (__DEV__) console.error('[FAQ Admin] Error creating FAQ:', error);
       return null;
     }
   }
@@ -79,7 +79,7 @@ class FAQAdminService {
       if (response.success && response.data) return response.data.faq;
       return null;
     } catch (error) {
-      console.error('[FAQ Admin] Error updating FAQ:', error);
+      if (__DEV__) console.error('[FAQ Admin] Error updating FAQ:', error);
       return null;
     }
   }
@@ -89,7 +89,7 @@ class FAQAdminService {
       const response = await apiClient.delete(`admin/support/faq/${id}`);
       return response.success;
     } catch (error) {
-      console.error('[FAQ Admin] Error deleting FAQ:', error);
+      if (__DEV__) console.error('[FAQ Admin] Error deleting FAQ:', error);
       return false;
     }
   }
@@ -99,7 +99,7 @@ class FAQAdminService {
       const response = await apiClient.patch(`admin/support/faq/${id}/toggle`);
       return response.success;
     } catch (error) {
-      console.error('[FAQ Admin] Error toggling FAQ:', error);
+      if (__DEV__) console.error('[FAQ Admin] Error toggling FAQ:', error);
       return false;
     }
   }
@@ -109,7 +109,7 @@ class FAQAdminService {
       const response = await apiClient.put('admin/support/faq/reorder', { items });
       return response.success;
     } catch (error) {
-      console.error('[FAQ Admin] Error reordering FAQs:', error);
+      if (__DEV__) console.error('[FAQ Admin] Error reordering FAQs:', error);
       return false;
     }
   }

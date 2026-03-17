@@ -71,7 +71,7 @@ export default function MerchantsScreen() {
       setHasMore(data.pagination.page < data.pagination.totalPages);
       setPage(pageNum);
     } catch (error) {
-      console.error('Failed to load merchants:', error);
+      if (__DEV__) console.error('Failed to load merchants:', error);
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +139,7 @@ export default function MerchantsScreen() {
       const wallet = await merchantsService.getMerchantWallet(merchant._id);
       setMerchantWallet(wallet);
     } catch (err: any) {
-      console.error('Failed to load merchant wallet:', err);
+      if (__DEV__) console.error('Failed to load merchant wallet:', err);
     } finally {
       setLoadingWallet(false);
     }

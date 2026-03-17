@@ -45,7 +45,7 @@ class UploadsService {
     folder: string = 'campaigns'
   ): Promise<UploadedImage> {
     try {
-      console.log('[Uploads] Uploading image:', { uri, type, folder, platform: Platform.OS });
+      if (__DEV__) console.log('[Uploads] Uploading image:', { uri, type, folder, platform: Platform.OS });
 
       // Create form data
       const formData = new FormData();
@@ -85,13 +85,13 @@ class UploadsService {
       );
 
       if (response.success && response.data) {
-        console.log('[Uploads] Image uploaded:', response.data.url);
+        if (__DEV__) console.log('[Uploads] Image uploaded:', response.data.url);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to upload image');
     } catch (error: any) {
-      console.error('[Uploads] Upload error:', error.message);
+      if (__DEV__) console.error('[Uploads] Upload error:', error.message);
       throw new Error(error.message || 'Failed to upload image');
     }
   }
@@ -106,7 +106,7 @@ class UploadsService {
     folder: string = 'campaigns'
   ): Promise<UploadedImage[]> {
     try {
-      console.log('[Uploads] Uploading multiple images:', uris.length);
+      if (__DEV__) console.log('[Uploads] Uploading multiple images:', uris.length);
 
       const formData = new FormData();
 
@@ -142,13 +142,13 @@ class UploadsService {
       );
 
       if (response.success && response.data) {
-        console.log('[Uploads] Images uploaded:', response.data.length);
+        if (__DEV__) console.log('[Uploads] Images uploaded:', response.data.length);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to upload images');
     } catch (error: any) {
-      console.error('[Uploads] Multiple upload error:', error.message);
+      if (__DEV__) console.error('[Uploads] Multiple upload error:', error.message);
       throw new Error(error.message || 'Failed to upload images');
     }
   }
@@ -159,7 +159,7 @@ class UploadsService {
    */
   async deleteImage(publicId: string): Promise<void> {
     try {
-      console.log('[Uploads] Deleting image:', publicId);
+      if (__DEV__) console.log('[Uploads] Deleting image:', publicId);
 
       const response = await apiClient.post('admin/uploads/delete', { publicId });
 
@@ -167,9 +167,9 @@ class UploadsService {
         throw new Error(response.message || 'Failed to delete image');
       }
 
-      console.log('[Uploads] Image deleted');
+      if (__DEV__) console.log('[Uploads] Image deleted');
     } catch (error: any) {
-      console.error('[Uploads] Delete error:', error.message);
+      if (__DEV__) console.error('[Uploads] Delete error:', error.message);
       throw new Error(error.message || 'Failed to delete image');
     }
   }

@@ -126,7 +126,7 @@ export default function FraudReportsScreen() {
       setTotalCount(data.total);
       setPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load fraud reports:', error);
+      if (__DEV__) console.error('Failed to load fraud reports:', error);
     } finally {
       setIsLoading(false);
       setRefreshing(false);

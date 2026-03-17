@@ -66,7 +66,7 @@ export default function UsersScreen() {
       setHasMore(data.pagination.page < data.pagination.totalPages);
       setPage(pageNum);
     } catch (err: any) {
-      console.error('Failed to load users:', err);
+      if (__DEV__) console.error('Failed to load users:', err);
       setError(err.message || 'Failed to load users');
     } finally {
       setIsLoading(false);
@@ -95,7 +95,7 @@ export default function UsersScreen() {
       const wallet = await usersService.getUserWallet(user._id);
       setUserWallet(wallet);
     } catch (err: any) {
-      console.error('Failed to load wallet:', err);
+      if (__DEV__) console.error('Failed to load wallet:', err);
     } finally {
       setLoadingWallet(false);
     }

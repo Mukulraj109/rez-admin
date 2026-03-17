@@ -91,7 +91,7 @@ export default function DashboardScreen() {
       const data = await dashboardService.getStats();
       setStats(data);
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      if (__DEV__) console.error('Failed to load stats:', error);
     } finally {
       setIsLoading(false);
     }

@@ -114,11 +114,11 @@ class ZoneVerificationsService {
       if (status && status !== 'all') url += `&status=${status}`;
       if (verificationType) url += `&verificationType=${verificationType}`;
 
-      console.log('[ZoneVerifications] Fetching verifications...');
+      if (__DEV__) console.log('[ZoneVerifications] Fetching verifications...');
       const response = await apiClient.get<any>(url);
 
       if (response.success && response.data) {
-        console.log('[ZoneVerifications] Verifications fetched successfully');
+        if (__DEV__) console.log('[ZoneVerifications] Verifications fetched successfully');
         return {
           verifications: response.data.verifications || [],
           pagination: response.data.pagination || { page, limit, total: 0, totalPages: 0, hasNext: false, hasPrev: false }
@@ -127,7 +127,7 @@ class ZoneVerificationsService {
 
       throw new Error(response.message || 'Failed to get verifications');
     } catch (error: any) {
-      console.error('[ZoneVerifications] Get verifications error:', error.message);
+      if (__DEV__) console.error('[ZoneVerifications] Get verifications error:', error.message);
       throw new Error(error.message || 'Failed to get verifications');
     }
   }
@@ -137,17 +137,17 @@ class ZoneVerificationsService {
    */
   async getStats(): Promise<VerificationStats> {
     try {
-      console.log('[ZoneVerifications] Fetching stats...');
+      if (__DEV__) console.log('[ZoneVerifications] Fetching stats...');
       const response = await apiClient.get<VerificationStats>('admin/zone-verifications/stats');
 
       if (response.success && response.data) {
-        console.log('[ZoneVerifications] Stats fetched successfully');
+        if (__DEV__) console.log('[ZoneVerifications] Stats fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get stats');
     } catch (error: any) {
-      console.error('[ZoneVerifications] Get stats error:', error.message);
+      if (__DEV__) console.error('[ZoneVerifications] Get stats error:', error.message);
       throw new Error(error.message || 'Failed to get stats');
     }
   }
@@ -157,7 +157,7 @@ class ZoneVerificationsService {
    */
   async getVerification(verificationId: string): Promise<ZoneVerification> {
     try {
-      console.log('[ZoneVerifications] Fetching verification:', verificationId);
+      if (__DEV__) console.log('[ZoneVerifications] Fetching verification:', verificationId);
       const response = await apiClient.get<ZoneVerification>(`admin/zone-verifications/${verificationId}`);
 
       if (response.success && response.data) {
@@ -166,7 +166,7 @@ class ZoneVerificationsService {
 
       throw new Error(response.message || 'Failed to get verification');
     } catch (error: any) {
-      console.error('[ZoneVerifications] Get verification error:', error.message);
+      if (__DEV__) console.error('[ZoneVerifications] Get verification error:', error.message);
       throw new Error(error.message || 'Failed to get verification');
     }
   }
@@ -179,7 +179,7 @@ class ZoneVerificationsService {
     expiresAt?: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[ZoneVerifications] Approving verification:', verificationId);
+      if (__DEV__) console.log('[ZoneVerifications] Approving verification:', verificationId);
       const body: ReviewRequest = { status: 'approved' };
       if (expiresAt) body.expiresAt = expiresAt;
 
@@ -190,7 +190,7 @@ class ZoneVerificationsService {
         message: response.message || 'Verification approved'
       };
     } catch (error: any) {
-      console.error('[ZoneVerifications] Approve verification error:', error.message);
+      if (__DEV__) console.error('[ZoneVerifications] Approve verification error:', error.message);
       throw new Error(error.message || 'Failed to approve verification');
     }
   }
@@ -203,7 +203,7 @@ class ZoneVerificationsService {
     reason: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[ZoneVerifications] Rejecting verification:', verificationId);
+      if (__DEV__) console.log('[ZoneVerifications] Rejecting verification:', verificationId);
       const body: ReviewRequest = {
         status: 'rejected',
         rejectionReason: reason
@@ -216,7 +216,7 @@ class ZoneVerificationsService {
         message: response.message || 'Verification rejected'
       };
     } catch (error: any) {
-      console.error('[ZoneVerifications] Reject verification error:', error.message);
+      if (__DEV__) console.error('[ZoneVerifications] Reject verification error:', error.message);
       throw new Error(error.message || 'Failed to reject verification');
     }
   }
@@ -229,7 +229,7 @@ class ZoneVerificationsService {
     reason?: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[ZoneVerifications] Revoking verification:', verificationId);
+      if (__DEV__) console.log('[ZoneVerifications] Revoking verification:', verificationId);
       const body: ReviewRequest = {
         status: 'rejected',
         ...(reason && { rejectionReason: reason }),
@@ -242,7 +242,7 @@ class ZoneVerificationsService {
         message: response.message || 'Verification revoked'
       };
     } catch (error: any) {
-      console.error('[ZoneVerifications] Revoke verification error:', error.message);
+      if (__DEV__) console.error('[ZoneVerifications] Revoke verification error:', error.message);
       throw new Error(error.message || 'Failed to revoke verification');
     }
   }
@@ -254,7 +254,7 @@ class ZoneVerificationsService {
     verificationId: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[ZoneVerifications] Re-approving verification:', verificationId);
+      if (__DEV__) console.log('[ZoneVerifications] Re-approving verification:', verificationId);
       const body: ReviewRequest = { status: 'approved' };
 
       const response = await apiClient.patch<any>(`admin/zone-verifications/${verificationId}/review`, body);
@@ -264,7 +264,7 @@ class ZoneVerificationsService {
         message: response.message || 'Verification re-approved'
       };
     } catch (error: any) {
-      console.error('[ZoneVerifications] Re-approve verification error:', error.message);
+      if (__DEV__) console.error('[ZoneVerifications] Re-approve verification error:', error.message);
       throw new Error(error.message || 'Failed to re-approve verification');
     }
   }
@@ -274,7 +274,7 @@ class ZoneVerificationsService {
    */
   async deleteVerification(verificationId: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[ZoneVerifications] Deleting verification:', verificationId);
+      if (__DEV__) console.log('[ZoneVerifications] Deleting verification:', verificationId);
       const response = await apiClient.delete<any>(`admin/zone-verifications/${verificationId}`);
 
       return {
@@ -282,7 +282,7 @@ class ZoneVerificationsService {
         message: response.message || 'Verification deleted'
       };
     } catch (error: any) {
-      console.error('[ZoneVerifications] Delete verification error:', error.message);
+      if (__DEV__) console.error('[ZoneVerifications] Delete verification error:', error.message);
       throw new Error(error.message || 'Failed to delete verification');
     }
   }

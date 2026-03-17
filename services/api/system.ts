@@ -111,17 +111,17 @@ class SystemService {
    */
   async getHealth(): Promise<SystemHealthData> {
     try {
-      console.log('[System] Fetching system health...');
+      if (__DEV__) console.log('[System] Fetching system health...');
       const response = await apiClient.get<SystemHealthData>('admin/system/health');
 
       if (response.success && response.data) {
-        console.log('[System] Health data fetched successfully');
+        if (__DEV__) console.log('[System] Health data fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get system health');
     } catch (error: any) {
-      console.error('[System] Get health error:', error.message);
+      if (__DEV__) console.error('[System] Get health error:', error.message);
       throw new Error(error.message || 'Failed to get system health');
     }
   }
@@ -131,17 +131,17 @@ class SystemService {
    */
   async getReconciliation(): Promise<ReconciliationResult> {
     try {
-      console.log('[System] Fetching reconciliation results...');
+      if (__DEV__) console.log('[System] Fetching reconciliation results...');
       const response = await apiClient.get<ReconciliationResult>('admin/system/reconciliation');
 
       if (response.success && response.data) {
-        console.log('[System] Reconciliation results fetched');
+        if (__DEV__) console.log('[System] Reconciliation results fetched');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get reconciliation results');
     } catch (error: any) {
-      console.error('[System] Get reconciliation error:', error.message);
+      if (__DEV__) console.error('[System] Get reconciliation error:', error.message);
       throw new Error(error.message || 'Failed to get reconciliation results');
     }
   }
@@ -151,17 +151,17 @@ class SystemService {
    */
   async triggerReconciliation(): Promise<ReconciliationResult> {
     try {
-      console.log('[System] Triggering manual reconciliation...');
+      if (__DEV__) console.log('[System] Triggering manual reconciliation...');
       const response = await apiClient.post<ReconciliationResult>('admin/system/reconciliation/trigger');
 
       if (response.success && response.data) {
-        console.log('[System] Reconciliation triggered successfully');
+        if (__DEV__) console.log('[System] Reconciliation triggered successfully');
         return { hasResults: true, ...response.data };
       }
 
       throw new Error(response.message || 'Failed to trigger reconciliation');
     } catch (error: any) {
-      console.error('[System] Trigger reconciliation error:', error.message);
+      if (__DEV__) console.error('[System] Trigger reconciliation error:', error.message);
       throw new Error(error.message || 'Failed to trigger reconciliation');
     }
   }
@@ -171,17 +171,17 @@ class SystemService {
    */
   async getJobs(): Promise<ScheduledJob[]> {
     try {
-      console.log('[System] Fetching scheduled jobs...');
+      if (__DEV__) console.log('[System] Fetching scheduled jobs...');
       const response = await apiClient.get<ScheduledJobsData>('admin/system/jobs');
 
       if (response.success && response.data) {
-        console.log('[System] Job statuses fetched');
+        if (__DEV__) console.log('[System] Job statuses fetched');
         return response.data.jobs;
       }
 
       throw new Error(response.message || 'Failed to get job statuses');
     } catch (error: any) {
-      console.error('[System] Get jobs error:', error.message);
+      if (__DEV__) console.error('[System] Get jobs error:', error.message);
       throw new Error(error.message || 'Failed to get job statuses');
     }
   }

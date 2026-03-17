@@ -53,7 +53,7 @@ class OffersSectionsService {
 
       throw new Error('Failed to fetch section configs');
     } catch (error: any) {
-      console.error('[OffersSections] Get sections error:', error.message);
+      if (__DEV__) console.error('[OffersSections] Get sections error:', error.message);
       throw error;
     }
   }
@@ -74,7 +74,7 @@ class OffersSectionsService {
 
       throw new Error('Failed to update section config');
     } catch (error: any) {
-      console.error('[OffersSections] Update section error:', error.message);
+      if (__DEV__) console.error('[OffersSections] Update section error:', error.message);
       throw error;
     }
   }
@@ -94,7 +94,7 @@ class OffersSectionsService {
 
       throw new Error('Failed to seed section configs');
     } catch (error: any) {
-      console.error('[OffersSections] Seed error:', error.message);
+      if (__DEV__) console.error('[OffersSections] Seed error:', error.message);
       throw error;
     }
   }

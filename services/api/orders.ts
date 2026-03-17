@@ -117,11 +117,11 @@ class OrdersService {
       if (search) url += `&search=${encodeURIComponent(search)}`;
       if (fulfillmentType) url += `&fulfillmentType=${fulfillmentType}`;
 
-      console.log('[Orders] Fetching orders list...');
+      if (__DEV__) console.log('[Orders] Fetching orders list...');
       const response = await apiClient.get<Order[]>(url);
 
       if (response.success) {
-        console.log('[Orders] Orders fetched successfully');
+        if (__DEV__) console.log('[Orders] Orders fetched successfully');
         // Backend returns { data: { orders: [...], pagination: {...} } }
         const nested = response.data as any;
         return {
@@ -132,7 +132,7 @@ class OrdersService {
 
       throw new Error(response.message || 'Failed to get orders');
     } catch (error: any) {
-      console.error('[Orders] Get orders error:', error.message);
+      if (__DEV__) console.error('[Orders] Get orders error:', error.message);
       throw new Error(error.message || 'Failed to get orders');
     }
   }
@@ -142,7 +142,7 @@ class OrdersService {
    */
   async getOrder(orderId: string): Promise<Order> {
     try {
-      console.log('[Orders] Fetching order:', orderId);
+      if (__DEV__) console.log('[Orders] Fetching order:', orderId);
       const response = await apiClient.get<Order>(`admin/orders/${orderId}`);
 
       if (response.success && response.data) {
@@ -151,7 +151,7 @@ class OrdersService {
 
       throw new Error(response.message || 'Failed to get order');
     } catch (error: any) {
-      console.error('[Orders] Get order error:', error.message);
+      if (__DEV__) console.error('[Orders] Get order error:', error.message);
       throw new Error(error.message || 'Failed to get order');
     }
   }
@@ -161,17 +161,17 @@ class OrdersService {
    */
   async getStats(): Promise<OrderStats> {
     try {
-      console.log('[Orders] Fetching order stats...');
+      if (__DEV__) console.log('[Orders] Fetching order stats...');
       const response = await apiClient.get<OrderStats>('admin/orders/stats');
 
       if (response.success && response.data) {
-        console.log('[Orders] Stats fetched successfully');
+        if (__DEV__) console.log('[Orders] Stats fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get order stats');
     } catch (error: any) {
-      console.error('[Orders] Get stats error:', error.message);
+      if (__DEV__) console.error('[Orders] Get stats error:', error.message);
       throw new Error(error.message || 'Failed to get order stats');
     }
   }
@@ -181,7 +181,7 @@ class OrdersService {
    */
   async refundOrder(orderId: string, reason: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Orders] Refunding order:', orderId);
+      if (__DEV__) console.log('[Orders] Refunding order:', orderId);
       const response = await apiClient.post<any>(`admin/orders/${orderId}/refund`, { reason });
 
       return {
@@ -189,7 +189,7 @@ class OrdersService {
         message: response.message || 'Order refunded'
       };
     } catch (error: any) {
-      console.error('[Orders] Refund order error:', error.message);
+      if (__DEV__) console.error('[Orders] Refund order error:', error.message);
       throw new Error(error.message || 'Failed to refund order');
     }
   }
@@ -199,7 +199,7 @@ class OrdersService {
    */
   async updateOrderStatus(orderId: string, status: string, notes?: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Orders] Updating order status:', orderId, '->', status);
+      if (__DEV__) console.log('[Orders] Updating order status:', orderId, '->', status);
       const response = await apiClient.put<any>(`admin/orders/${orderId}/status`, { status, notes });
 
       return {
@@ -207,7 +207,7 @@ class OrdersService {
         message: response.message || 'Status updated'
       };
     } catch (error: any) {
-      console.error('[Orders] Update status error:', error.message);
+      if (__DEV__) console.error('[Orders] Update status error:', error.message);
       throw new Error(error.message || 'Failed to update order status');
     }
   }
@@ -217,7 +217,7 @@ class OrdersService {
    */
   async cancelOrder(orderId: string, reason: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Orders] Cancelling order:', orderId);
+      if (__DEV__) console.log('[Orders] Cancelling order:', orderId);
       const response = await apiClient.post<any>(`admin/orders/${orderId}/cancel`, { reason });
 
       return {
@@ -225,7 +225,7 @@ class OrdersService {
         message: response.message || 'Order cancelled'
       };
     } catch (error: any) {
-      console.error('[Orders] Cancel order error:', error.message);
+      if (__DEV__) console.error('[Orders] Cancel order error:', error.message);
       throw new Error(error.message || 'Failed to cancel order');
     }
   }

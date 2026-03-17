@@ -127,7 +127,7 @@ class LeaderboardConfigService {
    */
   async getAll(query: LeaderboardConfigQuery = {}): Promise<LeaderboardConfigListResponse> {
     try {
-      console.log('[LeaderboardConfig] Fetching configs with query:', query);
+      if (__DEV__) console.log('[LeaderboardConfig] Fetching configs with query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -139,13 +139,13 @@ class LeaderboardConfigService {
       const response = await apiClient.get<LeaderboardConfigListResponse>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Fetched successfully:', response.data.configs?.length || 0, 'configs');
+        if (__DEV__) console.log('[LeaderboardConfig] Fetched successfully:', response.data.configs?.length || 0, 'configs');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch leaderboard configs');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Get all error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Get all error:', error.message);
       throw new Error(error.message || 'Failed to fetch leaderboard configs');
     }
   }
@@ -155,17 +155,17 @@ class LeaderboardConfigService {
    */
   async getById(id: string): Promise<LeaderboardConfigAdmin> {
     try {
-      console.log('[LeaderboardConfig] Fetching config:', id);
+      if (__DEV__) console.log('[LeaderboardConfig] Fetching config:', id);
       const response = await apiClient.get<LeaderboardConfigAdmin>(`admin/leaderboard/configs/${id}`);
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Config fetched:', response.data.slug);
+        if (__DEV__) console.log('[LeaderboardConfig] Config fetched:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch leaderboard config');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Get by ID error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Get by ID error:', error.message);
       throw new Error(error.message || 'Failed to fetch leaderboard config');
     }
   }
@@ -175,17 +175,17 @@ class LeaderboardConfigService {
    */
   async create(data: Partial<LeaderboardConfigAdmin>): Promise<LeaderboardConfigAdmin> {
     try {
-      console.log('[LeaderboardConfig] Creating config:', data.title);
+      if (__DEV__) console.log('[LeaderboardConfig] Creating config:', data.title);
       const response = await apiClient.post<LeaderboardConfigAdmin>('admin/leaderboard/configs', data);
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Config created:', response.data.slug);
+        if (__DEV__) console.log('[LeaderboardConfig] Config created:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create leaderboard config');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Create error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Create error:', error.message);
       throw new Error(error.message || 'Failed to create leaderboard config');
     }
   }
@@ -195,17 +195,17 @@ class LeaderboardConfigService {
    */
   async update(id: string, data: Partial<LeaderboardConfigAdmin>): Promise<LeaderboardConfigAdmin> {
     try {
-      console.log('[LeaderboardConfig] Updating config:', id);
+      if (__DEV__) console.log('[LeaderboardConfig] Updating config:', id);
       const response = await apiClient.put<LeaderboardConfigAdmin>(`admin/leaderboard/configs/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Config updated:', response.data.slug);
+        if (__DEV__) console.log('[LeaderboardConfig] Config updated:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update leaderboard config');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Update error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Update error:', error.message);
       throw new Error(error.message || 'Failed to update leaderboard config');
     }
   }
@@ -215,17 +215,17 @@ class LeaderboardConfigService {
    */
   async remove(id: string): Promise<void> {
     try {
-      console.log('[LeaderboardConfig] Deleting config:', id);
+      if (__DEV__) console.log('[LeaderboardConfig] Deleting config:', id);
       const response = await apiClient.delete(`admin/leaderboard/configs/${id}`);
 
       if (response.success) {
-        console.log('[LeaderboardConfig] Config deleted');
+        if (__DEV__) console.log('[LeaderboardConfig] Config deleted');
         return;
       }
 
       throw new Error(response.message || 'Failed to delete leaderboard config');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Delete error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Delete error:', error.message);
       throw new Error(error.message || 'Failed to delete leaderboard config');
     }
   }
@@ -235,17 +235,17 @@ class LeaderboardConfigService {
    */
   async updateStatus(id: string, status: LeaderboardStatus): Promise<LeaderboardConfigAdmin> {
     try {
-      console.log('[LeaderboardConfig] Updating status for config:', id, 'to:', status);
+      if (__DEV__) console.log('[LeaderboardConfig] Updating status for config:', id, 'to:', status);
       const response = await apiClient.patch<LeaderboardConfigAdmin>(`admin/leaderboard/configs/${id}/status`, { status });
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Status updated to:', response.data.status);
+        if (__DEV__) console.log('[LeaderboardConfig] Status updated to:', response.data.status);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update config status');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Update status error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Update status error:', error.message);
       throw new Error(error.message || 'Failed to update config status');
     }
   }
@@ -255,17 +255,17 @@ class LeaderboardConfigService {
    */
   async getStats(): Promise<LeaderboardStats> {
     try {
-      console.log('[LeaderboardConfig] Fetching stats...');
+      if (__DEV__) console.log('[LeaderboardConfig] Fetching stats...');
       const response = await apiClient.get<LeaderboardStats>('admin/leaderboard/configs/stats');
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Stats fetched, active:', response.data.activeLeaderboards);
+        if (__DEV__) console.log('[LeaderboardConfig] Stats fetched, active:', response.data.activeLeaderboards);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch leaderboard stats');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Get stats error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Get stats error:', error.message);
       throw new Error(error.message || 'Failed to fetch leaderboard stats');
     }
   }
@@ -275,17 +275,17 @@ class LeaderboardConfigService {
    */
   async getAnalytics(id: string): Promise<LeaderboardAnalytics> {
     try {
-      console.log('[LeaderboardConfig] Fetching analytics for config:', id);
+      if (__DEV__) console.log('[LeaderboardConfig] Fetching analytics for config:', id);
       const response = await apiClient.get<LeaderboardAnalytics>(`admin/leaderboard/configs/${id}/analytics`);
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Analytics fetched, participants:', response.data.totalParticipants);
+        if (__DEV__) console.log('[LeaderboardConfig] Analytics fetched, participants:', response.data.totalParticipants);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch config analytics');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Get analytics error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Get analytics error:', error.message);
       throw new Error(error.message || 'Failed to fetch config analytics');
     }
   }
@@ -295,7 +295,7 @@ class LeaderboardConfigService {
    */
   async getPrizeHistory(query: PrizeHistoryQuery = {}): Promise<PrizeHistoryResponse> {
     try {
-      console.log('[LeaderboardConfig] Fetching prize history with query:', query);
+      if (__DEV__) console.log('[LeaderboardConfig] Fetching prize history with query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -306,13 +306,13 @@ class LeaderboardConfigService {
       const response = await apiClient.get<PrizeHistoryResponse>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Prize history fetched:', response.data.prizes?.length || 0, 'entries');
+        if (__DEV__) console.log('[LeaderboardConfig] Prize history fetched:', response.data.prizes?.length || 0, 'entries');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch prize history');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Get prize history error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Get prize history error:', error.message);
       throw new Error(error.message || 'Failed to fetch prize history');
     }
   }
@@ -322,17 +322,17 @@ class LeaderboardConfigService {
    */
   async distributePrizes(id: string): Promise<{ distributed: number; flagged: number; totalEntries: number }> {
     try {
-      console.log('[LeaderboardConfig] Distributing prizes for config:', id);
+      if (__DEV__) console.log('[LeaderboardConfig] Distributing prizes for config:', id);
       const response = await apiClient.post<{ distributed: number; flagged: number; totalEntries: number }>(`admin/leaderboard/configs/${id}/distribute-prizes`);
 
       if (response.success && response.data) {
-        console.log('[LeaderboardConfig] Prizes distributed:', response.data.distributed, 'flagged:', response.data.flagged);
+        if (__DEV__) console.log('[LeaderboardConfig] Prizes distributed:', response.data.distributed, 'flagged:', response.data.flagged);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to distribute prizes');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Distribute prizes error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Distribute prizes error:', error.message);
       throw new Error(error.message || 'Failed to distribute prizes');
     }
   }
@@ -342,17 +342,17 @@ class LeaderboardConfigService {
    */
   async refreshCache(): Promise<void> {
     try {
-      console.log('[LeaderboardConfig] Refreshing leaderboard cache...');
+      if (__DEV__) console.log('[LeaderboardConfig] Refreshing leaderboard cache...');
       const response = await apiClient.post('admin/leaderboard/configs/refresh');
 
       if (response.success) {
-        console.log('[LeaderboardConfig] Cache refreshed');
+        if (__DEV__) console.log('[LeaderboardConfig] Cache refreshed');
         return;
       }
 
       throw new Error(response.message || 'Failed to refresh cache');
     } catch (error: any) {
-      console.error('[LeaderboardConfig] Refresh cache error:', error.message);
+      if (__DEV__) console.error('[LeaderboardConfig] Refresh cache error:', error.message);
       throw new Error(error.message || 'Failed to refresh cache');
     }
   }

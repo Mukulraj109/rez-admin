@@ -105,7 +105,7 @@ class MembershipAdminService {
 
       throw new Error(response.message || 'Failed to fetch subscription tiers');
     } catch (error: any) {
-      console.error('[Membership] List plans error:', error.message);
+      if (__DEV__) console.error('[Membership] List plans error:', error.message);
       throw new Error(error.message || 'Failed to fetch subscription tiers');
     }
   }
@@ -123,7 +123,7 @@ class MembershipAdminService {
 
       throw new Error(response.message || 'Failed to create subscription tier');
     } catch (error: any) {
-      console.error('[Membership] Create plan error:', error.message);
+      if (__DEV__) console.error('[Membership] Create plan error:', error.message);
       throw new Error(error.message || 'Failed to create subscription tier');
     }
   }
@@ -141,7 +141,7 @@ class MembershipAdminService {
 
       throw new Error(response.message || 'Failed to update subscription tier');
     } catch (error: any) {
-      console.error('[Membership] Update plan error:', error.message);
+      if (__DEV__) console.error('[Membership] Update plan error:', error.message);
       throw new Error(error.message || 'Failed to update subscription tier');
     }
   }
@@ -157,7 +157,7 @@ class MembershipAdminService {
 
       throw new Error(response.message || 'Failed to deactivate subscription tier');
     } catch (error: any) {
-      console.error('[Membership] Delete plan error:', error.message);
+      if (__DEV__) console.error('[Membership] Delete plan error:', error.message);
       throw new Error(error.message || 'Failed to deactivate subscription tier');
     }
   }
@@ -187,7 +187,7 @@ class MembershipAdminService {
 
       throw new Error(response.message || 'Failed to fetch subscribers');
     } catch (error: any) {
-      console.error('[Membership] Get subscribers error:', error.message);
+      if (__DEV__) console.error('[Membership] Get subscribers error:', error.message);
       throw new Error(error.message || 'Failed to fetch subscribers');
     }
   }
@@ -206,7 +206,7 @@ class MembershipAdminService {
 
       throw new Error(response.message || 'Failed to override subscriber tier');
     } catch (error: any) {
-      console.error('[Membership] Override error:', error.message);
+      if (__DEV__) console.error('[Membership] Override error:', error.message);
       throw new Error(error.message || 'Failed to override subscriber tier');
     }
   }

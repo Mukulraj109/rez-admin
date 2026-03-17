@@ -47,7 +47,7 @@ export default function AdminUsersScreen() {
       const data = await adminUsersService.listAdmins();
       setAdmins(data);
     } catch (error) {
-      console.error('Failed to load admins:', error);
+      if (__DEV__) console.error('Failed to load admins:', error);
     } finally {
       setIsLoading(false);
       setRefreshing(false);

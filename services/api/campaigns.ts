@@ -131,7 +131,7 @@ class CampaignsService {
    */
   async getCampaigns(query: CampaignsQuery = {}): Promise<CampaignsListResponse> {
     try {
-      console.log('[Campaigns] Fetching campaigns with query:', query);
+      if (__DEV__) console.log('[Campaigns] Fetching campaigns with query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -148,13 +148,13 @@ class CampaignsService {
       const response = await apiClient.get<CampaignsListResponse>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Fetched successfully:', response.data.campaigns?.length || 0, 'campaigns');
+        if (__DEV__) console.log('[Campaigns] Fetched successfully:', response.data.campaigns?.length || 0, 'campaigns');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch campaigns');
     } catch (error: any) {
-      console.error('[Campaigns] Get campaigns error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Get campaigns error:', error.message);
       throw new Error(error.message || 'Failed to fetch campaigns');
     }
   }
@@ -164,17 +164,17 @@ class CampaignsService {
    */
   async getStats(): Promise<CampaignStats> {
     try {
-      console.log('[Campaigns] Fetching stats...');
+      if (__DEV__) console.log('[Campaigns] Fetching stats...');
       const response = await apiClient.get<CampaignStats>('admin/campaigns/stats');
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Stats fetched successfully');
+        if (__DEV__) console.log('[Campaigns] Stats fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch stats');
     } catch (error: any) {
-      console.error('[Campaigns] Get stats error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Get stats error:', error.message);
       throw new Error(error.message || 'Failed to fetch campaign stats');
     }
   }
@@ -184,7 +184,7 @@ class CampaignsService {
    */
   async getStores(search?: string, limit: number = 50): Promise<StoreOption[]> {
     try {
-      console.log('[Campaigns] Fetching stores...');
+      if (__DEV__) console.log('[Campaigns] Fetching stores...');
       const params = new URLSearchParams();
       if (search) params.append('search', search);
       params.append('limit', limit.toString());
@@ -193,13 +193,13 @@ class CampaignsService {
       const response = await apiClient.get<StoreOption[]>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Stores fetched:', response.data.length);
+        if (__DEV__) console.log('[Campaigns] Stores fetched:', response.data.length);
         return response.data;
       }
 
       return [];
     } catch (error: any) {
-      console.error('[Campaigns] Get stores error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Get stores error:', error.message);
       return [];
     }
   }
@@ -209,17 +209,17 @@ class CampaignsService {
    */
   async getCampaignById(id: string): Promise<Campaign> {
     try {
-      console.log('[Campaigns] Fetching campaign:', id);
+      if (__DEV__) console.log('[Campaigns] Fetching campaign:', id);
       const response = await apiClient.get<Campaign>(`admin/campaigns/${id}`);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Campaign fetched:', response.data.title);
+        if (__DEV__) console.log('[Campaigns] Campaign fetched:', response.data.title);
         return response.data;
       }
 
       throw new Error(response.message || 'Campaign not found');
     } catch (error: any) {
-      console.error('[Campaigns] Get campaign error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Get campaign error:', error.message);
       throw new Error(error.message || 'Failed to fetch campaign');
     }
   }
@@ -229,17 +229,17 @@ class CampaignsService {
    */
   async createCampaign(data: CampaignRequest): Promise<Campaign> {
     try {
-      console.log('[Campaigns] Creating campaign:', data.title);
+      if (__DEV__) console.log('[Campaigns] Creating campaign:', data.title);
       const response = await apiClient.post<Campaign>('admin/campaigns', data);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Campaign created:', response.data.campaignId);
+        if (__DEV__) console.log('[Campaigns] Campaign created:', response.data.campaignId);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create campaign');
     } catch (error: any) {
-      console.error('[Campaigns] Create campaign error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Create campaign error:', error.message);
       throw new Error(error.message || 'Failed to create campaign');
     }
   }
@@ -249,17 +249,17 @@ class CampaignsService {
    */
   async updateCampaign(id: string, data: Partial<CampaignRequest>): Promise<Campaign> {
     try {
-      console.log('[Campaigns] Updating campaign:', id);
+      if (__DEV__) console.log('[Campaigns] Updating campaign:', id);
       const response = await apiClient.put<Campaign>(`admin/campaigns/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Campaign updated:', response.data.campaignId);
+        if (__DEV__) console.log('[Campaigns] Campaign updated:', response.data.campaignId);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update campaign');
     } catch (error: any) {
-      console.error('[Campaigns] Update campaign error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Update campaign error:', error.message);
       throw new Error(error.message || 'Failed to update campaign');
     }
   }
@@ -269,17 +269,17 @@ class CampaignsService {
    */
   async deleteCampaign(id: string): Promise<void> {
     try {
-      console.log('[Campaigns] Deleting campaign:', id);
+      if (__DEV__) console.log('[Campaigns] Deleting campaign:', id);
       const response = await apiClient.delete(`admin/campaigns/${id}`);
 
       if (response.success) {
-        console.log('[Campaigns] Campaign deleted');
+        if (__DEV__) console.log('[Campaigns] Campaign deleted');
         return;
       }
 
       throw new Error(response.message || 'Failed to delete campaign');
     } catch (error: any) {
-      console.error('[Campaigns] Delete campaign error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Delete campaign error:', error.message);
       throw new Error(error.message || 'Failed to delete campaign');
     }
   }
@@ -289,17 +289,17 @@ class CampaignsService {
    */
   async toggleCampaign(id: string): Promise<{ isActive: boolean }> {
     try {
-      console.log('[Campaigns] Toggling campaign:', id);
+      if (__DEV__) console.log('[Campaigns] Toggling campaign:', id);
       const response = await apiClient.patch<{ isActive: boolean }>(`admin/campaigns/${id}/toggle`);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Campaign toggled, isActive:', response.data.isActive);
+        if (__DEV__) console.log('[Campaigns] Campaign toggled, isActive:', response.data.isActive);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to toggle campaign');
     } catch (error: any) {
-      console.error('[Campaigns] Toggle campaign error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Toggle campaign error:', error.message);
       throw new Error(error.message || 'Failed to toggle campaign');
     }
   }
@@ -309,17 +309,17 @@ class CampaignsService {
    */
   async addDeal(campaignId: string, deal: CampaignDeal): Promise<Campaign> {
     try {
-      console.log('[Campaigns] Adding deal to campaign:', campaignId);
+      if (__DEV__) console.log('[Campaigns] Adding deal to campaign:', campaignId);
       const response = await apiClient.post<Campaign>(`admin/campaigns/${campaignId}/deals`, deal);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Deal added');
+        if (__DEV__) console.log('[Campaigns] Deal added');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to add deal');
     } catch (error: any) {
-      console.error('[Campaigns] Add deal error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Add deal error:', error.message);
       throw new Error(error.message || 'Failed to add deal');
     }
   }
@@ -329,17 +329,17 @@ class CampaignsService {
    */
   async removeDeal(campaignId: string, dealIndex: number): Promise<Campaign> {
     try {
-      console.log('[Campaigns] Removing deal from campaign:', campaignId, 'index:', dealIndex);
+      if (__DEV__) console.log('[Campaigns] Removing deal from campaign:', campaignId, 'index:', dealIndex);
       const response = await apiClient.delete<Campaign>(`admin/campaigns/${campaignId}/deals/${dealIndex}`);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Deal removed');
+        if (__DEV__) console.log('[Campaigns] Deal removed');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to remove deal');
     } catch (error: any) {
-      console.error('[Campaigns] Remove deal error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Remove deal error:', error.message);
       throw new Error(error.message || 'Failed to remove deal');
     }
   }
@@ -349,17 +349,17 @@ class CampaignsService {
    */
   async duplicateCampaign(id: string): Promise<Campaign> {
     try {
-      console.log('[Campaigns] Duplicating campaign:', id);
+      if (__DEV__) console.log('[Campaigns] Duplicating campaign:', id);
       const response = await apiClient.post<Campaign>(`admin/campaigns/${id}/duplicate`);
 
       if (response.success && response.data) {
-        console.log('[Campaigns] Campaign duplicated:', response.data.campaignId);
+        if (__DEV__) console.log('[Campaigns] Campaign duplicated:', response.data.campaignId);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to duplicate campaign');
     } catch (error: any) {
-      console.error('[Campaigns] Duplicate campaign error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Duplicate campaign error:', error.message);
       throw new Error(error.message || 'Failed to duplicate campaign');
     }
   }
@@ -369,17 +369,17 @@ class CampaignsService {
    */
   async bulkAction(action: 'activate' | 'deactivate' | 'delete', campaignIds: string[]): Promise<void> {
     try {
-      console.log('[Campaigns] Bulk action:', action, 'on', campaignIds.length, 'campaigns');
+      if (__DEV__) console.log('[Campaigns] Bulk action:', action, 'on', campaignIds.length, 'campaigns');
       const response = await apiClient.post('admin/campaigns/bulk-action', { action, campaignIds });
 
       if (response.success) {
-        console.log('[Campaigns] Bulk action completed');
+        if (__DEV__) console.log('[Campaigns] Bulk action completed');
         return;
       }
 
       throw new Error(response.message || 'Bulk action failed');
     } catch (error: any) {
-      console.error('[Campaigns] Bulk action error:', error.message);
+      if (__DEV__) console.error('[Campaigns] Bulk action error:', error.message);
       throw new Error(error.message || 'Failed to perform bulk action');
     }
   }

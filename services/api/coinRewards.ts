@@ -64,11 +64,11 @@ class CoinRewardsService {
       if (status) url += `&status=${status}`;
       if (source) url += `&source=${source}`;
 
-      console.log('[CoinRewards] Fetching rewards list...');
+      if (__DEV__) console.log('[CoinRewards] Fetching rewards list...');
       const response = await apiClient.get<PendingCoinReward[]>(url);
 
       if (response.success) {
-        console.log('[CoinRewards] Rewards fetched successfully');
+        if (__DEV__) console.log('[CoinRewards] Rewards fetched successfully');
         // Backend returns { data: { rewards: [...], pagination: {...} } }
         const nested = response.data as any;
         return {
@@ -79,7 +79,7 @@ class CoinRewardsService {
 
       throw new Error(response.message || 'Failed to get rewards');
     } catch (error: any) {
-      console.error('[CoinRewards] Get rewards error:', error.message);
+      if (__DEV__) console.error('[CoinRewards] Get rewards error:', error.message);
       throw new Error(error.message || 'Failed to get rewards');
     }
   }
@@ -89,7 +89,7 @@ class CoinRewardsService {
    */
   async getReward(rewardId: string): Promise<PendingCoinReward> {
     try {
-      console.log('[CoinRewards] Fetching reward:', rewardId);
+      if (__DEV__) console.log('[CoinRewards] Fetching reward:', rewardId);
       const response = await apiClient.get<PendingCoinReward>(`admin/coin-rewards/${rewardId}`);
 
       if (response.success && response.data) {
@@ -98,7 +98,7 @@ class CoinRewardsService {
 
       throw new Error(response.message || 'Failed to get reward');
     } catch (error: any) {
-      console.error('[CoinRewards] Get reward error:', error.message);
+      if (__DEV__) console.error('[CoinRewards] Get reward error:', error.message);
       throw new Error(error.message || 'Failed to get reward');
     }
   }
@@ -108,17 +108,17 @@ class CoinRewardsService {
    */
   async getStats(): Promise<CoinRewardStats> {
     try {
-      console.log('[CoinRewards] Fetching stats...');
+      if (__DEV__) console.log('[CoinRewards] Fetching stats...');
       const response = await apiClient.get<CoinRewardStats>('admin/coin-rewards/stats');
 
       if (response.success && response.data) {
-        console.log('[CoinRewards] Stats fetched successfully');
+        if (__DEV__) console.log('[CoinRewards] Stats fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get stats');
     } catch (error: any) {
-      console.error('[CoinRewards] Get stats error:', error.message);
+      if (__DEV__) console.error('[CoinRewards] Get stats error:', error.message);
       throw new Error(error.message || 'Failed to get stats');
     }
   }
@@ -128,7 +128,7 @@ class CoinRewardsService {
    */
   async approveReward(rewardId: string, notes?: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[CoinRewards] Approving reward:', rewardId);
+      if (__DEV__) console.log('[CoinRewards] Approving reward:', rewardId);
       const response = await apiClient.post<any>(`admin/coin-rewards/${rewardId}/approve`, { notes });
 
       return {
@@ -136,7 +136,7 @@ class CoinRewardsService {
         message: response.message || 'Reward approved successfully'
       };
     } catch (error: any) {
-      console.error('[CoinRewards] Approve reward error:', error.message);
+      if (__DEV__) console.error('[CoinRewards] Approve reward error:', error.message);
       throw new Error(error.message || 'Failed to approve reward');
     }
   }
@@ -146,7 +146,7 @@ class CoinRewardsService {
    */
   async rejectReward(rewardId: string, reason: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[CoinRewards] Rejecting reward:', rewardId);
+      if (__DEV__) console.log('[CoinRewards] Rejecting reward:', rewardId);
       const response = await apiClient.post<any>(`admin/coin-rewards/${rewardId}/reject`, { reason });
 
       return {
@@ -154,7 +154,7 @@ class CoinRewardsService {
         message: response.message || 'Reward rejected'
       };
     } catch (error: any) {
-      console.error('[CoinRewards] Reject reward error:', error.message);
+      if (__DEV__) console.error('[CoinRewards] Reject reward error:', error.message);
       throw new Error(error.message || 'Failed to reject reward');
     }
   }
@@ -164,7 +164,7 @@ class CoinRewardsService {
    */
   async bulkApprove(rewardIds: string[]): Promise<{ success: boolean; message: string; processed: number }> {
     try {
-      console.log('[CoinRewards] Bulk approving:', rewardIds.length, 'rewards');
+      if (__DEV__) console.log('[CoinRewards] Bulk approving:', rewardIds.length, 'rewards');
       const response = await apiClient.post<{ processed: number }>('admin/coin-rewards/bulk-approve', { rewardIds });
 
       return {
@@ -173,7 +173,7 @@ class CoinRewardsService {
         processed: response.data?.processed || rewardIds.length
       };
     } catch (error: any) {
-      console.error('[CoinRewards] Bulk approve error:', error.message);
+      if (__DEV__) console.error('[CoinRewards] Bulk approve error:', error.message);
       throw new Error(error.message || 'Failed to bulk approve');
     }
   }
@@ -183,7 +183,7 @@ class CoinRewardsService {
    */
   async bulkReject(rewardIds: string[], reason: string): Promise<{ success: boolean; message: string; processed: number }> {
     try {
-      console.log('[CoinRewards] Bulk rejecting:', rewardIds.length, 'rewards');
+      if (__DEV__) console.log('[CoinRewards] Bulk rejecting:', rewardIds.length, 'rewards');
       const response = await apiClient.post<{ processed: number }>('admin/coin-rewards/bulk-reject', { rewardIds, reason });
 
       return {
@@ -192,7 +192,7 @@ class CoinRewardsService {
         processed: response.data?.processed || rewardIds.length
       };
     } catch (error: any) {
-      console.error('[CoinRewards] Bulk reject error:', error.message);
+      if (__DEV__) console.error('[CoinRewards] Bulk reject error:', error.message);
       throw new Error(error.message || 'Failed to bulk reject');
     }
   }

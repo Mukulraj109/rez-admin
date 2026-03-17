@@ -54,7 +54,7 @@ export default function OfferCommentsScreen() {
       setHasMore(data.pagination.hasMore);
       setPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load comments:', error);
+      if (__DEV__) console.error('Failed to load comments:', error);
       showAlert('Error', error.message);
     } finally {
       setIsLoading(false);

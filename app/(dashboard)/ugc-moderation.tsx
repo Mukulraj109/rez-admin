@@ -76,7 +76,7 @@ export default function UgcModerationScreen() {
       setHasMore(data.pagination.hasMore);
       setPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load reels:', error);
+      if (__DEV__) console.error('Failed to load reels:', error);
       showAlert('Error', error.message);
     } finally {
       setIsLoading(false);

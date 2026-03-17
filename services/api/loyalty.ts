@@ -85,11 +85,11 @@ class LoyaltyService {
       if (category) url += `&category=${encodeURIComponent(category)}`;
       if (sortBy) url += `&sortBy=${encodeURIComponent(sortBy)}`;
 
-      console.log('[Loyalty] Fetching users list...');
+      if (__DEV__) console.log('[Loyalty] Fetching users list...');
       const response = await apiClient.get<LoyaltyUser[]>(url);
 
       if (response.success) {
-        console.log('[Loyalty] Users fetched successfully');
+        if (__DEV__) console.log('[Loyalty] Users fetched successfully');
         // Backend returns { data: { users: [...], pagination: {...} } }
         const nested = response.data as any;
         return {
@@ -100,7 +100,7 @@ class LoyaltyService {
 
       throw new Error(response.message || 'Failed to get users');
     } catch (error: any) {
-      console.error('[Loyalty] Get users error:', error.message);
+      if (__DEV__) console.error('[Loyalty] Get users error:', error.message);
       throw new Error(error.message || 'Failed to get users');
     }
   }
@@ -110,17 +110,17 @@ class LoyaltyService {
    */
   async getStats(): Promise<LoyaltyStats> {
     try {
-      console.log('[Loyalty] Fetching stats...');
+      if (__DEV__) console.log('[Loyalty] Fetching stats...');
       const response = await apiClient.get<LoyaltyStats>('admin/loyalty/stats');
 
       if (response.success && response.data) {
-        console.log('[Loyalty] Stats fetched successfully');
+        if (__DEV__) console.log('[Loyalty] Stats fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get stats');
     } catch (error: any) {
-      console.error('[Loyalty] Get stats error:', error.message);
+      if (__DEV__) console.error('[Loyalty] Get stats error:', error.message);
       throw new Error(error.message || 'Failed to get stats');
     }
   }
@@ -130,7 +130,7 @@ class LoyaltyService {
    */
   async getUser(userId: string): Promise<LoyaltyUser> {
     try {
-      console.log('[Loyalty] Fetching user:', userId);
+      if (__DEV__) console.log('[Loyalty] Fetching user:', userId);
       const response = await apiClient.get<LoyaltyUser>(`admin/loyalty/${userId}`);
 
       if (response.success && response.data) {
@@ -139,7 +139,7 @@ class LoyaltyService {
 
       throw new Error(response.message || 'Failed to get user');
     } catch (error: any) {
-      console.error('[Loyalty] Get user error:', error.message);
+      if (__DEV__) console.error('[Loyalty] Get user error:', error.message);
       throw new Error(error.message || 'Failed to get user');
     }
   }
@@ -154,7 +154,7 @@ class LoyaltyService {
     category?: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Loyalty] Adding coins to user:', userId, 'amount:', amount);
+      if (__DEV__) console.log('[Loyalty] Adding coins to user:', userId, 'amount:', amount);
       const response = await apiClient.post<any>(`admin/loyalty/${userId}/add-coins`, {
         amount,
         reason,
@@ -166,7 +166,7 @@ class LoyaltyService {
         message: response.message || 'Coins added successfully'
       };
     } catch (error: any) {
-      console.error('[Loyalty] Add coins error:', error.message);
+      if (__DEV__) console.error('[Loyalty] Add coins error:', error.message);
       throw new Error(error.message || 'Failed to add coins');
     }
   }
@@ -176,7 +176,7 @@ class LoyaltyService {
    */
   async resetStreak(userId: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Loyalty] Resetting streak for user:', userId);
+      if (__DEV__) console.log('[Loyalty] Resetting streak for user:', userId);
       const response = await apiClient.post<any>(`admin/loyalty/${userId}/reset-streak`, {});
 
       return {
@@ -184,7 +184,7 @@ class LoyaltyService {
         message: response.message || 'Streak reset successfully'
       };
     } catch (error: any) {
-      console.error('[Loyalty] Reset streak error:', error.message);
+      if (__DEV__) console.error('[Loyalty] Reset streak error:', error.message);
       throw new Error(error.message || 'Failed to reset streak');
     }
   }
@@ -197,7 +197,7 @@ class LoyaltyService {
     category?: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Loyalty] Resetting missions for user:', userId);
+      if (__DEV__) console.log('[Loyalty] Resetting missions for user:', userId);
       const response = await apiClient.post<any>(`admin/loyalty/${userId}/reset-missions`, {
         ...(category && { category })
       });
@@ -207,7 +207,7 @@ class LoyaltyService {
         message: response.message || 'Missions reset successfully'
       };
     } catch (error: any) {
-      console.error('[Loyalty] Reset missions error:', error.message);
+      if (__DEV__) console.error('[Loyalty] Reset missions error:', error.message);
       throw new Error(error.message || 'Failed to reset missions');
     }
   }

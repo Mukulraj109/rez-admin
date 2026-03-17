@@ -145,7 +145,7 @@ export default function AchievementsScreen() {
         setPage(pageNum);
       }
     } catch (error: any) {
-      console.error('Failed to load achievements:', error);
+      if (__DEV__) console.error('Failed to load achievements:', error);
       showAlert('Error', 'Failed to load achievements');
     } finally {
       setLoading(false);
@@ -160,7 +160,7 @@ export default function AchievementsScreen() {
         setStats(response.data);
       }
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      if (__DEV__) console.error('Failed to load stats:', error);
     }
   }, []);
 

@@ -58,7 +58,7 @@ export default function PhotoModerationScreen() {
       setHasMore(data.pagination.hasMore);
       setPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load photos:', error);
+      if (__DEV__) console.error('Failed to load photos:', error);
       showAlert('Error', error.message);
     } finally {
       setIsLoading(false);

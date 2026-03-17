@@ -109,7 +109,7 @@ export default function SpecialProgramsScreen() {
       setHasMoreMembers(page < data.pagination.totalPages);
       setMemberPage(page);
     } catch (error: any) {
-      console.error('Failed to load members:', error);
+      if (__DEV__) console.error('Failed to load members:', error);
     }
   };
 

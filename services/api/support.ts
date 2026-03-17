@@ -71,7 +71,7 @@ class SupportAdminService {
       if (response.success && response.data) return response.data;
       return { tickets: [], total: 0, page: 1, pages: 0 };
     } catch (error) {
-      console.error('[Support Admin] Error listing tickets:', error);
+      if (__DEV__) console.error('[Support Admin] Error listing tickets:', error);
       return { tickets: [], total: 0, page: 1, pages: 0 };
     }
   }
@@ -82,7 +82,7 @@ class SupportAdminService {
       if (response.success && response.data) return response.data.ticket;
       return null;
     } catch (error) {
-      console.error('[Support Admin] Error fetching ticket:', error);
+      if (__DEV__) console.error('[Support Admin] Error fetching ticket:', error);
       return null;
     }
   }
@@ -92,7 +92,7 @@ class SupportAdminService {
       const response = await apiClient.put(`admin/support/tickets/${id}/assign`, { agentId });
       return response.success;
     } catch (error) {
-      console.error('[Support Admin] Error assigning ticket:', error);
+      if (__DEV__) console.error('[Support Admin] Error assigning ticket:', error);
       return false;
     }
   }
@@ -102,7 +102,7 @@ class SupportAdminService {
       const response = await apiClient.post(`admin/support/tickets/${id}/messages`, { message });
       return response.success;
     } catch (error) {
-      console.error('[Support Admin] Error replying to ticket:', error);
+      if (__DEV__) console.error('[Support Admin] Error replying to ticket:', error);
       return false;
     }
   }
@@ -122,7 +122,7 @@ class SupportAdminService {
       const response = await apiClient.put<{ ticket: any; walletResult?: any }>(`admin/support/tickets/${id}/status`, body);
       return { success: response.success, walletResult: response.data?.walletResult };
     } catch (error) {
-      console.error('[Support Admin] Error updating status:', error);
+      if (__DEV__) console.error('[Support Admin] Error updating status:', error);
       return { success: false };
     }
   }
@@ -133,7 +133,7 @@ class SupportAdminService {
       if (response.success && response.data) return response.data.agents || [];
       return [];
     } catch (error) {
-      console.error('[Support Admin] Error fetching agents:', error);
+      if (__DEV__) console.error('[Support Admin] Error fetching agents:', error);
       return [];
     }
   }
@@ -143,7 +143,7 @@ class SupportAdminService {
       const response = await apiClient.post(`admin/support/tickets/${id}/read`);
       return response.success;
     } catch (error) {
-      console.error('[Support Admin] Error marking as read:', error);
+      if (__DEV__) console.error('[Support Admin] Error marking as read:', error);
       return false;
     }
   }
@@ -154,7 +154,7 @@ class SupportAdminService {
       if (response.success && response.data) return response.data;
       return null;
     } catch (error) {
-      console.error('[Support Admin] Error fetching statistics:', error);
+      if (__DEV__) console.error('[Support Admin] Error fetching statistics:', error);
       return null;
     }
   }

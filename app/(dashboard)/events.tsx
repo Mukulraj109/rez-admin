@@ -160,7 +160,7 @@ export default function EventsScreen() {
       setHasMore(data.pagination.page < data.pagination.totalPages);
       setPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load events:', error);
+      if (__DEV__) console.error('Failed to load events:', error);
       showAlert('Error', error.message || 'Failed to load events');
     } finally {
       setIsLoading(false);
@@ -172,7 +172,7 @@ export default function EventsScreen() {
       const data = await adminEventsService.getCategories();
       setCategories(data);
     } catch (error) {
-      console.error('Failed to load categories:', error);
+      if (__DEV__) console.error('Failed to load categories:', error);
     }
   };
 

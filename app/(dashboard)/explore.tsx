@@ -95,7 +95,7 @@ export default function ExploreScreen() {
       setExploreStats(explore);
       setVideoStats(video);
     } catch (error: any) {
-      console.error('Failed to load stats:', error);
+      if (__DEV__) console.error('Failed to load stats:', error);
     }
   };
 
@@ -142,7 +142,7 @@ export default function ExploreScreen() {
       setHasMore(data.pagination.current < data.pagination.pages);
       setPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load videos:', error);
+      if (__DEV__) console.error('Failed to load videos:', error);
       showAlert('Error', error.message || 'Failed to load videos');
     } finally {
       setIsLoading(false);
@@ -300,7 +300,7 @@ export default function ExploreScreen() {
       setReviewsHasMore(pagination ? pagination.current < pagination.pages : false);
       setReviewsPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load reviews:', error);
+      if (__DEV__) console.error('Failed to load reviews:', error);
       showAlert('Error', error.message || 'Failed to load reviews');
     } finally {
       setReviewsLoading(false);

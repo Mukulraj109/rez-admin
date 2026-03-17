@@ -142,7 +142,7 @@ export default function CampaignsScreen() {
 
       showAlert('Success', 'Image uploaded successfully');
     } catch (error: any) {
-      console.error('Upload error:', error);
+      if (__DEV__) console.error('Upload error:', error);
       showAlert('Upload Failed', error.message || 'Failed to upload image');
     } finally {
       setIsUploading(false);
@@ -162,7 +162,7 @@ export default function CampaignsScreen() {
       const storesData = await campaignsService.getStores(search, 100);
       setStores(storesData);
     } catch (error) {
-      console.error('Failed to load stores:', error);
+      if (__DEV__) console.error('Failed to load stores:', error);
     } finally {
       setStoresLoading(false);
     }
@@ -189,7 +189,7 @@ export default function CampaignsScreen() {
       setHasMore(data.pagination.hasNext);
       setPage(pageNum);
     } catch (error) {
-      console.error('Failed to load campaigns:', error);
+      if (__DEV__) console.error('Failed to load campaigns:', error);
     } finally {
       setIsLoading(false);
     }
@@ -200,7 +200,7 @@ export default function CampaignsScreen() {
       const data = await campaignsService.getStats();
       setStats(data);
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      if (__DEV__) console.error('Failed to load stats:', error);
     }
   };
 

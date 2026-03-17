@@ -64,11 +64,11 @@ class UsersService {
       if (status) url += `&status=${status}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
 
-      console.log('[Users] Fetching users list...');
+      if (__DEV__) console.log('[Users] Fetching users list...');
       const response = await apiClient.get<User[]>(url);
 
       if (response.success) {
-        console.log('[Users] Users fetched successfully');
+        if (__DEV__) console.log('[Users] Users fetched successfully');
         // Backend returns { data: { users: [...], pagination: {...} } }
         const nested = response.data as any;
         return {
@@ -79,7 +79,7 @@ class UsersService {
 
       throw new Error(response.message || 'Failed to get users');
     } catch (error: any) {
-      console.error('[Users] Get users error:', error.message);
+      if (__DEV__) console.error('[Users] Get users error:', error.message);
       throw new Error(error.message || 'Failed to get users');
     }
   }
@@ -89,7 +89,7 @@ class UsersService {
    */
   async getUser(userId: string): Promise<User> {
     try {
-      console.log('[Users] Fetching user:', userId);
+      if (__DEV__) console.log('[Users] Fetching user:', userId);
       const response = await apiClient.get<User>(`admin/users/${userId}`);
 
       if (response.success && response.data) {
@@ -98,7 +98,7 @@ class UsersService {
 
       throw new Error(response.message || 'Failed to get user');
     } catch (error: any) {
-      console.error('[Users] Get user error:', error.message);
+      if (__DEV__) console.error('[Users] Get user error:', error.message);
       throw new Error(error.message || 'Failed to get user');
     }
   }
@@ -108,7 +108,7 @@ class UsersService {
    */
   async getUserWallet(userId: string): Promise<UserWallet> {
     try {
-      console.log('[Users] Fetching wallet for user:', userId);
+      if (__DEV__) console.log('[Users] Fetching wallet for user:', userId);
       const response = await apiClient.get<UserWallet>(`admin/users/${userId}/wallet`);
 
       if (response.success && response.data) {
@@ -117,7 +117,7 @@ class UsersService {
 
       throw new Error(response.message || 'Failed to get user wallet');
     } catch (error: any) {
-      console.error('[Users] Get user wallet error:', error.message);
+      if (__DEV__) console.error('[Users] Get user wallet error:', error.message);
       throw new Error(error.message || 'Failed to get user wallet');
     }
   }
@@ -127,7 +127,7 @@ class UsersService {
    */
   async suspendUser(userId: string, reason?: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Users] Suspending user:', userId);
+      if (__DEV__) console.log('[Users] Suspending user:', userId);
       const response = await apiClient.post<any>(`admin/users/${userId}/suspend`, { reason });
 
       return {
@@ -135,7 +135,7 @@ class UsersService {
         message: response.message || 'User suspended'
       };
     } catch (error: any) {
-      console.error('[Users] Suspend user error:', error.message);
+      if (__DEV__) console.error('[Users] Suspend user error:', error.message);
       throw new Error(error.message || 'Failed to suspend user');
     }
   }
@@ -145,7 +145,7 @@ class UsersService {
    */
   async unsuspendUser(userId: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Users] Unsuspending user:', userId);
+      if (__DEV__) console.log('[Users] Unsuspending user:', userId);
       const response = await apiClient.post<any>(`admin/users/${userId}/unsuspend`);
 
       return {
@@ -153,7 +153,7 @@ class UsersService {
         message: response.message || 'User unsuspended'
       };
     } catch (error: any) {
-      console.error('[Users] Unsuspend user error:', error.message);
+      if (__DEV__) console.error('[Users] Unsuspend user error:', error.message);
       throw new Error(error.message || 'Failed to unsuspend user');
     }
   }

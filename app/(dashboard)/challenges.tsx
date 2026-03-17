@@ -215,7 +215,7 @@ export default function ChallengesScreen() {
         showAlert('Error', response.message || 'Failed to load challenges');
       }
     } catch (error: any) {
-      console.error('Failed to load challenges:', error);
+      if (__DEV__) console.error('Failed to load challenges:', error);
       showAlert('Error', error.message || 'Failed to load challenges');
     } finally {
       setLoading(false);
@@ -229,7 +229,7 @@ export default function ChallengesScreen() {
         setStats(response.data);
       }
     } catch (error) {
-      console.error('Failed to load challenge stats:', error);
+      if (__DEV__) console.error('Failed to load challenge stats:', error);
     }
   }, []);
 
@@ -240,7 +240,7 @@ export default function ChallengesScreen() {
         setAnalytics(response.data as ChallengeAnalytics);
       }
     } catch (error) {
-      console.error('Failed to load challenge analytics:', error);
+      if (__DEV__) console.error('Failed to load challenge analytics:', error);
     }
   }, []);
 
@@ -537,7 +537,7 @@ export default function ChallengesScreen() {
         showAlert('Error', 'Failed to load templates');
       }
     } catch (error) {
-      console.error('Failed to load templates:', error);
+      if (__DEV__) console.error('Failed to load templates:', error);
       showAlert('Error', 'Failed to load templates');
     } finally {
       setTemplatesLoading(false);

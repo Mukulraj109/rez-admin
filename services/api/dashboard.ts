@@ -50,17 +50,17 @@ class DashboardService {
    */
   async getStats(): Promise<DashboardStats> {
     try {
-      console.log('[Dashboard] Fetching platform stats...');
+      if (__DEV__) console.log('[Dashboard] Fetching platform stats...');
       const response = await apiClient.get<DashboardStats>('admin/dashboard/stats');
 
       if (response.success && response.data) {
-        console.log('[Dashboard] Stats fetched successfully');
+        if (__DEV__) console.log('[Dashboard] Stats fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get stats');
     } catch (error: any) {
-      console.error('[Dashboard] Get stats error:', error.message);
+      if (__DEV__) console.error('[Dashboard] Get stats error:', error.message);
       throw new Error(error.message || 'Failed to get dashboard stats');
     }
   }
@@ -70,17 +70,17 @@ class DashboardService {
    */
   async getRecentActivity(limit: number = 20): Promise<RecentActivity[]> {
     try {
-      console.log('[Dashboard] Fetching recent activity...');
+      if (__DEV__) console.log('[Dashboard] Fetching recent activity...');
       const response = await apiClient.get<RecentActivity[]>(`admin/dashboard/recent-activity?limit=${limit}`);
 
       if (response.success) {
-        console.log('[Dashboard] Recent activity fetched');
+        if (__DEV__) console.log('[Dashboard] Recent activity fetched');
         return response.data || [];
       }
 
       throw new Error(response.message || 'Failed to get activity');
     } catch (error: any) {
-      console.error('[Dashboard] Get recent activity error:', error.message);
+      if (__DEV__) console.error('[Dashboard] Get recent activity error:', error.message);
       throw new Error(error.message || 'Failed to get recent activity');
     }
   }

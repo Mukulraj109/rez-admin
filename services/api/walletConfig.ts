@@ -48,34 +48,34 @@ export interface WalletConfig extends WalletConfigData {
 class WalletConfigService {
   async getConfig(): Promise<WalletConfig> {
     try {
-      console.log('[WalletConfig] Fetching wallet config...');
+      if (__DEV__) console.log('[WalletConfig] Fetching wallet config...');
       const response = await apiClient.get<WalletConfig>('admin/wallet-config');
 
       if (response.success && response.data) {
-        console.log('[WalletConfig] Config fetched successfully');
+        if (__DEV__) console.log('[WalletConfig] Config fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to get wallet config');
     } catch (error: any) {
-      console.error('[WalletConfig] Get config error:', error.message);
+      if (__DEV__) console.error('[WalletConfig] Get config error:', error.message);
       throw new Error(error.message || 'Failed to get wallet config');
     }
   }
 
   async updateConfig(data: Partial<WalletConfigData>): Promise<WalletConfig> {
     try {
-      console.log('[WalletConfig] Updating wallet config...');
+      if (__DEV__) console.log('[WalletConfig] Updating wallet config...');
       const response = await apiClient.put<WalletConfig>('admin/wallet-config', data);
 
       if (response.success && response.data) {
-        console.log('[WalletConfig] Config updated successfully');
+        if (__DEV__) console.log('[WalletConfig] Config updated successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update wallet config');
     } catch (error: any) {
-      console.error('[WalletConfig] Update config error:', error.message);
+      if (__DEV__) console.error('[WalletConfig] Update config error:', error.message);
       throw new Error(error.message || 'Failed to update wallet config');
     }
   }

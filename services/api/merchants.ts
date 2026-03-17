@@ -138,11 +138,11 @@ class MerchantsService {
       if (status) url += `&status=${status}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
 
-      console.log('[Merchants] Fetching merchants list...');
+      if (__DEV__) console.log('[Merchants] Fetching merchants list...');
       const response = await apiClient.get<Merchant[]>(url);
 
       if (response.success) {
-        console.log('[Merchants] Merchants fetched successfully');
+        if (__DEV__) console.log('[Merchants] Merchants fetched successfully');
         // Backend returns { data: { merchants: [...], pagination: {...} } }
         const nested = response.data as any;
         return {
@@ -153,7 +153,7 @@ class MerchantsService {
 
       throw new Error(response.message || 'Failed to get merchants');
     } catch (error: any) {
-      console.error('[Merchants] Get merchants error:', error.message);
+      if (__DEV__) console.error('[Merchants] Get merchants error:', error.message);
       throw new Error(error.message || 'Failed to get merchants');
     }
   }
@@ -163,7 +163,7 @@ class MerchantsService {
    */
   async getMerchant(merchantId: string): Promise<Merchant> {
     try {
-      console.log('[Merchants] Fetching merchant:', merchantId);
+      if (__DEV__) console.log('[Merchants] Fetching merchant:', merchantId);
       const response = await apiClient.get<Merchant>(`admin/merchants/${merchantId}`);
 
       if (response.success && response.data) {
@@ -172,7 +172,7 @@ class MerchantsService {
 
       throw new Error(response.message || 'Failed to get merchant');
     } catch (error: any) {
-      console.error('[Merchants] Get merchant error:', error.message);
+      if (__DEV__) console.error('[Merchants] Get merchant error:', error.message);
       throw new Error(error.message || 'Failed to get merchant');
     }
   }
@@ -182,7 +182,7 @@ class MerchantsService {
    */
   async approveMerchant(merchantId: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Merchants] Approving merchant:', merchantId);
+      if (__DEV__) console.log('[Merchants] Approving merchant:', merchantId);
       const response = await apiClient.post<any>(`admin/merchants/${merchantId}/approve`);
 
       return {
@@ -190,7 +190,7 @@ class MerchantsService {
         message: response.message || 'Merchant approved'
       };
     } catch (error: any) {
-      console.error('[Merchants] Approve merchant error:', error.message);
+      if (__DEV__) console.error('[Merchants] Approve merchant error:', error.message);
       throw new Error(error.message || 'Failed to approve merchant');
     }
   }
@@ -200,7 +200,7 @@ class MerchantsService {
    */
   async rejectMerchant(merchantId: string, reason: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Merchants] Rejecting merchant:', merchantId);
+      if (__DEV__) console.log('[Merchants] Rejecting merchant:', merchantId);
       const response = await apiClient.post<any>(`admin/merchants/${merchantId}/reject`, { reason });
 
       return {
@@ -208,7 +208,7 @@ class MerchantsService {
         message: response.message || 'Merchant rejected'
       };
     } catch (error: any) {
-      console.error('[Merchants] Reject merchant error:', error.message);
+      if (__DEV__) console.error('[Merchants] Reject merchant error:', error.message);
       throw new Error(error.message || 'Failed to reject merchant');
     }
   }
@@ -218,7 +218,7 @@ class MerchantsService {
    */
   async suspendMerchant(merchantId: string, reason: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Merchants] Suspending merchant:', merchantId);
+      if (__DEV__) console.log('[Merchants] Suspending merchant:', merchantId);
       const response = await apiClient.post<any>(`admin/merchants/${merchantId}/suspend`, { reason });
 
       return {
@@ -226,7 +226,7 @@ class MerchantsService {
         message: response.message || 'Merchant suspended'
       };
     } catch (error: any) {
-      console.error('[Merchants] Suspend merchant error:', error.message);
+      if (__DEV__) console.error('[Merchants] Suspend merchant error:', error.message);
       throw new Error(error.message || 'Failed to suspend merchant');
     }
   }
@@ -236,7 +236,7 @@ class MerchantsService {
    */
   async reactivateMerchant(merchantId: string): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Merchants] Reactivating merchant:', merchantId);
+      if (__DEV__) console.log('[Merchants] Reactivating merchant:', merchantId);
       const response = await apiClient.post<any>(`admin/merchants/${merchantId}/reactivate`);
 
       return {
@@ -244,7 +244,7 @@ class MerchantsService {
         message: response.message || 'Merchant reactivated'
       };
     } catch (error: any) {
-      console.error('[Merchants] Reactivate merchant error:', error.message);
+      if (__DEV__) console.error('[Merchants] Reactivate merchant error:', error.message);
       throw new Error(error.message || 'Failed to reactivate merchant');
     }
   }
@@ -259,11 +259,11 @@ class MerchantsService {
     limit: number = 20
   ): Promise<{ wallets: MerchantWalletSummary[]; pagination: any }> {
     try {
-      console.log('[Merchants] Fetching merchant wallets...');
+      if (__DEV__) console.log('[Merchants] Fetching merchant wallets...');
       const response = await apiClient.get<MerchantWalletSummary[]>(`admin/merchant-wallets?page=${page}&limit=${limit}`);
 
       if (response.success) {
-        console.log('[Merchants] Wallets fetched successfully');
+        if (__DEV__) console.log('[Merchants] Wallets fetched successfully');
         return {
           wallets: response.data || [],
           pagination: response.pagination || { page, limit, total: 0, totalPages: 0 }
@@ -272,7 +272,7 @@ class MerchantsService {
 
       throw new Error(response.message || 'Failed to get wallets');
     } catch (error: any) {
-      console.error('[Merchants] Get merchant wallets error:', error.message);
+      if (__DEV__) console.error('[Merchants] Get merchant wallets error:', error.message);
       throw new Error(error.message || 'Failed to get merchant wallets');
     }
   }
@@ -282,7 +282,7 @@ class MerchantsService {
    */
   async getWalletStats(): Promise<any> {
     try {
-      console.log('[Merchants] Fetching wallet stats...');
+      if (__DEV__) console.log('[Merchants] Fetching wallet stats...');
       const response = await apiClient.get<any>('admin/merchant-wallets/stats');
 
       if (response.success && response.data) {
@@ -291,7 +291,7 @@ class MerchantsService {
 
       throw new Error(response.message || 'Failed to get wallet stats');
     } catch (error: any) {
-      console.error('[Merchants] Get wallet stats error:', error.message);
+      if (__DEV__) console.error('[Merchants] Get wallet stats error:', error.message);
       throw new Error(error.message || 'Failed to get wallet stats');
     }
   }
@@ -301,7 +301,7 @@ class MerchantsService {
    */
   async getMerchantWallet(merchantId: string): Promise<MerchantWallet> {
     try {
-      console.log('[Merchants] Fetching wallet for merchant:', merchantId);
+      if (__DEV__) console.log('[Merchants] Fetching wallet for merchant:', merchantId);
       const response = await apiClient.get<MerchantWallet>(`admin/merchant-wallets/${merchantId}`);
 
       if (response.success && response.data) {
@@ -310,7 +310,7 @@ class MerchantsService {
 
       throw new Error(response.message || 'Failed to get wallet');
     } catch (error: any) {
-      console.error('[Merchants] Get merchant wallet error:', error.message);
+      if (__DEV__) console.error('[Merchants] Get merchant wallet error:', error.message);
       throw new Error(error.message || 'Failed to get merchant wallet');
     }
   }
@@ -324,7 +324,7 @@ class MerchantsService {
     limit: number = 20
   ): Promise<{ transactions: any[]; pagination: any }> {
     try {
-      console.log('[Merchants] Fetching wallet transactions for:', merchantId);
+      if (__DEV__) console.log('[Merchants] Fetching wallet transactions for:', merchantId);
       const response = await apiClient.get<any[]>(`admin/merchant-wallets/${merchantId}/transactions?page=${page}&limit=${limit}`);
 
       if (response.success) {
@@ -336,7 +336,7 @@ class MerchantsService {
 
       throw new Error(response.message || 'Failed to get transactions');
     } catch (error: any) {
-      console.error('[Merchants] Get wallet transactions error:', error.message);
+      if (__DEV__) console.error('[Merchants] Get wallet transactions error:', error.message);
       throw new Error(error.message || 'Failed to get wallet transactions');
     }
   }
@@ -349,7 +349,7 @@ class MerchantsService {
     limit: number = 20
   ): Promise<{ withdrawals: PendingWithdrawalItem[]; pagination: any }> {
     try {
-      console.log('[Merchants] Fetching pending withdrawals...');
+      if (__DEV__) console.log('[Merchants] Fetching pending withdrawals...');
       const response = await apiClient.get<any>(`admin/merchant-wallets/pending-withdrawals?page=${page}&limit=${limit}`);
 
       if (response.success) {
@@ -361,7 +361,7 @@ class MerchantsService {
 
       throw new Error(response.message || 'Failed to get withdrawals');
     } catch (error: any) {
-      console.error('[Merchants] Get pending withdrawals error:', error.message);
+      if (__DEV__) console.error('[Merchants] Get pending withdrawals error:', error.message);
       throw new Error(error.message || 'Failed to get pending withdrawals');
     }
   }
@@ -375,7 +375,7 @@ class MerchantsService {
     transactionReference: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Merchants] Processing withdrawal for merchant:', merchantId);
+      if (__DEV__) console.log('[Merchants] Processing withdrawal for merchant:', merchantId);
       const response = await apiClient.post<any>(
         `admin/merchant-wallets/${merchantId}/process-withdrawal`,
         { transactionId, transactionReference }
@@ -386,7 +386,7 @@ class MerchantsService {
         message: response.message || 'Withdrawal processed successfully'
       };
     } catch (error: any) {
-      console.error('[Merchants] Process withdrawal error:', error.message);
+      if (__DEV__) console.error('[Merchants] Process withdrawal error:', error.message);
       throw new Error(error.message || 'Failed to process withdrawal');
     }
   }
@@ -400,7 +400,7 @@ class MerchantsService {
     reason: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('[Merchants] Rejecting withdrawal for merchant:', merchantId);
+      if (__DEV__) console.log('[Merchants] Rejecting withdrawal for merchant:', merchantId);
       const response = await apiClient.post<any>(
         `admin/merchant-wallets/${merchantId}/reject-withdrawal`,
         { transactionId, reason }
@@ -411,7 +411,7 @@ class MerchantsService {
         message: response.message || 'Withdrawal rejected'
       };
     } catch (error: any) {
-      console.error('[Merchants] Reject withdrawal error:', error.message);
+      if (__DEV__) console.error('[Merchants] Reject withdrawal error:', error.message);
       throw new Error(error.message || 'Failed to reject withdrawal');
     }
   }

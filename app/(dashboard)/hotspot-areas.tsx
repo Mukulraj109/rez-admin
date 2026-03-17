@@ -81,7 +81,7 @@ export default function HotspotAreasScreen() {
       const data = response.data?.areas || [];
       setAreas(data);
     } catch (error: any) {
-      console.error('Failed to load hotspot areas:', error);
+      if (__DEV__) console.error('Failed to load hotspot areas:', error);
       showAlert('Error', error.message || 'Failed to load hotspot areas');
     } finally {
       setLoading(false);

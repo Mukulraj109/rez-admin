@@ -76,7 +76,7 @@ class VoucherAdminService {
       if (response.success && response.data) return response.data;
       return { vouchers: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
     } catch (error) {
-      console.error('[Voucher Admin] Error listing vouchers:', error);
+      if (__DEV__) console.error('[Voucher Admin] Error listing vouchers:', error);
       return { vouchers: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
     }
   }
@@ -87,7 +87,7 @@ class VoucherAdminService {
       if (response.success && response.data) return response.data.voucher;
       return null;
     } catch (error) {
-      console.error('[Voucher Admin] Error getting voucher:', error);
+      if (__DEV__) console.error('[Voucher Admin] Error getting voucher:', error);
       return null;
     }
   }
@@ -98,7 +98,7 @@ class VoucherAdminService {
       if (response.success && response.data) return response.data.voucher;
       return null;
     } catch (error) {
-      console.error('[Voucher Admin] Error creating voucher:', error);
+      if (__DEV__) console.error('[Voucher Admin] Error creating voucher:', error);
       return null;
     }
   }
@@ -109,7 +109,7 @@ class VoucherAdminService {
       if (response.success && response.data) return response.data.voucher;
       return null;
     } catch (error) {
-      console.error('[Voucher Admin] Error updating voucher:', error);
+      if (__DEV__) console.error('[Voucher Admin] Error updating voucher:', error);
       return null;
     }
   }
@@ -119,7 +119,7 @@ class VoucherAdminService {
       const response = await apiClient.patch(`admin/vouchers/${id}/toggle`);
       return response.success;
     } catch (error) {
-      console.error('[Voucher Admin] Error toggling voucher:', error);
+      if (__DEV__) console.error('[Voucher Admin] Error toggling voucher:', error);
       return false;
     }
   }
@@ -129,7 +129,7 @@ class VoucherAdminService {
       const response = await apiClient.delete(`admin/vouchers/${id}`);
       return response.success;
     } catch (error) {
-      console.error('[Voucher Admin] Error deleting voucher:', error);
+      if (__DEV__) console.error('[Voucher Admin] Error deleting voucher:', error);
       return false;
     }
   }

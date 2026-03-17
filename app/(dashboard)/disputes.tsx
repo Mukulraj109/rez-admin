@@ -103,7 +103,7 @@ export default function DisputesScreen() {
         setStats(response.data as any);
       }
     } catch (err) {
-      console.error('Failed to load stats:', err);
+      if (__DEV__) console.error('Failed to load stats:', err);
     }
   }, []);
 
@@ -132,7 +132,7 @@ export default function DisputesScreen() {
         setHasMore(pagination?.hasNext ?? false);
       }
     } catch (err) {
-      console.error('Failed to load disputes:', err);
+      if (__DEV__) console.error('Failed to load disputes:', err);
     } finally {
       setLoading(false);
       setLoadingMore(false);

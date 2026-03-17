@@ -71,7 +71,7 @@ class SupportConfigService {
       }
       throw new Error(response.message || 'Failed to get support config');
     } catch (error: any) {
-      console.error('[SupportConfig] Get config error:', error.message);
+      if (__DEV__) console.error('[SupportConfig] Get config error:', error.message);
       throw new Error(error.message || 'Failed to get support config');
     }
   }
@@ -84,7 +84,7 @@ class SupportConfigService {
       }
       throw new Error(response.message || 'Failed to update support config');
     } catch (error: any) {
-      console.error('[SupportConfig] Update config error:', error.message);
+      if (__DEV__) console.error('[SupportConfig] Update config error:', error.message);
       throw new Error(error.message || 'Failed to update support config');
     }
   }

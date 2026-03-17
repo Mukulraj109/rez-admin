@@ -174,7 +174,7 @@ export default function ExtraRewardsScreen() {
       setCampaignsHasMore(data.pagination.hasNext);
       setCampaignsPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load campaigns:', error);
+      if (__DEV__) console.error('Failed to load campaigns:', error);
       showAlert('Error', error.message || 'Failed to load campaigns');
     } finally {
       setCampaignsLoading(false);
@@ -195,7 +195,7 @@ export default function ExtraRewardsScreen() {
       setCoinDropsHasMore(data.pagination.hasNext);
       setCoinDropsPage(pageNum);
     } catch (error: any) {
-      console.error('Failed to load coin drops:', error);
+      if (__DEV__) console.error('Failed to load coin drops:', error);
       showAlert('Error', error.message || 'Failed to load coin drops');
     } finally {
       setCoinDropsLoading(false);
@@ -208,7 +208,7 @@ export default function ExtraRewardsScreen() {
       const data = await extraRewardsService.getCoinDropStores(search);
       setStores(data);
     } catch (error) {
-      console.error('Failed to load stores:', error);
+      if (__DEV__) console.error('Failed to load stores:', error);
     } finally {
       setStoresLoading(false);
     }

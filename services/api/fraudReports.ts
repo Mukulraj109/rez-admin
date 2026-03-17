@@ -67,7 +67,7 @@ class FraudReportAdminService {
       if (response.success && response.data) return response.data;
       return { reports: [], total: 0, page: 1, pages: 0 };
     } catch (error) {
-      console.error('[Fraud Reports Admin] Error listing reports:', error);
+      if (__DEV__) console.error('[Fraud Reports Admin] Error listing reports:', error);
       return { reports: [], total: 0, page: 1, pages: 0 };
     }
   }
@@ -78,7 +78,7 @@ class FraudReportAdminService {
       if (response.success && response.data) return response.data.report;
       return null;
     } catch (error) {
-      console.error('[Fraud Reports Admin] Error fetching report:', error);
+      if (__DEV__) console.error('[Fraud Reports Admin] Error fetching report:', error);
       return null;
     }
   }
@@ -88,7 +88,7 @@ class FraudReportAdminService {
       const response = await apiClient.put(`admin/fraud-reports/${id}/status`, { status });
       return response.success;
     } catch (error) {
-      console.error('[Fraud Reports Admin] Error updating status:', error);
+      if (__DEV__) console.error('[Fraud Reports Admin] Error updating status:', error);
       return false;
     }
   }
@@ -98,7 +98,7 @@ class FraudReportAdminService {
       const response = await apiClient.put(`admin/fraud-reports/${id}/priority`, { priority });
       return response.success;
     } catch (error) {
-      console.error('[Fraud Reports Admin] Error updating priority:', error);
+      if (__DEV__) console.error('[Fraud Reports Admin] Error updating priority:', error);
       return false;
     }
   }
@@ -108,7 +108,7 @@ class FraudReportAdminService {
       const response = await apiClient.post(`admin/fraud-reports/${id}/notes`, { note });
       return response.success;
     } catch (error) {
-      console.error('[Fraud Reports Admin] Error adding note:', error);
+      if (__DEV__) console.error('[Fraud Reports Admin] Error adding note:', error);
       return false;
     }
   }

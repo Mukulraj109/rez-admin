@@ -57,7 +57,7 @@ export interface TournamentListResponse {
 class TournamentAdminService {
   async getAll(query: TournamentQuery = {}): Promise<TournamentListResponse> {
     try {
-      console.log('[Tournaments] Fetching with query:', query);
+      if (__DEV__) console.log('[Tournaments] Fetching with query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -69,13 +69,13 @@ class TournamentAdminService {
       const response = await apiClient.get<TournamentListResponse>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[Tournaments] Fetched:', response.data.tournaments?.length);
+        if (__DEV__) console.log('[Tournaments] Fetched:', response.data.tournaments?.length);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch tournaments');
     } catch (error: any) {
-      console.error('[Tournaments] List error:', error.message);
+      if (__DEV__) console.error('[Tournaments] List error:', error.message);
       throw new Error(error.message || 'Failed to fetch tournaments');
     }
   }
@@ -90,14 +90,14 @@ class TournamentAdminService {
 
       throw new Error(response.message || 'Tournament not found');
     } catch (error: any) {
-      console.error('[Tournaments] Get error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Get error:', error.message);
       throw new Error(error.message || 'Failed to fetch tournament');
     }
   }
 
   async create(data: Partial<TournamentAdmin>): Promise<TournamentAdmin> {
     try {
-      console.log('[Tournaments] Creating:', data.name);
+      if (__DEV__) console.log('[Tournaments] Creating:', data.name);
       const response = await apiClient.post<{ tournament: TournamentAdmin }>('admin/tournaments', data);
 
       if (response.success && response.data?.tournament) {
@@ -106,14 +106,14 @@ class TournamentAdminService {
 
       throw new Error(response.message || 'Failed to create tournament');
     } catch (error: any) {
-      console.error('[Tournaments] Create error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Create error:', error.message);
       throw new Error(error.message || 'Failed to create tournament');
     }
   }
 
   async update(id: string, data: Partial<TournamentAdmin>): Promise<TournamentAdmin> {
     try {
-      console.log('[Tournaments] Updating:', id);
+      if (__DEV__) console.log('[Tournaments] Updating:', id);
       const response = await apiClient.put<{ tournament: TournamentAdmin }>(`admin/tournaments/${id}`, data);
 
       if (response.success && response.data?.tournament) {
@@ -122,28 +122,28 @@ class TournamentAdminService {
 
       throw new Error(response.message || 'Failed to update tournament');
     } catch (error: any) {
-      console.error('[Tournaments] Update error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Update error:', error.message);
       throw new Error(error.message || 'Failed to update tournament');
     }
   }
 
   async delete(id: string): Promise<void> {
     try {
-      console.log('[Tournaments] Deleting:', id);
+      if (__DEV__) console.log('[Tournaments] Deleting:', id);
       const response = await apiClient.delete(`admin/tournaments/${id}`);
 
       if (!response.success) {
         throw new Error(response.message || 'Failed to delete tournament');
       }
     } catch (error: any) {
-      console.error('[Tournaments] Delete error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Delete error:', error.message);
       throw new Error(error.message || 'Failed to delete tournament');
     }
   }
 
   async activate(id: string): Promise<TournamentAdmin> {
     try {
-      console.log('[Tournaments] Activating:', id);
+      if (__DEV__) console.log('[Tournaments] Activating:', id);
       const response = await apiClient.post<{ tournament: TournamentAdmin }>(`admin/tournaments/${id}/activate`);
 
       if (response.success && response.data?.tournament) {
@@ -152,14 +152,14 @@ class TournamentAdminService {
 
       throw new Error(response.message || 'Failed to activate tournament');
     } catch (error: any) {
-      console.error('[Tournaments] Activate error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Activate error:', error.message);
       throw new Error(error.message || 'Failed to activate tournament');
     }
   }
 
   async cancel(id: string): Promise<TournamentAdmin> {
     try {
-      console.log('[Tournaments] Cancelling:', id);
+      if (__DEV__) console.log('[Tournaments] Cancelling:', id);
       const response = await apiClient.post<{ tournament: TournamentAdmin }>(`admin/tournaments/${id}/cancel`);
 
       if (response.success && response.data?.tournament) {
@@ -168,14 +168,14 @@ class TournamentAdminService {
 
       throw new Error(response.message || 'Failed to cancel tournament');
     } catch (error: any) {
-      console.error('[Tournaments] Cancel error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Cancel error:', error.message);
       throw new Error(error.message || 'Failed to cancel tournament');
     }
   }
 
   async clone(id: string, overrides?: { name?: string; startDate?: string; endDate?: string }): Promise<TournamentAdmin> {
     try {
-      console.log('[Tournaments] Cloning:', id);
+      if (__DEV__) console.log('[Tournaments] Cloning:', id);
       const response = await apiClient.post<{ tournament: TournamentAdmin }>(`admin/tournaments/${id}/clone`, overrides || {});
 
       if (response.success && response.data?.tournament) {
@@ -184,14 +184,14 @@ class TournamentAdminService {
 
       throw new Error(response.message || 'Failed to clone tournament');
     } catch (error: any) {
-      console.error('[Tournaments] Clone error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Clone error:', error.message);
       throw new Error(error.message || 'Failed to clone tournament');
     }
   }
 
   async reactivate(id: string, startDate: string, endDate: string): Promise<TournamentAdmin> {
     try {
-      console.log('[Tournaments] Reactivating:', id);
+      if (__DEV__) console.log('[Tournaments] Reactivating:', id);
       const response = await apiClient.post<{ tournament: TournamentAdmin }>(`admin/tournaments/${id}/reactivate`, { startDate, endDate });
 
       if (response.success && response.data?.tournament) {
@@ -200,7 +200,7 @@ class TournamentAdminService {
 
       throw new Error(response.message || 'Failed to reactivate tournament');
     } catch (error: any) {
-      console.error('[Tournaments] Reactivate error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Reactivate error:', error.message);
       throw new Error(error.message || 'Failed to reactivate tournament');
     }
   }
@@ -215,7 +215,7 @@ class TournamentAdminService {
 
       return [];
     } catch (error: any) {
-      console.error('[Tournaments] Participants error:', error.message);
+      if (__DEV__) console.error('[Tournaments] Participants error:', error.message);
       throw new Error(error.message || 'Failed to fetch participants');
     }
   }

@@ -89,7 +89,7 @@ export default function VerificationsScreen() {
       setHasMore(data.pagination.hasNext);
       setPage(pageNum);
     } catch (error) {
-      console.error('Failed to load verifications:', error);
+      if (__DEV__) console.error('Failed to load verifications:', error);
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +100,7 @@ export default function VerificationsScreen() {
       const data = await zoneVerificationsService.getStats();
       setStats(data);
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      if (__DEV__) console.error('Failed to load stats:', error);
     }
   };
 

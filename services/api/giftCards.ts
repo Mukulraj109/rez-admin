@@ -50,68 +50,68 @@ class GiftCardsAdminService {
 
       if (params.length > 0) url += `?${params.join('&')}`;
 
-      console.log('[GiftCards] Listing gift cards...');
+      if (__DEV__) console.log('[GiftCards] Listing gift cards...');
       const response = await apiClient.get<ListGiftCardsResponse>(url);
 
       if (response.success && response.data) {
-        console.log('[GiftCards] Gift cards fetched successfully');
+        if (__DEV__) console.log('[GiftCards] Gift cards fetched successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to list gift cards');
     } catch (error: any) {
-      console.error('[GiftCards] List error:', error.message);
+      if (__DEV__) console.error('[GiftCards] List error:', error.message);
       throw new Error(error.message || 'Failed to list gift cards');
     }
   }
 
   async create(data: CreateGiftCardData): Promise<GiftCardItem> {
     try {
-      console.log('[GiftCards] Creating gift card...');
+      if (__DEV__) console.log('[GiftCards] Creating gift card...');
       const response = await apiClient.post<GiftCardItem>('admin/gift-cards', data);
 
       if (response.success && response.data) {
-        console.log('[GiftCards] Gift card created successfully');
+        if (__DEV__) console.log('[GiftCards] Gift card created successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create gift card');
     } catch (error: any) {
-      console.error('[GiftCards] Create error:', error.message);
+      if (__DEV__) console.error('[GiftCards] Create error:', error.message);
       throw new Error(error.message || 'Failed to create gift card');
     }
   }
 
   async update(id: string, data: Partial<CreateGiftCardData>): Promise<GiftCardItem> {
     try {
-      console.log('[GiftCards] Updating gift card:', id);
+      if (__DEV__) console.log('[GiftCards] Updating gift card:', id);
       const response = await apiClient.put<GiftCardItem>(`admin/gift-cards/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[GiftCards] Gift card updated successfully');
+        if (__DEV__) console.log('[GiftCards] Gift card updated successfully');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update gift card');
     } catch (error: any) {
-      console.error('[GiftCards] Update error:', error.message);
+      if (__DEV__) console.error('[GiftCards] Update error:', error.message);
       throw new Error(error.message || 'Failed to update gift card');
     }
   }
 
   async deactivate(id: string): Promise<void> {
     try {
-      console.log('[GiftCards] Deactivating gift card:', id);
+      if (__DEV__) console.log('[GiftCards] Deactivating gift card:', id);
       const response = await apiClient.delete(`admin/gift-cards/${id}`);
 
       if (response.success) {
-        console.log('[GiftCards] Gift card deactivated successfully');
+        if (__DEV__) console.log('[GiftCards] Gift card deactivated successfully');
         return;
       }
 
       throw new Error(response.message || 'Failed to deactivate gift card');
     } catch (error: any) {
-      console.error('[GiftCards] Deactivate error:', error.message);
+      if (__DEV__) console.error('[GiftCards] Deactivate error:', error.message);
       throw new Error(error.message || 'Failed to deactivate gift card');
     }
   }

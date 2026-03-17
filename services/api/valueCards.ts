@@ -43,7 +43,7 @@ class ValueCardsService {
    */
   async getAll(query: ValueCardsQuery = {}): Promise<ValueCardsListResponse> {
     try {
-      console.log('[ValueCards] Fetching value cards with query:', query);
+      if (__DEV__) console.log('[ValueCards] Fetching value cards with query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -55,13 +55,13 @@ class ValueCardsService {
       const response = await apiClient.get<ValueCardsListResponse>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[ValueCards] Fetched successfully:', response.data.valueCards?.length || 0, 'cards');
+        if (__DEV__) console.log('[ValueCards] Fetched successfully:', response.data.valueCards?.length || 0, 'cards');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch value cards');
     } catch (error: any) {
-      console.error('[ValueCards] Get all error:', error.message);
+      if (__DEV__) console.error('[ValueCards] Get all error:', error.message);
       throw new Error(error.message || 'Failed to fetch value cards');
     }
   }
@@ -71,17 +71,17 @@ class ValueCardsService {
    */
   async getById(id: string): Promise<ValueCardAdmin> {
     try {
-      console.log('[ValueCards] Fetching value card:', id);
+      if (__DEV__) console.log('[ValueCards] Fetching value card:', id);
       const response = await apiClient.get<ValueCardAdmin>(`admin/value-cards/${id}`);
 
       if (response.success && response.data) {
-        console.log('[ValueCards] Card fetched:', response.data.title);
+        if (__DEV__) console.log('[ValueCards] Card fetched:', response.data.title);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch value card');
     } catch (error: any) {
-      console.error('[ValueCards] Get by ID error:', error.message);
+      if (__DEV__) console.error('[ValueCards] Get by ID error:', error.message);
       throw new Error(error.message || 'Failed to fetch value card');
     }
   }
@@ -91,17 +91,17 @@ class ValueCardsService {
    */
   async create(data: Partial<ValueCardAdmin>): Promise<ValueCardAdmin> {
     try {
-      console.log('[ValueCards] Creating value card:', data.title);
+      if (__DEV__) console.log('[ValueCards] Creating value card:', data.title);
       const response = await apiClient.post<ValueCardAdmin>('admin/value-cards', data);
 
       if (response.success && response.data) {
-        console.log('[ValueCards] Card created:', response.data.title);
+        if (__DEV__) console.log('[ValueCards] Card created:', response.data.title);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create value card');
     } catch (error: any) {
-      console.error('[ValueCards] Create error:', error.message);
+      if (__DEV__) console.error('[ValueCards] Create error:', error.message);
       throw new Error(error.message || 'Failed to create value card');
     }
   }
@@ -111,17 +111,17 @@ class ValueCardsService {
    */
   async update(id: string, data: Partial<ValueCardAdmin>): Promise<ValueCardAdmin> {
     try {
-      console.log('[ValueCards] Updating value card:', id);
+      if (__DEV__) console.log('[ValueCards] Updating value card:', id);
       const response = await apiClient.put<ValueCardAdmin>(`admin/value-cards/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[ValueCards] Card updated:', response.data.title);
+        if (__DEV__) console.log('[ValueCards] Card updated:', response.data.title);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update value card');
     } catch (error: any) {
-      console.error('[ValueCards] Update error:', error.message);
+      if (__DEV__) console.error('[ValueCards] Update error:', error.message);
       throw new Error(error.message || 'Failed to update value card');
     }
   }
@@ -131,17 +131,17 @@ class ValueCardsService {
    */
   async remove(id: string): Promise<void> {
     try {
-      console.log('[ValueCards] Deleting value card:', id);
+      if (__DEV__) console.log('[ValueCards] Deleting value card:', id);
       const response = await apiClient.delete(`admin/value-cards/${id}`);
 
       if (response.success) {
-        console.log('[ValueCards] Card deleted');
+        if (__DEV__) console.log('[ValueCards] Card deleted');
         return;
       }
 
       throw new Error(response.message || 'Failed to delete value card');
     } catch (error: any) {
-      console.error('[ValueCards] Delete error:', error.message);
+      if (__DEV__) console.error('[ValueCards] Delete error:', error.message);
       throw new Error(error.message || 'Failed to delete value card');
     }
   }
@@ -151,17 +151,17 @@ class ValueCardsService {
    */
   async toggleActive(id: string): Promise<ValueCardAdmin> {
     try {
-      console.log('[ValueCards] Toggling active status for card:', id);
+      if (__DEV__) console.log('[ValueCards] Toggling active status for card:', id);
       const response = await apiClient.patch<ValueCardAdmin>(`admin/value-cards/${id}/toggle-active`);
 
       if (response.success && response.data) {
-        console.log('[ValueCards] Active toggled, now:', response.data.isActive);
+        if (__DEV__) console.log('[ValueCards] Active toggled, now:', response.data.isActive);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to toggle value card status');
     } catch (error: any) {
-      console.error('[ValueCards] Toggle active error:', error.message);
+      if (__DEV__) console.error('[ValueCards] Toggle active error:', error.message);
       throw new Error(error.message || 'Failed to toggle value card status');
     }
   }

@@ -130,7 +130,7 @@ export default function GameConfigScreen() {
         setGameConfigs([]);
       }
     } catch (error: any) {
-      console.error('Failed to load game configs:', error);
+      if (__DEV__) console.error('Failed to load game configs:', error);
       showAlert('Error', error.message || 'Failed to load game configs');
     } finally {
       setLoading(false);

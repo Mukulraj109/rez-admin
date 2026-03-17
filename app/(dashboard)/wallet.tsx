@@ -40,7 +40,7 @@ export default function AdminWalletScreen() {
       const data = await adminWalletService.getWalletSummary();
       setSummary(data);
     } catch (error) {
-      console.error('Failed to load wallet summary:', error);
+      if (__DEV__) console.error('Failed to load wallet summary:', error);
     }
   };
 
@@ -56,7 +56,7 @@ export default function AdminWalletScreen() {
       setTxHasMore(data.pagination.hasNext);
       setTxPage(page);
     } catch (error) {
-      console.error('Failed to load transactions:', error);
+      if (__DEV__) console.error('Failed to load transactions:', error);
     } finally {
       setTxLoading(false);
     }
@@ -67,7 +67,7 @@ export default function AdminWalletScreen() {
       const data = await adminWalletService.getDailyBreakdown(30);
       setBreakdown(data.breakdown);
     } catch (error) {
-      console.error('Failed to load breakdown:', error);
+      if (__DEV__) console.error('Failed to load breakdown:', error);
     }
   };
 

@@ -181,7 +181,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to fetch mall stats');
     } catch (error: any) {
-      console.error('[MallService] getStats error:', error);
+      if (__DEV__) console.error('[MallService] getStats error:', error);
       throw error;
     }
   }
@@ -213,7 +213,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to fetch brands');
     } catch (error: any) {
-      console.error('[MallService] getBrands error:', error);
+      if (__DEV__) console.error('[MallService] getBrands error:', error);
       throw error;
     }
   }
@@ -226,7 +226,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to create brand');
     } catch (error: any) {
-      console.error('[MallService] createBrand error:', error);
+      if (__DEV__) console.error('[MallService] createBrand error:', error);
       throw error;
     }
   }
@@ -239,7 +239,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to update brand');
     } catch (error: any) {
-      console.error('[MallService] updateBrand error:', error);
+      if (__DEV__) console.error('[MallService] updateBrand error:', error);
       throw error;
     }
   }
@@ -251,7 +251,7 @@ class MallService {
         throw new Error(response.message || 'Failed to delete brand');
       }
     } catch (error: any) {
-      console.error('[MallService] deleteBrand error:', error);
+      if (__DEV__) console.error('[MallService] deleteBrand error:', error);
       throw error;
     }
   }
@@ -266,7 +266,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to fetch categories');
     } catch (error: any) {
-      console.error('[MallService] getCategories error:', error);
+      if (__DEV__) console.error('[MallService] getCategories error:', error);
       throw error;
     }
   }
@@ -279,7 +279,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to create category');
     } catch (error: any) {
-      console.error('[MallService] createCategory error:', error);
+      if (__DEV__) console.error('[MallService] createCategory error:', error);
       throw error;
     }
   }
@@ -292,7 +292,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to update category');
     } catch (error: any) {
-      console.error('[MallService] updateCategory error:', error);
+      if (__DEV__) console.error('[MallService] updateCategory error:', error);
       throw error;
     }
   }
@@ -304,7 +304,7 @@ class MallService {
         throw new Error(response.message || 'Failed to delete category');
       }
     } catch (error: any) {
-      console.error('[MallService] deleteCategory error:', error);
+      if (__DEV__) console.error('[MallService] deleteCategory error:', error);
       throw error;
     }
   }
@@ -331,7 +331,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to fetch offers');
     } catch (error: any) {
-      console.error('[MallService] getOffers error:', error);
+      if (__DEV__) console.error('[MallService] getOffers error:', error);
       throw error;
     }
   }
@@ -344,7 +344,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to create offer');
     } catch (error: any) {
-      console.error('[MallService] createOffer error:', error);
+      if (__DEV__) console.error('[MallService] createOffer error:', error);
       throw error;
     }
   }
@@ -357,7 +357,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to update offer');
     } catch (error: any) {
-      console.error('[MallService] updateOffer error:', error);
+      if (__DEV__) console.error('[MallService] updateOffer error:', error);
       throw error;
     }
   }
@@ -369,7 +369,7 @@ class MallService {
         throw new Error(response.message || 'Failed to delete offer');
       }
     } catch (error: any) {
-      console.error('[MallService] deleteOffer error:', error);
+      if (__DEV__) console.error('[MallService] deleteOffer error:', error);
       throw error;
     }
   }
@@ -385,7 +385,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to fetch alliance stores');
     } catch (error: any) {
-      console.error('[MallService] getAllianceStores error:', error);
+      if (__DEV__) console.error('[MallService] getAllianceStores error:', error);
       throw error;
     }
   }
@@ -398,7 +398,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to toggle alliance status');
     } catch (error: any) {
-      console.error('[MallService] toggleStoreAlliance error:', error);
+      if (__DEV__) console.error('[MallService] toggleStoreAlliance error:', error);
       throw error;
     }
   }
@@ -418,7 +418,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to fetch managed mall stores');
     } catch (error: any) {
-      console.error('[MallService] getManagedMallStores error:', error);
+      if (__DEV__) console.error('[MallService] getManagedMallStores error:', error);
       throw error;
     }
   }
@@ -431,7 +431,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to toggle mall status');
     } catch (error: any) {
-      console.error('[MallService] toggleStoreMall error:', error);
+      if (__DEV__) console.error('[MallService] toggleStoreMall error:', error);
       throw error;
     }
   }
@@ -449,7 +449,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to update mall properties');
     } catch (error: any) {
-      console.error('[MallService] updateStoreMallProperties error:', error);
+      if (__DEV__) console.error('[MallService] updateStoreMallProperties error:', error);
       throw error;
     }
   }
@@ -464,7 +464,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to fetch banners');
     } catch (error: any) {
-      console.error('[MallService] getBanners error:', error);
+      if (__DEV__) console.error('[MallService] getBanners error:', error);
       throw error;
     }
   }
@@ -477,7 +477,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to create banner');
     } catch (error: any) {
-      console.error('[MallService] createBanner error:', error);
+      if (__DEV__) console.error('[MallService] createBanner error:', error);
       throw error;
     }
   }
@@ -490,7 +490,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to update banner');
     } catch (error: any) {
-      console.error('[MallService] updateBanner error:', error);
+      if (__DEV__) console.error('[MallService] updateBanner error:', error);
       throw error;
     }
   }
@@ -502,7 +502,7 @@ class MallService {
         throw new Error(response.message || 'Failed to delete banner');
       }
     } catch (error: any) {
-      console.error('[MallService] deleteBanner error:', error);
+      if (__DEV__) console.error('[MallService] deleteBanner error:', error);
       throw error;
     }
   }
@@ -517,7 +517,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to fetch collections');
     } catch (error: any) {
-      console.error('[MallService] getCollections error:', error);
+      if (__DEV__) console.error('[MallService] getCollections error:', error);
       throw error;
     }
   }
@@ -530,7 +530,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to create collection');
     } catch (error: any) {
-      console.error('[MallService] createCollection error:', error);
+      if (__DEV__) console.error('[MallService] createCollection error:', error);
       throw error;
     }
   }
@@ -543,7 +543,7 @@ class MallService {
       }
       throw new Error(response.message || 'Failed to update collection');
     } catch (error: any) {
-      console.error('[MallService] updateCollection error:', error);
+      if (__DEV__) console.error('[MallService] updateCollection error:', error);
       throw error;
     }
   }
@@ -555,7 +555,7 @@ class MallService {
         throw new Error(response.message || 'Failed to delete collection');
       }
     } catch (error: any) {
-      console.error('[MallService] deleteCollection error:', error);
+      if (__DEV__) console.error('[MallService] deleteCollection error:', error);
       throw error;
     }
   }

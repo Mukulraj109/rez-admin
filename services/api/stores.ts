@@ -61,11 +61,11 @@ class StoresService {
       if (params.limit) queryParts.push(`limit=${params.limit}`);
 
       const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
-      console.log('[Stores] Fetching stores...', query);
+      if (__DEV__) console.log('[Stores] Fetching stores...', query);
       const response = await apiClient.get<any>(`admin/stores${query}`);
 
       if (response.success && response.data) {
-        console.log('[Stores] Fetched successfully');
+        if (__DEV__) console.log('[Stores] Fetched successfully');
         const stores = response.data.stores || (Array.isArray(response.data) ? response.data : []);
         const rawPag = response.data.pagination || response.pagination || {};
         const pagination: Pagination = {
@@ -79,7 +79,7 @@ class StoresService {
 
       throw new Error(response.message || 'Failed to fetch stores');
     } catch (error: any) {
-      console.error('[Stores] Get stores error:', error.message);
+      if (__DEV__) console.error('[Stores] Get stores error:', error.message);
       throw new Error(error.message || 'Failed to fetch stores');
     }
   }
@@ -89,18 +89,18 @@ class StoresService {
    */
   async getStore(id: string): Promise<{ store: AdminStore }> {
     try {
-      console.log('[Stores] Fetching store:', id);
+      if (__DEV__) console.log('[Stores] Fetching store:', id);
       const response = await apiClient.get<any>(`admin/stores/${id}`);
 
       if (response.success && response.data) {
-        console.log('[Stores] Store fetched:', response.data.store?.name || response.data.name);
+        if (__DEV__) console.log('[Stores] Store fetched:', response.data.store?.name || response.data.name);
         const store = response.data.store || response.data;
         return { store };
       }
 
       throw new Error(response.message || 'Store not found');
     } catch (error: any) {
-      console.error('[Stores] Get store error:', error.message);
+      if (__DEV__) console.error('[Stores] Get store error:', error.message);
       throw new Error(error.message || 'Failed to fetch store');
     }
   }
@@ -119,11 +119,11 @@ class StoresService {
       if (params?.limit) queryParts.push(`limit=${params.limit}`);
 
       const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
-      console.log('[Stores] Fetching stores for category:', categoryId, query);
+      if (__DEV__) console.log('[Stores] Fetching stores for category:', categoryId, query);
       const response = await apiClient.get<any>(`admin/stores/category/${categoryId}${query}`);
 
       if (response.success && response.data) {
-        console.log('[Stores] Category stores fetched');
+        if (__DEV__) console.log('[Stores] Category stores fetched');
         const stores = response.data.stores || (Array.isArray(response.data) ? response.data : []);
         const rawPag = response.data.pagination || response.pagination || {};
         const pagination: Pagination = {
@@ -137,7 +137,7 @@ class StoresService {
 
       throw new Error(response.message || 'Failed to fetch stores for category');
     } catch (error: any) {
-      console.error('[Stores] Get stores by category error:', error.message);
+      if (__DEV__) console.error('[Stores] Get stores by category error:', error.message);
       throw new Error(error.message || 'Failed to fetch stores for category');
     }
   }
@@ -147,18 +147,18 @@ class StoresService {
    */
   async reassignCategory(storeId: string, categoryId: string): Promise<{ store: AdminStore }> {
     try {
-      console.log('[Stores] Reassigning store:', storeId, 'to category:', categoryId);
+      if (__DEV__) console.log('[Stores] Reassigning store:', storeId, 'to category:', categoryId);
       const response = await apiClient.put<any>(`admin/stores/${storeId}/category`, { categoryId });
 
       if (response.success && response.data) {
-        console.log('[Stores] Store category reassigned');
+        if (__DEV__) console.log('[Stores] Store category reassigned');
         const store = response.data.store || response.data;
         return { store };
       }
 
       throw new Error(response.message || 'Failed to reassign category');
     } catch (error: any) {
-      console.error('[Stores] Reassign category error:', error.message);
+      if (__DEV__) console.error('[Stores] Reassign category error:', error.message);
       throw new Error(error.message || 'Failed to reassign category');
     }
   }
@@ -168,17 +168,17 @@ class StoresService {
    */
   async bulkReassignCategory(storeIds: string[], categoryId: string): Promise<{ count: number }> {
     try {
-      console.log('[Stores] Bulk reassigning', storeIds.length, 'stores to category:', categoryId);
+      if (__DEV__) console.log('[Stores] Bulk reassigning', storeIds.length, 'stores to category:', categoryId);
       const response = await apiClient.post<any>('admin/stores/bulk-category', { storeIds, categoryId });
 
       if (response.success && response.data) {
-        console.log('[Stores] Bulk reassign completed, count:', response.data.count);
+        if (__DEV__) console.log('[Stores] Bulk reassign completed, count:', response.data.count);
         return { count: response.data.count || storeIds.length };
       }
 
       throw new Error(response.message || 'Failed to bulk reassign categories');
     } catch (error: any) {
-      console.error('[Stores] Bulk reassign error:', error.message);
+      if (__DEV__) console.error('[Stores] Bulk reassign error:', error.message);
       throw new Error(error.message || 'Failed to bulk reassign categories');
     }
   }
@@ -197,18 +197,18 @@ class StoresService {
     }
   ): Promise<{ store: AdminStore }> {
     try {
-      console.log('[Stores] Updating admin actions for store:', storeId);
+      if (__DEV__) console.log('[Stores] Updating admin actions for store:', storeId);
       const response = await apiClient.put<any>(`admin/stores/${storeId}/admin-actions`, actions);
 
       if (response.success && response.data) {
-        console.log('[Stores] Admin actions updated');
+        if (__DEV__) console.log('[Stores] Admin actions updated');
         const store = response.data.store || response.data;
         return { store };
       }
 
       throw new Error(response.message || 'Failed to update admin actions');
     } catch (error: any) {
-      console.error('[Stores] Update admin actions error:', error.message);
+      if (__DEV__) console.error('[Stores] Update admin actions error:', error.message);
       throw new Error(error.message || 'Failed to update admin actions');
     }
   }
@@ -222,21 +222,21 @@ class StoresService {
     enabled: boolean
   ): Promise<{ store: AdminStore; message: string }> {
     try {
-      console.log('[Stores] Toggling capability:', capability, enabled ? 'ON' : 'OFF', 'for store:', storeId);
+      if (__DEV__) console.log('[Stores] Toggling capability:', capability, enabled ? 'ON' : 'OFF', 'for store:', storeId);
       const response = await apiClient.put<any>(`admin/stores/${storeId}/service-capabilities`, {
         capability,
         enabled,
       });
 
       if (response.success && response.data) {
-        console.log('[Stores] Capability toggled successfully');
+        if (__DEV__) console.log('[Stores] Capability toggled successfully');
         const store = response.data.store || response.data;
         return { store, message: response.message || `${capability} ${enabled ? 'enabled' : 'disabled'}` };
       }
 
       throw new Error(response.message || 'Failed to toggle service capability');
     } catch (error: any) {
-      console.error('[Stores] Toggle capability error:', error.message);
+      if (__DEV__) console.error('[Stores] Toggle capability error:', error.message);
       throw new Error(error.message || 'Failed to toggle service capability');
     }
   }

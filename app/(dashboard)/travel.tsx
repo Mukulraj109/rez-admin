@@ -136,7 +136,7 @@ function DashboardTab({ colors }: { colors: any }) {
       const data = await travelAdminService.getDashboard();
       setStats(data);
     } catch (err: any) {
-      console.error('Dashboard error:', err);
+      if (__DEV__) console.error('Dashboard error:', err);
     } finally {
       setLoading(false);
     }
@@ -248,7 +248,7 @@ function CategoriesTab({ colors }: { colors: any }) {
       const data = await travelAdminService.getCategories();
       setCategories(data);
     } catch (err) {
-      console.error('Categories error:', err);
+      if (__DEV__) console.error('Categories error:', err);
     } finally {
       setLoading(false);
     }
@@ -356,7 +356,7 @@ function ServicesTab({ colors }: { colors: any }) {
       setServices(data.services);
       setTotalPages(data.pagination?.pages || 1);
     } catch (err) {
-      console.error('Services error:', err);
+      if (__DEV__) console.error('Services error:', err);
     } finally {
       setLoading(false);
     }
@@ -491,7 +491,7 @@ function BookingsTab({ colors }: { colors: any }) {
       setBookings(data.bookings);
       setTotalPages(data.pagination?.pages || 1);
     } catch (err) {
-      console.error('Bookings error:', err);
+      if (__DEV__) console.error('Bookings error:', err);
     } finally {
       setLoading(false);
     }
@@ -776,7 +776,7 @@ function AnalyticsTab({ colors }: { colors: any }) {
         const data = await travelAdminService.getDashboard();
         setStats(data);
       } catch (err) {
-        console.error('Analytics error:', err);
+        if (__DEV__) console.error('Analytics error:', err);
       } finally {
         setLoading(false);
       }

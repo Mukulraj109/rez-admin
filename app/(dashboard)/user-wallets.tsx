@@ -93,7 +93,7 @@ export default function UserWalletsScreen() {
       setHasMore(pagination ? pagination.page < pagination.totalPages : false);
       setPage(pg);
     } catch (err: any) {
-      console.error('Failed to load user wallets:', err);
+      if (__DEV__) console.error('Failed to load user wallets:', err);
     } finally { setIsLoading(false); }
   };
 

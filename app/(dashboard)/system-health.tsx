@@ -150,7 +150,7 @@ export default function SystemHealthScreen() {
       setHealthData(health);
       setReconciliation(recon);
     } catch (error: any) {
-      console.error('Failed to load system health:', error.message);
+      if (__DEV__) console.error('Failed to load system health:', error.message);
       if (!silent) {
         showAlert('Error', 'Failed to load system health data.');
       }

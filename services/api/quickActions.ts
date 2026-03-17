@@ -46,7 +46,7 @@ class QuickActionsService {
    */
   async getAll(query: QuickActionsQuery = {}): Promise<QuickActionsListResponse> {
     try {
-      console.log('[QuickActions] Fetching quick actions with query:', query);
+      if (__DEV__) console.log('[QuickActions] Fetching quick actions with query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -58,13 +58,13 @@ class QuickActionsService {
       const response = await apiClient.get<QuickActionsListResponse>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[QuickActions] Fetched successfully:', response.data.quickActions?.length || 0, 'actions');
+        if (__DEV__) console.log('[QuickActions] Fetched successfully:', response.data.quickActions?.length || 0, 'actions');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch quick actions');
     } catch (error: any) {
-      console.error('[QuickActions] Get all error:', error.message);
+      if (__DEV__) console.error('[QuickActions] Get all error:', error.message);
       throw new Error(error.message || 'Failed to fetch quick actions');
     }
   }
@@ -74,17 +74,17 @@ class QuickActionsService {
    */
   async getById(id: string): Promise<QuickActionAdmin> {
     try {
-      console.log('[QuickActions] Fetching quick action:', id);
+      if (__DEV__) console.log('[QuickActions] Fetching quick action:', id);
       const response = await apiClient.get<QuickActionAdmin>(`admin/quick-actions/${id}`);
 
       if (response.success && response.data) {
-        console.log('[QuickActions] Action fetched:', response.data.slug);
+        if (__DEV__) console.log('[QuickActions] Action fetched:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch quick action');
     } catch (error: any) {
-      console.error('[QuickActions] Get by ID error:', error.message);
+      if (__DEV__) console.error('[QuickActions] Get by ID error:', error.message);
       throw new Error(error.message || 'Failed to fetch quick action');
     }
   }
@@ -94,17 +94,17 @@ class QuickActionsService {
    */
   async create(data: Partial<QuickActionAdmin>): Promise<QuickActionAdmin> {
     try {
-      console.log('[QuickActions] Creating quick action:', data.title);
+      if (__DEV__) console.log('[QuickActions] Creating quick action:', data.title);
       const response = await apiClient.post<QuickActionAdmin>('admin/quick-actions', data);
 
       if (response.success && response.data) {
-        console.log('[QuickActions] Action created:', response.data.slug);
+        if (__DEV__) console.log('[QuickActions] Action created:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create quick action');
     } catch (error: any) {
-      console.error('[QuickActions] Create error:', error.message);
+      if (__DEV__) console.error('[QuickActions] Create error:', error.message);
       throw new Error(error.message || 'Failed to create quick action');
     }
   }
@@ -114,17 +114,17 @@ class QuickActionsService {
    */
   async update(id: string, data: Partial<QuickActionAdmin>): Promise<QuickActionAdmin> {
     try {
-      console.log('[QuickActions] Updating quick action:', id);
+      if (__DEV__) console.log('[QuickActions] Updating quick action:', id);
       const response = await apiClient.put<QuickActionAdmin>(`admin/quick-actions/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[QuickActions] Action updated:', response.data.slug);
+        if (__DEV__) console.log('[QuickActions] Action updated:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update quick action');
     } catch (error: any) {
-      console.error('[QuickActions] Update error:', error.message);
+      if (__DEV__) console.error('[QuickActions] Update error:', error.message);
       throw new Error(error.message || 'Failed to update quick action');
     }
   }
@@ -134,17 +134,17 @@ class QuickActionsService {
    */
   async remove(id: string): Promise<void> {
     try {
-      console.log('[QuickActions] Deleting quick action:', id);
+      if (__DEV__) console.log('[QuickActions] Deleting quick action:', id);
       const response = await apiClient.delete(`admin/quick-actions/${id}`);
 
       if (response.success) {
-        console.log('[QuickActions] Action deleted');
+        if (__DEV__) console.log('[QuickActions] Action deleted');
         return;
       }
 
       throw new Error(response.message || 'Failed to delete quick action');
     } catch (error: any) {
-      console.error('[QuickActions] Delete error:', error.message);
+      if (__DEV__) console.error('[QuickActions] Delete error:', error.message);
       throw new Error(error.message || 'Failed to delete quick action');
     }
   }
@@ -154,17 +154,17 @@ class QuickActionsService {
    */
   async toggleActive(id: string): Promise<QuickActionAdmin> {
     try {
-      console.log('[QuickActions] Toggling active status for action:', id);
+      if (__DEV__) console.log('[QuickActions] Toggling active status for action:', id);
       const response = await apiClient.patch<QuickActionAdmin>(`admin/quick-actions/${id}/toggle-active`);
 
       if (response.success && response.data) {
-        console.log('[QuickActions] Active toggled, now:', response.data.isActive);
+        if (__DEV__) console.log('[QuickActions] Active toggled, now:', response.data.isActive);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to toggle quick action status');
     } catch (error: any) {
-      console.error('[QuickActions] Toggle active error:', error.message);
+      if (__DEV__) console.error('[QuickActions] Toggle active error:', error.message);
       throw new Error(error.message || 'Failed to toggle quick action status');
     }
   }
@@ -174,17 +174,17 @@ class QuickActionsService {
    */
   async reorder(orderedIds: string[]): Promise<void> {
     try {
-      console.log('[QuickActions] Reordering quick actions:', orderedIds.length, 'items');
+      if (__DEV__) console.log('[QuickActions] Reordering quick actions:', orderedIds.length, 'items');
       const response = await apiClient.post('admin/quick-actions/reorder', { orderedIds });
 
       if (response.success) {
-        console.log('[QuickActions] Reorder successful');
+        if (__DEV__) console.log('[QuickActions] Reorder successful');
         return;
       }
 
       throw new Error(response.message || 'Failed to reorder quick actions');
     } catch (error: any) {
-      console.error('[QuickActions] Reorder error:', error.message);
+      if (__DEV__) console.error('[QuickActions] Reorder error:', error.message);
       throw new Error(error.message || 'Failed to reorder quick actions');
     }
   }

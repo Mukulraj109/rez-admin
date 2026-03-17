@@ -213,7 +213,7 @@ export default function SponsorsScreen() {
         showAlert('Error', 'Failed to load sponsors');
       }
     } catch (error: any) {
-      console.error('Failed to load sponsors:', error);
+      if (__DEV__) console.error('Failed to load sponsors:', error);
       showAlert('Error', error.message || 'Failed to load sponsors');
     } finally {
       setIsLoading(false);
@@ -340,7 +340,7 @@ export default function SponsorsScreen() {
       setForm({ ...DEFAULT_FORM });
       loadSponsors(1);
     } catch (error: any) {
-      console.error('Save sponsor error:', error);
+      if (__DEV__) console.error('Save sponsor error:', error);
       showAlert('Error', error.message || 'Failed to save sponsor');
     } finally {
       setIsSaving(false);
@@ -363,7 +363,7 @@ export default function SponsorsScreen() {
           showAlert('Success', `Sponsor ${action}d successfully`);
           loadSponsors(1);
         } catch (error: any) {
-          console.error('Toggle active error:', error);
+          if (__DEV__) console.error('Toggle active error:', error);
           showAlert('Error', error.message || `Failed to ${action} sponsor`);
         } finally {
           setProcessing(null);
@@ -401,7 +401,7 @@ export default function SponsorsScreen() {
         setLedgerEntries(ledgerData.entries || ledgerData.ledger || (Array.isArray(ledgerData) ? ledgerData : []));
       }
     } catch (error: any) {
-      console.error('Load budget error:', error);
+      if (__DEV__) console.error('Load budget error:', error);
     } finally {
       setBudgetLoading(false);
     }
@@ -429,7 +429,7 @@ export default function SponsorsScreen() {
       loadBudgetData(fundingSponsor._id);
       loadSponsors(1);
     } catch (error: any) {
-      console.error('Fund sponsor error:', error);
+      if (__DEV__) console.error('Fund sponsor error:', error);
       showAlert('Error', error.message || 'Failed to fund sponsor');
     } finally {
       setIsFunding(false);

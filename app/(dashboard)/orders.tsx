@@ -87,7 +87,7 @@ export default function OrdersScreen() {
       setHasMore(data.pagination.page < data.pagination.totalPages);
       setPage(pageNum);
     } catch (error) {
-      console.error('Failed to load orders:', error);
+      if (__DEV__) console.error('Failed to load orders:', error);
     } finally {
       setIsLoading(false);
     }

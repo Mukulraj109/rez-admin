@@ -19,6 +19,59 @@ interface RequestOptions {
 }
 
 class ApiClient {
+  private isRefreshing: boolean = false;
+  private refreshPromise: Promise<string | null> | null = null;
+
+  /**
+   * Attempt to refresh the access token using the stored refresh token.
+   * Returns the new access token on success, or null on failure.
+   */
+  private async attemptTokenRefresh(): Promise<string | null> {
+    // Deduplicate concurrent refresh attempts
+    if (this.isRefreshing && this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.isRefreshing = true;
+    this.refreshPromise = (async () => {
+      try {
+        const refreshToken = await storageService.getRefreshToken();
+        if (!refreshToken) return null;
+
+        const url = buildApiUrl('admin/auth/refresh-token');
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data?.success && data?.data?.token) {
+          await storageService.setAuthToken(data.data.token);
+          if (data.data.refreshToken) {
+            await storageService.setRefreshToken(data.data.refreshToken);
+          }
+          if (data.data.user) {
+            await storageService.setUserData(data.data.user);
+          }
+          if (__DEV__) console.log('[Admin API] Token refreshed successfully');
+          return data.data.token as string;
+        }
+
+        return null;
+      } catch (err) {
+        if (__DEV__) console.error('[Admin API] Token refresh failed:', err);
+        return null;
+      } finally {
+        this.isRefreshing = false;
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
+  }
+
   private async getHeaders(customHeaders?: Record<string, string>): Promise<Record<string, string>> {
     const token = await storageService.getAuthToken();
 
@@ -64,9 +117,27 @@ class ApiClient {
       if (!response.ok) {
         if (__DEV__) console.error(`❌ [Admin API] ${method} ${endpoint} failed:`, data.message || response.statusText);
 
-        // Handle 401 - token expired
-        if (response.status === 401) {
-          if (__DEV__) console.log('🔐 [Admin API] Token expired, clearing auth data');
+        // Handle 401 - attempt token refresh before logging out
+        if (response.status === 401 && !endpoint.includes('/auth/')) {
+          if (__DEV__) console.log('[Admin API] Token expired, attempting refresh...');
+          const newToken = await this.attemptTokenRefresh();
+          if (newToken) {
+            // Retry the original request with the new token
+            const retryHeaders = { ...headers, Authorization: `Bearer ${newToken}` };
+            const retryResponse = await fetch(url, {
+              method,
+              headers: retryHeaders,
+              body: body ? JSON.stringify(body) : undefined,
+            });
+            const retryData = await retryResponse.json();
+            if (retryResponse.ok) {
+              if (__DEV__) console.log(`✅ [Admin API] ${method} ${endpoint} success (after refresh)`);
+              return retryData;
+            }
+          }
+
+          // Refresh failed — log out
+          if (__DEV__) console.log('[Admin API] Token refresh failed, clearing auth data');
           await storageService.logout();
         }
 
@@ -161,8 +232,26 @@ class ApiClient {
       if (!response.ok) {
         if (__DEV__) console.error(`❌ [Admin API] UPLOAD ${endpoint} failed:`, data.message || response.statusText);
 
-        if (response.status === 401) {
-          if (__DEV__) console.log('🔐 [Admin API] Token expired, clearing auth data');
+        if (response.status === 401 && !endpoint.includes('/auth/')) {
+          if (__DEV__) console.log('[Admin API] Token expired during upload, attempting refresh...');
+          const newToken = await this.attemptTokenRefresh();
+          if (newToken) {
+            // Retry the upload with the new token
+            const retryHeaders: Record<string, string> = { ...options?.headers };
+            retryHeaders['Authorization'] = `Bearer ${newToken}`;
+            const retryResponse = await fetch(url, {
+              method: 'POST',
+              headers: retryHeaders,
+              body: formData,
+            });
+            const retryData = await retryResponse.json();
+            if (retryResponse.ok) {
+              if (__DEV__) console.log(`✅ [Admin API] UPLOAD ${endpoint} success (after refresh)`);
+              return retryData;
+            }
+          }
+
+          if (__DEV__) console.log('[Admin API] Token refresh failed, clearing auth data');
           await storageService.logout();
         }
 

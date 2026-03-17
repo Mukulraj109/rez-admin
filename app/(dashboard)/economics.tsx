@@ -94,7 +94,7 @@ export default function EconomicsScreen() {
       const overview = await economicsService.getOverview();
       setData(overview);
     } catch (error) {
-      console.error('Failed to load economics data:', error);
+      if (__DEV__) console.error('Failed to load economics data:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);

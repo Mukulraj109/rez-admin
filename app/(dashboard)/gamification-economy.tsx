@@ -95,7 +95,7 @@ export default function GamificationEconomyScreen() {
       if (engagementRes.success && engagementRes.data) setEngagement(engagementRes.data as EngagementStats);
       if (fraudRes.success && fraudRes.data) setFraudData(fraudRes.data as FraudAlertResponse);
     } catch (error) {
-      console.error('Failed to load gamification stats:', error);
+      if (__DEV__) console.error('Failed to load gamification stats:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);

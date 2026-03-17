@@ -204,7 +204,7 @@ class BonusZoneService {
    */
   async getCampaigns(query: BonusCampaignsQuery = {}): Promise<BonusCampaignsListResponse> {
     try {
-      console.log('[BonusZone] Fetching campaigns with query:', query);
+      if (__DEV__) console.log('[BonusZone] Fetching campaigns with query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -218,13 +218,13 @@ class BonusZoneService {
       const response = await apiClient.get<BonusCampaignsListResponse>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Fetched successfully:', response.data.campaigns?.length || 0, 'campaigns');
+        if (__DEV__) console.log('[BonusZone] Fetched successfully:', response.data.campaigns?.length || 0, 'campaigns');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch bonus campaigns');
     } catch (error: any) {
-      console.error('[BonusZone] Get campaigns error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Get campaigns error:', error.message);
       throw new Error(error.message || 'Failed to fetch bonus campaigns');
     }
   }
@@ -234,17 +234,17 @@ class BonusZoneService {
    */
   async createCampaign(data: Partial<BonusCampaignAdmin>): Promise<BonusCampaignAdmin> {
     try {
-      console.log('[BonusZone] Creating campaign:', data.title);
+      if (__DEV__) console.log('[BonusZone] Creating campaign:', data.title);
       const response = await apiClient.post<BonusCampaignAdmin>('admin/bonus-zone/campaigns', data);
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Campaign created:', response.data.slug);
+        if (__DEV__) console.log('[BonusZone] Campaign created:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to create bonus campaign');
     } catch (error: any) {
-      console.error('[BonusZone] Create campaign error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Create campaign error:', error.message);
       throw new Error(error.message || 'Failed to create bonus campaign');
     }
   }
@@ -254,17 +254,17 @@ class BonusZoneService {
    */
   async updateCampaign(id: string, data: Partial<BonusCampaignAdmin>): Promise<BonusCampaignAdmin> {
     try {
-      console.log('[BonusZone] Updating campaign:', id);
+      if (__DEV__) console.log('[BonusZone] Updating campaign:', id);
       const response = await apiClient.put<BonusCampaignAdmin>(`admin/bonus-zone/campaigns/${id}`, data);
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Campaign updated:', response.data.slug);
+        if (__DEV__) console.log('[BonusZone] Campaign updated:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update bonus campaign');
     } catch (error: any) {
-      console.error('[BonusZone] Update campaign error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Update campaign error:', error.message);
       throw new Error(error.message || 'Failed to update bonus campaign');
     }
   }
@@ -274,17 +274,17 @@ class BonusZoneService {
    */
   async deleteCampaign(id: string): Promise<void> {
     try {
-      console.log('[BonusZone] Deleting campaign:', id);
+      if (__DEV__) console.log('[BonusZone] Deleting campaign:', id);
       const response = await apiClient.delete(`admin/bonus-zone/campaigns/${id}`);
 
       if (response.success) {
-        console.log('[BonusZone] Campaign deleted');
+        if (__DEV__) console.log('[BonusZone] Campaign deleted');
         return;
       }
 
       throw new Error(response.message || 'Failed to delete bonus campaign');
     } catch (error: any) {
-      console.error('[BonusZone] Delete campaign error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Delete campaign error:', error.message);
       throw new Error(error.message || 'Failed to delete bonus campaign');
     }
   }
@@ -294,17 +294,17 @@ class BonusZoneService {
    */
   async updateStatus(id: string, status: BonusCampaignStatus): Promise<BonusCampaignAdmin> {
     try {
-      console.log('[BonusZone] Updating status for campaign:', id, 'to:', status);
+      if (__DEV__) console.log('[BonusZone] Updating status for campaign:', id, 'to:', status);
       const response = await apiClient.patch<BonusCampaignAdmin>(`admin/bonus-zone/campaigns/${id}/status`, { status });
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Status updated to:', response.data.status);
+        if (__DEV__) console.log('[BonusZone] Status updated to:', response.data.status);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to update campaign status');
     } catch (error: any) {
-      console.error('[BonusZone] Update status error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Update status error:', error.message);
       throw new Error(error.message || 'Failed to update campaign status');
     }
   }
@@ -314,17 +314,17 @@ class BonusZoneService {
    */
   async getCampaignAnalytics(id: string): Promise<BonusCampaignAnalytics> {
     try {
-      console.log('[BonusZone] Fetching analytics for campaign:', id);
+      if (__DEV__) console.log('[BonusZone] Fetching analytics for campaign:', id);
       const response = await apiClient.get<BonusCampaignAnalytics>(`admin/bonus-zone/campaigns/${id}/analytics`);
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Analytics fetched, totalClaims:', response.data.totalClaims);
+        if (__DEV__) console.log('[BonusZone] Analytics fetched, totalClaims:', response.data.totalClaims);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch campaign analytics');
     } catch (error: any) {
-      console.error('[BonusZone] Get analytics error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Get analytics error:', error.message);
       throw new Error(error.message || 'Failed to fetch campaign analytics');
     }
   }
@@ -334,7 +334,7 @@ class BonusZoneService {
    */
   async getCampaignClaims(id: string, query: BonusCampaignClaimsQuery = {}): Promise<BonusCampaignClaimsResponse> {
     try {
-      console.log('[BonusZone] Fetching claims for campaign:', id, 'query:', query);
+      if (__DEV__) console.log('[BonusZone] Fetching claims for campaign:', id, 'query:', query);
 
       const params = new URLSearchParams();
       if (query.page) params.append('page', query.page.toString());
@@ -346,13 +346,13 @@ class BonusZoneService {
       const response = await apiClient.get<BonusCampaignClaimsResponse>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Claims fetched:', response.data.claims?.length || 0, 'claims');
+        if (__DEV__) console.log('[BonusZone] Claims fetched:', response.data.claims?.length || 0, 'claims');
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch campaign claims');
     } catch (error: any) {
-      console.error('[BonusZone] Get claims error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Get claims error:', error.message);
       throw new Error(error.message || 'Failed to fetch campaign claims');
     }
   }
@@ -362,17 +362,17 @@ class BonusZoneService {
    */
   async fundCampaign(id: string, amount: number): Promise<BonusCampaignAdmin> {
     try {
-      console.log('[BonusZone] Funding campaign:', id, 'amount:', amount);
+      if (__DEV__) console.log('[BonusZone] Funding campaign:', id, 'amount:', amount);
       const response = await apiClient.post<BonusCampaignAdmin>(`admin/bonus-zone/campaigns/${id}/fund`, { amount });
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Campaign funded, new budget:', response.data.reward?.totalBudget);
+        if (__DEV__) console.log('[BonusZone] Campaign funded, new budget:', response.data.reward?.totalBudget);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fund bonus campaign');
     } catch (error: any) {
-      console.error('[BonusZone] Fund campaign error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Fund campaign error:', error.message);
       throw new Error(error.message || 'Failed to fund bonus campaign');
     }
   }
@@ -382,20 +382,20 @@ class BonusZoneService {
    */
   async duplicateCampaign(id: string, newSlug?: string): Promise<BonusCampaignAdmin> {
     try {
-      console.log('[BonusZone] Duplicating campaign:', id);
+      if (__DEV__) console.log('[BonusZone] Duplicating campaign:', id);
       const body: { newSlug?: string } = {};
       if (newSlug) body.newSlug = newSlug;
 
       const response = await apiClient.post<BonusCampaignAdmin>(`admin/bonus-zone/campaigns/${id}/duplicate`, body);
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Campaign duplicated:', response.data.slug);
+        if (__DEV__) console.log('[BonusZone] Campaign duplicated:', response.data.slug);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to duplicate bonus campaign');
     } catch (error: any) {
-      console.error('[BonusZone] Duplicate campaign error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Duplicate campaign error:', error.message);
       throw new Error(error.message || 'Failed to duplicate bonus campaign');
     }
   }
@@ -405,17 +405,17 @@ class BonusZoneService {
    */
   async getDashboard(): Promise<BonusZoneDashboard> {
     try {
-      console.log('[BonusZone] Fetching dashboard...');
+      if (__DEV__) console.log('[BonusZone] Fetching dashboard...');
       const response = await apiClient.get<BonusZoneDashboard>('admin/bonus-zone/dashboard');
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Dashboard fetched, active campaigns:', response.data.activeCampaigns);
+        if (__DEV__) console.log('[BonusZone] Dashboard fetched, active campaigns:', response.data.activeCampaigns);
         return response.data;
       }
 
       throw new Error(response.message || 'Failed to fetch bonus zone dashboard');
     } catch (error: any) {
-      console.error('[BonusZone] Get dashboard error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Get dashboard error:', error.message);
       throw new Error(error.message || 'Failed to fetch bonus zone dashboard');
     }
   }
@@ -425,17 +425,17 @@ class BonusZoneService {
    */
   async rejectClaim(claimId: string, reason: string): Promise<BonusCampaignClaim> {
     try {
-      console.log('[BonusZone] Rejecting claim:', claimId, 'reason:', reason);
+      if (__DEV__) console.log('[BonusZone] Rejecting claim:', claimId, 'reason:', reason);
       const response = await apiClient.patch<{ claim: BonusCampaignClaim }>(`admin/bonus-zone/claims/${claimId}/reject`, { reason });
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Claim rejected:', claimId);
+        if (__DEV__) console.log('[BonusZone] Claim rejected:', claimId);
         return response.data.claim;
       }
 
       throw new Error(response.message || 'Failed to reject claim');
     } catch (error: any) {
-      console.error('[BonusZone] Reject claim error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Reject claim error:', error.message);
       throw new Error(error.message || 'Failed to reject claim');
     }
   }
@@ -445,7 +445,7 @@ class BonusZoneService {
    */
   async getFraudAlerts(limit?: number): Promise<BonusFraudAlert[]> {
     try {
-      console.log('[BonusZone] Fetching fraud alerts...');
+      if (__DEV__) console.log('[BonusZone] Fetching fraud alerts...');
 
       const params = new URLSearchParams();
       if (limit) params.append('limit', limit.toString());
@@ -454,13 +454,13 @@ class BonusZoneService {
       const response = await apiClient.get<BonusFraudAlert[]>(endpoint);
 
       if (response.success && response.data) {
-        console.log('[BonusZone] Fraud alerts fetched:', response.data.length);
+        if (__DEV__) console.log('[BonusZone] Fraud alerts fetched:', response.data.length);
         return response.data;
       }
 
       return [];
     } catch (error: any) {
-      console.error('[BonusZone] Get fraud alerts error:', error.message);
+      if (__DEV__) console.error('[BonusZone] Get fraud alerts error:', error.message);
       return [];
     }
   }
