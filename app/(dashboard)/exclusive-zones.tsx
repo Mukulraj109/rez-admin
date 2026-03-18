@@ -9,7 +9,7 @@ import { exclusiveZonesService, ExclusiveZone } from '../../services/api/exclusi
 import { Colors } from '../../constants/Colors';
 import { showAlert, showConfirm } from '../../utils/alert';
 
-const ELIGIBILITY_TYPES = ['corporate_email', 'gender', 'birthday_month', 'student', 'age', 'verification'];
+const ELIGIBILITY_TYPES = ['corporate_email', 'gender', 'birthday_month', 'student', 'age', 'verification', 'profession', 'disability'];
 
 export default function ExclusiveZonesScreen() {
   const colorScheme = useColorScheme();

@@ -16,7 +16,8 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   segment?: 'normal' | 'verified_student' | 'verified_employee'
-    | 'verified_defence' | 'verified_healthcare';
+    | 'verified_defence' | 'verified_healthcare' | 'verified_teacher'
+    | 'verified_senior' | 'verified_government' | 'verified_differentlyAbled';
   featureLevel?: number;
   verificationStatus?: 'none' | 'provisional' | 'pending' | 'verified';
   isFlagged?: boolean;
