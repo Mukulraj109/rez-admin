@@ -514,6 +514,18 @@ export default function DashboardLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="institutions"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="institute-referrals"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

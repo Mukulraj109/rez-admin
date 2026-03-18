@@ -25,6 +25,7 @@ import {
 import { Colors } from '../../constants/Colors';
 import { format } from 'date-fns';
 import { showAlert, showConfirm } from '../../utils/alert';
+import { usersService } from '../../services/api/users';
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 type TypeFilter = 'all' | VerificationType;
@@ -65,6 +66,16 @@ export default function VerificationsScreen() {
 
   // Type filter modal
   const [showTypeFilter, setShowTypeFilter] = useState(false);
+
+  // Bulk approve modal
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkInstituteName, setBulkInstituteName] = useState('');
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+
+  // Flag user modal
+  const [showFlagModal, setShowFlagModal] = useState(false);
+  const [flagUserId, setFlagUserId] = useState('');
+  const [flagReason, setFlagReason] = useState('');
 
   useEffect(() => {
     loadData();
@@ -294,6 +305,17 @@ export default function VerificationsScreen() {
         </Text>
         <Ionicons name="chevron-down" size={16} color={colors.icon} />
       </TouchableOpacity>
+
+      {/* Bulk Approve Button */}
+      <TouchableOpacity
+        style={[styles.typeFilterButton, { backgroundColor: '#dcfce7' }]}
+        onPress={() => setShowBulkModal(true)}
+      >
+        <Ionicons name="checkmark-done" size={16} color="#16a34a" />
+        <Text style={{ fontSize: 13, color: '#16a34a', fontWeight: '600', marginLeft: 4 }}>
+          Bulk Approve
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -389,6 +411,16 @@ export default function VerificationsScreen() {
             >
               <Ionicons name="close" size={16} color={colors.card} />
               <Text style={styles.actionButtonText}>Reject</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: '#f59e0b' }]}
+              onPress={() => {
+                setFlagUserId(typeof item.userId === 'string' ? item.userId : (item.userId as any)?._id || '');
+                setShowFlagModal(true);
+              }}
+            >
+              <Ionicons name="flag" size={14} color={colors.card} />
+              <Text style={styles.actionButtonText}>Flag</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -755,6 +787,115 @@ export default function VerificationsScreen() {
             >
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Bulk Approve Modal */}
+      <Modal visible={showBulkModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
+              Bulk Approve by Institution
+            </Text>
+            <TextInput
+              style={[styles.rejectInput, { color: colors.text, borderColor: colors.text + '30' }]}
+              placeholder="Enter institution name"
+              placeholderTextColor={colors.text + '66'}
+              value={bulkInstituteName}
+              onChangeText={setBulkInstituteName}
+            />
+            <Text style={{ fontSize: 12, color: colors.text + '66', marginBottom: 12 }}>
+              All pending verifications matching this name will be approved.
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.cancelButton, { borderColor: colors.text + '30' }]}
+                onPress={() => { setShowBulkModal(false); setBulkInstituteName(''); }}
+              >
+                <Text style={{ color: colors.text }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitButton, { backgroundColor: '#16a34a' }]}
+                disabled={bulkProcessing}
+                onPress={async () => {
+                  if (!bulkInstituteName.trim()) {
+                    showAlert('Required', 'Enter institution name');
+                    return;
+                  }
+                  setBulkProcessing(true);
+                  try {
+                    const result = await zoneVerificationsService.bulkApproveByInstitution(bulkInstituteName.trim());
+                    showAlert('Done', `${result.approved} verifications approved for ${bulkInstituteName}`);
+                    setShowBulkModal(false);
+                    setBulkInstituteName('');
+                    loadData();
+                    loadStats();
+                  } catch (e: any) {
+                    showAlert('Error', e.message);
+                  } finally {
+                    setBulkProcessing(false);
+                  }
+                }}
+              >
+                {bulkProcessing ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.submitButtonText}>Approve All</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Flag User Modal */}
+      <Modal visible={showFlagModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
+              Flag User
+            </Text>
+            <Text style={{ fontSize: 12, color: colors.text + '99', marginBottom: 12 }}>
+              Flagged users cannot auto-verify. All future submissions go to manual review.
+            </Text>
+            <TextInput
+              style={[styles.rejectInput, { color: colors.text, borderColor: colors.text + '30', minHeight: 80 }]}
+              placeholder="Reason for flagging"
+              placeholderTextColor={colors.text + '66'}
+              value={flagReason}
+              onChangeText={setFlagReason}
+              multiline
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.cancelButton, { borderColor: colors.text + '30' }]}
+                onPress={() => { setShowFlagModal(false); setFlagReason(''); setFlagUserId(''); }}
+              >
+                <Text style={{ color: colors.text }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitButton, { backgroundColor: '#f59e0b' }]}
+                onPress={async () => {
+                  if (!flagReason.trim()) {
+                    showAlert('Required', 'Enter a reason');
+                    return;
+                  }
+                  try {
+                    await usersService.flagUser(flagUserId, flagReason.trim());
+                    showAlert('Flagged', 'User flagged. Auto-verify disabled.');
+                    setShowFlagModal(false);
+                    setFlagReason('');
+                    setFlagUserId('');
+                    loadData();
+                  } catch (e: any) {
+                    showAlert('Error', e.message);
+                  }
+                }}
+              >
+                <Text style={styles.submitButtonText}>Flag User</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>

@@ -15,6 +15,12 @@ export interface User {
   lastLogin?: string;
   createdAt: string;
   updatedAt: string;
+  segment?: 'normal' | 'verified_student' | 'verified_employee'
+    | 'verified_defence' | 'verified_healthcare';
+  featureLevel?: number;
+  verificationStatus?: 'none' | 'provisional' | 'pending' | 'verified';
+  isFlagged?: boolean;
+  flagReason?: string;
 }
 
 export interface UserWallet {
@@ -155,6 +161,30 @@ class UsersService {
     } catch (error: any) {
       if (__DEV__) console.error('[Users] Unsuspend user error:', error.message);
       throw new Error(error.message || 'Failed to unsuspend user');
+    }
+  }
+
+  async flagUser(userId: string, reason: string): Promise<void> {
+    try {
+      const response = await apiClient.put(`admin/users/${userId}/flag`, { reason });
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to flag user');
+      }
+    } catch (error: any) {
+      if (__DEV__) console.error('[Users] Flag user error:', error.message);
+      throw new Error(error.message || 'Failed to flag user');
+    }
+  }
+
+  async unflagUser(userId: string): Promise<void> {
+    try {
+      const response = await apiClient.put(`admin/users/${userId}/unflag`, {});
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to unflag user');
+      }
+    } catch (error: any) {
+      if (__DEV__) console.error('[Users] Unflag user error:', error.message);
+      throw new Error(error.message || 'Failed to unflag user');
     }
   }
 }

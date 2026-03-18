@@ -266,6 +266,29 @@ export default function UsersScreen() {
                 {item.status}
               </Text>
             </View>
+            {(item as any).segment && (item as any).segment !== 'normal' && (
+              <View style={[styles.statusBadge, { backgroundColor: '#dcfce7' }]}>
+                <Text style={{ fontSize: 10, fontWeight: '600', color: '#16a34a' }}>
+                  {(item as any).segment === 'verified_student' ? '🎓 Student'
+                    : (item as any).segment === 'verified_employee' ? '💼 Employee'
+                    : (item as any).segment.replace('verified_', '')}
+                </Text>
+              </View>
+            )}
+            {(item as any).isFlagged && (
+              <View style={[styles.statusBadge, { backgroundColor: '#fef2f2' }]}>
+                <Text style={{ fontSize: 10, fontWeight: '600', color: '#dc2626' }}>
+                  🚩 Flagged
+                </Text>
+              </View>
+            )}
+            {(item as any).featureLevel > 1 && (
+              <View style={[styles.statusBadge, { backgroundColor: '#f0f9ff' }]}>
+                <Text style={{ fontSize: 10, fontWeight: '600', color: '#0284c7' }}>
+                  L{(item as any).featureLevel}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </View>

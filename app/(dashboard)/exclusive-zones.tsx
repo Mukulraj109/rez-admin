@@ -4,6 +4,7 @@ import {
   useColorScheme, ActivityIndicator, Switch, TextInput, Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { exclusiveZonesService, ExclusiveZone } from '../../services/api/exclusiveZones';
 import { Colors } from '../../constants/Colors';
 import { showAlert, showConfirm } from '../../utils/alert';
@@ -14,6 +15,7 @@ export default function ExclusiveZonesScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const isDark = colorScheme === 'dark';
+  const router = useRouter();
 
   const [zones, setZones] = useState<ExclusiveZone[]>([]);
   const [loading, setLoading] = useState(true);
@@ -128,10 +130,19 @@ export default function ExclusiveZonesScreen() {
           <Text style={[styles.title, { color: colors.text }]}>Exclusive Zones</Text>
           <Text style={[styles.subtitle, { color: colors.icon }]}>Manage exclusive access zones</Text>
         </View>
-        <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.tint }]} onPress={openCreate}>
-          <Ionicons name="add" size={20} color={colors.card} />
-          <Text style={styles.addBtnText}>Add Zone</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <TouchableOpacity
+            style={[styles.addBtn, { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.tint }]}
+            onPress={() => router.push('/(dashboard)/institutions' as any)}
+          >
+            <Ionicons name="business" size={16} color={colors.tint} />
+            <Text style={[styles.addBtnText, { color: colors.tint }]}>Institutions</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.tint }]} onPress={openCreate}>
+            <Ionicons name="add" size={20} color={colors.card} />
+            <Text style={styles.addBtnText}>Add Zone</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.statsRow}>

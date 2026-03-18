@@ -1,5 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+
+let SecureStore: typeof import('expo-secure-store') | null = null;
+if (Platform.OS !== 'web') {
+  SecureStore = require('expo-secure-store');
+}
 
 const STORAGE_KEYS = {
   AUTH_TOKEN: 'admin_auth_token',
@@ -8,20 +13,30 @@ const STORAGE_KEYS = {
 };
 
 class StorageService {
+  private isWeb = Platform.OS === 'web';
+
   private async secureSetItem(key: string, value: string): Promise<void> {
-    await SecureStore.setItemAsync(key, value);
-    await AsyncStorage.removeItem(key);
+    if (this.isWeb) {
+      localStorage.setItem(key, value);
+    } else {
+      await SecureStore!.setItemAsync(key, value);
+      await AsyncStorage.removeItem(key);
+    }
   }
 
   private async secureGetItem(key: string): Promise<string | null> {
-    const secureValue = await SecureStore.getItemAsync(key);
+    if (this.isWeb) {
+      return localStorage.getItem(key);
+    }
+
+    const secureValue = await SecureStore!.getItemAsync(key);
     if (secureValue !== null) {
       return secureValue;
     }
 
     const legacyValue = await AsyncStorage.getItem(key);
     if (legacyValue !== null) {
-      await SecureStore.setItemAsync(key, legacyValue);
+      await SecureStore!.setItemAsync(key, legacyValue);
       await AsyncStorage.removeItem(key);
     }
 
@@ -29,8 +44,12 @@ class StorageService {
   }
 
   private async secureRemoveItem(key: string): Promise<void> {
-    await SecureStore.deleteItemAsync(key);
-    await AsyncStorage.removeItem(key);
+    if (this.isWeb) {
+      localStorage.removeItem(key);
+    } else {
+      await SecureStore!.deleteItemAsync(key);
+      await AsyncStorage.removeItem(key);
+    }
   }
 
   async setAuthToken(token: string): Promise<void> {

@@ -286,6 +286,25 @@ class ZoneVerificationsService {
       throw new Error(error.message || 'Failed to delete verification');
     }
   }
+
+  async bulkApproveByInstitution(instituteName: string): Promise<{
+    approved: number;
+    message: string;
+  }> {
+    try {
+      const response = await apiClient.post<{ approved: number; message: string }>(
+        'admin/zone-verifications/bulk-approve',
+        { instituteName }
+      );
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.message || 'Bulk approve failed');
+    } catch (error: any) {
+      if (__DEV__) console.error('[ZoneVerifications] Bulk approve error:', error.message);
+      throw new Error(error.message || 'Failed to bulk approve');
+    }
+  }
 }
 
 export const zoneVerificationsService = new ZoneVerificationsService();
