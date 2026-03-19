@@ -12,6 +12,10 @@ export const API_CONFIG = {
                 process.env.EXPO_PUBLIC_API_BASE_URL ||
                 process.env.EXPO_PUBLIC_API_URL ||
                 (isDevelopment ? 'http://localhost:5001/api' : 'https://rez-backend-vvhl.onrender.com/api');
+    // In production, enforce HTTPS to prevent credential leakage over plaintext
+    if (isProduction && !url.startsWith('https://')) {
+      throw new Error(`[ADMIN API] FATAL: Production API URL must use HTTPS. Got: ${url}`);
+    }
     return url;
   })(),
 
@@ -30,6 +34,10 @@ export const API_CONFIG = {
     const url = Constants.expoConfig?.extra?.socketUrl ||
                 process.env.EXPO_PUBLIC_SOCKET_URL ||
                 (isDevelopment ? 'http://localhost:5001' : 'https://rez-backend-vvhl.onrender.com');
+    // In production, enforce HTTPS to prevent credential leakage
+    if (isProduction && !url.startsWith('https://')) {
+      throw new Error(`[ADMIN API] FATAL: Production Socket URL must use HTTPS. Got: ${url}`);
+    }
     return url;
   })(),
   SOCKET_TIMEOUT: parseInt(
