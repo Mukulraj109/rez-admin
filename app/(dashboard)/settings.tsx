@@ -121,65 +121,51 @@ export default function SettingsScreen() {
         </View>
       </View>
 
-      {/* Homepage Management */}
+      {/* Financial & Compliance — Priority section, always on top */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.icon }]}>HOMEPAGE MANAGEMENT</Text>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>FINANCIAL & COMPLIANCE</Text>
         <View style={styles.settingsGroup}>
           <SettingItem
-            icon="flash"
-            iconColor={colors.warning}
-            title="Deals Section"
-            subtitle="Manage deals that save money"
-            onPress={() => router.push('/(dashboard)/homepage-deals')}
-          />
-          <SettingItem
-            icon="sparkles"
-            iconColor={colors.purple}
-            title="Shop by Experience"
-            subtitle="Manage homepage experiences"
-            onPress={() => router.push('/(dashboard)/experiences')}
-          />
-          <SettingItem
-            icon="compass"
-            iconColor="#06B6D4"
-            title="Explore Section"
-            subtitle="Manage explore page content"
-            onPress={() => router.push('/(dashboard)/explore')}
-          />
-          <SettingItem
-            icon="apps"
-            iconColor={colors.purple}
-            title="Categories"
-            subtitle="Manage main categories & page configs"
-            onPress={() => router.push('/(dashboard)/categories')}
-          />
-          <SettingItem
-            icon="bag-handle"
-            iconColor="#0284C7"
-            title="Mall Management"
-            subtitle="Manage mall brands, categories & offers"
-            onPress={() => router.push('/(dashboard)/mall')}
-          />
-          <SettingItem
-            icon="rocket"
-            iconColor={colors.warning}
-            title="Extra Rewards"
-            subtitle="Double cashback campaigns & coin drops"
-            onPress={() => router.push('/(dashboard)/extra-rewards')}
-          />
-          <SettingItem
-            icon="cash"
+            icon="wallet"
             iconColor={colors.success}
-            title="Cash Store Management"
-            subtitle="Vouchers, coupons, campaigns & analytics"
-            onPress={() => router.push('/(dashboard)/cash-store')}
+            title="Wallet Management"
+            subtitle="Manage user wallets"
+            onPress={() => router.push('/(dashboard)/wallet')}
           />
           <SettingItem
-            icon="airplane"
-            iconColor={colors.purple}
-            title="Travel Management"
-            subtitle="Bookings, categories, cashback & analytics"
-            onPress={() => router.push('/(dashboard)/travel')}
+            icon="settings"
+            iconColor={colors.indigo}
+            title="Wallet Config"
+            subtitle="Transfer limits, cashback tiers, fraud thresholds"
+            onPress={() => router.push('/(dashboard)/wallet-config')}
+          />
+          <SettingItem
+            icon="people-circle"
+            iconColor="#0891B2"
+            title="User Wallets"
+            subtitle="Search, freeze, adjust user wallets"
+            onPress={() => router.push('/(dashboard)/user-wallets')}
+          />
+          <SettingItem
+            icon="stats-chart"
+            iconColor={colors.success}
+            title="Economy Dashboard"
+            subtitle="Monitor coin economy & fraud"
+            onPress={() => router.push('/(dashboard)/gamification-economy')}
+          />
+          <SettingItem
+            icon="warning"
+            iconColor={colors.error}
+            title="Fraud Reports"
+            subtitle="Review fraud reports & suspicious activity"
+            onPress={() => router.push('/(dashboard)/fraud-reports')}
+          />
+          <SettingItem
+            icon="gift"
+            iconColor={colors.warning}
+            title="Coin Rewards"
+            subtitle="Review and approve rewards"
+            onPress={() => router.push('/(dashboard)/coin-rewards')}
           />
         </View>
       </View>
@@ -264,6 +250,69 @@ export default function SettingsScreen() {
             title="Privé"
             subtitle="Offers, vouchers, reputation & analytics"
             onPress={() => router.push('/(dashboard)/prive')}
+          />
+        </View>
+      </View>
+
+      {/* Homepage Management */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>HOMEPAGE MANAGEMENT</Text>
+        <View style={styles.settingsGroup}>
+          <SettingItem
+            icon="flash"
+            iconColor={colors.warning}
+            title="Deals Section"
+            subtitle="Manage deals that save money"
+            onPress={() => router.push('/(dashboard)/homepage-deals')}
+          />
+          <SettingItem
+            icon="sparkles"
+            iconColor={colors.purple}
+            title="Shop by Experience"
+            subtitle="Manage homepage experiences"
+            onPress={() => router.push('/(dashboard)/experiences')}
+          />
+          <SettingItem
+            icon="compass"
+            iconColor="#06B6D4"
+            title="Explore Section"
+            subtitle="Manage explore page content"
+            onPress={() => router.push('/(dashboard)/explore')}
+          />
+          <SettingItem
+            icon="apps"
+            iconColor={colors.purple}
+            title="Categories"
+            subtitle="Manage main categories & page configs"
+            onPress={() => router.push('/(dashboard)/categories')}
+          />
+          <SettingItem
+            icon="bag-handle"
+            iconColor="#0284C7"
+            title="Mall Management"
+            subtitle="Manage mall brands, categories & offers"
+            onPress={() => router.push('/(dashboard)/mall')}
+          />
+          <SettingItem
+            icon="rocket"
+            iconColor={colors.warning}
+            title="Extra Rewards"
+            subtitle="Double cashback campaigns & coin drops"
+            onPress={() => router.push('/(dashboard)/extra-rewards')}
+          />
+          <SettingItem
+            icon="cash"
+            iconColor={colors.success}
+            title="Cash Store Management"
+            subtitle="Vouchers, coupons, campaigns & analytics"
+            onPress={() => router.push('/(dashboard)/cash-store')}
+          />
+          <SettingItem
+            icon="airplane"
+            iconColor={colors.purple}
+            title="Travel Management"
+            subtitle="Bookings, categories, cashback & analytics"
+            onPress={() => router.push('/(dashboard)/travel')}
           />
         </View>
       </View>

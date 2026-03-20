@@ -124,16 +124,23 @@ export default function CoinRewardsScreen() {
       'Bulk Approve',
       `Approve ${selectedRewards.length} rewards?`,
       async () => {
-        try {
-          await coinRewardsService.bulkApprove(selectedRewards);
-          showAlert('Success', `${selectedRewards.length} rewards approved`);
-          setSelectedRewards([]);
-          setIsSelectionMode(false);
-          await loadData(1);
-          await loadStats();
-        } catch (error: any) {
-          showAlert('Error', error.message);
+        const results = { success: 0, failed: 0 };
+        for (const rewardId of selectedRewards) {
+          try {
+            await coinRewardsService.approveReward(rewardId);
+            results.success++;
+          } catch {
+            results.failed++;
+          }
         }
+        const msg = results.failed > 0
+          ? `${results.success} approved, ${results.failed} failed — check individually.`
+          : `${results.success} rewards approved successfully.`;
+        showAlert(results.failed > 0 ? 'Partial Success' : 'Success', msg);
+        setSelectedRewards([]);
+        setIsSelectionMode(false);
+        await loadData(1);
+        await loadStats();
       },
       'Approve All'
     );
