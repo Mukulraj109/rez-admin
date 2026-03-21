@@ -16,7 +16,7 @@ export default function MallBrandsList({ colors }: { colors: any }) {
   const [processing, setProcessing] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<MallBrand | null>(null);
-  const [form, setForm] = useState({ name: '', slug: '', description: '', logo: '', externalUrl: '', tier: 'standard' as string, mallCategory: '', cashbackPercentage: '0', cashbackMaxAmount: '', cashbackMinPurchase: '', isActive: true, isFeatured: false, isLuxury: false, isNewArrival: false, badges: '', tags: '' });
+  const [form, setForm] = useState({ name: '', slug: '', description: '', logo: '', externalUrl: '', tier: 'standard' as string, mallCategory: '', cashbackPercentage: '0', cashbackMaxAmount: '', cashbackMinPurchase: '', coinsPerHundred: '5', maxCoinsPerOrder: '10000', minOrderAmount: '0', isActive: true, isFeatured: false, isLuxury: false, isNewArrival: false, badges: '', tags: '' });
 
   const loadBrands = async () => {
     try {
@@ -38,10 +38,10 @@ export default function MallBrandsList({ colors }: { colors: any }) {
   const openForm = (brand?: MallBrand) => {
     if (brand) {
       setEditing(brand);
-      setForm({ name: brand.name, slug: brand.slug, description: brand.description || '', logo: brand.logo || '', externalUrl: brand.externalUrl || '', tier: brand.tier, mallCategory: brand.mallCategory?._id || '', cashbackPercentage: brand.cashback?.percentage?.toString() || '0', cashbackMaxAmount: brand.cashback?.maxAmount?.toString() || '', cashbackMinPurchase: brand.cashback?.minPurchase?.toString() || '', isActive: brand.isActive, isFeatured: brand.isFeatured, isLuxury: brand.isLuxury, isNewArrival: brand.isNewArrival || false, badges: brand.badges?.join(', ') || '', tags: brand.tags?.join(', ') || '' });
+      setForm({ name: brand.name, slug: brand.slug, description: brand.description || '', logo: brand.logo || '', externalUrl: brand.externalUrl || '', tier: brand.tier, mallCategory: brand.mallCategory?._id || '', cashbackPercentage: brand.cashback?.percentage?.toString() || '0', cashbackMaxAmount: brand.cashback?.maxAmount?.toString() || '', cashbackMinPurchase: brand.cashback?.minPurchase?.toString() || '', coinsPerHundred: (brand as any).rezCoinReward?.coinsPerHundred?.toString() || '5', maxCoinsPerOrder: (brand as any).rezCoinReward?.maximumCoinsPerOrder?.toString() || '10000', minOrderAmount: (brand as any).rezCoinReward?.minimumOrderAmount?.toString() || '0', isActive: brand.isActive, isFeatured: brand.isFeatured, isLuxury: brand.isLuxury, isNewArrival: brand.isNewArrival || false, badges: brand.badges?.join(', ') || '', tags: brand.tags?.join(', ') || '' });
     } else {
       setEditing(null);
-      setForm({ name: '', slug: '', description: '', logo: '', externalUrl: '', tier: 'standard', mallCategory: '', cashbackPercentage: '0', cashbackMaxAmount: '', cashbackMinPurchase: '', isActive: true, isFeatured: false, isLuxury: false, isNewArrival: false, badges: '', tags: '' });
+      setForm({ name: '', slug: '', description: '', logo: '', externalUrl: '', tier: 'standard', mallCategory: '', cashbackPercentage: '0', cashbackMaxAmount: '', cashbackMinPurchase: '', coinsPerHundred: '5', maxCoinsPerOrder: '10000', minOrderAmount: '0', isActive: true, isFeatured: false, isLuxury: false, isNewArrival: false, badges: '', tags: '' });
     }
     setShowModal(true);
   };
@@ -52,7 +52,8 @@ export default function MallBrandsList({ colors }: { colors: any }) {
       const cashback: any = { percentage: parseFloat(form.cashbackPercentage) || 0 };
       if (form.cashbackMaxAmount) cashback.maxAmount = parseFloat(form.cashbackMaxAmount);
       if (form.cashbackMinPurchase) cashback.minPurchase = parseFloat(form.cashbackMinPurchase);
-      const data: any = { name: form.name.trim(), slug: form.slug.trim() || form.name.toLowerCase().replace(/\s+/g, '-'), description: form.description.trim(), logo: form.logo.trim(), externalUrl: form.externalUrl.trim(), tier: form.tier, mallCategory: form.mallCategory || undefined, cashback, isActive: form.isActive, isFeatured: form.isFeatured, isLuxury: form.isLuxury, isNewArrival: form.isNewArrival, badges: form.badges.split(',').map(b => b.trim()).filter(Boolean), tags: form.tags.split(',').map(t => t.trim()).filter(Boolean) };
+      const rezCoinReward = { coinsPerHundred: parseFloat(form.coinsPerHundred) || 5, maximumCoinsPerOrder: parseFloat(form.maxCoinsPerOrder) || 10000, minimumOrderAmount: parseFloat(form.minOrderAmount) || 0, isActive: true };
+      const data: any = { name: form.name.trim(), slug: form.slug.trim() || form.name.toLowerCase().replace(/\s+/g, '-'), description: form.description.trim(), logo: form.logo.trim(), externalUrl: form.externalUrl.trim(), tier: form.tier, mallCategory: form.mallCategory || undefined, cashback, rezCoinReward, isActive: form.isActive, isFeatured: form.isFeatured, isLuxury: form.isLuxury, isNewArrival: form.isNewArrival, badges: form.badges.split(',').map(b => b.trim()).filter(Boolean), tags: form.tags.split(',').map(t => t.trim()).filter(Boolean) };
       if (editing) { await mallService.updateBrand(editing._id, data); showAlert('Success', 'Brand updated'); } else { await mallService.createBrand(data); showAlert('Success', 'Brand created'); }
       setShowModal(false); loadBrands();
     } catch (e: any) { showAlert('Error', e.message || 'Failed to save brand'); }
@@ -99,6 +100,9 @@ export default function MallBrandsList({ colors }: { colors: any }) {
             <Field label="Cashback %" value={form.cashbackPercentage} onChange={(v: string) => setForm(p => ({ ...p, cashbackPercentage: v }))} />
             <Field label="Max Cashback" value={form.cashbackMaxAmount} onChange={(v: string) => setForm(p => ({ ...p, cashbackMaxAmount: v }))} />
             <Field label="Min Purchase" value={form.cashbackMinPurchase} onChange={(v: string) => setForm(p => ({ ...p, cashbackMinPurchase: v }))} />
+            <Field label="Coins per ₹100" value={form.coinsPerHundred} onChange={(v: string) => setForm(p => ({ ...p, coinsPerHundred: v }))} placeholder="5" />
+            <Field label="Max Coins per Order" value={form.maxCoinsPerOrder} onChange={(v: string) => setForm(p => ({ ...p, maxCoinsPerOrder: v }))} placeholder="10000" />
+            <Field label="Min Order Amount (for coins)" value={form.minOrderAmount} onChange={(v: string) => setForm(p => ({ ...p, minOrderAmount: v }))} placeholder="0" />
             <Field label="Tags (comma separated)" value={form.tags} onChange={(v: string) => setForm(p => ({ ...p, tags: v }))} />
             <SwitchField label="Active" value={form.isActive} onChange={(v: boolean) => setForm(p => ({ ...p, isActive: v }))} />
             <SwitchField label="Featured" value={form.isFeatured} onChange={(v: boolean) => setForm(p => ({ ...p, isFeatured: v }))} />

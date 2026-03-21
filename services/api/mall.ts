@@ -170,6 +170,19 @@ export interface MallStats {
   totalMallStores: number;
 }
 
+export interface MallListingRequest {
+  _id: string;
+  storeId: { _id: string; name: string; logo?: string; tags?: string[]; category?: { _id: string; name: string } };
+  merchantId: { _id: string; name?: string; email?: string; phoneNumber?: string };
+  status: 'pending' | 'approved' | 'rejected';
+  reason: string;
+  adminNotes?: string;
+  reviewedBy?: { fullName?: string; email?: string };
+  reviewedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 class MallService {
   // ==================== STATS ====================
 
@@ -556,6 +569,58 @@ class MallService {
       }
     } catch (error: any) {
       if (__DEV__) console.error('[MallService] deleteCollection error:', error);
+      throw error;
+    }
+  }
+
+  // ==================== LISTING REQUESTS ====================
+
+  async getListingRequests(params?: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ requests: MallListingRequest[]; pagination: any }> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.status) queryParams.append('status', params.status);
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+      const url = `/mall/admin/listing-requests?${queryParams.toString()}`;
+      const response = await apiClient.get<MallListingRequest[]>(url);
+      if (response.success) {
+        return {
+          requests: response.data || [],
+          pagination: response.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 },
+        };
+      }
+      throw new Error(response.message || 'Failed to fetch listing requests');
+    } catch (error: any) {
+      if (__DEV__) console.error('[MallService] getListingRequests error:', error);
+      throw error;
+    }
+  }
+
+  async approveListingRequest(requestId: string, adminNotes?: string): Promise<void> {
+    try {
+      const response = await apiClient.put(`/mall/admin/listing-requests/${requestId}/approve`, { adminNotes });
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to approve request');
+      }
+    } catch (error: any) {
+      if (__DEV__) console.error('[MallService] approveListingRequest error:', error);
+      throw error;
+    }
+  }
+
+  async rejectListingRequest(requestId: string, adminNotes?: string): Promise<void> {
+    try {
+      const response = await apiClient.put(`/mall/admin/listing-requests/${requestId}/reject`, { adminNotes });
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to reject request');
+      }
+    } catch (error: any) {
+      if (__DEV__) console.error('[MallService] rejectListingRequest error:', error);
       throw error;
     }
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,243 +6,111 @@ import {
   ScrollView,
   TouchableOpacity,
   useColorScheme,
+  TextInput,
+  Switch,
+  RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
+import { showAlert } from '../../utils/alert';
+import { engagementConfigService, EngagementConfigItem } from '../../services/api/engagementConfig';
 
-interface EngagementAction {
-  key: string;
-  label: string;
-  description: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  iconColor: string;
-  baseCoins: number;
-  bonusCoins: number;
-  dailyLimit: number;
-  requiresModeration: boolean;
-  qualityChecks?: string;
-  coinSource: string;
-}
-
-/**
- * Hardcoded config matching engagementRewardService.ts ENGAGEMENT_CONFIGS.
- * Phase 6 will replace this with a backend endpoint (EngagementConfig model).
- */
-const ENGAGEMENT_ACTIONS: EngagementAction[] = [
-  {
-    key: 'share_store',
-    label: 'Share Store',
-    description: 'Users share a store to earn coins. Instant reward.',
-    icon: 'share-social',
-    iconColor: Colors.light.info,
-    baseCoins: 10,
-    bonusCoins: 0,
-    dailyLimit: 5,
-    requiresModeration: false,
-    coinSource: 'social_share_reward',
-  },
-  {
-    key: 'share_offer',
-    label: 'Share Offer',
-    description: 'Users share an offer to earn coins. Instant reward.',
-    icon: 'pricetag',
-    iconColor: Colors.light.success,
-    baseCoins: 5,
-    bonusCoins: 0,
-    dailyLimit: 10,
-    requiresModeration: false,
-    coinSource: 'social_share_reward',
-  },
-  {
-    key: 'poll_vote',
-    label: 'Vote in Poll',
-    description: 'Users vote in a poll to earn coins. Instant reward.',
-    icon: 'bar-chart',
-    iconColor: Colors.light.indigo,
-    baseCoins: 10,
-    bonusCoins: 0,
-    dailyLimit: 3,
-    requiresModeration: false,
-    coinSource: 'poll_vote',
-  },
-  {
-    key: 'offer_comment',
-    label: 'Comment on Offer',
-    description: 'Users comment on offers. Requires moderation before coins are credited.',
-    icon: 'chatbubble-ellipses',
-    iconColor: Colors.light.warningDark,
-    baseCoins: 15,
-    bonusCoins: 5,
-    dailyLimit: 5,
-    requiresModeration: true,
-    qualityChecks: 'Min 20 chars, +5 bonus for 100+ chars',
-    coinSource: 'offer_comment',
-  },
-  {
-    key: 'photo_upload',
-    label: 'Upload Photos',
-    description: 'Users upload photos of stores/products. Requires moderation.',
-    icon: 'camera',
-    iconColor: Colors.light.pink,
-    baseCoins: 25,
-    bonusCoins: 75,
-    dailyLimit: 3,
-    requiresModeration: true,
-    qualityChecks: 'Min 1 photo, quality bonus on approval',
-    coinSource: 'photo_upload',
-  },
-  {
-    key: 'ugc_reel',
-    label: 'Create Reel',
-    description: 'Users create UGC reels. Requires moderation before publish + coins.',
-    icon: 'videocam',
-    iconColor: Colors.light.error,
-    baseCoins: 50,
-    bonusCoins: 150,
-    dailyLimit: 2,
-    requiresModeration: true,
-    qualityChecks: 'Min 10s duration, quality bonus on approval',
-    coinSource: 'ugc_reel',
-  },
-  {
-    key: 'event_rating',
-    label: 'Rate Event',
-    description: 'Users rate events they attended. +5 bonus for verified bookings.',
-    icon: 'star',
-    iconColor: Colors.light.warning,
-    baseCoins: 20,
-    bonusCoins: 5,
-    dailyLimit: 3,
-    requiresModeration: false,
-    qualityChecks: '+5 bonus for verified booking',
-    coinSource: 'event_rating',
-  },
-];
+const ACTION_DISPLAY: Record<string, { label: string; icon: string; iconColor: string }> = {
+  share_store:       { label: 'Share Store',       icon: 'share-social',         iconColor: Colors.light.info },
+  share_offer:       { label: 'Share Offer',       icon: 'pricetag',             iconColor: Colors.light.success },
+  poll_vote:         { label: 'Vote in Poll',      icon: 'bar-chart',            iconColor: Colors.light.indigo },
+  offer_comment:     { label: 'Comment on Offer',  icon: 'chatbubble-ellipses',  iconColor: Colors.light.warningDark },
+  photo_upload:      { label: 'Upload Photos',     icon: 'camera',               iconColor: Colors.light.pink },
+  ugc_reel:          { label: 'Create Reel',       icon: 'videocam',             iconColor: Colors.light.error },
+  event_rating:      { label: 'Rate Event',        icon: 'star',                 iconColor: Colors.light.warning },
+  social_media_post: { label: 'Social Media Post', icon: 'logo-instagram',       iconColor: '#E1306C' },
+  check_in:          { label: 'Daily Check-In',    icon: 'checkmark-circle',     iconColor: Colors.light.success },
+  bill_upload:       { label: 'Bill Upload',       icon: 'receipt',              iconColor: Colors.light.info },
+  referral:          { label: 'Refer a Friend',    icon: 'people',               iconColor: Colors.light.indigo },
+};
 
 export default function EngagementConfigScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
+  const [configs, setConfigs] = useState<EngagementConfigItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [saving, setSaving] = useState<string | null>(null);
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const [edits, setEdits] = useState<Record<string, Partial<EngagementConfigItem>>>({});
 
-  // Summary stats
-  const totalActions = ENGAGEMENT_ACTIONS.length;
-  const moderatedActions = ENGAGEMENT_ACTIONS.filter(a => a.requiresModeration).length;
+  const load = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) setRefreshing(true);
+      else setLoading(true);
+      const data = await engagementConfigService.getAll();
+      setConfigs(data);
+      setEdits({});
+    } catch {
+      showAlert('Error', 'Failed to load engagement config');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const updateEdit = (action: string, field: string, value: any) => {
+    setEdits(prev => ({ ...prev, [action]: { ...prev[action], [field]: value } }));
+  };
+
+  const getVal = (config: EngagementConfigItem, field: keyof EngagementConfigItem): any =>
+    edits[config.action]?.[field] !== undefined ? edits[config.action]![field] : config[field];
+
+  const saveAction = async (config: EngagementConfigItem) => {
+    const patch = edits[config.action];
+    if (!patch || Object.keys(patch).length === 0) return;
+    setSaving(config.action);
+    try {
+      await engagementConfigService.update(config.action, patch);
+      showAlert('Saved', `${ACTION_DISPLAY[config.action]?.label ?? config.action} config updated.`);
+      setEdits(prev => { const n = { ...prev }; delete n[config.action]; return n; });
+      load();
+    } catch {
+      showAlert('Error', 'Failed to save config');
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  // Summary stats from live data
+  const totalActions = configs.length;
+  const moderatedActions = configs.filter(c => c.requiresModeration).length;
   const instantActions = totalActions - moderatedActions;
-  const maxDailyCoins = ENGAGEMENT_ACTIONS.reduce(
-    (sum, a) => sum + (a.baseCoins + a.bonusCoins) * a.dailyLimit,
+  const maxDailyCoins = configs.reduce(
+    (sum, c) => sum + (c.baseCoins + c.bonusCoins) * c.dailyLimit,
     0
   );
 
-  const renderActionCard = (action: EngagementAction) => {
-    const isExpanded = expandedKey === action.key;
-
+  if (loading) {
     return (
-      <TouchableOpacity
-        key={action.key}
-        style={[styles.actionCard, { backgroundColor: colors.card }]}
-        onPress={() => setExpandedKey(isExpanded ? null : action.key)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.actionHeader}>
-          <View style={[styles.actionIcon, { backgroundColor: `${action.iconColor}20` }]}>
-            <Ionicons name={action.icon} size={20} color={action.iconColor} />
-          </View>
-          <View style={styles.actionInfo}>
-            <Text style={[styles.actionLabel, { color: colors.text }]}>{action.label}</Text>
-            <Text style={[styles.actionKey, { color: colors.icon }]}>{action.key}</Text>
-          </View>
-          <View style={styles.coinDisplay}>
-            <Ionicons name="sparkles" size={14} color={colors.warning} />
-            <Text style={styles.coinValue}>
-              {action.baseCoins}{action.bonusCoins > 0 ? `+${action.bonusCoins}` : ''}
-            </Text>
-          </View>
-          <Ionicons
-            name={isExpanded ? 'chevron-up' : 'chevron-down'}
-            size={18}
-            color={colors.icon}
-          />
-        </View>
-
-        {/* Quick badges */}
-        <View style={styles.badgeRow}>
-          <View style={[styles.badge, {
-            backgroundColor: action.requiresModeration ? colors.warningLight : colors.successLight,
-          }]}>
-            <Text style={{
-              fontSize: 10,
-              fontWeight: '600',
-              color: action.requiresModeration ? colors.warningDark : colors.successDark,
-            }}>
-              {action.requiresModeration ? 'MODERATED' : 'INSTANT'}
-            </Text>
-          </View>
-          <View style={[styles.badge, { backgroundColor: '#EEF2FF' }]}>
-            <Text style={{ fontSize: 10, fontWeight: '600', color: colors.indigo }}>
-              {action.dailyLimit}/day
-            </Text>
-          </View>
-        </View>
-
-        {/* Expanded details */}
-        {isExpanded && (
-          <View style={styles.expandedContent}>
-            <Text style={[styles.actionDescription, { color: colors.icon }]}>
-              {action.description}
-            </Text>
-
-            <View style={styles.detailGrid}>
-              <View style={[styles.detailItem, { backgroundColor: `${colors.background}` }]}>
-                <Text style={[styles.detailLabel, { color: colors.icon }]}>Base Coins</Text>
-                <Text style={[styles.detailValue, { color: colors.text }]}>{action.baseCoins}</Text>
-              </View>
-              <View style={[styles.detailItem, { backgroundColor: `${colors.background}` }]}>
-                <Text style={[styles.detailLabel, { color: colors.icon }]}>Bonus Coins</Text>
-                <Text style={[styles.detailValue, { color: action.bonusCoins > 0 ? colors.success : colors.icon }]}>
-                  {action.bonusCoins > 0 ? `+${action.bonusCoins}` : 'None'}
-                </Text>
-              </View>
-              <View style={[styles.detailItem, { backgroundColor: `${colors.background}` }]}>
-                <Text style={[styles.detailLabel, { color: colors.icon }]}>Daily Limit</Text>
-                <Text style={[styles.detailValue, { color: colors.text }]}>{action.dailyLimit}</Text>
-              </View>
-              <View style={[styles.detailItem, { backgroundColor: `${colors.background}` }]}>
-                <Text style={[styles.detailLabel, { color: colors.icon }]}>Max/Day</Text>
-                <Text style={[styles.detailValue, { color: colors.warningDark }]}>
-                  {(action.baseCoins + action.bonusCoins) * action.dailyLimit}
-                </Text>
-              </View>
-            </View>
-
-            {action.qualityChecks && (
-              <View style={[styles.qualityRow, { backgroundColor: '#FEF9C3' }]}>
-                <Ionicons name="shield-checkmark" size={14} color="#CA8A04" />
-                <Text style={{ color: '#CA8A04', fontSize: 12, flex: 1 }}>
-                  {action.qualityChecks}
-                </Text>
-              </View>
-            )}
-
-            <View style={styles.sourceRow}>
-              <Text style={[styles.sourceLabel, { color: colors.icon }]}>CoinTransaction source:</Text>
-              <Text style={[styles.sourceValue, { color: colors.text }]}>{action.coinSource}</Text>
-            </View>
-          </View>
-        )}
-      </TouchableOpacity>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.tint} />
+        <Text style={{ color: colors.icon, marginTop: 12 }}>Loading engagement config...</Text>
+      </View>
     );
-  };
+  }
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}
+    >
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.card }]}>
         <Ionicons name="settings" size={24} color={colors.tint} />
         <View style={{ flex: 1 }}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>Engagement Config</Text>
           <Text style={[styles.headerSubtitle, { color: colors.icon }]}>
-            Share & Engage reward settings
+            Control coin rewards for each engagement action
           </Text>
         </View>
       </View>
@@ -267,21 +135,138 @@ export default function EngagementConfigScreen() {
         </View>
       </View>
 
-      {/* Info banner */}
-      <View style={[styles.infoBanner, { backgroundColor: colors.infoLight }]}>
-        <Ionicons name="information-circle" size={18} color={colors.info} />
-        <Text style={styles.infoText}>
-          These values are currently hardcoded in the backend. Admin-editable configuration
-          will be added in a future update.
-        </Text>
-      </View>
-
-      {/* Action cards */}
+      {/* Action cards — live from API */}
       <View style={styles.actionsList}>
-        {ENGAGEMENT_ACTIONS.map(renderActionCard)}
+        {configs.map(config => {
+          const meta = ACTION_DISPLAY[config.action] ?? { label: config.action, icon: 'flash', iconColor: colors.icon };
+          const isExpanded = expandedKey === config.action;
+          const isDirty = !!(edits[config.action] && Object.keys(edits[config.action]!).length > 0);
+          const isSaving = saving === config.action;
+
+          return (
+            <View
+              key={config.action}
+              style={[styles.actionCard, { backgroundColor: colors.card, borderWidth: isDirty ? 2 : 0, borderColor: colors.tint }]}
+            >
+              <TouchableOpacity
+                style={styles.actionHeader}
+                onPress={() => setExpandedKey(isExpanded ? null : config.action)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.actionIcon, { backgroundColor: `${meta.iconColor}20` }]}>
+                  <Ionicons name={meta.icon as any} size={20} color={meta.iconColor} />
+                </View>
+                <View style={styles.actionInfo}>
+                  <Text style={[styles.actionLabel, { color: colors.text }]}>{meta.label}</Text>
+                  <Text style={[styles.actionKey, { color: colors.icon }]}>{config.action}</Text>
+                </View>
+                <View style={styles.coinDisplay}>
+                  <Ionicons name="sparkles" size={14} color={colors.warning} />
+                  <Text style={styles.coinValue}>
+                    {getVal(config, 'baseCoins')}{(getVal(config, 'bonusCoins') || 0) > 0 ? `+${getVal(config, 'bonusCoins')}` : ''}
+                  </Text>
+                </View>
+                <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={18} color={colors.icon} />
+              </TouchableOpacity>
+
+              {/* Badges */}
+              <View style={styles.badgeRow}>
+                <View style={[styles.badge, {
+                  backgroundColor: config.requiresModeration ? colors.warningLight : colors.successLight,
+                }]}>
+                  <Text style={{
+                    fontSize: 10, fontWeight: '600',
+                    color: config.requiresModeration ? colors.warningDark : colors.successDark,
+                  }}>
+                    {config.requiresModeration ? 'MODERATED' : 'INSTANT'}
+                  </Text>
+                </View>
+                <View style={[styles.badge, { backgroundColor: '#EEF2FF' }]}>
+                  <Text style={{ fontSize: 10, fontWeight: '600', color: colors.indigo }}>
+                    {getVal(config, 'dailyLimit')}/day
+                  </Text>
+                </View>
+                {!config.isEnabled && (
+                  <View style={[styles.badge, { backgroundColor: colors.errorLight }]}>
+                    <Text style={{ fontSize: 10, fontWeight: '600', color: colors.error }}>DISABLED</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Active multiplier badge */}
+              {config.multiplier > 1 && (
+                <View style={{ backgroundColor: '#FEF9C3', borderRadius: 8, padding: 8, marginTop: 8 }}>
+                  <Text style={{ fontSize: 12, color: '#92400E', fontWeight: '700' }}>
+                    Active Multiplier: {config.multiplier}x
+                    {config.multiplierEndsAt ? ` (ends ${new Date(config.multiplierEndsAt).toLocaleDateString()})` : ''}
+                  </Text>
+                </View>
+              )}
+
+              {/* Expanded: editable fields */}
+              {isExpanded && (
+                <View style={styles.expandedContent}>
+                  {/* Enable/Disable toggle */}
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text }}>Enabled</Text>
+                    <Switch
+                      value={!!getVal(config, 'isEnabled')}
+                      onValueChange={v => updateEdit(config.action, 'isEnabled', v)}
+                      trackColor={{ true: colors.tint }}
+                    />
+                  </View>
+
+                  {/* Coin inputs */}
+                  <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
+                    {[
+                      { label: 'Base Coins', field: 'baseCoins' as const },
+                      { label: 'Bonus Coins', field: 'bonusCoins' as const },
+                      { label: 'Daily Limit', field: 'dailyLimit' as const },
+                    ].map(({ label, field }) => (
+                      <View key={field} style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 11, color: colors.icon, marginBottom: 4 }}>{label}</Text>
+                        <TextInput
+                          style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 8, color: colors.text, backgroundColor: colors.background, textAlign: 'center', fontSize: 16, fontWeight: '700' }}
+                          value={String(getVal(config, field))}
+                          onChangeText={v => updateEdit(config.action, field, parseInt(v, 10) || 0)}
+                          keyboardType="numeric"
+                        />
+                      </View>
+                    ))}
+                  </View>
+
+                  {/* Moderation toggle */}
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <Text style={{ fontSize: 13, color: colors.text }}>Requires Moderation</Text>
+                    <Switch
+                      value={!!getVal(config, 'requiresModeration')}
+                      onValueChange={v => updateEdit(config.action, 'requiresModeration', v)}
+                      trackColor={{ true: colors.warning }}
+                    />
+                  </View>
+
+                  {/* Save button */}
+                  {isDirty && (
+                    <TouchableOpacity
+                      onPress={() => saveAction(config)}
+                      disabled={isSaving}
+                      style={{ backgroundColor: colors.tint, borderRadius: 8, padding: 12, alignItems: 'center', marginTop: 4 }}
+                    >
+                      {isSaving ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                      ) : (
+                        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Save Changes</Text>
+                      )}
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+            </View>
+          );
+        })}
       </View>
 
-      <View style={{ height: 40 }} />
+      <View style={{ height: 120 }} />
     </ScrollView>
   );
 }
@@ -305,16 +290,7 @@ const styles = StyleSheet.create({
   },
   statValue: { fontSize: 20, fontWeight: '700' },
   statLabel: { fontSize: 10, marginTop: 2 },
-  infoBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 16,
-    padding: 12,
-    borderRadius: 10,
-    gap: 8,
-  },
-  infoText: { flex: 1, fontSize: 12, color: Colors.light.info, lineHeight: 16 },
-  actionsList: { padding: 16, paddingTop: 12 },
+  actionsList: { padding: 16, paddingTop: 4 },
   actionCard: {
     padding: 16,
     borderRadius: 12,
@@ -344,25 +320,4 @@ const styles = StyleSheet.create({
   badgeRow: { flexDirection: 'row', marginTop: 8, gap: 6 },
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   expandedContent: { marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: Colors.light.border },
-  actionDescription: { fontSize: 13, lineHeight: 18, marginBottom: 12 },
-  detailGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  detailItem: { width: '48%', padding: 10, borderRadius: 8, alignItems: 'center' },
-  detailLabel: { fontSize: 10, fontWeight: '600' },
-  detailValue: { fontSize: 16, fontWeight: '700', marginTop: 2 },
-  qualityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 10,
-    gap: 6,
-  },
-  sourceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-    gap: 4,
-  },
-  sourceLabel: { fontSize: 11 },
-  sourceValue: { fontSize: 11, fontWeight: '600', fontFamily: 'monospace' },
 });

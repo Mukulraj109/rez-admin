@@ -52,9 +52,8 @@ const CAMPAIGN_TYPES: { value: CampaignType; label: string }[] = [
 
 const REGIONS: { value: Campaign['region']; label: string }[] = [
   { value: 'all', label: 'All Regions' },
-  { value: 'bangalore', label: 'Bangalore' },
+  { value: 'bangalore', label: 'India' },
   { value: 'dubai', label: 'Dubai' },
-  { value: 'china', label: 'China' },
 ];
 
 const DEFAULT_GRADIENT_COLORS = ['#FF6B6B', '#FF8E53'];

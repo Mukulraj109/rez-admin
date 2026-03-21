@@ -269,6 +269,18 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
+        name="review-moderation"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="pending-approvals"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="social-impact"
         options={{
           href: null,
@@ -282,6 +294,12 @@ export default function DashboardLayout() {
       />
       <Tabs.Screen
         name="bonus-zone"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="whats-new"
         options={{
           href: null,
         }}

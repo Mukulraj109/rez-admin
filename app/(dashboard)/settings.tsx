@@ -7,10 +7,14 @@ import {
   TouchableOpacity,
   useColorScheme,
   Switch,
+  Modal,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { authService, AdminUser } from '../../services/api/auth';
+import { apiClient } from '../../services/api/apiClient';
 import { Colors } from '../../constants/Colors';
 import { showAlert, showConfirm } from '../../utils/alert';
 
@@ -57,6 +61,41 @@ export default function SettingsScreen() {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(colorScheme === 'dark');
+
+  // Password change state
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      showAlert('Error', 'All fields are required');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showAlert('Error', 'New passwords do not match');
+      return;
+    }
+    if (newPassword.length < 8) {
+      showAlert('Error', 'New password must be at least 8 characters');
+      return;
+    }
+    setIsChangingPassword(true);
+    try {
+      await apiClient.post('admin/auth/change-password', { currentPassword, newPassword });
+      showAlert('Success', 'Password changed successfully');
+      setShowPasswordModal(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      showAlert('Error', err?.message || 'Failed to change password');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   useEffect(() => {
     loadUser();
@@ -243,6 +282,13 @@ export default function SettingsScreen() {
             title="Bonus Zone"
             subtitle="Cashback boosts, bank offers & bonuses"
             onPress={() => router.push('/(dashboard)/bonus-zone')}
+          />
+          <SettingItem
+            icon="sparkles-outline"
+            iconColor="#8B5CF6"
+            title="What's New Stories"
+            subtitle="Manage homepage story circles"
+            onPress={() => router.push('/(dashboard)/whats-new')}
           />
           <SettingItem
             icon="diamond-outline"
@@ -602,6 +648,13 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/ugc-moderation')}
           />
           <SettingItem
+            icon="star-half"
+            iconColor={colors.warning}
+            title="Review Moderation"
+            subtitle="Approve or reject written reviews"
+            onPress={() => router.push('/(dashboard)/review-moderation')}
+          />
+          <SettingItem
             icon="settings"
             iconColor={colors.info}
             title="Engagement Config"
@@ -711,6 +764,13 @@ export default function SettingsScreen() {
             onPress={() => router.push('/(dashboard)/wallet-adjustment')}
           />
           <SettingItem
+            icon="checkmark-done-circle"
+            iconColor={colors.warning}
+            title="Pending Approvals"
+            subtitle="Review & approve admin actions"
+            onPress={() => router.push('/(dashboard)/pending-approvals')}
+          />
+          <SettingItem
             icon="help-buoy"
             iconColor={colors.purple}
             title="FAQ Management"
@@ -757,7 +817,7 @@ export default function SettingsScreen() {
             iconColor={colors.warning}
             title="Change Password"
             subtitle="Update your password"
-            onPress={() => showAlert('Coming Soon', 'Password change will be available soon')}
+            onPress={() => setShowPasswordModal(true)}
           />
           <SettingItem
             icon="log-out"
@@ -768,6 +828,53 @@ export default function SettingsScreen() {
           />
         </View>
       </View>
+
+      {/* Password Change Modal */}
+      <Modal visible={showPasswordModal} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: colors.card, borderRadius: 16, padding: 20 }}>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: colors.text, marginBottom: 16 }}>
+              Change Password
+            </Text>
+            {[
+              { label: 'Current Password', value: currentPassword, setter: setCurrentPassword },
+              { label: 'New Password', value: newPassword, setter: setNewPassword },
+              { label: 'Confirm New Password', value: confirmPassword, setter: setConfirmPassword },
+            ].map(({ label, value, setter }) => (
+              <View key={label} style={{ marginBottom: 12 }}>
+                <Text style={{ fontSize: 12, color: colors.icon, marginBottom: 4 }}>{label}</Text>
+                <TextInput
+                  secureTextEntry
+                  style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 10, color: colors.text, backgroundColor: colors.background }}
+                  value={value}
+                  onChangeText={setter}
+                  placeholder="••••••••"
+                  placeholderTextColor={colors.icon}
+                />
+              </View>
+            ))}
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+              <TouchableOpacity
+                onPress={() => { setShowPasswordModal(false); setCurrentPassword(''); setNewPassword(''); setConfirmPassword(''); }}
+                style={{ flex: 1, borderWidth: 1, borderColor: colors.border, borderRadius: 10, padding: 12, alignItems: 'center' }}
+              >
+                <Text style={{ color: colors.text, fontWeight: '600' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={isChangingPassword}
+                onPress={handleChangePassword}
+                style={{ flex: 1, backgroundColor: colors.tint, borderRadius: 10, padding: 12, alignItems: 'center' }}
+              >
+                {isChangingPassword ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>Change Password</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* App Info */}
       <View style={styles.appInfo}>

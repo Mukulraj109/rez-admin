@@ -16,11 +16,11 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
-import { mallService, MallCategory, MallOffer, MallStats, AllianceStore, ManagedMallStore, MallBanner, MallCollection } from '../../services/api/mall';
+import { mallService, MallCategory, MallOffer, MallStats, AllianceStore, ManagedMallStore, MallBanner, MallCollection, MallListingRequest } from '../../services/api/mall';
 import { showAlert, showConfirm } from '../../utils/alert';
-import { MallDashboard, MallBrandsList } from '../../components/mall';
+import { MallDashboard } from '../../components/mall';
 
-type TabType = 'dashboard' | 'stores' | 'brands' | 'categories' | 'offers' | 'banners' | 'collections' | 'alliance';
+type TabType = 'dashboard' | 'stores' | 'listing-requests' | 'categories' | 'offers' | 'banners' | 'collections' | 'alliance';
 export default function MallScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -63,6 +63,12 @@ export default function MallScreen() {
   const [collections, setCollections] = useState<MallCollection[]>([]);
   const [collectionsLoading, setCollectionsLoading] = useState(false);
   const [processingCollection, setProcessingCollection] = useState<string | null>(null);
+
+  // Listing requests state
+  const [listingRequests, setListingRequests] = useState<MallListingRequest[]>([]);
+  const [listingRequestsLoading, setListingRequestsLoading] = useState(false);
+  const [processingRequest, setProcessingRequest] = useState<string | null>(null);
+  const [listingRequestsFilter, setListingRequestsFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
 
   // Modals
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -154,7 +160,8 @@ export default function MallScreen() {
     else if (activeTab === 'stores') loadManagedStores();
     else if (activeTab === 'banners') loadBanners();
     else if (activeTab === 'collections') loadCollections();
-  }, [activeTab, managedStoresFilter]);
+    else if (activeTab === 'listing-requests') loadListingRequests();
+  }, [activeTab, managedStoresFilter, listingRequestsFilter]);
 
   // ==================== LOADERS ====================
 
@@ -735,6 +742,153 @@ export default function MallScreen() {
     }
   };
 
+  // ==================== LISTING REQUESTS ====================
+
+  const loadListingRequests = async () => {
+    try {
+      setListingRequestsLoading(true);
+      const statusParam = listingRequestsFilter === 'all' ? undefined : listingRequestsFilter;
+      const result = await mallService.getListingRequests({ status: statusParam, limit: 50 });
+      setListingRequests(result.requests);
+    } catch (error: any) {
+      if (__DEV__) console.error('Failed to load listing requests:', error);
+      showAlert('Error', 'Failed to load listing requests');
+    } finally {
+      setListingRequestsLoading(false);
+    }
+  };
+
+  const handleApproveRequest = async (requestId: string) => {
+    const confirmed = await showConfirm('Approve Request', 'This will enable Mall listing for this store. Continue?');
+    if (!confirmed) return;
+    try {
+      setProcessingRequest(requestId);
+      await mallService.approveListingRequest(requestId);
+      showAlert('Success', 'Request approved — store is now in Mall');
+      loadListingRequests();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to approve request');
+    } finally {
+      setProcessingRequest(null);
+    }
+  };
+
+  const handleRejectRequest = async (requestId: string) => {
+    const confirmed = await showConfirm('Reject Request', 'Reject this mall listing request?');
+    if (!confirmed) return;
+    try {
+      setProcessingRequest(requestId);
+      await mallService.rejectListingRequest(requestId, 'Rejected by admin');
+      showAlert('Success', 'Request rejected');
+      loadListingRequests();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to reject request');
+    } finally {
+      setProcessingRequest(null);
+    }
+  };
+
+  const renderListingRequests = () => {
+    if (listingRequestsLoading) {
+      return (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color={colors.tint} />
+          <Text style={[styles.loadingText, { color: colors.icon }]}>Loading requests...</Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={{ flex: 1 }}>
+        {/* Status filter */}
+        <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10, gap: 8 }}>
+          {(['all', 'pending', 'approved', 'rejected'] as const).map((f) => (
+            <TouchableOpacity
+              key={f}
+              style={[
+                { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: colors.border },
+                listingRequestsFilter === f && { backgroundColor: colors.tint, borderColor: colors.tint },
+              ]}
+              onPress={() => setListingRequestsFilter(f)}
+            >
+              <Text style={[
+                { fontSize: 12, fontWeight: '600', color: colors.icon, textTransform: 'capitalize' },
+                listingRequestsFilter === f && { color: colors.card },
+              ]}>
+                {f}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <FlatList
+          data={listingRequests}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120 }}
+          ListEmptyComponent={
+            <View style={styles.centerContainer}>
+              <Ionicons name="document-text-outline" size={48} color={colors.icon} />
+              <Text style={[styles.emptyText, { color: colors.icon }]}>No listing requests</Text>
+            </View>
+          }
+          renderItem={({ item }) => {
+            const storeName = typeof item.storeId === 'object' ? item.storeId?.name : item.storeId;
+            const merchantName = typeof item.merchantId === 'object'
+              ? (item.merchantId?.name || item.merchantId?.email || item.merchantId?.phoneNumber || 'Unknown')
+              : item.merchantId;
+            const isProcessing = processingRequest === item._id;
+            const statusColor = item.status === 'approved' ? '#10B981' : item.status === 'rejected' ? '#EF4444' : '#F59E0B';
+
+            return (
+              <View style={[{ backgroundColor: colors.card, borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border }]}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text, flex: 1 }} numberOfLines={1}>{storeName}</Text>
+                  <View style={{ backgroundColor: statusColor + '20', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10 }}>
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: statusColor, textTransform: 'uppercase' }}>{item.status}</Text>
+                  </View>
+                </View>
+                <Text style={{ fontSize: 12, color: colors.icon, marginBottom: 4 }}>Merchant: {merchantName}</Text>
+                <Text style={{ fontSize: 12, color: colors.icon, marginBottom: 4 }}>Reason: {item.reason}</Text>
+                <Text style={{ fontSize: 11, color: colors.icon }}>
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </Text>
+                {item.adminNotes && (
+                  <Text style={{ fontSize: 11, color: colors.icon, marginTop: 4, fontStyle: 'italic' }}>Admin: {item.adminNotes}</Text>
+                )}
+
+                {item.status === 'pending' && (
+                  <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+                    <TouchableOpacity
+                      style={{ flex: 1, backgroundColor: '#10B981', paddingVertical: 8, borderRadius: 8, alignItems: 'center', opacity: isProcessing ? 0.5 : 1 }}
+                      onPress={() => handleApproveRequest(item._id)}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                      ) : (
+                        <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>Approve</Text>
+                      )}
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{ flex: 1, backgroundColor: '#EF4444', paddingVertical: 8, borderRadius: 8, alignItems: 'center', opacity: isProcessing ? 0.5 : 1 }}
+                      onPress={() => handleRejectRequest(item._id)}
+                      disabled={isProcessing}
+                    >
+                      <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>Reject</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            );
+          }}
+          refreshControl={
+            <RefreshControl refreshing={listingRequestsLoading} onRefresh={loadListingRequests} />
+          }
+        />
+      </View>
+    );
+  };
+
   // ==================== RENDERS ====================
 
   const renderTabs = () => (
@@ -742,7 +896,7 @@ export default function MallScreen() {
       {([
         { key: 'dashboard', label: 'Dashboard', icon: 'grid' as const },
         { key: 'stores', label: 'Stores', icon: 'business' as const },
-        { key: 'brands', label: 'Brands', icon: 'storefront' as const },
+        { key: 'listing-requests', label: 'Requests', icon: 'document-text' as const },
         { key: 'categories', label: 'Categories', icon: 'apps' as const },
         { key: 'offers', label: 'Offers', icon: 'pricetag' as const },
         { key: 'banners', label: 'Banners', icon: 'image' as const },
@@ -1815,7 +1969,7 @@ export default function MallScreen() {
       <View style={{ flex: 1 }}>
         {activeTab === 'dashboard' && <MallDashboard colors={colors} onNavigate={(tab) => setActiveTab(tab as TabType)} />}
         {activeTab === 'stores' && renderManagedStores()}
-        {activeTab === 'brands' && <MallBrandsList colors={colors} />}
+        {activeTab === 'listing-requests' && renderListingRequests()}
         {activeTab === 'categories' && renderCategories()}
         {activeTab === 'offers' && renderOffers()}
         {activeTab === 'banners' && renderBanners()}

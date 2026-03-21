@@ -4,7 +4,7 @@ import { apiClient } from './apiClient';
 // INTERFACES
 // ============================================
 
-export type RegionId = 'bangalore' | 'dubai' | 'china' | 'all';
+export type RegionId = 'bangalore' | 'dubai' | 'all';
 
 export type TabType = 'offers' | 'cashback' | 'exclusive';
 

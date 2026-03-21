@@ -43,7 +43,7 @@ export interface Campaign {
   maxBenefit?: number;
   icon?: string;
   bannerImage?: string;
-  region?: 'bangalore' | 'dubai' | 'china' | 'all';
+  region?: 'bangalore' | 'dubai' | 'all';
   createdAt: string;
   updatedAt: string;
   // Computed fields

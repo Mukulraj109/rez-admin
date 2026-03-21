@@ -338,38 +338,71 @@ export default function WalletConfigScreen() {
         {/* Coin Expiry Rules */}
         {renderSectionCard('coinExpiry', <>
           <Text style={[styles.subHeading, { color: colors.text }]}>Per-Coin-Type Expiry & Usage Rules</Text>
-          <Text style={{ fontSize: 12, color: colors.mutedDark, marginBottom: 8 }}>Set expiry days (0 = never expires) and max usage % per transaction for each coin type.</Text>
-          {(['rez', 'prive', 'promo', 'branded'] as const).map(coinType => {
-            const label = coinType === 'rez' ? `${BRAND.APP_NAME} (${BRAND.COIN_SHORT})` : coinType === 'prive' ? 'Prive' : coinType === 'promo' ? 'Promo' : 'Branded';
+
+          {/* Info box */}
+          <View style={{ backgroundColor: '#FFF8E1', borderRadius: 8, padding: 10, marginBottom: 12 }}>
+            <Text style={{ fontSize: 12, color: '#5D4037', fontWeight: '600' }}>Expiry Rules</Text>
+            <Text style={{ fontSize: 12, color: '#795548', marginTop: 4, lineHeight: 18 }}>
+              expiryDays: 0 = coins never expire{'\n'}
+              maxUsagePct: max % of any bill payable with this coin type{'\n'}
+              Changes take effect for all new coin issuances. Existing coins retain their original expiry.
+            </Text>
+          </View>
+
+          {([
+            { key: 'rez', label: 'REZ Coins (Universal)', hint: '0 = never expires. Main reward coins, usable everywhere.', maxHint: '100 = no cap on bill payment (recommended)' },
+            { key: 'prive', label: 'Prive Coins (Premium tier)', hint: '365 = 1 year default. Only Prive members earn these.', maxHint: '100 = no cap (recommended for Prive members)' },
+            { key: 'promo', label: 'Promo Coins (Campaign-based)', hint: '0 = per-campaign expiry. Leave 0 to let campaign control it.', maxHint: '20 = max 20% of any bill. Prevents abuse of promotional coins.' },
+            { key: 'branded', label: 'Branded Coins (Merchant-specific)', hint: '0 = never expires. Issued by merchants, only usable at their store.', maxHint: '100 = no cap at issuing merchant store' },
+          ] as const).map(({ key: coinType, label, hint, maxHint }) => {
             const cfg = config.coinExpiryConfig?.[coinType] || { expiryDays: 0, maxUsagePct: 100 };
+            const neverExpires = cfg.expiryDays === 0;
             return (
-              <View key={coinType} style={[styles.tierRow, { borderColor: colors.border }]}>
-                <View style={{ width: 80 }}>
-                  <Text style={[styles.tierLabel, { color: colors.text, fontWeight: '700' }]}>{label}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.tierLabel, { color: colors.text }]}>Expiry Days</Text>
+              <View key={coinType} style={{ marginBottom: 16, backgroundColor: '#F9F9F9', borderRadius: 8, padding: 12 }}>
+                <Text style={{ fontWeight: '700', fontSize: 14, marginBottom: 6, color: '#1a3a52' }}>{label}</Text>
+
+                <View style={{ marginBottom: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 12, fontWeight: '600', color: '#555' }}>Expiry Days</Text>
+                    {neverExpires && (
+                      <View style={{ backgroundColor: '#E8F5E9', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}>
+                        <Text style={{ fontSize: 10, color: '#2e7d32', fontWeight: '700' }}>NEVER EXPIRES</Text>
+                      </View>
+                    )}
+                  </View>
                   <TextInput
-                    style={[styles.fieldInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text }]}
+                    style={[styles.fieldInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text, marginTop: 4 }]}
                     value={String(cfg.expiryDays)}
-                    onChangeText={v => updateField(`coinExpiryConfig.${coinType}.expiryDays`, parseFloat(v) || 0)}
+                    onChangeText={v => updateField(`coinExpiryConfig.${coinType}.expiryDays`, parseInt(v, 10) || 0)}
                     keyboardType="numeric"
                     selectTextOnFocus
+                    placeholder="0"
                   />
+                  <Text style={{ fontSize: 11, color: '#888', marginTop: 3 }}>{hint}</Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.tierLabel, { color: colors.text }]}>Max Usage %</Text>
+
+                <View>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#555' }}>Max Usage % per Bill</Text>
                   <TextInput
-                    style={[styles.fieldInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text }]}
+                    style={[styles.fieldInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text, marginTop: 4 }]}
                     value={String(cfg.maxUsagePct)}
-                    onChangeText={v => updateField(`coinExpiryConfig.${coinType}.maxUsagePct`, parseFloat(v) || 0)}
+                    onChangeText={v => updateField(`coinExpiryConfig.${coinType}.maxUsagePct`, parseInt(v, 10) || 0)}
                     keyboardType="numeric"
                     selectTextOnFocus
+                    placeholder="100"
                   />
+                  <Text style={{ fontSize: 11, color: '#888', marginTop: 3 }}>{maxHint}</Text>
                 </View>
               </View>
             );
           })}
+
+          {/* Save warning */}
+          <View style={{ backgroundColor: '#FFF3E0', borderRadius: 8, padding: 10, marginTop: 8 }}>
+            <Text style={{ fontSize: 12, color: '#E65100' }}>
+              Changing expiry affects all coins issued from this point onward. Coins already in user wallets keep their original expiry. maxUsagePct changes are immediate.
+            </Text>
+          </View>
         </>)}
 
         {/* Commission & Conversion */}

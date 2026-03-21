@@ -6,13 +6,12 @@ import { Colors } from '@/constants/Colors';
 // ============================================
 
 // Region type
-export type RegionId = 'bangalore' | 'dubai' | 'china';
+export type RegionId = 'bangalore' | 'dubai';
 
 // Region option for admin UI
 export const REGIONS: { value: RegionId; label: string; flag: string }[] = [
-  { value: 'bangalore', label: 'Bangalore, India', flag: '🇮🇳' },
+  { value: 'bangalore', label: 'India', flag: '🇮🇳' },
   { value: 'dubai', label: 'Dubai, UAE', flag: '🇦🇪' },
-  { value: 'china', label: 'China', flag: '🇨🇳' },
 ];
 
 // Store Experience interface

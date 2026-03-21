@@ -31,6 +31,7 @@ import { useRouter } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { showAlert, showConfirm } from '../../utils/alert';
 import { cashStoreAdminService } from '../../services/api/cashStore';
+import { apiClient } from '../../services/api/apiClient';
 import type {
   VoucherBrand,
   AdminCoupon,
@@ -39,8 +40,245 @@ import type {
   CoinDrop,
 } from '../../services/api/cashStore';
 
-type TabType = 'vouchers' | 'coupons' | 'campaigns' | 'coindrops' | 'affiliate';
+type TabType = 'vouchers' | 'coupons' | 'campaigns' | 'coindrops' | 'affiliate' | 'mall-brands' | 'purchases';
 type FilterType = 'all' | 'active' | 'inactive' | 'featured';
+
+function PurchasesTabContent() {
+  const [purchases, setPurchases] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [filter, setFilter] = React.useState<'all' | 'pending' | 'confirmed' | 'credited' | 'rejected' | 'flagged'>('all');
+  const [processing, setProcessing] = React.useState<string | null>(null);
+  const [page, setPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+
+  const load = React.useCallback(async (pageNum = 1) => {
+    try {
+      setLoading(true);
+      let url = `/admin/cashstore/purchases?page=${pageNum}&limit=20`;
+      if (filter === 'flagged') {
+        url = `/admin/cashstore/purchases/flagged?page=${pageNum}&limit=20`;
+      } else if (filter !== 'all') {
+        url += `&status=${filter}`;
+      }
+      const res = await apiClient.get<any>(url);
+      if (res.success) {
+        setPurchases(res.data || []);
+        setTotalPages(res.meta?.pagination?.totalPages || 1);
+        setPage(pageNum);
+      }
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [filter]);
+
+  React.useEffect(() => { load(1); }, [load]);
+
+  const handleReview = async (purchaseId: string, action: 'approve' | 'reject') => {
+    try {
+      setProcessing(purchaseId);
+      await apiClient.patch(`/admin/cashstore/purchases/${purchaseId}/review`, { action, reason: `${action}d by admin` });
+      showAlert('Success', `Purchase ${action}d`);
+      load(page);
+    } catch {
+      showAlert('Error', `Failed to ${action}`);
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return '#F59E0B';
+      case 'confirmed': return '#3B82F6';
+      case 'credited': return '#10B981';
+      case 'rejected': return '#EF4444';
+      case 'refunded': return '#6B7280';
+      default: return '#6B7280';
+    }
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingHorizontal: 12, paddingVertical: 8, maxHeight: 50 }}>
+        {(['all', 'flagged', 'pending', 'confirmed', 'credited', 'rejected'] as const).map(f => (
+          <TouchableOpacity
+            key={f}
+            style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, marginRight: 8, backgroundColor: filter === f ? '#1a3a52' : '#F0F0F0' }}
+            onPress={() => setFilter(f)}
+          >
+            <Text style={{ color: filter === f ? '#FFF' : '#666', fontSize: 13, fontWeight: '600' }}>
+              {f === 'flagged' ? '⚠ Flagged' : f.charAt(0).toUpperCase() + f.slice(1)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      <FlatList
+        data={purchases}
+        keyExtractor={item => item._id}
+        refreshing={refreshing}
+        onRefresh={() => { setRefreshing(true); load(page); }}
+        contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 100 }}
+        renderItem={({ item }) => (
+          <View style={{ padding: 12, borderRadius: 10, backgroundColor: '#FFF', marginBottom: 8, borderWidth: 1, borderColor: item.fraudFlags?.length ? '#FDE68A' : '#F0F0F0' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+              {item.brand?.logo && <Image source={{ uri: item.brand.logo }} style={{ width: 32, height: 32, borderRadius: 8, marginRight: 8, backgroundColor: '#EEE' }} />}
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontWeight: '600', fontSize: 14 }}>{item.brand?.name || 'Unknown Brand'}</Text>
+                <Text style={{ fontSize: 11, color: '#999' }}>Order: {item.externalOrderId}</Text>
+              </View>
+              <View style={{ backgroundColor: `${getStatusColor(item.status)}20`, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                <Text style={{ color: getStatusColor(item.status), fontSize: 11, fontWeight: '700' }}>{item.status.toUpperCase()}</Text>
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+              <Text style={{ fontSize: 12, color: '#666' }}>Amount: ₹{item.orderAmount?.toFixed(2)}</Text>
+              <Text style={{ fontSize: 12, color: '#666' }}>Coins: {item.coinsAwarded || 0}</Text>
+              <Text style={{ fontSize: 12, color: '#666' }}>Rate: {item.cashbackRate}%</Text>
+            </View>
+            <Text style={{ fontSize: 11, color: '#999' }}>User: {item.user?.fullName || item.user?.phoneNumber || 'N/A'}</Text>
+            <Text style={{ fontSize: 11, color: '#999' }}>Date: {new Date(item.purchasedAt).toLocaleDateString()}</Text>
+            {item.fraudFlags?.length > 0 && (
+              <View style={{ marginTop: 6, backgroundColor: '#FEF3C7', padding: 6, borderRadius: 6 }}>
+                <Text style={{ fontSize: 11, color: '#92400E', fontWeight: '600' }}>Flags: {item.fraudFlags.join(', ')}</Text>
+              </View>
+            )}
+            {(item.status === 'pending' || item.status === 'confirmed') && item.fraudFlags?.length > 0 && (
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+                <TouchableOpacity
+                  style={{ flex: 1, backgroundColor: '#10B981', paddingVertical: 8, borderRadius: 8, alignItems: 'center' }}
+                  onPress={() => handleReview(item._id, 'approve')}
+                  disabled={processing === item._id}
+                >
+                  {processing === item._id ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 13 }}>Approve</Text>}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ flex: 1, backgroundColor: '#EF4444', paddingVertical: 8, borderRadius: 8, alignItems: 'center' }}
+                  onPress={() => handleReview(item._id, 'reject')}
+                  disabled={processing === item._id}
+                >
+                  <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 13 }}>Reject</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        )}
+        ListEmptyComponent={
+          !loading ? (
+            <View style={{ alignItems: 'center', paddingTop: 40 }}>
+              <Ionicons name="receipt-outline" size={48} color="#CCC" />
+              <Text style={{ color: '#999', marginTop: 8 }}>No purchases found</Text>
+            </View>
+          ) : (
+            <ActivityIndicator size="large" color="#1a3a52" style={{ marginTop: 40 }} />
+          )
+        }
+        ListFooterComponent={totalPages > 1 ? (
+          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 16, paddingVertical: 12 }}>
+            <TouchableOpacity
+              onPress={() => load(page - 1)}
+              disabled={page <= 1}
+              style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: page > 1 ? '#1a3a52' : '#E5E5E5' }}
+            >
+              <Text style={{ color: page > 1 ? '#FFF' : '#999', fontWeight: '600' }}>Previous</Text>
+            </TouchableOpacity>
+            <Text style={{ alignSelf: 'center', color: '#666' }}>{page} / {totalPages}</Text>
+            <TouchableOpacity
+              onPress={() => load(page + 1)}
+              disabled={page >= totalPages}
+              style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: page < totalPages ? '#1a3a52' : '#E5E5E5' }}
+            >
+              <Text style={{ color: page < totalPages ? '#FFF' : '#999', fontWeight: '600' }}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+      />
+    </View>
+  );
+}
+
+function MallBrandsTabContent() {
+  const [brands, setBrands] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [search, setSearch] = React.useState('');
+
+  const load = React.useCallback(async (q?: string) => {
+    try {
+      const url = q ? `/admin/mall/brands?search=${encodeURIComponent(q)}` : '/admin/mall/brands';
+      const res = await apiClient.get<any>(url);
+      if (res.success) setBrands(res.data?.brands || []);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  React.useEffect(() => { load(); }, [load]);
+
+  const handleToggle = async (brandId: string) => {
+    try {
+      await apiClient.patch(`/admin/mall/brands/${brandId}/toggle`, {});
+      load(search);
+    } catch {
+      // silent
+    }
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <TextInput
+        style={{ margin: 12, padding: 10, backgroundColor: '#F5F5F5', borderRadius: 8, fontSize: 14 }}
+        placeholder="Search brands..."
+        value={search}
+        onChangeText={v => { setSearch(v); load(v); }}
+      />
+      <FlatList
+        data={brands}
+        keyExtractor={item => item._id}
+        refreshing={refreshing}
+        onRefresh={() => { setRefreshing(true); load(search); }}
+        renderItem={({ item }) => (
+          <View style={{
+            flexDirection: 'row', alignItems: 'center',
+            padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0F0F0'
+          }}>
+            <Image
+              source={{ uri: item.logo }}
+              style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: '#EEE' }}
+            />
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text style={{ fontWeight: '600', fontSize: 14 }}>{item.name}</Text>
+              <Text style={{ fontSize: 12, color: '#F59E0B', fontWeight: '700' }}>
+                {item.rezCoinReward?.coinsPerHundred ?? 5} coins/100
+              </Text>
+              <Text style={{ fontSize: 11, color: '#999' }}>
+                Commission: {item.cashback?.percentage ?? 0}% |
+                Margin: {((item.cashback?.percentage ?? 0) - (item.rezCoinReward?.coinsPerHundred ?? 5)).toFixed(1)}/100
+              </Text>
+            </View>
+            <Switch
+              value={item.isActive}
+              onValueChange={() => handleToggle(item._id)}
+            />
+          </View>
+        )}
+        ListEmptyComponent={
+          !loading ? (
+            <Text style={{ textAlign: 'center', color: '#999', marginTop: 40 }}>
+              No affiliate brands yet.{'\n'}Add brands via the backend API.
+            </Text>
+          ) : null
+        }
+      />
+    </View>
+  );
+}
 
 export default function CashStoreScreen() {
   const router = useRouter();
@@ -62,6 +300,7 @@ export default function CashStoreScreen() {
     name: '', slug: '', logo: '', description: '', category: '',
     cashbackRate: '0', denominations: '', termsAndConditions: '',
     isActive: true, isFeatured: false,
+    rezCoinRate: '5', maxCoinsPerOrder: '10000', minOrderAmount: '0',
   });
 
   // ─── Coupons State ─────────────────────────────────────────
@@ -156,6 +395,9 @@ export default function CashStoreScreen() {
         name: voucher.name, slug: voucher.slug || '', logo: voucher.logo || '',
         description: voucher.description || '', category: voucher.category || '',
         cashbackRate: voucher.cashbackRate?.toString() || '0',
+        rezCoinRate: (voucher as any).rezCoinReward?.coinsPerHundred?.toString() || '5',
+        maxCoinsPerOrder: (voucher as any).rezCoinReward?.maximumCoinsPerOrder?.toString() || '10000',
+        minOrderAmount: (voucher as any).rezCoinReward?.minimumOrderAmount?.toString() || '0',
         denominations: voucher.denominations?.join(', ') || '',
         termsAndConditions: voucher.termsAndConditions?.join('\n') || '',
         isActive: voucher.isActive, isFeatured: voucher.isFeatured,
@@ -166,6 +408,7 @@ export default function CashStoreScreen() {
         name: '', slug: '', logo: '', description: '', category: '',
         cashbackRate: '0', denominations: '100, 250, 500, 1000',
         termsAndConditions: '', isActive: true, isFeatured: false,
+        rezCoinRate: '5', maxCoinsPerOrder: '10000', minOrderAmount: '0',
       });
     }
     setShowVoucherModal(true);
@@ -180,6 +423,12 @@ export default function CashStoreScreen() {
         logo: voucherForm.logo.trim(), description: voucherForm.description.trim(),
         category: voucherForm.category.trim(),
         cashbackRate: parseFloat(voucherForm.cashbackRate) || 0,
+        rezCoinReward: {
+          coinsPerHundred: parseFloat(voucherForm.rezCoinRate) || 5,
+          maximumCoinsPerOrder: parseFloat(voucherForm.maxCoinsPerOrder) || 10000,
+          minimumOrderAmount: parseFloat(voucherForm.minOrderAmount) || 0,
+          isActive: true,
+        },
         denominations: voucherForm.denominations.split(',').map(d => parseFloat(d.trim())).filter(Boolean),
         termsAndConditions: voucherForm.termsAndConditions.split('\n').filter(t => t.trim()),
         isActive: voucherForm.isActive, isFeatured: voucherForm.isFeatured,
@@ -805,7 +1054,7 @@ export default function CashStoreScreen() {
             { label: 'Total Clicks', value: affiliateData.clicks || 0, icon: 'hand-left', color: colors.info },
             { label: 'Purchases', value: affiliateData.purchases || 0, icon: 'cart', color: colors.success },
             { label: 'Revenue', value: `₹${affiliateData.revenue || 0}`, icon: 'cash', color: colors.warning },
-            { label: 'Cashback Paid', value: `₹${affiliateData.cashbackPaid || 0}`, icon: 'wallet', color: colors.purple },
+            { label: 'Coins Awarded', value: `${affiliateData.coinsAwarded || affiliateData.cashbackPaid || 0}`, icon: 'wallet', color: colors.purple },
             { label: 'Conversion Rate', value: `${(affiliateData.conversionRate || 0).toFixed(1)}%`, icon: 'trending-up', color: colors.cyan },
           ].map((stat, i) => (
             <View key={i} style={[styles.statCard, { backgroundColor: colors.card }]}>
@@ -837,7 +1086,9 @@ export default function CashStoreScreen() {
     { key: 'coupons', label: 'Coupons', icon: 'pricetag' },
     { key: 'campaigns', label: '2X Cashback', icon: 'flash' },
     { key: 'coindrops', label: 'Coin Drops', icon: 'diamond' },
+    { key: 'purchases', label: 'Purchases', icon: 'receipt' },
     { key: 'affiliate', label: 'Analytics', icon: 'bar-chart' },
+    { key: 'mall-brands', label: 'Mall Brands', icon: 'storefront' },
   ];
 
   const getListData = () => {
@@ -938,8 +1189,14 @@ export default function CashStoreScreen() {
         </ScrollView>
       </View>
 
+      {/* Mall Brands Tab */}
+      {activeTab === 'mall-brands' && <MallBrandsTabContent />}
+
+      {/* Purchases Tab */}
+      {activeTab === 'purchases' && <PurchasesTabContent />}
+
       {/* Affiliate Tab (special layout) */}
-      {activeTab === 'affiliate' ? renderAffiliateTab() : (
+      {activeTab === 'affiliate' ? renderAffiliateTab() : (activeTab === 'mall-brands' || activeTab === 'purchases') ? null : (
         <>
           {/* Search + Filter bar */}
           {(activeTab === 'vouchers' || activeTab === 'coupons') && (
@@ -1025,6 +1282,28 @@ export default function CashStoreScreen() {
             {renderFormField('Terms & Conditions (one per line)', voucherForm.termsAndConditions, v => setVoucherForm(p => ({ ...p, termsAndConditions: v })), { multiline: true })}
             {renderSwitchField('Active', voucherForm.isActive, v => setVoucherForm(p => ({ ...p, isActive: v })))}
             {renderSwitchField('Featured', voucherForm.isFeatured, v => setVoucherForm(p => ({ ...p, isFeatured: v })))}
+
+            {/* REZ Coin Reward Section */}
+            <View style={{ backgroundColor: '#FFF8E1', borderRadius: 8, padding: 12, marginTop: 8 }}>
+              <Text style={{ fontWeight: '700', color: '#5D4037', marginBottom: 8, fontSize: 13 }}>
+                REZ Coin Reward (per 100 spent)
+              </Text>
+              {renderFormField('Coins per 100 (e.g. 8)', voucherForm.rezCoinRate, v => setVoucherForm(p => ({ ...p, rezCoinRate: v })))}
+              {renderFormField('Max coins per order', voucherForm.maxCoinsPerOrder, v => setVoucherForm(p => ({ ...p, maxCoinsPerOrder: v })))}
+              {renderFormField('Min order amount', voucherForm.minOrderAmount, v => setVoucherForm(p => ({ ...p, minOrderAmount: v })))}
+              <View style={{ backgroundColor: '#FFF', borderRadius: 6, padding: 10, marginTop: 6 }}>
+                <Text style={{ fontSize: 11, color: '#666', fontWeight: '600', marginBottom: 4 }}>PREVIEW</Text>
+                <Text style={{ fontSize: 12, color: '#333' }}>
+                  1,000 order: {Math.floor(1000 * (parseFloat(voucherForm.rezCoinRate) || 0) / 100)} REZ coins
+                </Text>
+                <Text style={{ fontSize: 12, color: '#333' }}>
+                  5,000 order: {Math.min(Math.floor(5000 * (parseFloat(voucherForm.rezCoinRate) || 0) / 100), parseFloat(voucherForm.maxCoinsPerOrder) || 10000)} REZ coins
+                </Text>
+                <Text style={{ fontSize: 11, color: '#888', marginTop: 4 }}>
+                  Brand pays {voucherForm.cashbackRate}% | User gets {voucherForm.rezCoinRate} coins/100 | Margin: {((parseFloat(voucherForm.cashbackRate) || 0) - (parseFloat(voucherForm.rezCoinRate) || 0)).toFixed(1)}/100
+                </Text>
+              </View>
+            </View>
           </ScrollView>
         </View>
       </Modal>
