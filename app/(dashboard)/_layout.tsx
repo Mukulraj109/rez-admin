@@ -311,6 +311,54 @@ export default function DashboardLayout() {
         }}
       />
       <Tabs.Screen
+        name="prive-submissions"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="coin-overview"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="campaign-approval"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="credit-engine"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="region-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="influencer-approval"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="mode-control"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="whatsapp-templates"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="tournaments"
         options={{
           href: null,
@@ -540,6 +588,102 @@ export default function DashboardLayout() {
       />
       <Tabs.Screen
         name="institute-referrals"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="merchant-tier-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="finance-dashboard"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="coin-rules"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="bbps-transactions"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="bbps-providers"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="bbps-analytics"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="bbps-config"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="device-security"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="disputes"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="service-appointments"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="table-bookings"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="coupons"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="referral-management"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="merchant-wallet-management"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="system-monitoring"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="bulk-wallet-adjustment"
         options={{
           href: null,
         }}

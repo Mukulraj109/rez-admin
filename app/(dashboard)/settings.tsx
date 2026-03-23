@@ -209,6 +209,41 @@ export default function SettingsScreen() {
         </View>
       </View>
 
+      {/* Payments & BBPS */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>PAYMENTS & BBPS</Text>
+        <View style={styles.settingsGroup}>
+          <SettingItem
+            icon="receipt-outline"
+            iconColor={colors.info}
+            title="BBPS Transactions"
+            subtitle="Monitor bill payment transactions"
+            onPress={() => router.push('/(dashboard)/bbps-transactions')}
+          />
+          <SettingItem
+            icon="list-outline"
+            iconColor={colors.success}
+            title="Bill Providers"
+            subtitle="Manage BBPS bill payment providers"
+            onPress={() => router.push('/(dashboard)/bbps-providers')}
+          />
+          <SettingItem
+            icon="bar-chart-outline"
+            iconColor={colors.purple}
+            title="BBPS Analytics"
+            subtitle="Bill payment volume & performance"
+            onPress={() => router.push('/(dashboard)/bbps-analytics')}
+          />
+          <SettingItem
+            icon="settings-outline"
+            iconColor={colors.warning}
+            title="BBPS Config"
+            subtitle="Coin rewards, limits & feature flags"
+            onPress={() => router.push('/(dashboard)/bbps-config')}
+          />
+        </View>
+      </View>
+
       {/* Offers & Zones Management */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.icon }]}>OFFERS & ZONES</Text>
@@ -422,6 +457,27 @@ export default function SettingsScreen() {
             title="Merchant Withdrawals"
             subtitle="Review & process merchant withdrawals"
             onPress={() => router.push('/(dashboard)/merchant-withdrawals')}
+          />
+          <SettingItem
+            icon="wallet"
+            iconColor="#7C3AED"
+            title="Merchant Wallet Management"
+            subtitle="Balances, transactions & bank verification"
+            onPress={() => router.push('/(dashboard)/merchant-wallet-management')}
+          />
+          <SettingItem
+            icon="ticket"
+            iconColor={colors.purple}
+            title="Coupons"
+            subtitle="Create & manage coupon codes"
+            onPress={() => router.push('/(dashboard)/coupons')}
+          />
+          <SettingItem
+            icon="people"
+            iconColor="#0EA5E9"
+            title="Referral Management"
+            subtitle="Track referrals, fraud detection & stats"
+            onPress={() => router.push('/(dashboard)/referral-management')}
           />
           <SettingItem
             icon="people"
@@ -664,6 +720,69 @@ export default function SettingsScreen() {
         </View>
       </View>
 
+      {/* Advanced Admin */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.icon }]}>ADVANCED</Text>
+        <View style={styles.settingsGroup}>
+          <SettingItem
+            icon="analytics"
+            iconColor="#7C3AED"
+            title="Coin Overview"
+            subtitle="Coin stats & emergency kill switch"
+            onPress={() => router.push('/(dashboard)/coin-overview')}
+          />
+          <SettingItem
+            icon="megaphone"
+            iconColor="#F59E0B"
+            title="Privé Submissions"
+            subtitle="Review campaign post submissions"
+            onPress={() => router.push('/(dashboard)/prive-submissions')}
+          />
+          <SettingItem
+            icon="checkmark-done-circle"
+            iconColor="#10B981"
+            title="Campaign Approval"
+            subtitle="Approve merchant campaigns"
+            onPress={() => router.push('/(dashboard)/campaign-approval')}
+          />
+          <SettingItem
+            icon="card"
+            iconColor="#3B82F6"
+            title="Credit Engine"
+            subtitle="Trust tiers & pay-later limits"
+            onPress={() => router.push('/(dashboard)/credit-engine')}
+          />
+          <SettingItem
+            icon="globe"
+            iconColor="#10B981"
+            title="Region Config"
+            subtitle="Enable/disable regions"
+            onPress={() => router.push('/(dashboard)/region-config')}
+          />
+          <SettingItem
+            icon="people"
+            iconColor="#EC4899"
+            title="Influencer Approval"
+            subtitle="Review Privé applications"
+            onPress={() => router.push('/(dashboard)/influencer-approval')}
+          />
+          <SettingItem
+            icon="apps"
+            iconColor="#6366F1"
+            title="Mode Control"
+            subtitle="Enable/disable app modes"
+            onPress={() => router.push('/(dashboard)/mode-control')}
+          />
+          <SettingItem
+            icon="logo-whatsapp"
+            iconColor="#25D366"
+            title="WhatsApp Templates"
+            subtitle="Notification message templates"
+            onPress={() => router.push('/(dashboard)/whatsapp-templates')}
+          />
+        </View>
+      </View>
+
       {/* System Settings */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.icon }]}>SYSTEM</Text>
@@ -721,6 +840,13 @@ export default function SettingsScreen() {
               onPress={() => router.push('/(dashboard)/system-health')}
             />
             <SettingItem
+              icon="speedometer"
+              iconColor="#7C3AED"
+              title="System Monitoring"
+              subtitle="Real-time KPIs, alerts & service status"
+              onPress={() => router.push('/(dashboard)/system-monitoring')}
+            />
+            <SettingItem
               icon="shield-checkmark"
               iconColor={colors.success}
               title="Security Settings"
@@ -762,6 +888,13 @@ export default function SettingsScreen() {
             title="Wallet Adjustment"
             subtitle="Dispute resolution with maker-checker approvals"
             onPress={() => router.push('/(dashboard)/wallet-adjustment')}
+          />
+          <SettingItem
+            icon="layers"
+            iconColor="#0891B2"
+            title="Bulk Wallet Adjustment"
+            subtitle="Credit/debit coins for multiple users at once"
+            onPress={() => router.push('/(dashboard)/bulk-wallet-adjustment')}
           />
           <SettingItem
             icon="checkmark-done-circle"

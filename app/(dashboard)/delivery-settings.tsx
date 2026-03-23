@@ -83,6 +83,7 @@ export default function DeliverySettingsScreen() {
   const [saving, setSaving] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [isUsingDefaults, setIsUsingDefaults] = useState(true);
 
   const [collapsed, setCollapsed] = useState<Record<SectionKey, boolean>>({
     global: false,
@@ -109,9 +110,10 @@ export default function DeliverySettingsScreen() {
         if (response.data.zones) setZones(response.data.zones);
         if (response.data.timeSlots) setTimeSlots(response.data.timeSlots);
         setDirty(false);
+        setIsUsingDefaults(false);
       }
     } catch {
-      // Endpoint may not exist yet, silently ignore
+      setIsUsingDefaults(true);
     } finally {
       setRefreshing(false);
     }
@@ -143,6 +145,7 @@ export default function DeliverySettingsScreen() {
       if (response.success) {
         showAlert('Success', 'Delivery settings saved successfully');
         setDirty(false);
+        setIsUsingDefaults(false);
       } else {
         showAlert('Error', response.message || 'Failed to save delivery settings');
       }
@@ -264,6 +267,15 @@ export default function DeliverySettingsScreen() {
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[colors.tint]} />}
       >
+        {isUsingDefaults && (
+          <View style={styles.defaultsBanner}>
+            <Ionicons name="warning" size={18} color="#92400E" />
+            <Text style={styles.defaultsBannerText}>
+              Using default settings — backend delivery config endpoint not configured. Save to create initial configuration.
+            </Text>
+          </View>
+        )}
+
         {/* Section 1: Global Delivery Settings */}
         {renderSectionCard('global', (
           <>
@@ -462,6 +474,23 @@ const styles = StyleSheet.create({
   },
   addBtnText: { fontSize: 13, fontWeight: '600' },
   emptyText: { fontSize: 13, textAlign: 'center', paddingVertical: 16, fontStyle: 'italic' },
+  defaultsBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+  },
+  defaultsBannerText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#92400E',
+    lineHeight: 18,
+  },
   bottomSave: { backgroundColor: Colors.light.navy, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
   bottomSaveText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
 });
